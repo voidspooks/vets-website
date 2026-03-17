@@ -434,6 +434,8 @@ describe('MigratingFacilitiesAlerts', () => {
             p5: 'May 1, 2026',
             p6: 'May 3, 2026',
             p7: 'May 8, 2026',
+            p8: 'May 31, 2026',
+            p9: 'June 16, 2026',
           },
         },
         {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import { useLocation } from 'react-router-dom';
@@ -17,6 +17,7 @@ import {
   getPageTitle,
   scrollIfFocusedAndNotInView,
   isMigrationPhaseBlockingReplies,
+  hasMessageMigratedToOracleHealth,
 } from '../util/helpers';
 import { closeAlert } from '../actions/alerts';
 import CannotReplyAlert from './shared/CannotReplyAlert';
@@ -66,6 +67,12 @@ const MessageThreadHeader = props => {
     state => state.sm.threadDetails.ohMigrationPhase,
   );
   const isInMigrationPhase = isMigrationPhaseBlockingReplies(ohMigrationPhase);
+  const messagePostMigration = useMemo(
+    () => {
+      return hasMessageMigratedToOracleHealth(messages);
+    },
+    [messages],
+  );
 
   useEffect(
     () => {
@@ -192,7 +199,11 @@ const MessageThreadHeader = props => {
       {customFoldersRedesignEnabled ? (
         <ReplyButton
           key="replyButton"
-          visible={!cannotReply && !showBlockedTriageGroupAlert}
+          visible={
+            !cannotReply &&
+            !showBlockedTriageGroupAlert &&
+            !messagePostMigration
+          }
         />
       ) : (
         <MessageActionButtons

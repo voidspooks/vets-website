@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
+import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import { expect } from 'chai';
 import { waitFor } from '@testing-library/react';
 import sinon from 'sinon';
@@ -392,6 +393,106 @@ describe('MessageThreadHeader component', () => {
           "You can't send messages to some of your care teams",
         );
       });
+    });
+  });
+
+  describe('useCanReplyField toggle on + migration phase', () => {
+    const migrationSchedules = [
+      {
+        migrationDate: 'February 13, 2026',
+        facilities: [
+          {
+            facilityId: '979',
+            facilityName: 'Test VA Medical Center',
+          },
+        ],
+        phases: {
+          current: 'p3',
+          p0: 'December 15, 2025',
+          p1: 'December 30, 2025',
+          p2: 'January 14, 2026',
+          p3: 'February 7, 2026',
+          p4: 'February 10, 2026',
+          p5: 'February 13, 2026',
+          p6: 'February 15, 2026',
+          p7: 'February 20, 2026',
+        },
+      },
+    ];
+
+    it('hides CannotReplyAlert when in migration phase even though replyDisabled is true', () => {
+      const state = {
+        ...defaultState,
+        sm: {
+          ...defaultState.sm,
+          threadDetails: {
+            ...defaultState.sm.threadDetails,
+            ohMigrationPhase: 'p3',
+            replyDisabled: true,
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingCanReplyField]: true,
+        },
+        user: { profile: { migrationSchedules } },
+      };
+      const props = { ...defaultProps, cannotReply: true };
+      const screen = setup(state, props);
+
+      // CannotReplyAlert would be visible without migration phase;
+      // migration phase's !isInMigrationPhase guard hides it
+      expect(screen.queryByTestId('cannot-reply-alert-message')).to.not.exist;
+    });
+
+    it('still shows StaleMessageAlert in migration phase when isStale is true and replyDisabled is false', () => {
+      const state = {
+        ...defaultState,
+        sm: {
+          ...defaultState.sm,
+          threadDetails: {
+            ...defaultState.sm.threadDetails,
+            ohMigrationPhase: 'p3',
+            isStale: true,
+            replyDisabled: false,
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingCanReplyField]: true,
+        },
+        user: { profile: { migrationSchedules } },
+      };
+      const props = { ...defaultProps, cannotReply: true };
+      const screen = setup(state, props);
+
+      // StaleMessageAlert in the useCanReplyField path does not check
+      // isInMigrationPhase, so it remains visible
+      expect(screen.queryByTestId('expired-alert-message')).to.exist;
+    });
+  });
+
+  describe('ReplyButton visibility with messagePostMigration', () => {
+    it('hides ReplyButton when a message has migratedToOracleHealth', () => {
+      const migratedMessage = {
+        ...defaultMessage,
+        migratedToOracleHealth: true,
+      };
+      const state = {
+        ...defaultState,
+        sm: {
+          ...defaultState.sm,
+          threadDetails: {
+            ...defaultState.sm.threadDetails,
+            messages: [migratedMessage],
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingCustomFoldersRedesign]: true,
+        },
+      };
+      const screen = setup(state, defaultProps);
+
+      expect(screen.queryByTestId('reply-to-message-link')).to.not.exist;
+      expect(screen.queryByTestId('reply-button-body')).to.not.exist;
     });
   });
 });
