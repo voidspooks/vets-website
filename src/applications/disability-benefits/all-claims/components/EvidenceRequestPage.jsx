@@ -165,7 +165,6 @@ export const EvidenceRequestPage = ({
           status="success"
           visible={alertVisible}
           uswds
-          tabIndex="-1"
         >
           <p className="vads-u-margin-y--0">{alertMessage(alertType)}</p>
         </VaAlert>

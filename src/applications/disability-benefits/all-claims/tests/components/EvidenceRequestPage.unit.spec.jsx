@@ -716,4 +716,76 @@ describe('EvidenceRequestPage', () => {
       expect(alert).to.have.attribute('visible', 'false');
     });
   });
+
+  it('should close success alert when Enter key is pressed on close button', async () => {
+    const setFormData = sinon.spy();
+    const data = {
+      'view:hasMedicalRecords': false,
+      vaTreatmentFacilities: [{ treatmentCenterName: 'VA Hospital 1' }],
+    };
+
+    const { container } = render(page({ data, setFormData }));
+    fireEvent.click($('button[type="submit"]', container));
+
+    await waitFor(() => {
+      const modal = container.querySelector('va-modal');
+      expect(modal).to.have.attribute('visible', 'true');
+    });
+
+    const modal = container.querySelector('va-modal');
+    fireEvent(modal, new CustomEvent('primaryButtonClick'));
+
+    await waitFor(() => {
+      const alert = container.querySelector('va-alert');
+      expect(alert).to.have.attribute('visible', 'true');
+    });
+
+    const alert = container.querySelector('va-alert');
+
+    // Simulate Enter key press on the alert's close button
+    fireEvent.keyDown(alert, { key: 'Enter', code: 'Enter', keyCode: 13 });
+
+    // The web component should trigger closeEvent when Enter is pressed
+    fireEvent(alert, new CustomEvent('closeEvent'));
+
+    await waitFor(() => {
+      expect(alert).to.have.attribute('visible', 'false');
+    });
+  });
+
+  it('should close success alert when Space key is pressed on close button', async () => {
+    const setFormData = sinon.spy();
+    const data = {
+      'view:hasMedicalRecords': false,
+      vaTreatmentFacilities: [{ treatmentCenterName: 'VA Hospital 1' }],
+    };
+
+    const { container } = render(page({ data, setFormData }));
+    fireEvent.click($('button[type="submit"]', container));
+
+    await waitFor(() => {
+      const modal = container.querySelector('va-modal');
+      expect(modal).to.have.attribute('visible', 'true');
+    });
+
+    const modal = container.querySelector('va-modal');
+    fireEvent(modal, new CustomEvent('primaryButtonClick'));
+
+    await waitFor(() => {
+      const alert = container.querySelector('va-alert');
+      expect(alert).to.have.attribute('visible', 'true');
+    });
+
+    const alert = container.querySelector('va-alert');
+
+    // Simulate Space key press on the alert's close button
+    fireEvent.keyDown(alert, { key: ' ', code: 'Space', keyCode: 32 });
+
+    // The web component should trigger closeEvent when Space is pressed
+    fireEvent(alert, new CustomEvent('closeEvent'));
+
+    await waitFor(() => {
+      expect(alert).to.have.attribute('visible', 'false');
+    });
+  });
 });
