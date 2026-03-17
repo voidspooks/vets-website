@@ -636,10 +636,10 @@ export default function VaFileInputMultiplePage() {
             onVaInput={handleSlotInput}
             hint="Upload PDF, JPEG, or PNG files. Encrypted PDFs will require a password."
             label="Select files to upload"
+            enableAnalytics
           >
             <div className="additional-input-container">
               <VaSelect required label="Document status">
-                <option value="">Select status</option>
                 <option value="public">Public</option>
                 <option value="private">Private</option>
               </VaSelect>
