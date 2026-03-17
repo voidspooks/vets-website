@@ -1,13 +1,20 @@
 const generateFeatureToggles = (toggles = {}) => {
-  const { findARepresentativeEnableFrontend = false } = toggles;
+  const {
+    findARepresentativeEnableFrontend = false,
+    findARepresentativeEnabled = false,
+  } = toggles;
 
   return {
     data: {
       type: 'feature_toggles',
       features: [
         {
-          name: 'find_a_representative',
+          name: 'find_a_representative_enable_frontend',
           value: findARepresentativeEnableFrontend,
+        },
+        {
+          name: 'find_a_representative_enabled',
+          value: findARepresentativeEnabled,
         },
       ],
     },

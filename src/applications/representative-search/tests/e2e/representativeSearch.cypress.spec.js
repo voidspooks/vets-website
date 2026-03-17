@@ -28,13 +28,11 @@ Cypress.Commands.add('verifyOptions', () => {
 
 describe('Representative Search', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/v0/feature_toggles*', {
-      data: {
-        features: [
-          { name: 'find_a_representative_enable_frontend', value: true },
-        ],
-      },
-    });
+    cy.intercept(
+      'GET',
+      '/v0/feature_toggles*',
+      generateFeatureToggles({ findARepresentativeEnableFrontend: true }),
+    );
     cy.intercept('GET', '/v0/maintenance_windows', []);
 
     cy.intercept(
@@ -48,7 +46,6 @@ describe('Representative Search', () => {
     cy.intercept('GET', '/geocoding/**/*', mockGeocodingData);
 
     cy.visit('/get-help-from-accredited-representative/find-rep/');
-    generateFeatureToggles();
 
     cy.injectAxe();
     cy.axeCheck();
@@ -77,7 +74,6 @@ describe('Representative Search', () => {
     ).as('searchFacilities');
     cy.intercept('GET', '/geocoding/**/*', mockGeocodingData);
     cy.visit('/get-help-from-accredited-representative/find-rep/');
-    generateFeatureToggles();
     cy.injectAxe();
     cy.axeCheck();
 
@@ -94,7 +90,6 @@ describe('Representative Search', () => {
 
   it('should not trigger Use My Location when pressing enter in the input field', () => {
     cy.visit('/get-help-from-accredited-representative/find-rep/');
-    generateFeatureToggles();
     cy.injectAxe();
     cy.axeCheck();
     cy.get('#street-city-state-zip')
@@ -110,5 +105,95 @@ describe('Representative Search', () => {
       .then(searchString => expect(searchString).to.equal('27606'));
     // If Use My Location is triggered and fails, it will trigger a modal alert:
     cy.get('#va-modal-title').should('not.exist');
+  });
+
+  it('adds and clears organization name in search results', () => {
+    cy.intercept('GET', '/geocoding/**/*', mockGeocodingData);
+    cy.intercept(
+      'GET',
+      '/v0/feature_toggles*',
+      generateFeatureToggles({
+        findARepresentativeEnableFrontend: true,
+        findARepresentativeEnabled: true,
+      }),
+    );
+    cy.intercept(
+      'GET',
+      '/representation_management/v0/accredited_organizations',
+      [{ data: { attributes: { name: 'American Legion' } } }],
+    );
+
+    cy.visit('/get-help-from-accredited-representative/find-rep/');
+
+    cy.injectAxe();
+    cy.axeCheck();
+
+    cy.verifyOptions();
+
+    cy.get('#street-city-state-zip')
+      .find('input[type="text"]')
+      .type('Austin, TX');
+
+    cy.get('.organization-select')
+      .find('input[type="text"]')
+      .type('American Legion{enter}');
+
+    cy.intercept(
+      'GET',
+      '/services/veteran/v0/vso_accredited_representatives?**',
+      {
+        data: [],
+        meta: { pagination: { totalEntries: 0 } },
+      },
+    ).as('searchRepresentatives');
+
+    cy.get('va-button[text="Search"]').click({ waitForAnimations: true });
+
+    cy.wait('@searchRepresentatives')
+      .its('request.url')
+      .should('include', 'org_name=American+Legion');
+
+    cy.get('.organization-select')
+      .find('input[type="text"]')
+      .not('[disabled]')
+      .type('{selectAll}{del}{enter}');
+
+    cy.get('va-button[text="Search"]').click({ waitForAnimations: true });
+
+    cy.wait('@searchRepresentatives')
+      .its('request.url')
+      .should('not.include', 'org_name=');
+  });
+
+  it('does not see organization select combo box when feature toggle is off', () => {
+    cy.intercept('GET', '/geocoding/**/*', mockGeocodingData);
+
+    cy.visit('/get-help-from-accredited-representative/find-rep/');
+
+    cy.injectAxe();
+    cy.axeCheck();
+
+    cy.verifyOptions();
+
+    cy.get('#street-city-state-zip')
+      .find('input[type="text"]')
+      .type('Austin, TX');
+
+    cy.get('.organization-select').should('not.exist');
+
+    cy.intercept(
+      'GET',
+      '/services/veteran/v0/vso_accredited_representatives?**',
+      {
+        data: [],
+        meta: { pagination: { totalEntries: 0 } },
+      },
+    ).as('searchRepresentatives');
+
+    cy.get('va-button[text="Search"]').click({ waitForAnimations: true });
+
+    cy.wait('@searchRepresentatives')
+      .its('request.url')
+      .should('not.include', 'org_name=');
   });
 });
