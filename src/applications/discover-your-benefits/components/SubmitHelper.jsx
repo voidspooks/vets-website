@@ -2,9 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getResults } from '../reducers/actions';
+import { FORM_RESPONSES_KEY } from '../constants/storageKeys';
 
 const SubmitHelper = props => {
   const handleClick = () => {
+    // Store form responses for retrieval on the PreSubmitInfo page if
+    // the user wants to edit them after navigating from the results page.
+    sessionStorage.setItem(FORM_RESPONSES_KEY, JSON.stringify(props.form.data));
+
     props.getResults(props.form.data);
   };
   return (
