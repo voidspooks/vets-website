@@ -1,0 +1,61 @@
+{
+  "shared": {
+    "loading": {
+      "label": "Loading",
+      "message": "Please wait while we load the application for you."
+    },
+    "downtime": {
+      "appTitle": "Debts and bills application"
+    },
+    "phone": {
+        "tollFree": { "label": "Toll free:", "value": "800-827-0648" },
+        "international": { "label": "International:", "value": "612-713-6415" },
+        "hrc": { "label": "Health Resource Center:", "value": "866-400-1238" },
+        "tty": { "label": "TTY:", "value": "711" },
+        "applyForHealthCare": { "label": "", "value": "877-222-8387" }
+    },
+    "linkText": {
+        "reviewDetails": "Review details",
+        "resolveOverpayment": "Resolve this overpayment",
+        "requestHelp": "Request help with this overpayment",
+        "makeAPayment": "Make a payment",
+        "askVa": "Ask VA",
+        "updateAddress": "Update your mailing address",
+        "contactUsVA": "contact us through Ask VA",
+        "applyForHealthCare": "Find out how to apply for VA health care benefits"
+    },
+    "needHelp": {
+      "benefitOverpayments": "<strong>If you need help now with a benefit overpayment balance,</strong> call our Debt Management Center at <1>phone1</1> (<2>TTY: 711</2>). If you're outside the U.S., call <3>phone2</3>. We're here Monday through Friday, 7:30 a.m. to 7:00 p.m. ET.",
+      "copayBills": "<strong>If you need help now with a copay bill,</strong> call our Health Resource Center at <1>phone1</1> (<2>TTY: 711</2>). We're here Monday through Friday, 8:00 a.m. to 8:00 p.m. ET.",
+      "questions": "<strong>If you want to ask us a question online,</strong> <1>contact us through Ask VA</1>."
+    },
+    "debtSummary": {
+      "title": "Overpayment balances",
+      "body": "Check the details of benefit overpayments you might have from VA education, disability compensation, or pension programs. Find out how to resolve overpayments and what to do if you need financial assistance."
+    },
+    "copaySummary": {
+      "title": "Copay balances",
+      "body": "Check the balance of VA health care and prescription charges from each of your facilities. Find out how to make payments or request financial help."
+    },
+    "otherVADebts": {
+      "title": {
+        "commonText": "Your {{type}}",
+        "debt": "benefit overpayment balances",
+        "copay": "VA copay bills"
+      },
+      "description": {
+        "debtText": "Our records show you have benefit overpayments. You can check the details of your balance, find out how to make a payment, and learn how to request financial assistance.",
+        "copayText": "Our records show you have a VA health care copay bill. You can check the details of your copay balance, find out how to pay your balance, and learn how to request financial assistance. "
+      },
+      "links": {
+        "debt": "Review overpayment balances",
+        "copay": "Review your VA copay bills"
+      }
+    },
+    "downloadLetters": {
+      "header" : "Download debt letters",
+      "body": "You can download some of your letters for education, compensation and pension debt.",
+      "linkText": "Download letters related to your VA debt"
+    }
+  }
+}
