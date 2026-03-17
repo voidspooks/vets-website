@@ -24,7 +24,7 @@ import { ConfirmationAlert } from '../../shared/components/ConfirmationAlert';
 import { ConfirmationTitle } from '../../shared/components/ConfirmationTitle';
 import ConfirmationPersonalInfo from '../../shared/components/ConfirmationPersonalInfo';
 import ConfirmationIssues from '../../shared/components/ConfirmationIssues';
-import { getReadableDate } from '../../shared/utils/dates';
+import { getReadableDateFromTimestamp } from '../../shared/utils/dates';
 import { convertBoolResponseToYesNo } from '../../shared/utils/form-data-display';
 // import { NOD_PDF_DOWNLOAD_URL } from '../../shared/constants';
 
@@ -50,7 +50,7 @@ export const ConfirmationPageV2 = () => {
   );
 
   const { submission, data = {} } = form;
-  const submitDate = getReadableDate(
+  const submitDate = getReadableDateFromTimestamp(
     submission?.timestamp || new Date().toISOString(),
   );
 

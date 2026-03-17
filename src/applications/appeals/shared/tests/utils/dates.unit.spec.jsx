@@ -1,7 +1,9 @@
 import { expect } from 'chai';
+import { formatInTimeZone } from 'date-fns-tz';
 
 import { FORMAT_YMD_DATE_FNS, FORMAT_READABLE_DATE_FNS } from '../../constants';
 import {
+  getReadableDateFromTimestamp,
   parseDateToDateObj,
   parseDate,
   parseDateWithOffset,
@@ -9,6 +11,39 @@ import {
   getCurrentUTCStartOfDay,
   formatDateToReadableString,
 } from '../../utils/dates';
+
+const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+describe('getReadableDateFromTimestamp', () => {
+  it('should format an ISO 8601 timestamp as a readable date', () => {
+    expect(getReadableDateFromTimestamp('2026-03-17T18:00:00.000Z')).to.eq(
+      'March 17, 2026',
+    );
+  });
+
+  it('should convert a near-midnight UTC timestamp to the local timezone date', () => {
+    // March 17 in UTC, March 16 in US
+    const isoString = '2026-03-17T02:00:00.000Z';
+    const expected = formatInTimeZone(
+      new Date(isoString),
+      LOCAL_TZ,
+      'MMMM d, yyyy',
+    );
+    expect(getReadableDateFromTimestamp(isoString)).to.eq(expected);
+  });
+
+  it('should convert a UTC midnight timestamp to the correct local date', () => {
+    // Exactly midnight UTC — any timezone behind UTC sees the previous day
+    const isoString = '2025-01-01T00:00:00.000Z';
+    const expected = formatInTimeZone(
+      new Date(isoString),
+      LOCAL_TZ,
+      'MMMM d, yyyy',
+    ); // December 31, 2024
+
+    expect(getReadableDateFromTimestamp(isoString)).to.eq(expected);
+  });
+});
 
 describe('parseDateToDateObj', () => {
   const dateString = '2021-02-10';

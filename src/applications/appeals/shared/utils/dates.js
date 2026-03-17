@@ -24,6 +24,14 @@ export const getCurrentTimeZoneAbbr = () => {
 };
 
 /**
+ * Convert an ISO 8601 timestamp to a readable date in the user's timezone
+ * @param {string} isoString - ISO 8601 date string (e.g. "2026-03-17T08:15:57.782Z")
+ * @returns {string} Formatted date string (e.g. "March 17, 2026")
+ */
+export const getReadableDateFromTimestamp = isoString =>
+  formatInTimeZone(new Date(isoString), USER_TIMEZONE, 'MMMM d, yyyy');
+
+/**
  * parseDateToDateObj from ISO8601 or JS number date (not unix time)
  * @param {string, number, Date} date - date to format
  * @returns {dateObj|null} date object

@@ -27,7 +27,7 @@ import {
   getOtherEvidence,
 } from '../utils/form-data-retrieval';
 import { HAS_PRIVATE_LIMITATION } from '../constants';
-import { getReadableDate } from '../../shared/utils/dates';
+import { getReadableDateFromTimestamp } from '../../shared/utils/dates';
 
 // Components
 import {
@@ -64,7 +64,7 @@ export const ConfirmationPage = () => {
   const noEvidence =
     vaEvidence.length + privateEvidence.length + otherEvidence.length === 0;
 
-  const submitDate = getReadableDate(
+  const submitDate = getReadableDateFromTimestamp(
     submission?.timestamp || new Date().toISOString(),
   );
 

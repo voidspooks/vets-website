@@ -33,7 +33,7 @@ import { ConfirmationAlert } from '../../shared/components/ConfirmationAlert';
 import { ConfirmationTitle } from '../../shared/components/ConfirmationTitle';
 import ConfirmationPersonalInfo from '../../shared/components/ConfirmationPersonalInfo';
 import ConfirmationIssues from '../../shared/components/ConfirmationIssues';
-import { getReadableDate } from '../../shared/utils/dates';
+import { getReadableDateFromTimestamp } from '../../shared/utils/dates';
 
 export const ConfirmationPageV2 = () => {
   resetStoredSubTask();
@@ -73,7 +73,7 @@ export const ConfirmationPageV2 = () => {
     false;
   const { informalConferenceRep = {} } = data;
 
-  const submitDate = getReadableDate(
+  const submitDate = getReadableDateFromTimestamp(
     submission?.timestamp || new Date().toISOString(),
   );
 
