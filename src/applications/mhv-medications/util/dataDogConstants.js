@@ -8,9 +8,9 @@ import {
 
 export const pageType = {
   DETAILS: 'Details Page',
-  DOCUMENTATION: 'Documentation',
-  IN_PROGRESS: 'In-progress',
-  HISTORY: 'History',
+  DOCUMENTATION: 'Documentation Page',
+  IN_PROGRESS: 'In-progress Page',
+  HISTORY: 'History Page',
   LIST: 'List Page',
   REFILL: 'Refill Page',
 };
