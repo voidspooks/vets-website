@@ -116,6 +116,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
     layEvidenceUploads,
   ).length;
   const selectedEvidence = _.get('view:hasEvidence', formData, false);
+  const hasMedicalRecords = _.get('view:hasMedicalRecords', formData, false);
   const serviceTreatmentRecordsSelected = _.get(
     'view:uploadServiceTreatmentRecordsQualifier.view:hasServiceTreatmentRecordsToUpload',
     formData,
@@ -139,10 +140,8 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
   const enhancedNoEvidenceNonBdd =
     formData.disability526SupportingEvidenceEnhancement &&
     !isBDD(formData) &&
-    !evidenceLength &&
-    !selectedEvidence &&
-    !serviceTreatmentRecordsSelected &&
-    !sectionsList.length;
+    !hasMedicalRecords &&
+    layEvidenceUploads.length === 0;
 
   const bddBothSubmitLater =
     isBDD(formData) &&
@@ -277,10 +276,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
     ));
     layContent = formData.disability526SupportingEvidenceEnhancement ? (
       <div className="vads-u-margin-top--2">
-        <strong>
-          We’ll submit these documents you uploaded as evidence supporting your
-          claim:
-        </strong>
+        <strong>We’ll submit these documents you uploaded:</strong>
         <ul>{layEvidenceUploadsList}</ul>
       </div>
     ) : (
@@ -296,7 +292,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
       {(bddBothSubmitLater || enhancedNoEvidenceNonBdd) && NO_EVIDENCE_MESSAGE}
       {!bddBothSubmitLater &&
         !enhancedNoEvidenceNonBdd &&
-        (evidenceLength || selectedEvidence || sectionsList.length > 0) &&
+        (evidenceLength || sectionsList.length > 0) &&
         formData.disability526SupportingEvidenceEnhancement && (
           <p>You provided documents to support your claim.</p>
         )}
@@ -307,10 +303,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
       {serviceTreatmentRecordsContent}
       {layContent}
       {formData.disability526SupportingEvidenceEnhancement && (
-        <p>
-          Next, we’ll share some information about what to expect during a claim
-          exam.
-        </p>
+        <p>Next, we’ll tell you what to expect during a claim exam.</p>
       )}
     </div>
   );

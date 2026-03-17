@@ -159,7 +159,7 @@ export const AdditionalEvidenceIntroPage = ({
         onSecondaryButtonClick={handlers.onCancelChange}
         visible={modalVisible}
         status="warning"
-        primaryButtonText="Change and delete"
+        primaryButtonText="Cancel and delete"
         secondaryButtonText="Keep files"
       >
         {getAdditionalDocuments(data).length > 0 && (
