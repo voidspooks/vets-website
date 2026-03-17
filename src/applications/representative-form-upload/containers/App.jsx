@@ -18,6 +18,7 @@ import AccessTokenManager from './AccessTokenManager';
 const App = ({ children }) => {
   const {
     TOGGLE_NAMES: { accreditedRepresentativePortalFrontend: appToggleKey },
+    useFormFeatureToggleSync,
     useToggleLoadingValue,
     useToggleValue,
   } = useFeatureToggle();
@@ -32,6 +33,9 @@ const App = ({ children }) => {
   const userLoggedIn = useSelector(state => isLoggedIn(state));
   const profile = useSelector(selectUserProfile);
   const formNumber = getFormNumber();
+
+  useFormFeatureToggleSync(['accreditedRepresentativePortalEnable526ezBdd']);
+
   useEffect(() => {
     document.title = `Submit VA Form ${formNumber} | Accredited Representative Portal | Veterans Affairs`;
     // Insert CSS to hide 'For example: January 19 2000' hint on memorable dates

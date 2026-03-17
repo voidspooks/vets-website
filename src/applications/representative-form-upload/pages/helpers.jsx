@@ -100,6 +100,12 @@ export const ITFBenefitTypes = Object.freeze({
   },
 });
 
+export const BddCheckbox = Object.freeze({
+  BDD: {
+    title: 'This is a Benefits Delivery at Discharge (BDD) claim',
+  },
+});
+
 export const CustomTopContent = () => {
   const bcString = JSON.stringify(form686cBcList);
   return (

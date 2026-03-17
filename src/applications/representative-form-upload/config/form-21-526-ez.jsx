@@ -64,6 +64,9 @@ const form21526Ez = (pathname = null) => {
             // we want req'd fields prefilled for LOCAL testing/previewing
             // one single initialData prop here will suffice for entire form
             initialData: getMockData(),
+            depends: () => {
+              return true;
+            },
           },
         },
       },

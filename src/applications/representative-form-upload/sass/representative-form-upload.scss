@@ -279,6 +279,15 @@
   display: none;
 }
 .form {
+  &__checkbox {
+    margin-top: 32px;
+    legend {
+      height: auto;
+    }
+    p {
+      margin: 8px 0;
+    }
+  }
   &__icon {
     &--warning {
       margin: 0 4px;
