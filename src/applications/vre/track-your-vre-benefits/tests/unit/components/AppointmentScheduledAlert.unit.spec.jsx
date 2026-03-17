@@ -6,7 +6,7 @@ import AppointmentScheduledAlert, {
 } from '../../../components/AppointmentScheduledAlert';
 
 describe('AppointmentScheduledAlert', () => {
-  it('renders the expandable alert and shows formatted date + address', () => {
+  it('renders the alert and shows formatted date + address', () => {
     const { container, getByText } = render(
       <AppointmentScheduledAlert
         appointmentDateTime="2026-06-15T18:00:00.000Z"
@@ -14,12 +14,13 @@ describe('AppointmentScheduledAlert', () => {
       />,
     );
 
-    const alert = container.querySelector('va-alert-expandable');
+    const alert = container.querySelector('va-alert');
+    const headline = container.querySelector('h2[slot="headline"]');
     expect(alert).to.exist;
+    expect(headline).to.exist;
+    expect(headline.textContent).to.equal('You have an appointment scheduled');
     expect(alert.getAttribute('status')).to.equal('info');
-    expect(alert.getAttribute('trigger')).to.equal(
-      'You have an appointment scheduled',
-    );
+    expect(alert.hasAttribute('visible')).to.be.true;
 
     // Check formatted date in text
     const formattedDate = formatApptDateTime('2026-06-15T18:00:00.000Z');
@@ -42,13 +43,13 @@ describe('AppointmentScheduledAlert', () => {
       <AppointmentScheduledAlert appointmentDateTime="2026-06-15T18:00:00.000Z" />,
     );
 
-    // va-alert-expandable is a shadow DOM component
-    const alert = container.querySelector('va-alert-expandable');
+    const alert = container.querySelector('va-alert');
+    const headline = container.querySelector('h2[slot="headline"]');
     expect(alert).to.exist;
+    expect(headline).to.exist;
+    expect(headline.textContent).to.equal('You have an appointment scheduled');
     expect(alert.getAttribute('status')).to.equal('info');
-    expect(alert.getAttribute('trigger')).to.equal(
-      'You have an appointment scheduled',
-    );
+    expect(alert.hasAttribute('visible')).to.be.true;
 
     // Should render Teams fallback text
     const formattedDate = formatApptDateTime('2026-06-15T18:00:00.000Z');

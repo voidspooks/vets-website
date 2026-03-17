@@ -16,7 +16,6 @@ import MyCaseManagementHub from '../../../containers/MyCaseManagementHub';
 import * as CaseProgressBarMod from '../../../components/CaseProgressBar';
 import * as HubCardListMod from '../../../components/HubCardList';
 import * as NeedHelpMod from '../../../components/NeedHelp';
-import * as ApptAlertMod from '../../../components/AppointmentScheduledAlert';
 import * as DiscontinuedMod from '../../../components/ApplicationDiscontinuedAlert';
 import * as InterruptedMod from '../../../components/ApplicationInterruptedAlert';
 import * as LoadFailedMod from '../../../components/LoadCaseDetailsFailedAlert';
@@ -94,9 +93,6 @@ describe('<MyCaseManagementHub>', () => {
     sandbox
       .stub(NeedHelpMod, 'default')
       .callsFake(() => <div data-testid="need-help" />);
-    sandbox
-      .stub(ApptAlertMod, 'default')
-      .callsFake(() => <div data-testid="appt-alert" />);
     sandbox
       .stub(DiscontinuedMod, 'default')
       .callsFake(() => <div data-testid="discontinued-alert" />);

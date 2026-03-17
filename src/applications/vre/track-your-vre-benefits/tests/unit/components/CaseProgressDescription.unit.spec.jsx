@@ -6,11 +6,13 @@ import sinon from 'sinon';
 import { MemoryRouter } from 'react-router-dom-v5-compat';
 
 import CaseProgressDescription from '../../../components/CaseProgressDescription';
+import * as AppointmentScheduledAlertMod from '../../../components/AppointmentScheduledAlert';
 import * as HubCardListMod from '../../../components/HubCardList';
 import * as SelectPreferenceViewMod from '../../../components/SelectPreferenceView';
 
 const sandbox = sinon.createSandbox();
 let hubCardProps;
+let appointmentAlertProps;
 
 const makeStore = state => {
   const dispatch = sandbox.spy();
@@ -31,10 +33,15 @@ const renderWithProviders = (ui, state = {}) =>
 describe('CaseProgressDescription', () => {
   beforeEach(() => {
     hubCardProps = null;
+    appointmentAlertProps = null;
 
     sandbox.stub(HubCardListMod, 'default').callsFake(props => {
       hubCardProps = props;
       return <div data-testid="hub-card-list" />;
+    });
+    sandbox.stub(AppointmentScheduledAlertMod, 'default').callsFake(props => {
+      appointmentAlertProps = props;
+      return <div data-testid="appointment-scheduled-alert" />;
     });
     sandbox
       .stub(SelectPreferenceViewMod, 'default')
@@ -91,15 +98,16 @@ describe('CaseProgressDescription', () => {
   });
 
   it('renders the step 4 scheduling message when the appointment is still pending', () => {
-    const { getByText } = renderWithProviders(
+    const { getByText, queryByTestId } = renderWithProviders(
       <CaseProgressDescription step={4} status="PENDING" />,
     );
 
     getByText(/Check your email to schedule your meeting with your counselor/i);
+    expect(queryByTestId('appointment-scheduled-alert')).to.equal(null);
   });
 
   it('renders the step 4 scheduled message when appointment details are available', () => {
-    const { getByText } = renderWithProviders(
+    const { getByText, getByTestId } = renderWithProviders(
       <CaseProgressDescription
         step={4}
         status="COMPLETED"
@@ -112,7 +120,16 @@ describe('CaseProgressDescription', () => {
       />,
     );
 
-    getByText(/Your Initial Evaluation Appointment has been scheduled/i);
+    const scheduledMessage = getByText(
+      /Your Initial Evaluation Appointment has been scheduled/i,
+    );
+    const appointmentAlert = getByTestId('appointment-scheduled-alert');
+
+    expect(scheduledMessage.nextElementSibling).to.equal(appointmentAlert);
+    expect(appointmentAlertProps).to.deep.equal({
+      appointmentDateTime: '2026-03-03T10:00:00Z',
+      appointmentPlace: 'Regional office',
+    });
   });
 
   it('renders hub cards for the later workflow steps when requested', () => {

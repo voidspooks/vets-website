@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { VaLink } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useSelector } from 'react-redux';
+import AppointmentScheduledAlert from './AppointmentScheduledAlert';
 import HubCardList from './HubCardList';
 import SelectPreferenceView from './SelectPreferenceView';
 
@@ -96,9 +97,8 @@ const CaseProgressDescription = ({
                   <li>
                     <VaLink
                       href="https://www.va.gov/careers-employment/vocational-rehabilitation"
-                      text="Program Overview"
+                      text="Learn about the VR&E program"
                       className=" vads-u-font-weight--bold"
-                      external
                     />
 
                     <p className="va-nav-linkslist-description">
@@ -110,8 +110,7 @@ const CaseProgressDescription = ({
                     <VaLink
                       className=" vads-u-font-weight--bold"
                       href="https://www.va.gov/careers-employment/vocational-rehabilitation/programs"
-                      text="VR&E Support-and-Services Tracks"
-                      external
+                      text="Explore VR&E support-and-services tracks"
                     />
 
                     <p className="va-nav-linkslist-description">
@@ -130,7 +129,9 @@ const CaseProgressDescription = ({
     }
 
     case 4: {
-      if (!attributes?.orientationAppointmentDetails?.appointmentDateTime) {
+      const appointmentDetails = attributes?.orientationAppointmentDetails;
+
+      if (!appointmentDetails?.appointmentDateTime) {
         return (
           <p>
             We’ve received and processed your application for Chapter 31
@@ -144,12 +145,18 @@ const CaseProgressDescription = ({
       }
 
       return (
-        <p>
-          Your Initial Evaluation Appointment has been scheduled. If you need to
-          reschedule, use your appointment confirmation rescheduling link sent
-          to you via email and text. If you need further assistance, contact
-          your counselor.
-        </p>
+        <>
+          <p>
+            Your Initial Evaluation Appointment has been scheduled. If you need
+            to reschedule, use your appointment confirmation rescheduling link
+            sent to you via email and text. If you need further assistance,
+            contact your counselor.
+          </p>
+          <AppointmentScheduledAlert
+            appointmentDateTime={appointmentDetails.appointmentDateTime}
+            appointmentPlace={appointmentDetails.appointmentPlace}
+          />
+        </>
       );
     }
 

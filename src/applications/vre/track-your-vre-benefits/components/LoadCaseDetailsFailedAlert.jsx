@@ -10,8 +10,8 @@ export default function LoadCaseDetailsFailedAlert() {
       >
         <h2 slot="headline">We can't load the Case Progress right now</h2>
         <p>
-          We apologize. We are experiencing technical issues. Please wait a few
-          minutes and try again.
+          Something went wrong. If the issue persists, contact the VA benefits
+          hotline.
         </p>
       </va-alert>
     </div>

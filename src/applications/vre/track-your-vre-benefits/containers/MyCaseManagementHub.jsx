@@ -7,7 +7,6 @@ import { focusElement, scrollToTop } from 'platform/utilities/ui';
 import { fetchCh31CaseStatusDetails } from '../actions/ch31-case-status-details';
 import HubCardList from '../components/HubCardList';
 import NeedHelp from '../components/NeedHelp';
-import AppointmentScheduledAlert from '../components/AppointmentScheduledAlert';
 import ApplicationDiscontinuedAlert from '../components/ApplicationDiscontinuedAlert';
 import LoadCaseDetailsFailedAlert from '../components/LoadCaseDetailsFailedAlert';
 import ApplicationInterruptedAlert from '../components/ApplicationInterruptedAlert';
@@ -15,13 +14,13 @@ import CaseProgressBar from '../components/CaseProgressBar';
 import { getCurrentStepFromStateList } from '../helpers';
 
 const stepLabels = [
-  'Application Received',
-  'Eligibility Determination',
-  'Orientation Video',
-  'Initial Evaluation Counselor Meeting',
-  'Entitlement Determination date',
-  'Rehabilitation Plan or Career Track',
-  'Benefits Initiated',
+  'Application received',
+  'Eligibility determination',
+  'Orientation video',
+  'Initial evaluation counselor meeting',
+  'Entitlement determination date',
+  'Rehabilitation plan or career track',
+  'Benefits initiated',
 ];
 
 const pageHeading = 'Your VR&E benefit status';
@@ -79,12 +78,6 @@ const MyCaseManagementHub = () => {
     interruptedReason,
     stateList = [],
   } = externalStatus;
-
-  const showAppointmentAlert =
-    attrs?.orientationAppointmentDetails?.appointmentDateTime &&
-    stateList.some(s => s?.stepCode === 'INTAKE' && s?.status === 'ACTIVE');
-
-  const appointment = attrs?.orientationAppointmentDetails;
 
   useEffect(
     () => {
@@ -184,10 +177,10 @@ const MyCaseManagementHub = () => {
       <h1>{pageHeading}</h1>
 
       <p>
-        The Veteran Readiness and Employment (VR&E) (Chapter 31) Benefits
-        Tracker enables Veterans to manage their entire VR&E journey
-        independently, from eligibility determination through program
-        participation and completion.
+        The Veteran Readiness and Employment (VR&E) benefits tracker helps you
+        manage your Chapter 31 process on your own. It guides you from the
+        moment you submit your application all the way through your benefits
+        being initiated.
       </p>
 
       {caseStatusError && <LoadCaseDetailsFailedAlert />}
@@ -205,13 +198,6 @@ const MyCaseManagementHub = () => {
         !isDiscontinued &&
         !isInterrupted && (
           <>
-            {showAppointmentAlert && (
-              <AppointmentScheduledAlert
-                appointmentDateTime={appointment?.appointmentDateTime}
-                appointmentPlace={appointment?.appointmentPlace}
-              />
-            )}
-
             <CaseProgressBar
               current={current}
               stepLabels={stepLabels}

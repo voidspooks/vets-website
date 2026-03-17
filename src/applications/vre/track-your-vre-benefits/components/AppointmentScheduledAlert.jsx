@@ -60,10 +60,10 @@ const AppointmentScheduledAlert = ({
 
   return (
     <div className="vads-u-margin-y--3">
-      <va-alert-expandable
-        status="info"
-        trigger="You have an appointment scheduled"
-      >
+      <va-alert close-btn-aria-label="Close notification" status="info" visible>
+        <h2 id="appointment-scheduled" slot="headline">
+          You have an appointment scheduled
+        </h2>
         {appointmentPlace ? (
           <>
             <p>
@@ -84,7 +84,7 @@ const AppointmentScheduledAlert = ({
             </p>
           </>
         )}
-      </va-alert-expandable>
+      </va-alert>
     </div>
   );
 };

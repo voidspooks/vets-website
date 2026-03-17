@@ -15,6 +15,10 @@ describe('LoadCaseDetailsFailedAlert', () => {
 
   it('renders the body message paragraph', () => {
     const { getByText } = render(<LoadCaseDetailsFailedAlert />);
-    expect(getByText(/please wait a few minutes/i)).to.exist;
+    expect(
+      getByText(
+        /something went wrong\. if the issue persists, contact the va benefits hotline\./i,
+      ),
+    ).to.exist;
   });
 });
