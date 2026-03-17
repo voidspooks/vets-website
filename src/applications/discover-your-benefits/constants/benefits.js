@@ -1,4 +1,3 @@
-import environment from 'platform/utilities/environment';
 import { URLS } from './urls';
 
 export const categories = {
@@ -944,7 +943,6 @@ export const BENEFITS_LIST = [
     },
     isQualified: responses => {
       return (
-        !environment.isProduction() &&
         responses[mappingTypes.GOALS] &&
         responses[mappingTypes.CURRENTLY_SERVING]
       );

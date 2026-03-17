@@ -16,7 +16,6 @@ import manifest from '../manifest.json';
 
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
-import ConfirmationPageCopy from '../containers/ConfirmationPageRemoveAfterTesting';
 
 // pages
 import goals from '../pages/goals';
@@ -48,11 +47,7 @@ export const formConfig = {
   submit: submitHandler,
   trackingPrefix: 'discover-your-benefits-',
   introduction: IntroductionPage,
-  // Remove this after testing. The 'environment.isTest()' check is necessary because E2E tests run in a production environment.
-  confirmation:
-    !environment.isProduction() || environment.isTest()
-      ? ConfirmationPage
-      : ConfirmationPageCopy,
+  confirmation: ConfirmationPage,
   v3SegmentedProgressBar: true,
   stepLabels: 'Goals;Service;Separation;Discharge;Disability;Review',
   formId: 'T-QSTNR',
