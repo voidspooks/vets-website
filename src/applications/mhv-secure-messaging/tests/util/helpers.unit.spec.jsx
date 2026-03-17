@@ -1009,12 +1009,9 @@ describe('MHV Secure Messaging helpers', () => {
   describe('buildRxRenewalMessageBody', () => {
     const mockRx = {
       prescriptionName: 'Lisinopril 10mg',
-      prescriptionNumber: '1234567890',
       providerFirstName: 'Dr.',
       providerLastName: 'Smith',
-      refillRemaining: 2,
       expirationDate: '2024-12-31',
-      reason: 'Refill needed',
       quantity: '30 tablets',
       sortedDispensedDate: '2023-08-04',
       sig: 'Take one tablet by mouth daily',
@@ -1024,21 +1021,15 @@ describe('MHV Secure Messaging helpers', () => {
       const result = buildRxRenewalMessageBody(mockRx, true);
 
       expect(result).to.include('Medication name, strength, and form:');
-      expect(result).to.include('Prescription number:');
       expect(result).to.include('Instructions:');
       expect(result).to.include('Provider who prescribed it:');
-      expect(result).to.include('Number of refills left:');
       expect(result).to.include('Prescription expiration date:');
-      expect(result).to.include('Reason for use:');
       expect(result).to.include('Last filled on:');
       expect(result).to.include('Quantity:');
       expect(result).to.not.include('Lisinopril 10mg');
-      expect(result).to.not.include('1234567890');
       expect(result).to.not.include('Take one tablet by mouth daily');
       expect(result).to.not.include('Dr. Smith');
-      expect(result).to.not.include('2');
       expect(result).to.not.include('December 31, 2024');
-      expect(result).to.not.include('Refill needed');
       expect(result).to.not.include('30 tablets');
       expect(result).to.not.include('August 4, 2023');
     });
@@ -1049,16 +1040,16 @@ describe('MHV Secure Messaging helpers', () => {
       expect(result).to.include(
         'Medication name, strength, and form: Lisinopril 10mg',
       );
-      expect(result).to.include('Prescription number: 1234567890');
       expect(result).to.include('Instructions: Take one tablet by mouth daily');
       expect(result).to.include('Provider who prescribed it: Dr. Smith');
-      expect(result).to.include('Number of refills left: 2');
       expect(result).to.include(
         'Prescription expiration date: December 31, 2024',
       );
-      expect(result).to.include('Reason for use: Refill needed');
       expect(result).to.include('Quantity: 30 tablets');
       expect(result).to.include('Last filled on: August 4, 2023');
+      expect(result).to.not.include('Prescription number:');
+      expect(result).to.not.include('Number of refills left:');
+      expect(result).to.not.include('Reason for use:');
     });
 
     it('should handle missing provider names and show placeholder', () => {
@@ -1083,60 +1074,6 @@ describe('MHV Secure Messaging helpers', () => {
       const result = buildRxRenewalMessageBody(rxWithPartialProvider, false);
 
       expect(result).to.include('Provider who prescribed it: Dr.');
-    });
-
-    it('should handle numeric refillRemaining', () => {
-      const rxWithNumericRefills = {
-        ...mockRx,
-        refillRemaining: 5,
-      };
-      const result = buildRxRenewalMessageBody(rxWithNumericRefills, false);
-
-      expect(result).to.include('Number of refills left: 5');
-    });
-
-    it('should handle string refillRemaining', () => {
-      const rxWithStringRefills = {
-        ...mockRx,
-        refillRemaining: '3',
-      };
-      const result = buildRxRenewalMessageBody(rxWithStringRefills, false);
-
-      expect(result).to.include('Number of refills left: 3');
-    });
-
-    it('should handle invalid refillRemaining and show placeholder', () => {
-      const rxWithInvalidRefills = {
-        ...mockRx,
-        refillRemaining: null,
-      };
-      const result = buildRxRenewalMessageBody(rxWithInvalidRefills, false);
-
-      expect(result).to.include(
-        'Number of refills left: Number of refills left not available',
-      );
-    });
-
-    it('should handle zero refillRemaining', () => {
-      const rxWithZeroRefills = {
-        ...mockRx,
-        refillRemaining: 0,
-      };
-      const result = buildRxRenewalMessageBody(rxWithZeroRefills, false);
-
-      expect(result).to.include('Number of refills left: 0');
-    });
-
-    it('should handle empty string refillRemaining and show placeholder', () => {
-      const rxWithEmptyRefills = {
-        ...mockRx,
-        refillRemaining: '',
-      };
-      const result = buildRxRenewalMessageBody(rxWithEmptyRefills, false);
-
-      expect(result).to.include(
-        'Number of refills left: Number of refills left not available',
-      );
     });
 
     it('should format expiration date correctly', () => {
@@ -1197,21 +1134,14 @@ describe('MHV Secure Messaging helpers', () => {
       const result = buildRxRenewalMessageBody(null, false);
 
       expect(result).to.include('Medication name, strength, and form:');
-      expect(result).to.include(
-        'Prescription number: Prescription number not available',
-      );
       expect(result).to.include('Instructions: Instructions not available');
       expect(result).to.include(
         'Provider who prescribed it: Provider name not available',
       );
       expect(result).to.include(
-        'Number of refills left: Number of refills left not available',
-      );
-      expect(result).to.include(
         'Prescription expiration date: Date not available',
       );
       expect(result).to.include('Last filled on: Not filled yet');
-      expect(result).to.include('Reason for use: Reason for use not available');
       expect(result).to.include('Quantity: Quantity not available');
     });
 
@@ -1219,21 +1149,14 @@ describe('MHV Secure Messaging helpers', () => {
       const result = buildRxRenewalMessageBody(undefined, false);
 
       expect(result).to.include('Medication name, strength, and form:');
-      expect(result).to.include(
-        'Prescription number: Prescription number not available',
-      );
       expect(result).to.include('Instructions: Instructions not available');
       expect(result).to.include(
         'Provider who prescribed it: Provider name not available',
       );
       expect(result).to.include(
-        'Number of refills left: Number of refills left not available',
-      );
-      expect(result).to.include(
         'Prescription expiration date: Date not available',
       );
       expect(result).to.include('Last filled on: Not filled yet');
-      expect(result).to.include('Reason for use: Reason for use not available');
       expect(result).to.include('Quantity: Quantity not available');
     });
 
@@ -1241,21 +1164,14 @@ describe('MHV Secure Messaging helpers', () => {
       const result = buildRxRenewalMessageBody({}, false);
 
       expect(result).to.include('Medication name, strength, and form:');
-      expect(result).to.include(
-        'Prescription number: Prescription number not available',
-      );
       expect(result).to.include('Instructions: Instructions not available');
       expect(result).to.include(
         'Provider who prescribed it: Provider name not available',
       );
       expect(result).to.include(
-        'Number of refills left: Number of refills left not available',
-      );
-      expect(result).to.include(
         'Prescription expiration date: Date not available',
       );
       expect(result).to.include('Last filled on: Not filled yet');
-      expect(result).to.include('Reason for use: Reason for use not available');
       expect(result).to.include('Quantity: Quantity not available');
     });
 
@@ -1265,7 +1181,6 @@ describe('MHV Secure Messaging helpers', () => {
       expect(result).to.include(
         'Medication name, strength, and form: Lisinopril 10mg',
       );
-      expect(result).to.include('Prescription number: 1234567890');
       expect(result).to.include('Instructions: Take one tablet by mouth daily');
     });
 
@@ -1277,28 +1192,6 @@ describe('MHV Secure Messaging helpers', () => {
       const result = buildRxRenewalMessageBody(rxWithoutName, false);
 
       expect(result).to.include('Medication name, strength, and form:');
-    });
-
-    it('should handle missing prescriptionNumber and show placeholder', () => {
-      const rxWithoutNumber = {
-        ...mockRx,
-        prescriptionNumber: null,
-      };
-      const result = buildRxRenewalMessageBody(rxWithoutNumber, false);
-
-      expect(result).to.include(
-        'Prescription number: Prescription number not available',
-      );
-    });
-
-    it('should handle missing reason and show placeholder', () => {
-      const rxWithoutReason = {
-        ...mockRx,
-        reason: null,
-      };
-      const result = buildRxRenewalMessageBody(rxWithoutReason, false);
-
-      expect(result).to.include('Reason for use: Reason for use not available');
     });
 
     it('should handle missing quantity and show placeholder', () => {
