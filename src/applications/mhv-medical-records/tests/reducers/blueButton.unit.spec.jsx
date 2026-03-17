@@ -721,7 +721,7 @@ describe('blueButtonReducer', () => {
       medicationsResponse: {},
       appointmentsResponse: {},
       demographicsResponse: {},
-      militaryServiceResponse: '',
+      militaryServiceResponse: null,
       patientResponse: {},
     };
 
@@ -730,7 +730,7 @@ describe('blueButtonReducer', () => {
       medicationsList: [],
       appointmentsList: [],
       demographics: [],
-      militaryService: undefined,
+      militaryService: NONE_RECORDED,
       accountSummary: {
         authenticationSummary: {},
         vaTreatmentFacilities: [],
@@ -756,5 +756,55 @@ describe('blueButtonReducer', () => {
 
     const newState = blueButtonReducer(state, action);
     expect(newState).to.deep.equal(state);
+  });
+
+  // Regression tests: each domain dispatched individually with null response
+  // mirrors the real app where each API result dispatches a separate action
+  it('should set medicationsList to [] when only medicationsResponse is null', () => {
+    const action = {
+      type: Actions.BlueButtonReport.GET,
+      medicationsResponse: null,
+    };
+    const newState = blueButtonReducer(initialState, action);
+    expect(newState.medicationsList).to.deep.equal([]);
+  });
+
+  it('should set appointmentsList to [] when only appointmentsResponse is null', () => {
+    const action = {
+      type: Actions.BlueButtonReport.GET,
+      appointmentsResponse: null,
+    };
+    const newState = blueButtonReducer(initialState, action);
+    expect(newState.appointmentsList).to.deep.equal([]);
+  });
+
+  it('should set demographics to [] when only demographicsResponse is null', () => {
+    const action = {
+      type: Actions.BlueButtonReport.GET,
+      demographicsResponse: null,
+    };
+    const newState = blueButtonReducer(initialState, action);
+    expect(newState.demographics).to.deep.equal([]);
+  });
+
+  it('should set militaryService to NONE_RECORDED when only militaryServiceResponse is null', () => {
+    const action = {
+      type: Actions.BlueButtonReport.GET,
+      militaryServiceResponse: null,
+    };
+    const newState = blueButtonReducer(initialState, action);
+    expect(newState.militaryService).to.equal(NONE_RECORDED);
+  });
+
+  it('should set accountSummary to consistent empty shape when only patientResponse is null', () => {
+    const action = {
+      type: Actions.BlueButtonReport.GET,
+      patientResponse: null,
+    };
+    const newState = blueButtonReducer(initialState, action);
+    expect(newState.accountSummary).to.deep.equal({
+      authenticationSummary: {},
+      vaTreatmentFacilities: [],
+    });
   });
 });

@@ -211,9 +211,10 @@ export const vaccineReducer = (state = initialState, action) => {
             })
             .sort((a, b) => new Date(b.date) - new Date(a.date)) || [];
       } else {
-        newList = action.response.data?.map(record =>
-          convertNewVaccine(record.attributes),
-        );
+        newList =
+          action.response.data?.map(record =>
+            convertNewVaccine(record.attributes),
+          ) || [];
       }
 
       return {

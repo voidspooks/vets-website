@@ -381,34 +381,43 @@ export const blueButtonReducer = (state = initialState, action) => {
     case Actions.BlueButtonReport.GET: {
       const updates = {};
 
-      if (action.medicationsResponse) {
+      if ('medicationsResponse' in action) {
         updates.medicationsList =
-          action.medicationsResponse.data?.map(med => {
+          action.medicationsResponse?.data?.map(med => {
             return convertMedication(med);
           }) || [];
       }
 
-      if (action.appointmentsResponse) {
+      if ('appointmentsResponse' in action) {
         updates.appointmentsList =
-          action.appointmentsResponse.data?.map(appt => {
+          action.appointmentsResponse?.data?.map(appt => {
             return convertAppointment(appt);
           }) || [];
       }
 
-      if (action.demographicsResponse) {
+      if ('demographicsResponse' in action) {
         updates.demographics =
-          action.demographicsResponse.content?.map(item => {
+          action.demographicsResponse?.content?.map(item => {
             return convertDemographics(item);
           }) || [];
       }
 
-      if (action.militaryServiceResponse) {
-        updates.militaryService = action.militaryServiceResponse || undefined;
+      if ('militaryServiceResponse' in action) {
+        updates.militaryService =
+          action.militaryServiceResponse || NONE_RECORDED;
       }
 
-      if (action.patientResponse) {
-        updates.accountSummary =
-          convertAccountSummary(action.patientResponse) || {};
+      if ('patientResponse' in action) {
+        if (action.patientResponse) {
+          updates.accountSummary = convertAccountSummary(
+            action.patientResponse,
+          );
+        } else {
+          updates.accountSummary = {
+            authenticationSummary: {},
+            vaTreatmentFacilities: [],
+          };
+        }
       }
 
       return {
