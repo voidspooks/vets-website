@@ -1,4 +1,3 @@
-/* eslint-disable no-prototype-builtins */
 import sharedTransformForSubmit from '../../shared/config/submit-transformer';
 
 export default function transformForSubmit(formConfig, form) {
@@ -35,7 +34,7 @@ export default function transformForSubmit(formConfig, form) {
   );
 
   // otherConditions is combined into remarks string, so remove from transformedData
-  if (transformedData.hasOwnProperty('otherConditions')) {
+  if (Object.hasOwn(transformedData, 'otherConditions')) {
     delete transformedData.otherConditions;
   }
 
