@@ -136,6 +136,7 @@ describe('VAOS vaccine flow: ReviewPage', () => {
         id: store.getState().covid19Vaccine.newBooking.availableSlots[0].id,
       },
       systemType: 'vista',
+      serviceType: 'covid',
     });
   });
 

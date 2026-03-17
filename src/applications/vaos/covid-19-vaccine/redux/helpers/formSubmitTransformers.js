@@ -6,7 +6,7 @@ import {
 import { getClinicId } from '../../../services/healthcare-service';
 import { isCernerLocation } from '../../../services/location';
 import { selectRegisteredCernerFacilityIds } from '../../../redux/selectors';
-import { APPOINTMENT_SYSTEM } from '../../../utils/constants';
+import { APPOINTMENT_SYSTEM, TYPE_OF_CARE_IDS } from '../../../utils/constants';
 
 export function transformFormToVAOSAppointment(state) {
   const data = selectCovid19VaccineFormData(state);
@@ -26,5 +26,6 @@ export function transformFormToVAOSAppointment(state) {
     },
     locationId: data.vaFacility,
     systemType: ehr,
+    serviceType: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
   };
 }

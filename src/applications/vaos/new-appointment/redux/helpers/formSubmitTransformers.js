@@ -143,6 +143,7 @@ export function transformFormToVAOSVARequest(state, updateLimits = false) {
 export function transformFormToVAOSAppointment(state, updateLimits = false) {
   const data = getFormData(state);
   const { ehr } = state.newAppointment;
+  const typeOfCare = getTypeOfCare(data);
 
   // Only appointments booked in a VistA system need the clinic id
   let clinicId = null;
@@ -173,5 +174,6 @@ export function transformFormToVAOSAppointment(state, updateLimits = false) {
       updateLimits,
     }),
     systemType: ehr,
+    serviceType: typeOfCare.idV2,
   };
 }

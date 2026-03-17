@@ -281,6 +281,7 @@ describe('VAOS Page: ReviewPage direct scheduling', () => {
       },
       slot: store.getState().newAppointment.availableSlots[0],
       systemType: 'vista',
+      serviceType: 'primaryCare',
     });
   });
 

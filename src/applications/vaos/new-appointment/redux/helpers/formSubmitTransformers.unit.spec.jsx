@@ -131,6 +131,7 @@ describe('VAOS V2 data transformation', () => {
         locationId: '983',
         reasonCode: reasonTextTransformed,
         systemType: 'vista',
+        serviceType: 'primaryCare',
       });
     });
 
@@ -170,6 +171,7 @@ describe('VAOS V2 data transformation', () => {
         locationId: '983',
         reasonCode: reasonTextTransformed,
         systemType: 'cerner',
+        serviceType: 'primaryCare',
       });
     });
 
@@ -209,6 +211,7 @@ describe('VAOS V2 data transformation', () => {
         locationId: '983',
         reasonCode: reasonTextTransformed,
         systemType: 'vista',
+        serviceType: 'primaryCare',
       });
     });
   });
