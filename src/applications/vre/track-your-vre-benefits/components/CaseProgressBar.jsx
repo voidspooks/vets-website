@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import CaseProgressDescription from './CaseProgressDescription';
 
@@ -12,17 +12,25 @@ const CaseProgressBar = ({
   attributes = {},
 }) => {
   const total = stepLabels.length;
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const fullSizeProgressBarProps =
+    windowWidth > 820 ? { label, labels: stepLabels.join(';'), counters } : {};
 
   return (
     <>
       <div className="usa-width-one-whole vads-u-margin-top--2">
         <va-segmented-progress-bar
-          counters={counters}
           current={String(current)}
           header-level={headerLevel}
           heading-text={headingText}
-          label={label}
-          labels={stepLabels.join(';')}
+          {...fullSizeProgressBarProps}
           total={String(total)}
         />
       </div>

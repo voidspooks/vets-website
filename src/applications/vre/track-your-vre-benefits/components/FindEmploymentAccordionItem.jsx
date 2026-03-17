@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function FindEmploymentAccordionItem() {
   return (
-    <va-accordion-item header="3. Find Employment" open bordered>
+    <va-accordion-item header="3. Find employment" open bordered>
       <ul className="va-nav-linkslist-list vads-u-margin-bottom--3">
         <li className="vads-u-border-bottom--2px vads-u-border-color--gray-light vads-u-padding-bottom--2 vads-u-margin-bottom--4">
           <p className="va-nav-linkslist-description">
@@ -13,8 +13,7 @@ export default function FindEmploymentAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Wages/cost-of-living.aspx"
-              text="View Compare Costs of Living on Career One Stop website"
-              external
+              text="View compare costs of living on CareerOneStop website"
             />
           </p>
         </li>
@@ -26,8 +25,7 @@ export default function FindEmploymentAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Wages/find-salary.aspx"
-              text="View Salary Finder on Career One Stop website"
-              external
+              text="View salary finder on CareerOneStop website"
             />
           </p>
         </li>
@@ -39,8 +37,7 @@ export default function FindEmploymentAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Jobs/find-jobs.aspx"
-              text="View Employment Finder on Career One Stop website"
-              external
+              text="View employment finder on CareerOneStop website"
             />
           </p>
         </li>

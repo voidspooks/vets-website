@@ -42,7 +42,7 @@ const ApplicationDiscontinuedAlert = ({ discontinuedReason, resCaseId }) => {
         </p>
         <p>{discontinuedReason || 'No reason provided.'}</p>
         {downloadErrorMessage ? (
-          <p>
+          <p aria-live="assertive" role="alert">
             <strong>Note:</strong> {downloadErrorMessage}
           </p>
         ) : (
@@ -53,6 +53,7 @@ const ApplicationDiscontinuedAlert = ({ discontinuedReason, resCaseId }) => {
               <va-loading-indicator
                 label="Loading"
                 message="Downloading your letter..."
+                set-focus
               />
             ) : (
               <va-link

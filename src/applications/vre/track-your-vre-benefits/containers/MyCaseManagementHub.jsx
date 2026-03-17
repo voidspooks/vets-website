@@ -158,6 +158,7 @@ const MyCaseManagementHub = () => {
       </div>
     );
   }
+
   if (loading) {
     return (
       <div>

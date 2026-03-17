@@ -56,45 +56,29 @@ describe('CaseProgressDescription', () => {
     const { getByText } = renderWithProviders(
       <CaseProgressDescription step={1} />,
     );
-    getByText(/received your application for VR&E benefits\./i);
+    getByText(
+      /The section below contains information on steps you can take while waiting to hear back from us/i,
+    );
   });
 
-  it('renders step 2 with eligibility link', () => {
-    const { container } = renderWithProviders(
+  it('renders step 2 description', () => {
+    const { getByText } = renderWithProviders(
       <CaseProgressDescription step={2} />,
     );
-    const link = container.querySelector(
-      'va-link[href="/careers-employment/your-vre-eligibility"]',
+    getByText(
+      /currently reviewing your application to confirm your VR&E Chapter 31 eligibility/i,
     );
-    expect(link).to.exist;
   });
 
-  it('renders step 3 orientation content', () => {
+  it('renders step 3 description', () => {
     const { container, getByText } = renderWithProviders(
       <CaseProgressDescription step={3} />,
       { ch31CaseMilestones: undefined },
     );
-    getByText(/Orientation Completion/i);
+    getByText(
+      /Your next step is to complete the orientation video online or during your initial evaluation counselor meeting/i,
+    );
     expect(container.querySelector('va-card')).to.exist;
-  });
-
-  it('renders step 3 success state when a preference has already been recorded', () => {
-    const {
-      container,
-      getByText,
-      queryByTestId,
-      queryByText,
-    } = renderWithProviders(<CaseProgressDescription step={3} />, {
-      ch31CaseMilestones: {
-        data: { saved: true },
-        error: null,
-      },
-    });
-
-    getByText(/Your choice has been recorded/i);
-    expect(container.querySelector('va-alert[status="success"]')).to.exist;
-    expect(queryByTestId('select-preference-view')).to.equal(null);
-    expect(queryByText(/Reading Material/i)).to.equal(null);
   });
 
   it('renders the step 4 scheduling message when the appointment is still pending', () => {

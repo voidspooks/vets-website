@@ -14,6 +14,7 @@ export default function CareerPlanning() {
   );
 
   useEffect(() => {
+    document.title = `Career planning | Veterans Affairs`;
     scrollToTop();
     focusElement('h1');
   }, []);
@@ -22,7 +23,7 @@ export default function CareerPlanning() {
     return (
       <div className="row">
         <div className="usa-width-two-thirds vads-u-margin-top--0p5 vads-u-margin-x--1 medium-screen:vads-u-margin-x--0">
-          <h1>Career Planning</h1>
+          <h1>Career planning</h1>
           <p className="vads-u-color--gray-medium">
             This page isn't available right now.
           </p>
@@ -34,7 +35,7 @@ export default function CareerPlanning() {
   return (
     <div className="row">
       <article className="usa-width-two-thirds vads-u-margin-top--0p5 vads-u-margin-x--1 medium-screen:vads-u-margin-x--0 ">
-        <h1>Career Planning</h1>
+        <h1>Career planning</h1>
         <p className="vads-u-font-size--lg">
           Explore career resources and tools to help you achieve your employment
           goals.

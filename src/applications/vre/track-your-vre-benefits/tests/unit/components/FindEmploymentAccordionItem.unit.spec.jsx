@@ -8,7 +8,7 @@ describe('<FindEmploymentAccordionItem>', () => {
     const { container } = render(<FindEmploymentAccordionItem />);
     const accordionItem = container.querySelector('va-accordion-item');
     expect(accordionItem).to.exist;
-    expect(accordionItem.getAttribute('header')).to.equal('3. Find Employment');
+    expect(accordionItem.getAttribute('header')).to.equal('3. Find employment');
     expect(accordionItem.hasAttribute('open')).to.be.true;
     expect(accordionItem.hasAttribute('bordered')).to.be.true;
   });

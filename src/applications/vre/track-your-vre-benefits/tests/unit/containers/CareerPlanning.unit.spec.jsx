@@ -42,7 +42,7 @@ describe('<CareerPlanning>', () => {
 
   it('renders the main heading and intro paragraph', () => {
     const { getByRole, getByText } = renderPage(makeState());
-    getByRole('heading', { name: /Career Planning/i });
+    getByRole('heading', { name: /Career planning/i });
     getByText(
       /Explore career resources and tools to help you achieve your employment goals/i,
     );

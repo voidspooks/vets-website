@@ -4,6 +4,7 @@ import {
   VaRadioOption,
   VaButton,
   VaCheckbox,
+  VaLink,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '@department-of-veterans-affairs/platform-user/selectors';
@@ -15,9 +16,9 @@ import {
 } from '../constants';
 
 const ORIENTATION_TYPE = {
-  WATCH_VIDEO: 'Watch the VA Orientation Video online',
+  WATCH_VIDEO: 'Watch the VA orientation video online',
   COMPLETE_DURING_MEETING:
-    'Complete orientation during the Initial Evaluation Counselor Meeting',
+    'Watch the VA orientation video during the initial evaluation counselor meeting ',
 };
 
 const preferenceRadioGroupName = 'orientation_type_preference';
@@ -54,12 +55,14 @@ export default function SelectPreferenceView() {
   };
 
   const errorAlert = (
-    <va-alert class="vads-u-margin-bottom--1" status="error" visible slim>
-      <p className="vads-u-margin-y--0">
-        We’re sorry. Something went wrong on our end while submitting your
-        preference. Please try again later.
-      </p>
-    </va-alert>
+    <div aria-live="assertive" role="alert">
+      <va-alert class="vads-u-margin-bottom--1" status="error" visible slim>
+        <p className="vads-u-margin-y--0">
+          We’re sorry. Something went wrong on our end while submitting your
+          preference. Please try again later.
+        </p>
+      </va-alert>
+    </div>
   );
 
   const submitBtn = (
@@ -72,12 +75,10 @@ export default function SelectPreferenceView() {
 
   return (
     <>
-      <p>
-        Choose between watching the VA Video Orientation online or completing
-        orientation during the Initial Evaluation.
-      </p>
       <VaRadio
-        label="My preference is to:"
+        label="How would you like to complete the orientation?"
+        labelHeaderLevel="3"
+        required
         onVaValueChange={e => {
           setOrientationTypeRadioValue(e.detail.value);
           setCheckboxError(false);
@@ -85,6 +86,11 @@ export default function SelectPreferenceView() {
           dispatch({ type: CH31_CASE_MILESTONES_RESET_STATE });
         }}
       >
+        <VaRadioOption
+          label={ORIENTATION_TYPE.COMPLETE_DURING_MEETING}
+          name={preferenceRadioGroupName}
+          value={ORIENTATION_TYPE.COMPLETE_DURING_MEETING}
+        />
         <VaRadioOption
           label={ORIENTATION_TYPE.WATCH_VIDEO}
           name={preferenceRadioGroupName}
@@ -98,10 +104,19 @@ export default function SelectPreferenceView() {
               full video and self-certify upon completion.
             </p>
             <p>
-              <va-link
-                channel
+              <VaLink
+                iconName="youtube"
+                iconSize={3}
                 href={YOUTUBE_ORIENTATION_VIDEO_URL}
-                text="Go to the video about Veteran Readiness and Employment (VR&E) 5 Tracks on"
+                onClick={e => {
+                  e.preventDefault();
+                  window.open(
+                    YOUTUBE_ORIENTATION_VIDEO_URL,
+                    '_blank',
+                    'noopener,noreferrer',
+                  );
+                }}
+                text="Go to the video about Veteran Readiness and Employment (VR&E) 5 Tracks on YouTube (opens in a new tab)"
               />
             </p>
             <VaCheckbox
@@ -120,23 +135,11 @@ export default function SelectPreferenceView() {
                 dispatch({ type: CH31_CASE_MILESTONES_RESET_STATE });
               }}
             />
-            {ch31CaseMilestonesState?.error && errorAlert}
-            {submitBtn}
-          </div>
-        )}
-        <VaRadioOption
-          label={ORIENTATION_TYPE.COMPLETE_DURING_MEETING}
-          name={preferenceRadioGroupName}
-          value={ORIENTATION_TYPE.COMPLETE_DURING_MEETING}
-        />
-        {orientationTypeRadioValue ===
-          ORIENTATION_TYPE.COMPLETE_DURING_MEETING && (
-          <div className="vads-u-margin-left--4">
-            {ch31CaseMilestonesState?.error && errorAlert}
-            {submitBtn}
           </div>
         )}
       </VaRadio>
+      {ch31CaseMilestonesState?.error && errorAlert}
+      {submitBtn}
     </>
   );
 }

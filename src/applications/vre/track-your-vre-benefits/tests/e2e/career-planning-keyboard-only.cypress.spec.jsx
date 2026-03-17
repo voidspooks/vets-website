@@ -24,7 +24,7 @@ describe('CH31 Career Planning Keyboard Only Navigation', () => {
     cy.injectAxeThenAxeCheck();
     // eslint-disable-next-line cypress/unsafe-to-chain-command
     cy.focused().then($el => {
-      expect($el.text()).to.contain('Career Planning');
+      expect($el.text()).to.contain('Career planning');
     });
   });
 

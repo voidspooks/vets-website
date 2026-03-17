@@ -13,8 +13,7 @@ export default function AssessYourInterestsAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Skills/skills-matcher.aspx"
-              text="View Skills Matcher on Career One Stop website"
-              external
+              text="View skills matcher on CareerOneStop website"
             />
           </p>
         </li>
@@ -26,8 +25,7 @@ export default function AssessYourInterestsAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Careers/interest-assessment.aspx"
-              text="View Interest Assessment on Career One Stop website"
-              external
+              text="View interest assessment on CareerOneStop website"
             />
           </p>
         </li>
@@ -40,8 +38,7 @@ export default function AssessYourInterestsAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Careers/Occupations/occupation-profile.aspx"
-              text="View Occupation Profile on Career One Stop website"
-              external
+              text="View occupation profile on CareerOneStop website"
             />
           </p>
         </li>
@@ -54,8 +51,7 @@ export default function AssessYourInterestsAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.bls.gov"
-              text="View Labor Market Information on U.S Bureau of Labor Statistics website"
-              external
+              text="View labor market information on U.S Bureau of Labor Statistics website"
             />
           </p>
         </li>
@@ -67,8 +63,7 @@ export default function AssessYourInterestsAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/JobSearch/Resumes/ResumeGuide/introduction.aspx?secondaryNavPanels=CA%3D%3D"
-              text="View Resume Builder on Career One Stop website"
-              external
+              text="View resume builder on CareerOneStop website"
             />
           </p>
         </li>

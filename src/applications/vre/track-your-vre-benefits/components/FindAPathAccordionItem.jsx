@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function FindAPathAccordionItem() {
   return (
-    <va-accordion-item header="2. Find a Path" open bordered>
+    <va-accordion-item header="2. Find a path" open bordered>
       <ul className="va-nav-linkslist-list vads-u-margin-bottom--3">
         <li className="vads-u-border-bottom--2px vads-u-border-color--gray-light vads-u-padding-bottom--2 vads-u-margin-bottom--4">
           <p className="va-nav-linkslist-description">
@@ -12,8 +12,7 @@ export default function FindAPathAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.youtube.com/watch?v=49eWvGitLPw"
-              text="View Orientation Video on YouTube website"
-              external
+              text="View orientation video on YouTube website"
             />
           </p>
         </li>
@@ -26,8 +25,7 @@ export default function FindAPathAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/ExploreCareers/Learn/self-employment.aspx?secondaryNavPanels=Ag%3D%3D"
-              text="View Employment Options on Career One Stop website"
-              external
+              text="View employment options on CareerOneStop website"
             />
           </p>
         </li>
@@ -39,8 +37,7 @@ export default function FindAPathAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Training/find-local-training.aspx"
-              text="View Location Training Finder on Career One Stop website"
-              external
+              text="View location training finder on CareerOneStop website"
             />
           </p>
         </li>
@@ -52,8 +49,7 @@ export default function FindAPathAccordionItem() {
           <p className="va-nav-linkslist-description vads-u-margin-top--2 vads-u-font-weight--bold">
             <va-link
               href="https://www.careeronestop.org/Toolkit/Training/find-certifications.aspx"
-              text="View Certification Finder on Career One Stop website"
-              external
+              text="View certification finder on CareerOneStop website"
             />
           </p>
         </li>
