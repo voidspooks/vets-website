@@ -1,7 +1,18 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render as rtlRender } from '@testing-library/react';
 import { expect } from 'chai';
+import sinon from 'sinon';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import MigratingFacilitiesAlerts from '../../components/CernerFacilityAlert/MigratingFacilitiesAlerts';
+import * as useOhMigrationAlertMetricModule from '../../hooks/useOhMigrationAlertMetric';
+
+const store = configureStore()({
+  user: { profile: { facilities: [] } },
+});
+
+const render = (ui, options) =>
+  rtlRender(<Provider store={store}>{ui}</Provider>, options);
 
 describe('MigratingFacilitiesAlerts', () => {
   const mockMigratingFacilities = [
@@ -794,6 +805,197 @@ describe('MigratingFacilitiesAlerts', () => {
       expect(getByText(/New medical records may not appear here until/)).to
         .exist;
       expect(getAllByText(/May 8, 2026/).length).to.be.greaterThan(0);
+    });
+  });
+
+  describe('metric logging', () => {
+    let metricSpy;
+    let metricStub;
+
+    beforeEach(() => {
+      metricSpy = sinon.spy();
+      metricStub = sinon
+        .stub(useOhMigrationAlertMetricModule, 'default')
+        .callsFake(metricSpy);
+    });
+
+    afterEach(() => {
+      metricStub.restore();
+    });
+
+    it('calls useOhMigrationAlertMetric with correct parameters for warning alert', () => {
+      const warningProps = {
+        healthTool: 'MEDICATIONS',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p1',
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...warningProps} />);
+
+      expect(metricSpy.calledOnce).to.be.true;
+      expect(metricSpy.firstCall.args[0]).to.deep.equal({
+        alertName: 'MigratingFacilitiesAlerts-warning-MEDICATIONS',
+        isVisible: true,
+        currentPhase: 'p1',
+      });
+    });
+
+    it('calls useOhMigrationAlertMetric with correct parameters for error alert', () => {
+      const errorProps = {
+        healthTool: 'MEDICATIONS',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p4',
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...errorProps} />);
+
+      expect(metricSpy.calledOnce).to.be.true;
+      expect(metricSpy.firstCall.args[0]).to.deep.equal({
+        alertName: 'MigratingFacilitiesAlerts-error-MEDICATIONS',
+        isVisible: true,
+        currentPhase: 'p4',
+      });
+    });
+
+    it('calls useOhMigrationAlertMetric multiple times for multiple migrations', () => {
+      const multipleMigrationsProps = {
+        healthTool: 'MEDICATIONS',
+        migratingFacilities: [
+          {
+            migrationDate: '2026-05-01',
+            facilities: [
+              {
+                facilityId: '528',
+                facilityName: 'VA Uptown New Orleans Medical Center',
+              },
+            ],
+            phases: {
+              current: 'p1',
+              p0: 'March 1, 2026',
+              p1: 'March 15, 2026',
+              p2: 'April 1, 2026',
+              p3: 'April 24, 2026',
+              p4: 'April 27, 2026',
+              p5: 'May 1, 2026',
+              p6: 'May 3, 2026',
+              p7: 'May 8, 2026',
+              p8: 'May 31, 2026',
+              p9: 'June 15, 2026',
+            },
+          },
+          {
+            migrationDate: '2026-06-01',
+            facilities: [
+              {
+                facilityId: '529',
+                facilityName: 'VA Downtown New Orleans Clinic',
+              },
+            ],
+            phases: {
+              current: 'p4',
+              p0: 'April 1, 2026',
+              p1: 'April 15, 2026',
+              p2: 'May 1, 2026',
+              p3: 'May 24, 2026',
+              p4: 'May 27, 2026',
+              p5: 'June 1, 2026',
+              p6: 'June 3, 2026',
+              p7: 'June 8, 2026',
+              p8: 'July 1, 2026',
+              p9: 'July 16, 2026',
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...multipleMigrationsProps} />);
+
+      expect(metricSpy.calledTwice).to.be.true;
+      expect(metricSpy.firstCall.args[0]).to.deep.equal({
+        alertName: 'MigratingFacilitiesAlerts-warning-MEDICATIONS',
+        isVisible: true,
+        currentPhase: 'p1',
+      });
+      expect(metricSpy.secondCall.args[0]).to.deep.equal({
+        alertName: 'MigratingFacilitiesAlerts-error-MEDICATIONS',
+        isVisible: true,
+        currentPhase: 'p4',
+      });
+    });
+
+    it('does not call useOhMigrationAlertMetric when no alerts are rendered', () => {
+      const noAlertProps = {
+        healthTool: 'MEDICATIONS',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p0', // Not in warning or error arrays
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...noAlertProps} />);
+
+      expect(metricSpy.called).to.be.false;
+    });
+
+    it('calls useOhMigrationAlertMetric with different currentPhase values', () => {
+      const p2WarningProps = {
+        healthTool: 'MEDICATIONS',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p2',
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...p2WarningProps} />);
+
+      expect(metricSpy.calledOnce).to.be.true;
+      expect(metricSpy.firstCall.args[0].currentPhase).to.equal('p2');
+    });
+
+    it('includes correct alertName suffix for different health tools', () => {
+      const appointmentsProps = {
+        healthTool: 'APPOINTMENTS',
+        migratingFacilities: [
+          {
+            ...mockMigratingFacilities[0],
+            phases: {
+              ...mockMigratingFacilities[0].phases,
+              current: 'p0', // In warning array for APPOINTMENTS
+            },
+          },
+        ],
+      };
+
+      render(<MigratingFacilitiesAlerts {...appointmentsProps} />);
+
+      expect(metricSpy.calledOnce).to.be.true;
+      expect(metricSpy.firstCall.args[0].alertName).to.equal(
+        'MigratingFacilitiesAlerts-warning-APPOINTMENTS',
+      );
     });
   });
 });

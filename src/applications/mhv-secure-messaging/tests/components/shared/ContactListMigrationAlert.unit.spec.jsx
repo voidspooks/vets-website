@@ -1,9 +1,19 @@
 import React from 'react';
 import { render, cleanup, waitFor } from '@testing-library/react';
 import { expect } from 'chai';
+import sinon from 'sinon';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import * as useOhMigrationAlertMetricModule from 'platform/mhv/hooks/useOhMigrationAlertMetric';
 import ContactListMigrationAlert from '../../../components/shared/ContactListMigrationAlert';
 
+const mockStore = configureStore();
+
 describe('ContactListMigrationAlert component', () => {
+  const store = mockStore({
+    user: { profile: { facilities: [{ facilityId: '553' }] } },
+  });
+
   const baseMigrationSchedule = {
     migrationDate: 'February 13, 2026',
     facilities: [
@@ -32,7 +42,11 @@ describe('ContactListMigrationAlert component', () => {
   };
 
   const setup = (props = {}) => {
-    return render(<ContactListMigrationAlert {...defaultProps} {...props} />);
+    return render(
+      <Provider store={store}>
+        <ContactListMigrationAlert {...defaultProps} {...props} />
+      </Provider>,
+    );
   };
 
   afterEach(() => {
@@ -188,6 +202,96 @@ describe('ContactListMigrationAlert component', () => {
         expect(screen.queryByText('VA Northern Indiana Healthcare System')).to
           .not.exist;
       });
+    });
+  });
+
+  describe('P1_TO_P5_MIGRATION variant', () => {
+    const scheduleP3 = {
+      ...baseMigrationSchedule,
+      phases: { ...baseMigrationSchedule.phases, current: 'p3' },
+    };
+
+    it('renders the P1_TO_P5 headline when facility is in phase p3', async () => {
+      const screen = setup({ migrationSchedules: [scheduleP3] });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('contact-list-migration-alert')).to.exist;
+        expect(screen.getByText("We're making changes to your contact list")).to
+          .exist;
+      });
+    });
+
+    it('renders the P1_TO_P5 headline when facility is in phase p1', async () => {
+      const scheduleP1 = {
+        ...baseMigrationSchedule,
+        phases: { ...baseMigrationSchedule.phases, current: 'p1' },
+      };
+      const screen = setup({ migrationSchedules: [scheduleP1] });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('contact-list-migration-alert')).to.exist;
+        expect(screen.getByText("We're making changes to your contact list")).to
+          .exist;
+      });
+    });
+
+    it('displays the correct body text with computed dates', async () => {
+      const screen = setup({ migrationSchedules: [scheduleP3] });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /remove care teams from these facilities from your contact list/i,
+          ),
+        ).to.exist;
+        expect(screen.getByText(/you can still send messages to care teams/i))
+          .to.exist;
+      });
+    });
+  });
+
+  describe('useOhMigrationAlertMetric integration', () => {
+    let metricSpy;
+    let metricStub;
+
+    beforeEach(() => {
+      metricSpy = sinon.spy();
+      metricStub = sinon
+        .stub(useOhMigrationAlertMetricModule, 'default')
+        .callsFake(metricSpy);
+    });
+
+    afterEach(() => {
+      metricStub.restore();
+    });
+
+    it('calls useOhMigrationAlertMetric with isVisible true when alert renders', () => {
+      setup();
+
+      const call = metricSpy
+        .getCalls()
+        .find(c => c.args[0].alertName === 'ContactListMigrationAlert');
+      expect(call).to.exist;
+      expect(call.args[0].isVisible).to.be.true;
+    });
+
+    it('calls useOhMigrationAlertMetric with matched phases', () => {
+      setup();
+
+      const call = metricSpy
+        .getCalls()
+        .find(c => c.args[0].alertName === 'ContactListMigrationAlert');
+      expect(call.args[0].currentPhase).to.deep.equal(['p6', 'p7', 'p8']);
+    });
+
+    it('calls useOhMigrationAlertMetric with isVisible false when alert does not render', () => {
+      setup({ userFacilityMigratingToOh: false });
+
+      const call = metricSpy
+        .getCalls()
+        .find(c => c.args[0].alertName === 'ContactListMigrationAlert');
+      expect(call).to.exist;
+      expect(call.args[0].isVisible).to.be.false;
     });
   });
 });

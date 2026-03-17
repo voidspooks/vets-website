@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import useOhMigrationAlertMetric from 'platform/mhv/hooks/useOhMigrationAlertMetric';
 import { hasMessageMigratedToOracleHealth } from '../../util/helpers';
 
 const DATADOG_FIND_VA_FACILITY_LINK =
@@ -18,6 +19,13 @@ const MigratedMessageAlert = () => {
     },
     [messages],
   );
+
+  useOhMigrationAlertMetric({
+    alertName: 'PostMigrationMessageAlert-OH',
+    isVisible: userMessagePostMigration,
+    stationNumber: messages?.[0]?.triageGroup?.stationNumber,
+    currentPhase: messages?.[0]?.ohMigrationPhase,
+  });
 
   if (userMessagePostMigration) {
     return (

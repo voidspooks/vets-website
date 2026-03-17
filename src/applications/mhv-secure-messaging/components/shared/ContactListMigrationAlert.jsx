@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
+import useOhMigrationAlertMetric from 'platform/mhv/hooks/useOhMigrationAlertMetric';
 import { ContactListMigrationAlertContent } from '../../util/constants';
 import { filterSchedulesByPhase } from '../../util/helpers';
 
@@ -108,12 +109,25 @@ const ContactListMigrationAlert = ({
     [migrationSchedules],
   );
 
-  if (
-    !isVisible ||
-    !userFacilityMigratingToOh ||
-    !matchedPhaseContent ||
-    !facilities.length
-  ) {
+  const alertVisible = useMemo(
+    () => {
+      return (
+        isVisible &&
+        userFacilityMigratingToOh &&
+        !!matchedPhaseContent &&
+        facilities.length > 0
+      );
+    },
+    [isVisible, userFacilityMigratingToOh, matchedPhaseContent, facilities],
+  );
+
+  useOhMigrationAlertMetric({
+    alertName: 'ContactListMigrationAlert',
+    isVisible: alertVisible,
+    currentPhase: matchedPhaseContent?.phases,
+  });
+
+  if (!alertVisible) {
     return null;
   }
 

@@ -1,6 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CernerAlertContent } from './constants';
+import useOhMigrationAlertMetric from '../../hooks/useOhMigrationAlertMetric';
+
+/**
+ * Wrapper that calls the metric hook for each rendered alert.
+ * Each instance gets its own ref guard so every alert logs independently.
+ */
+const MigratingFacilityAlert = ({ alertName, currentPhase, children }) => {
+  useOhMigrationAlertMetric({ alertName, isVisible: true, currentPhase });
+  return children;
+};
+
+MigratingFacilityAlert.propTypes = {
+  alertName: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  currentPhase: PropTypes.string,
+};
 
 /**
  * Component to render alerts for facilities migrating to Oracle Health
@@ -37,78 +53,88 @@ const MigratingFacilitiesAlerts = ({
         : config.errorHeadline;
 
       return (
-        <va-alert
+        <MigratingFacilityAlert
           key={index}
+          alertName={`MigratingFacilitiesAlerts-error-${healthTool}`}
+          currentPhase={currentPhase}
+        >
+          <va-alert
+            class={`vads-u-margin-bottom--2p5 ${className} ${
+              migratingFacilities.length > 0 ? 'vads-u-margin-top--2' : ''
+            }`}
+            status="error"
+            data-testid="cerner-facilities-transition-alert-error-phase"
+            background-only
+          >
+            <h2 className="vads-u-font-size--md" slot="headline">
+              {errorHeadline}
+            </h2>
+            <div>
+              <p>
+                {config.errorIntro && (
+                  <>
+                    {config.errorIntro} from <strong>{startDate}</strong>, to{' '}
+                    <strong>{endDate}</strong>{' '}
+                  </>
+                )}
+                {config.errorMessage} {facilityText} until{' '}
+                <strong>{endDate}</strong>:
+              </p>
+              <ul>
+                {migration.facilities.map((facility, i) => (
+                  <li key={i}>{facility.facilityName}</li>
+                ))}
+              </ul>
+              {config.errorNote && (
+                <>
+                  <p>{config.errorNote}</p>
+                  <va-link
+                    data-testid="find-facility-link"
+                    href="https://www.va.gov/find-locations/"
+                    text="Find your facility's contact information"
+                  />
+                </>
+              )}
+            </div>
+          </va-alert>
+        </MigratingFacilityAlert>
+      );
+    }
+
+    // Render warning alert
+    return (
+      <MigratingFacilityAlert
+        key={index}
+        alertName={`MigratingFacilitiesAlerts-warning-${healthTool}`}
+        currentPhase={currentPhase}
+      >
+        <va-alert-expandable
           class={`vads-u-margin-bottom--2p5 ${className} ${
             migratingFacilities.length > 0 ? 'vads-u-margin-top--2' : ''
           }`}
-          status="error"
-          data-testid="cerner-facilities-transition-alert-error-phase"
-          background-only
+          data-testid="cerner-facilities-transition-alert"
+          status="warning"
+          trigger={`Updates will begin on ${startDate}`}
         >
-          <h2 className="vads-u-font-size--md" slot="headline">
-            {errorHeadline}
-          </h2>
           <div>
             <p>
-              {config.errorIntro && (
-                <>
-                  {config.errorIntro} from <strong>{startDate}</strong>, to{' '}
-                  <strong>{endDate}</strong>{' '}
-                </>
-              )}
-              {config.errorMessage} {facilityText} until{' '}
-              <strong>{endDate}</strong>:
+              From <strong>{startDate}</strong>, to <strong>{endDate}</strong>,{' '}
+              {config.warningMessage} {facilityText}:
             </p>
             <ul>
               {migration.facilities.map((facility, i) => (
                 <li key={i}>{facility.facilityName}</li>
               ))}
             </ul>
-            {config.errorNote && (
-              <>
-                <p>{config.errorNote}</p>
-                <va-link
-                  data-testid="find-facility-link"
-                  href="https://www.va.gov/find-locations/"
-                  text="Find your facility's contact information"
-                />
-              </>
+            {(config.warningGetNote || config.warningNote) && (
+              <p>
+                <strong>Note:</strong>{' '}
+                {config.warningNote || config.warningGetNote(facilityText)}
+              </p>
             )}
           </div>
-        </va-alert>
-      );
-    }
-
-    // Render warning alert
-    return (
-      <va-alert-expandable
-        key={index}
-        class={`vads-u-margin-bottom--2p5 ${className} ${
-          migratingFacilities.length > 0 ? 'vads-u-margin-top--2' : ''
-        }`}
-        data-testid="cerner-facilities-transition-alert"
-        status="warning"
-        trigger={`Updates will begin on ${startDate}`}
-      >
-        <div>
-          <p>
-            From <strong>{startDate}</strong>, to <strong>{endDate}</strong>,{' '}
-            {config.warningMessage} {facilityText}:
-          </p>
-          <ul>
-            {migration.facilities.map((facility, i) => (
-              <li key={i}>{facility.facilityName}</li>
-            ))}
-          </ul>
-          {(config.warningGetNote || config.warningNote) && (
-            <p>
-              <strong>Note:</strong>{' '}
-              {config.warningNote || config.warningGetNote(facilityText)}
-            </p>
-          )}
-        </div>
-      </va-alert-expandable>
+        </va-alert-expandable>
+      </MigratingFacilityAlert>
     );
   });
 
