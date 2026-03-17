@@ -16,6 +16,11 @@ export default function SurvivorsBenefitsApp({ location, children }) {
       toggleName: TOGGLE_KEY, // feature toggle name
       formKey: 'survivorsBenefitsForm2025VersionEnabled', // form data name
     },
+    'survivorsBenefitsIdp',
+    {
+      toggleName: 'survivorsBenefitsIdp',
+      formKey: 'view:idpEnabled',
+    },
   ]);
 
   return (
