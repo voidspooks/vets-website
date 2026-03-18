@@ -125,33 +125,63 @@ describe('utils', () => {
 
   describe('redirectEnhancementToLegacy', () => {
     it('should return true when returnUrl matches enhancement pages and formData indicates legacy flow', () => {
-      expect(
-        redirectEnhancementToLegacy({
-          returnUrl: '/supporting-evidence/evidence-request',
-          formData: { disability526SupportingEvidenceEnhancement: false },
-        }),
-      ).to.be.true;
-      expect(
-        redirectEnhancementToLegacy({
-          returnUrl: '/supporting-evidence/medical-records',
-          formData: { disability526SupportingEvidenceEnhancement: false },
-        }),
-      ).to.be.true;
+      const enhancementUrls = [
+        '/supporting-evidence/evidence-request',
+        '/supporting-evidence/medical-records',
+        '/supporting-evidence/private-medical-records-upload-enhancement',
+        '/supporting-evidence/private-medical-records-upload-enhancement-v1',
+        '/supporting-evidence/additional-evidence-intro',
+        '/supporting-evidence/additional-evidence-enhancement',
+        '/supporting-evidence/additional-evidence-enhancement-v1',
+      ];
+
+      enhancementUrls.forEach(url => {
+        expect(
+          redirectEnhancementToLegacy({
+            returnUrl: url,
+            formData: { disability526SupportingEvidenceEnhancement: false },
+          }),
+        ).to.be.true;
+      });
     });
 
     it('should return false otherwise', () => {
-      expect(
-        redirectEnhancementToLegacy({
+      const cases = [
+        {
           returnUrl: '/supporting-evidence/evidence-request',
           formData: { disability526SupportingEvidenceEnhancement: true },
-        }),
-      ).to.be.false;
-      expect(
-        redirectEnhancementToLegacy({
+        },
+        {
           returnUrl: '/supporting-evidence/evidence-types',
           formData: { disability526SupportingEvidenceEnhancement: false },
-        }),
-      ).to.be.false;
+        },
+        {
+          returnUrl:
+            '/supporting-evidence/private-medical-records-upload-enhancement',
+          formData: { disability526SupportingEvidenceEnhancement: true },
+        },
+        {
+          returnUrl:
+            '/supporting-evidence/private-medical-records-upload-enhancement-v1',
+          formData: { disability526SupportingEvidenceEnhancement: true },
+        },
+        {
+          returnUrl: '/supporting-evidence/additional-evidence-intro',
+          formData: { disability526SupportingEvidenceEnhancement: true },
+        },
+        {
+          returnUrl: '/supporting-evidence/additional-evidence-enhancement',
+          formData: { disability526SupportingEvidenceEnhancement: true },
+        },
+        {
+          returnUrl: '/supporting-evidence/additional-evidence-enhancement-v1',
+          formData: { disability526SupportingEvidenceEnhancement: true },
+        },
+      ];
+
+      cases.forEach(testCase => {
+        expect(redirectEnhancementToLegacy(testCase)).to.be.false;
+      });
     });
   });
 

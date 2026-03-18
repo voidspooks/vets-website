@@ -1035,14 +1035,20 @@ export const redirectLegacyToEnhancement = props => {
  * @param {Object} props - { returnUrl, formData }
  * @returns {boolean} true if redirect needed
  */
+const ENHANCEMENT_EVIDENCE_URLS = [
+  '/supporting-evidence/evidence-request',
+  '/supporting-evidence/medical-records',
+  '/supporting-evidence/private-medical-records-upload-enhancement',
+  '/supporting-evidence/private-medical-records-upload-enhancement-v1',
+  '/supporting-evidence/additional-evidence-intro',
+  '/supporting-evidence/additional-evidence-enhancement',
+  '/supporting-evidence/additional-evidence-enhancement-v1',
+];
+
 export const redirectEnhancementToLegacy = props => {
   const { returnUrl, formData } = props;
   const isEnhancement = isEvidenceEnhancement(formData);
-  return (
-    !isEnhancement &&
-    (returnUrl === '/supporting-evidence/evidence-request' ||
-      returnUrl === '/supporting-evidence/medical-records')
-  );
+  return !isEnhancement && ENHANCEMENT_EVIDENCE_URLS.includes(returnUrl);
 };
 
 export const isNewConditionsOn = formData =>
