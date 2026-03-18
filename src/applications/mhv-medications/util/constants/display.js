@@ -12,6 +12,8 @@ export const allergyTypes = {
 export const FIELD_NONE_NOTED = 'None noted';
 export const FIELD_NOT_AVAILABLE = 'Not available';
 export const NO_PROVIDER_NAME = 'Provider name not available';
+export const NON_VA_MEDICATION_MESSAGE =
+  'You can’t manage this medication in this online tool.';
 
 export const downtimeNotificationParams = {
   appTitle: 'this medications tool',

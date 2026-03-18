@@ -34,6 +34,7 @@ import {
   DISPENSE_STATUS,
   dispStatusObjV2,
   medicationsUrls,
+  NON_VA_MEDICATION_MESSAGE,
 } from '../../util/constants';
 
 const MedicationsListCard = ({ rx }) => {
@@ -42,7 +43,7 @@ const MedicationsListCard = ({ rx }) => {
   const useV2StatusMapping = isCernerPilot && isV2StatusMapping;
   const isPendingDispense =
     rx.prescriptionSource === RX_SOURCE.PENDING_DISPENSE;
-  const isManagementImprovements = useSelector(
+  const isMedsImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
   const isFillInProgress =
@@ -96,41 +97,55 @@ const MedicationsListCard = ({ rx }) => {
     rx.refillRemaining === 0 &&
     !isNonVaPrescription;
   const showMedImprovementCard =
-    isManagementImprovements &&
+    isMedsImprovements &&
     (isFillInProgress || isRecentlyShipped || isActiveNoRefills);
 
+  const renderNonVaCard = () => (
+    <>
+      <p
+        className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
+        data-testid="non-va-medication-label"
+      >
+        Non-VA medication
+      </p>
+      <p className="vads-u-margin-y--0" data-testid="non-VA-prescription">
+        {NON_VA_MEDICATION_MESSAGE}
+      </p>
+    </>
+  );
+
+  const renderPendingCard = () => (
+    <div className="vads-u-display--flex vads-u-margin-top--2">
+      <span className="vads-u-flex--auto vads-u-padding-top--1">
+        <va-icon icon="info" size={3} aria-hidden="true" />
+      </span>
+      <p
+        className="vads-u-margin-left--2 vads-u-flex--1"
+        data-testid="pending-renewal-rx"
+        id={`pending-med-content-${rx.prescriptionId}`}
+      >
+        {pendingRenewal ? (
+          <>
+            This is a renewal you requested. Your VA pharmacy is reviewing it
+            now. Details may change.
+          </>
+        ) : (
+          <>
+            This is a new prescription from your provider. Your VA pharmacy is
+            reviewing it now. Details may change.
+          </>
+        )}
+      </p>
+    </div>
+  );
+
   const cardBodyContent = () => {
-    if (pendingRenewal || pendingMed) {
-      return (
-        <>
-          <div className="vads-u-display--flex vads-u-margin-top--2">
-            <span className="vads-u-flex--auto vads-u-padding-top--1">
-              <va-icon icon="info" size={3} aria-hidden="true" />
-            </span>
-            <p
-              className="vads-u-margin-left--2 vads-u-flex--1"
-              data-testid="pending-renewal-rx"
-              id={`pending-med-content-${rx.prescriptionId}`}
-            >
-              {pendingRenewal ? (
-                <>
-                  This is a renewal you requested. Your VA pharmacy is reviewing
-                  it now. Details may change.
-                </>
-              ) : (
-                <>
-                  This is a new prescription from your provider. Your VA
-                  pharmacy is reviewing it now. Details may change.
-                </>
-              )}
-            </p>
-          </div>
-        </>
-      );
-    }
+    if (isMedsImprovements && isNonVaPrescription) return renderNonVaCard();
+    if (pendingRenewal || pendingMed) return renderPendingCard();
+
     return (
       <>
-        {showMedImprovementCard &&
+        {isMedsImprovements &&
           isFillInProgress && (
             <StatusAlertBanner testId="fill-in-progress-alert" icon="schedule">
               {isInitialFill ? 'Fill' : 'Refill'} in progress.{' '}
@@ -139,11 +154,11 @@ const MedicationsListCard = ({ rx }) => {
               </Link>
             </StatusAlertBanner>
           )}
-        {showMedImprovementCard &&
+        {isMedsImprovements &&
           isRecentlyShipped && (
             <StatusAlertBanner testId="shipped-alert" icon="local_shipping">
               {isFirstFill ? 'Fill' : 'Refill'} has shipped.{' '}
-              {trackingUrl && (
+              {trackingUrl ? (
                 <a
                   href={trackingUrl}
                   rel="noreferrer"
@@ -151,6 +166,8 @@ const MedicationsListCard = ({ rx }) => {
                 >
                   Get tracking info
                 </a>
+              ) : (
+                <Link to={getPrescriptionDetailUrl(rx)}>Get tracking info</Link>
               )}
             </StatusAlertBanner>
           )}
@@ -163,7 +180,7 @@ const MedicationsListCard = ({ rx }) => {
               data-dd-privacy="mask"
               id={`refill-remaining-${rx.prescriptionId}`}
             >
-              {isManagementImprovements
+              {isMedsImprovements
                 ? `Refills left: ${rx.refillRemaining}`
                 : `Refills remaining: ${rx.refillRemaining}`}
             </p>
@@ -213,7 +230,7 @@ const MedicationsListCard = ({ rx }) => {
               </span>
             </p>
           )}
-        {!isManagementImprovements &&
+        {!isMedsImprovements &&
           rxStatus !== 'Unknown' && (
             <p
               id={`status-${rx.prescriptionId}`}
@@ -265,7 +282,7 @@ const MedicationsListCard = ({ rx }) => {
             {rx?.prescriptionName || rx?.orderableItem}
           </span>
         </Link>
-        {!isManagementImprovements &&
+        {!isMedsImprovements &&
           !pendingMed &&
           !pendingRenewal &&
           rxStatus !== 'Unknown' &&

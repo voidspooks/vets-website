@@ -14,6 +14,7 @@ import {
   dispStatusObj,
   dispStatusObjV2,
   DISPENSE_STATUS,
+  NON_VA_MEDICATION_MESSAGE,
 } from '../../util/constants';
 import CallPharmacyPhone from './CallPharmacyPhone';
 import RefillButton from './RefillButton';
@@ -211,7 +212,7 @@ const ExtraDetails = ({
       case dispStatusObjV2.nonVA:
         return (
           <p className="vads-u-margin-y--0" data-testid="non-VA-prescription">
-            You can’t manage this medication in this online tool.
+            {NON_VA_MEDICATION_MESSAGE}
           </p>
         );
 
@@ -382,7 +383,7 @@ const ExtraDetails = ({
       case dispStatusObj.nonVA:
         return (
           <p className="vads-u-margin-y--0" data-testid="non-VA-prescription">
-            You can’t manage this medication in this online tool.
+            {NON_VA_MEDICATION_MESSAGE}
           </p>
         );
 
@@ -441,7 +442,7 @@ const ExtraDetails = ({
     if (rxSourceIsNonVA(rx)) {
       return (
         <p className="vads-u-margin-y--0" data-testid="non-VA-prescription">
-          You can’t manage this medication in this online tool.
+          {NON_VA_MEDICATION_MESSAGE}
         </p>
       );
     }

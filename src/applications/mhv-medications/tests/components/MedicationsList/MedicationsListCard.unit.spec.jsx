@@ -6,7 +6,10 @@ import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNa
 import prescriptionsListItem from '../../fixtures/prescriptionsListItem.json';
 import MedicationsListCard from '../../../components/MedicationsList/MedicationsListCard';
 import reducers from '../../../reducers';
-import { medicationsUrls } from '../../../util/constants';
+import {
+  medicationsUrls,
+  NON_VA_MEDICATION_MESSAGE,
+} from '../../../util/constants';
 
 describe('Medication card component', () => {
   const FLAG_COMBINATIONS = [
@@ -506,6 +509,50 @@ describe('Medication card component', () => {
       expect(getByTestId('learn-to-renew-prescriptions-link')).to.exist;
       expect(queryByTestId('send-renewal-request-message-link')).to.be.null;
     });
+
+    describe('Non-VA medication card', () => {
+      const nonVaRx = {
+        ...prescriptionsListItem,
+        prescriptionSource: 'NV',
+        dispStatus: 'Active: Non-VA',
+        orderedDate: '2024-06-16T20:00:00Z',
+      };
+
+      it('renders "Non-VA medication" label', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.getByTestId('non-va-medication-label')).to.exist;
+        expect(screen.getByTestId('non-va-medication-label')).to.have.text(
+          'Non-VA medication',
+        );
+      });
+
+      it('renders "can’t manage" message', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.getByTestId('non-VA-prescription')).to.have.text(
+          NON_VA_MEDICATION_MESSAGE,
+        );
+      });
+
+      it('does not render documented date', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.queryByTestId('rx-last-filled-info')).to.not.exist;
+      });
+
+      it('does not render "Active: Non-VA" status text', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.queryByTestId('rxStatus')).to.not.exist;
+      });
+
+      it('does not render prescription number', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.queryByTestId('rx-number')).to.not.exist;
+      });
+
+      it('still renders medication name link', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.getByTestId('medications-history-details-link')).to.exist;
+      });
+    });
   });
 
   describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
@@ -520,6 +567,19 @@ describe('Medication card component', () => {
       expect(queryByTestId('fill-in-progress-alert')).to.be.null;
       expect(getByTestId('rx-number')).to.exist;
       expect(getByTestId('rxStatus')).to.exist;
+    });
+
+    it('falls back to legacy Non-VA card layout', () => {
+      const nonVaRx = {
+        ...prescriptionsListItem,
+        prescriptionSource: 'NV',
+        dispStatus: 'Active: Non-VA',
+        orderedDate: '2024-06-16T20:00:00Z',
+      };
+      const screen = setup(nonVaRx);
+      expect(screen.queryByTestId('non-va-medication-label')).to.not.exist;
+      expect(screen.getByTestId('rxStatus')).to.have.text('Active: Non-VA');
+      expect(screen.getByTestId('rx-last-filled-info')).to.exist;
     });
   });
 
@@ -592,15 +652,13 @@ describe('Medication card component', () => {
       orderedDate: '2024-06-16T20:00:00Z',
     };
     const { getByTestId } = setup(rx);
-    /* eslint-disable prettier/prettier */
     expect(getByTestId('rx-last-filled-info')).to.have.text(
       'Documented on June 16, 2024',
     );
     expect(getByTestId('rxStatus')).to.have.text('Active: Non-VA');
     expect(getByTestId('non-VA-prescription')).to.have.text(
-      'You can’t manage this medication in this online tool.',
+      NON_VA_MEDICATION_MESSAGE,
     );
-    /* eslint-enable prettier/prettier */
   });
 
   it('renders a Non-VA Prescription without an orderedDate', () => {
@@ -611,15 +669,13 @@ describe('Medication card component', () => {
       orderedDate: '',
     };
     const { getByTestId } = setup(rx);
-    /* eslint-disable prettier/prettier */
     expect(getByTestId('rx-last-filled-info')).to.have.text(
       'Documented on: Date not available',
     );
     expect(getByTestId('rxStatus')).to.have.text('Active: Non-VA');
     expect(getByTestId('non-VA-prescription')).to.have.text(
-      'You can’t manage this medication in this online tool.',
+      NON_VA_MEDICATION_MESSAGE,
     );
-    /* eslint-enable prettier/prettier */
   });
 
   it('renders a Non-VA Prescription when dispStatus is null', () => {
@@ -630,15 +686,13 @@ describe('Medication card component', () => {
       orderedDate: '',
     };
     const { getByTestId } = setup(rx);
-    /* eslint-disable prettier/prettier */
     expect(getByTestId('rx-last-filled-info')).to.have.text(
       'Documented on: Date not available',
     );
     expect(getByTestId('rxStatus')).to.have.text('Active: Non-VA');
     expect(getByTestId('non-VA-prescription')).to.have.text(
-      'You can’t manage this medication in this online tool.',
+      NON_VA_MEDICATION_MESSAGE,
     );
-    /* eslint-enable prettier/prettier */
   });
 
   describe('CernerPilot and V2StatusMapping flag requirement validation', () => {
