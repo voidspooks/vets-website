@@ -113,12 +113,14 @@ describe('IntroductionPage', () => {
       loggedIn: false,
       showLoadingIndicator: false,
     };
-    const { getByTestId } = render(
+    const { container } = render(
       <Provider store={mockStore}>
         <IntroductionPage {...loggedInProps} />
       </Provider>,
     );
-    expect(getByTestId('sign-in-alert')).to.exist;
+    expect(
+      container.querySelector('va-alert-sign-in[variant="signInRequired"]'),
+    ).to.exist;
   });
 
   it('should not render sign-in alert when user is logged in', () => {
