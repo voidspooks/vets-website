@@ -1,4 +1,7 @@
 const { format } = require('date-fns');
+const ccdGenerate = require('~/platform/mhv/api/mocks/medical-records/downloads/ccd_generate.json');
+const ccdStatusNotReady = require('~/platform/mhv/api/mocks/medical-records/downloads/ccd_status_not_ready.json');
+const ccdStatusReady = require('~/platform/mhv/api/mocks/medical-records/downloads/ccd_status_ready.json');
 
 const generateCCD = (req, res) => {
   const randomSeed = Math.floor(Math.random() * 2);
@@ -113,7 +116,149 @@ const downloadCCD = (req, res) => {
   );
 };
 
+const generateCCDV2 = (req, res) => {
+  return res.json(ccdGenerate);
+};
+
+const statusCCDV2 = (req, res) => {
+  const { id } = req.params;
+  // UUID from the generate response returns NOT_READY with no taskId
+  if (id === 'b0733653-30b4-411f-a997-7453039e510c') {
+    return res.json(ccdStatusNotReady);
+  }
+  // Once we have a taskId (12043), return the ready response
+  return res.json(ccdStatusReady);
+};
+
+const downloadCCDV2 = (req, res) => {
+  // Determine the requested format from the URL extension
+  const urlPath = req.path || '';
+  let requestedFormat = 'pdf';
+  if (urlPath.endsWith('.xml')) requestedFormat = 'xml';
+  else if (urlPath.endsWith('.html')) requestedFormat = 'html';
+
+  if (requestedFormat === 'xml') {
+    return res.type('application/xml').send(
+      `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3">
+  <title>VA Continuity of Care Document (CCD) - Oracle Health</title>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <title>Mock Oracle Health CCD XML</title>
+          <text>This is mock XML data for local V2 CCD development testing.</text>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>`,
+    );
+  }
+
+  if (requestedFormat === 'html') {
+    return res.type('text/html').send(
+      `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Continuity of Care Document - Oracle Health</title>
+  </head>
+  <body>
+    <h1>VA Continuity of Care Document</h1>
+    <p><strong>Data Source:</strong> Oracle Health</p>
+    <p>This is mock HTML data for local V2 CCD development testing.</p>
+  </body>
+</html>`,
+    );
+  }
+
+  const pdfMock = `%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/Resources <<
+/Font <<
+/F1 <<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+/F2 <<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica-Bold
+>>
+>>
+>>
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 380
+>>
+stream
+BT
+/F2 18 Tf
+50 750 Td
+(VA Continuity of Care Document - Oracle Health) Tj
+/F1 12 Tf
+0 -40 Td
+(Patient Information:) Tj
+0 -20 Td
+(Name: Test Patient) Tj
+0 -20 Td
+(Date of Birth: January 1, 1971) Tj
+0 -20 Td
+(Gender: M) Tj
+0 -40 Td
+(Data Source: Oracle Health System) Tj
+0 -20 Td
+(Generated: March 16, 2026) Tj
+0 -40 Td
+(This is mock data for local development testing.) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000427 00000 n 
+trailer
+<<
+/Size 5
+/Root 1 0 R
+>>
+startxref
+856
+%%EOF
+`;
+  return res.type('application/pdf').send(Buffer.from(pdfMock));
+};
+
 module.exports = {
   generateCCD,
   downloadCCD,
+  generateCCDV2,
+  statusCCDV2,
+  downloadCCDV2,
 };

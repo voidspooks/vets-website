@@ -9,7 +9,7 @@ import {
   updateReportRecordType,
   updateReportDateRange,
   genAndDownloadCCD,
-  downloadCCDV2,
+  genAndDownloadCCDV2,
 } from '../../actions/downloads';
 import { Actions } from '../../util/actionTypes';
 
@@ -125,7 +125,7 @@ describe('Download Actions', () => {
     });
   });
 
-  describe('downloadCCDV2', () => {
+  describe('genAndDownloadCCDV2', () => {
     let clickToRestore = null;
 
     beforeEach(() => {
@@ -150,20 +150,58 @@ describe('Download Actions', () => {
       const mockBlob = new Blob(['mock xml data'], {
         type: 'application/xml',
       });
-      const mockResponse = {
-        blob: sinon.stub().resolves(mockBlob),
-      };
-      mockApiRequest(mockResponse);
 
-      await downloadCCDV2(firstName, lastName, 'xml')(dispatch);
+      // genAndDownloadCCDV2 makes 3 sequential API calls:
+      // 1. generateCCDV2 -> returns jobId
+      // 2. statusCCDV2 -> returns status with format READY
+      // 3. downloadCCDV2 -> returns blob response
+      const generateRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              jobId: 'test-job-id',
+              retryAfterSeconds: 0.001,
+            },
+          },
+        },
+      };
+      const statusRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              taskId: '12043',
+              xml: 'READY',
+              html: 'READY',
+              pdf: 'READY',
+            },
+          },
+        },
+      };
+      const downloadRequest = {
+        shouldResolve: true,
+        response: {
+          blob: sinon.stub().resolves(mockBlob),
+        },
+      };
+      mockMultipleApiRequests([
+        generateRequest,
+        statusRequest,
+        downloadRequest,
+      ]);
+
+      await genAndDownloadCCDV2(firstName, lastName, 'xml')(dispatch);
 
       expect(dispatch.secondCall.args[0].type).to.equal(
         Actions.Downloads.GENERATE_CCD,
       );
 
-      expect(dispatch.thirdCall.args[0].type).to.equal(
-        Actions.Downloads.DOWNLOAD_CCD,
-      );
+      expect(
+        dispatch
+          .getCalls()
+          .some(call => call.args[0].type === Actions.Downloads.DOWNLOAD_CCD),
+      ).to.be.true;
 
       expect(HTMLAnchorElement.prototype.click.called).to.be.true;
     });
@@ -172,10 +210,41 @@ describe('Download Actions', () => {
       const dispatch = sinon.spy();
 
       const mockBlob = new Blob(['mock'], { type: 'application/pdf' });
-      const mockResponse = {
-        blob: sinon.stub().resolves(mockBlob),
+
+      // genAndDownloadCCDV2 makes 3 sequential API calls
+      const generateRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              jobId: 'test-job-id',
+              retryAfterSeconds: 0.001,
+            },
+          },
+        },
       };
-      mockApiRequest(mockResponse);
+      const statusRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              taskId: '12043',
+              pdf: 'READY',
+            },
+          },
+        },
+      };
+      const downloadRequest = {
+        shouldResolve: true,
+        response: {
+          blob: sinon.stub().resolves(mockBlob),
+        },
+      };
+      mockMultipleApiRequests([
+        generateRequest,
+        statusRequest,
+        downloadRequest,
+      ]);
 
       const createElementStub = sinon.stub(document, 'createElement');
       const mockAnchor = {
@@ -186,7 +255,7 @@ describe('Download Actions', () => {
       };
       createElementStub.withArgs('a').returns(mockAnchor);
 
-      await downloadCCDV2('Jane', 'Smith', 'pdf')(dispatch);
+      await genAndDownloadCCDV2('Jane', 'Smith', 'pdf')(dispatch);
 
       expect(mockAnchor.download).to.include('OH');
       expect(mockAnchor.download).to.include('Jane');
@@ -206,7 +275,7 @@ describe('Download Actions', () => {
       };
       mockApiRequest(mockResponse);
 
-      await downloadCCDV2('John', 'Doe', 'xml')(dispatch);
+      await genAndDownloadCCDV2('John', 'Doe', 'xml')(dispatch);
 
       expect(dispatch.secondCall.args[0].type).to.equal(
         Actions.Downloads.GENERATE_CCD,
@@ -227,7 +296,7 @@ describe('Download Actions', () => {
       };
       mockApiRequest(mockResponse);
 
-      await downloadCCDV2('John', 'Doe', 'html')(dispatch);
+      await genAndDownloadCCDV2('John', 'Doe', 'html')(dispatch);
 
       expect(
         dispatch

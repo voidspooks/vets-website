@@ -145,8 +145,8 @@ describe('VistaAndOHContent', () => {
   });
 
   describe('CCD Download Success Alert', () => {
-    it('does not render CCD download success alert when only generatingCCD is true, but shows spinner', () => {
-      const { queryByText, getByTestId } = renderComponent({
+    it('does not render CCD download success alert when only generatingCCD is true, but shows single spinner', () => {
+      const { queryByText, getByTestId, queryByTestId } = renderComponent({
         generatingCCD: true,
         ccdDownloadSuccess: false,
         ccdError: false,
@@ -154,8 +154,20 @@ describe('VistaAndOHContent', () => {
       });
 
       expect(queryByText(/Continuity of Care Document download/)).to.not.exist;
-      expect(getByTestId('generating-ccd-VistA-indicator')).to.exist;
-      expect(getByTestId('generating-ccd-OH-indicator')).to.exist;
+      expect(getByTestId('generating-ccd-indicator')).to.exist;
+      // VistA and OH section download links should not be visible
+      expect(queryByTestId('generateCcdButtonXmlVistA')).to.not.exist;
+      expect(queryByTestId('generateCcdButtonXmlOH')).to.not.exist;
+    });
+
+    it('does not show spinner when generatingCCD is false', () => {
+      const { queryByTestId, getByTestId } = renderComponent({
+        generatingCCD: false,
+      });
+
+      expect(queryByTestId('generating-ccd-indicator')).to.not.exist;
+      expect(getByTestId('generateCcdButtonXmlVistA')).to.exist;
+      expect(getByTestId('generateCcdButtonXmlOH')).to.exist;
     });
 
     it('renders CCD download success alert when ccdDownloadSuccess is true and no error', () => {

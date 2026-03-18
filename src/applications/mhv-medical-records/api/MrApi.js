@@ -490,20 +490,38 @@ export const downloadCCD = (timestamp, format = 'html') => {
 };
 
 /**
- * Downloads a Continuity of Care Document (CCD) from Oracle Health data (v2 endpoint)
- * @param {string} format
- * @returns {Promise}
- *
- * V2 vs V1 Architecture:
- * - V1: Two-step process (generate -> poll -> download)
- * - V2: Single-step direct download
- * - In V2, backend can convert FHIR -> XML/HTML/PDF on-demand
+ * Starts generation of a Continuity of Care Document (CCD) from Oracle Health data (v2 endpoint).
+ * @returns {Promise} Promise resolving to CCD generation job metadata.
  */
-export const downloadCCDV2 = async (format = 'xml') => {
-  const lowerFormat = format.toLowerCase();
+export const generateCCDV2 = () => {
+  return apiRequest(`${API_BASE_PATH_V2}/medical_records/ccd/generate`, {
+    headers,
+  });
+};
+
+/**
+ * Retrieves the status for a CCD generation job (v2 endpoint).
+ * @param {string} jobId - Identifier returned by generateCCDV2.
+ * @returns {Promise} Promise resolving to the CCD job status payload.
+ */
+export const statusCCDV2 = jobId => {
+  return apiRequest(`${API_BASE_PATH_V2}/medical_records/ccd/status/${jobId}`, {
+    headers,
+  });
+};
+
+/**
+ * Downloads a generated CCD document for the specified job (v2 endpoint).
+ * @param {string} jobId - Identifier of the completed CCD generation job.
+ * @param {string} format - Desired document format ('html', 'xml', or 'pdf').
+ * @returns {Promise} Promise resolving to the CCD document response.
+ */
+export const downloadCCDV2 = (jobId, format) => {
   return apiRequest(
-    `${API_BASE_PATH_V2}/medical_records/ccd/download.${lowerFormat}`,
-    { headers },
+    `${API_BASE_PATH_V2}/medical_records/ccd/download/${jobId}.${format}`,
+    {
+      headers,
+    },
   );
 };
 

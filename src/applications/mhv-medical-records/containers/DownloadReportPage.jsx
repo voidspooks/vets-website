@@ -31,7 +31,7 @@ import {
   createBeforeCutoverFacilityNames,
   createAfterCutoverFacilityNames,
 } from '../util/facilityHelpers';
-import { genAndDownloadCCD, downloadCCDV2 } from '../actions/downloads';
+import { genAndDownloadCCD, genAndDownloadCCDV2 } from '../actions/downloads';
 import { Actions } from '../util/actionTypes';
 import useAlerts from '../hooks/use-alerts';
 import VistaOnlyContent from '../components/DownloadRecords/VistaOnlyContent';
@@ -238,7 +238,7 @@ const DownloadReportPage = ({ runningUnitTest }) => {
     (e, fileType) => {
       e.preventDefault();
       dispatch(
-        downloadCCDV2(
+        genAndDownloadCCDV2(
           userProfile?.userFullName?.first || '',
           userProfile?.userFullName?.last || '',
           fileType,

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "id": "12043",
+    "type": "ccd_status",
+    "attributes": {
+      "status": "NOT_READY",
+      "jobId": "12043",
+      "taskId": "12043",
+      "source": "oracle-health",
+      "message": "CCD processing requested or in progress",
+      "retryAfterSeconds": 10,
+      "authoredOn": null,
+      "xml": null,
+      "html": null,
+      "pdf": null
+    }
+  }
+}

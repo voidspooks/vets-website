@@ -4,6 +4,9 @@ import vistaOnlyUser from './fixtures/users/vista-only-user.json';
 import ohOnlyUser from './fixtures/users/oh-only-user.json';
 import bothSourcesUser from './fixtures/users/both-sources-user.json';
 
+const mockDate = new Date(2026, 2, 17); // March 17, 2026
+const mockDateISO = mockDate.toISOString();
+
 /**
  * Cypress tests for DownloadReportPage.jsx conditional rendering
  *
@@ -507,7 +510,7 @@ describe('Medical Records Download Page - CCD Download Success Alerts', () => {
       // Use proper generate response format - array with status COMPLETE
       const ccdGenerateResponse = [
         {
-          dateGenerated: new Date().toISOString(),
+          dateGenerated: mockDateISO,
           status: 'COMPLETE',
           patientId: 'test-patient-id',
         },
@@ -565,11 +568,13 @@ describe('Medical Records Download Page - Loading States', () => {
         req.reply({
           delay: 2000,
           statusCode: 200,
-          body: { dateGenerated: new Date().toISOString() },
+          body: { dateGenerated: mockDateISO },
         });
       });
 
-      cy.get('[data-testid="generateCcdButtonXmlVistA"]').click();
+      cy.get('[data-testid="generateCcdButtonXmlVistA"]').click({
+        force: true,
+      });
 
       // Verify loading indicator appears (with VistA suffix)
       cy.get('#generating-ccd-VistA-indicator').should('exist');
@@ -579,7 +584,7 @@ describe('Medical Records Download Page - Loading States', () => {
   });
 
   describe('CCD loading spinner for OH-only users', () => {
-    it('shows loading indicator while generating CCD V2', () => {
+    it('shows unified loading indicator while generating CCD V2', () => {
       site.login(ohOnlyUser, false);
       site.mockFeatureToggles({
         isCcdExtendedFileTypesEnabled: true,
@@ -587,21 +592,127 @@ describe('Medical Records Download Page - Loading States', () => {
       });
       DownloadReportsPage.goToReportsPage();
 
-      // Intercept with a delay to catch the loading state
-      cy.intercept('GET', '/my_health/v2/medical_records/ccd/download.xml', {
-        delay: 2000,
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/xml' },
-        body: '<?xml version="1.0"?><ClinicalDocument></ClinicalDocument>',
+      // Intercept the V2 generate endpoint with a delay to catch the loading state.
+      // The spinner appears as soon as GENERATE_CCD is dispatched, which happens
+      // before the generate request completes.
+      cy.intercept('GET', '/my_health/v2/medical_records/ccd/generate', req => {
+        req.reply({
+          delay: 2000,
+          statusCode: 200,
+          body: {
+            data: {
+              id: 'test-job-spinner',
+              type: 'ccd_status',
+              attributes: {
+                jobId: 'test-job-spinner',
+                retryAfterSeconds: 1,
+              },
+            },
+          },
+        });
       });
+
+      // Also intercept status and download so the flow doesn't error after the spinner check.
+      // Simulate polling with ID-based intercepts that mimic the real jobId → taskId switch:
+      // First poll uses jobId ("test-job-spinner") → NOT_READY, returns taskId "test-task-spinner"
+      cy.intercept(
+        'GET',
+        '/my_health/v2/medical_records/ccd/status/test-job-spinner',
+        {
+          statusCode: 200,
+          body: {
+            data: {
+              id: 'test-job-spinner',
+              type: 'ccd_status',
+              attributes: {
+                status: 'NOT_READY',
+                jobId: 'test-job-spinner',
+                taskId: 'test-task-spinner',
+                source: 'oracle-health',
+                message: 'CCD processing',
+                retryAfterSeconds: 1,
+                authoredOn: null,
+                xml: null,
+                html: null,
+                pdf: null,
+              },
+            },
+          },
+        },
+      );
+      // Second poll uses taskId ("test-task-spinner") → READY
+      cy.intercept(
+        'GET',
+        '/my_health/v2/medical_records/ccd/status/test-task-spinner',
+        {
+          statusCode: 200,
+          body: {
+            data: {
+              id: 'test-task-spinner',
+              type: 'ccd_status',
+              attributes: {
+                jobId: 'test-job-spinner',
+                taskId: 'test-task-spinner',
+                xml: 'READY',
+                html: 'READY',
+                pdf: 'READY',
+              },
+            },
+          },
+        },
+      );
+      cy.intercept(
+        'GET',
+        '/my_health/v2/medical_records/ccd/download/test-task-spinner.xml',
+        {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/xml' },
+          body: '<?xml version="1.0"?><ClinicalDocument></ClinicalDocument>',
+        },
+      );
 
       cy.get('[data-testid="generateCcdButtonXmlOH"]')
         .shadow()
         .find('a')
         .click({ force: true });
 
-      // Verify loading indicator appears for OH users
-      cy.get('#generating-ccd-OH-indicator').should('exist');
+      // Verify unified loading indicator appears (single spinner for both VistA and OH)
+      cy.get('[data-testid="generating-ccd-indicator"]').should('exist');
+
+      // Exclude heading-order rule during loading state because the transient state
+      // causes a violation (h1 → h3) since the h2 is conditionally hidden.
+      cy.injectAxeThenAxeCheck('main', { headingOrder: false });
+    });
+  });
+
+  describe('Unified CCD loading spinner for both-sources users', () => {
+    it('shows single unified spinner when downloading CCD for VistA facilities', () => {
+      site.login(bothSourcesUser, false);
+      site.mockFeatureToggles({
+        isCcdExtendedFileTypesEnabled: true,
+        isCcdOHEnabled: true,
+      });
+      DownloadReportsPage.goToReportsPage();
+
+      // Intercept with a delay to catch the loading state
+      cy.intercept('GET', '/my_health/v1/medical_records/ccd/generate', req => {
+        req.reply({
+          delay: 2000,
+          statusCode: 200,
+          body: { dateGenerated: mockDateISO },
+        });
+      });
+
+      cy.get('[data-testid="generateCcdButtonXmlVistA"]')
+        .shadow()
+        .find('a')
+        .click({ force: true });
+
+      // Verify unified loading indicator replaces ALL download sections (VistA and OH)
+      cy.get('[data-testid="generating-ccd-indicator"]').should('exist');
+      // Both VistA and OH download links should be hidden while any CCD is generating
+      cy.get('[data-testid="generateCcdButtonXmlOH"]').should('not.exist');
+      cy.get('[data-testid="generateCcdButtonXmlVistA"]').should('not.exist');
 
       // Exclude heading-order rule during loading state because the transient state
       // causes a violation (h1 → h3) since the h2 is conditionally hidden.
@@ -630,7 +741,9 @@ describe('Medical Records Download Page - Blue Button Section', () => {
     });
 
     it('Blue Button link navigates to date-range page', () => {
-      cy.get('[data-testid="go-to-download-all"]').click();
+      cy.get('[data-testid="go-to-download-all"]')
+        .should('exist')
+        .click();
       cy.url().should('include', '/download/date-range');
       cy.injectAxeThenAxeCheck();
     });

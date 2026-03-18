@@ -2,7 +2,7 @@ import { Actions } from '../util/actionTypes';
 
 const initialState = {
   /**
-   * Awaiting CCD generation
+   * Awaiting CCD generation (VistA or Oracle Health)
    * @type {Boolean}
    */
   generatingCCD: false,

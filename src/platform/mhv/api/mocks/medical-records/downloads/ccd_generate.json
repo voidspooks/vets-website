@@ -1,0 +1,18 @@
+{
+  "data": {
+    "id": "b0733653-30b4-411f-a997-7453039e510c",
+    "type": "ccd_status",
+    "attributes": {
+      "status": "NOT_READY",
+      "jobId": "b0733653-30b4-411f-a997-7453039e510c",
+      "taskId": null,
+      "source": "oracle-health",
+      "message": "CCD processing requested; awaiting task correlation",
+      "retryAfterSeconds": 10,
+      "authoredOn": null,
+      "xml": null,
+      "html": null,
+      "pdf": null
+    }
+  }
+}

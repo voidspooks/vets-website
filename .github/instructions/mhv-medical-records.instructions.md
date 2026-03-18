@@ -302,9 +302,11 @@ Used in CCD download sections to distinguish records before vs after VistA-to-OH
   - PDF helpers in `util/pdfHelpers/`
   - TXT helpers in `util/txtHelpers/`
 - **CCD (Continuity of Care Document)**: 
-  - V1: Two-step process (generate -> poll -> download)
-  - V2: Single-step direct download from Oracle Health
+  - V1 (VistA): Two-step process (generate -> poll -> download), uses `genAndDownloadCCD` action
+  - V2 (Oracle Health): Three-step process (generate -> poll status until READY -> download), uses `genAndDownloadCCDV2` action
   - Formats: HTML, XML, PDF
+  - **CRITICAL**: Both V1 and V2 CCD generation share a single `generatingCCD` boolean in Redux state. When either download is in progress, a single loading spinner replaces **both** the VistA and OH download sections in `VistaAndOHContent`. This keeps the UX simple — only one CCD download can be active at a time.
+  - V2 polling checks only the requested format for READY status, not all formats
 - **Self-Entered Information (SEI)**: Download user-entered health data
 
 ### Image Studies (Radiology)
@@ -487,6 +489,18 @@ Used in CCD download sections to distinguish records before vs after VistA-to-OH
   - Inject axe: `cy.injectAxe()`
   - Run check: `cy.axeCheck()`
 - **Naming Convention**: `medical-records-<feature>.cypress.spec.js`
+- **CCD Download Spinner Selectors**:
+  - `VistaOnlyContent` (VistA-only users): spinner rendered by `CCDDownloadSection` with `testIdSuffix="VistA"` → `data-testid="generating-ccd-VistA-indicator"`
+  - `VistaAndOHContent` (both-sources & OH-only users): unified spinner wraps both download sections → `data-testid="generating-ccd-indicator"` (no suffix). When either VistA or OH download is in progress, **all** download links are hidden and a single spinner is shown.
+- **CCD V2 E2E Intercepts**: The V2 CCD download is a 3-step flow with ID-based polling. E2E tests must intercept **all four** paths:
+  1. `GET /my_health/v2/medical_records/ccd/generate` → fixture: `ccd-generate-response-v2.json` (returns `jobId: "test-job-id-12345"`, `taskId: null`)
+  2. `GET /my_health/v2/medical_records/ccd/status/test-job-id-12345` → fixture: `ccd-status-not-ready-v2.json` (NOT_READY, returns `taskId: "12345"` — app switches pollId)
+  3. `GET /my_health/v2/medical_records/ccd/status/12345` → fixture: `ccd-status-ready-v2.json` (READY for all formats)
+  4. `GET /my_health/v2/medical_records/ccd/download/12345.{format}` → mock body with correct `Content-Type`
+  - Use `DownloadReportsPage.interceptCcdV2Flow()` to set up all intercepts at once (ID-based routing is built in from fixtures).
+  - Wait for `@statusCcdV2NotReady` then `@statusCcdV2Ready` to account for the polling cycle.
+  - IDs are derived from fixture data — the generate fixture's `jobId` routes the first status poll, and the not-ready fixture's `taskId` routes the second poll and the download.
+  - **Fixed mock dates**: Always use a fixed `mockDateISO` constant (e.g., `new Date(2026, 2, 17).toISOString()`) in test intercepts instead of `new Date()` to ensure deterministic, reproducible tests.
 
 ## API Functions (`api/MrApi.js`)
 
@@ -554,7 +568,9 @@ Used in CCD download sections to distinguish records before vs after VistA-to-OH
 ### CCD
 - `generateCCD()`: Generate CCD document (v1)
 - `downloadCCD(timestamp, format)`: Download generated CCD (v1)
-- `downloadCCDV2(format)`: Direct CCD download (v2)
+- `generateCCDV2()`: Generate CCD from Oracle Health (v2), returns jobId
+- `statusCCDV2(jobId)`: Poll CCD V2 generation status until format is READY
+- `downloadCCDV2(jobId, format)`: Download generated CCD V2 document by format
 
 ### Analytics
 - `postRecordDatadogAction(metric, tags)`: Send Datadog metric to backend
@@ -648,6 +664,9 @@ state.mr = {
     loading: Boolean,
   },
   downloads: {
+    generatingCCD: Boolean, // CCD generation in progress (VistA or Oracle Health)
+    ccdDownloadSuccess: Boolean,
+    error: Boolean,
     dateFilter: Object,
     recordFilter: Object,
     fileTypeFilter: String,
@@ -741,6 +760,7 @@ export const convertAllergy = allergy => {
 - ❌ **Never** use moment.js for new code; prefer date-fns
 - ❌ **Never** skip Datadog error tracking in catch blocks in Redux action creators
 - ❌ **Never** use Unicode escape sequences (e.g., `\u2019`) to represent curly apostrophes or other special characters. Always write straight apostrophes (`'`) in source code and test assertions — ESLint will auto-fix them to curly apostrophes at lint time, but unit tests run against the raw source, so assertions must match straight apostrophes.
+- ❌ **Never** register mock API routes without the file extension when the client-side API appends one. The `mocker-api` / Express router treats `download` and `download.xml` as different paths. If `MrApi.js` requests `ccd/download.xml`, the mock must be `'GET .../ccd/download.xml'`, **not** `'GET .../ccd/download'`.
 
 ### Performance Considerations
 - ✅ Use lazy loading for page containers

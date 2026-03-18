@@ -2,15 +2,20 @@ import { format } from 'date-fns';
 import {
   generateCCD,
   downloadCCD,
+  generateCCDV2,
+  statusCCDV2,
   downloadCCDV2 as downloadCCDV2Api,
 } from '../api/MrApi';
 import { Actions } from '../util/actionTypes';
 import { addAlert, clearAlerts } from './alerts';
+import { sendDatadogError } from '../util/helpers';
 import * as Constants from '../util/constants';
 
 const INITIAL_BACKOFF = 1000; // 1 second
 const BACKOFF_FACTOR = 1.05; // 5% increase
 const MAX_DURATION = 60000; // 1 minute total
+const MIN_DELAY = 1000; // 1s floor for status polling
+const MAX_DELAY = 30000; // 30s ceiling for status polling
 
 // Shared media type map for CCD downloads
 const MEDIA_TYPE_MAP = {
@@ -141,12 +146,69 @@ export const genAndDownloadCCD = (
 };
 
 /**
- * Downloads CCD from Oracle Health (V2 endpoint) - Direct download
+ * Helper that polls the CCD V2 status endpoint until the requested format
+ * reports "READY", or the timeout is reached.
  *
- * Unlike V1 which requires generate->poll->download cycle, V2 downloads immediately.
- * This is possible because Oracle Health's FHIR API is fast enough for on-demand generation.
+ * @param {string} jobId   - Job ID returned by the generate call
+ * @param {string} requestedFormat - The file extension the user requested (xml, html, pdf)
+ * @param {number} retryAfter - Initial retry interval in seconds
+ * @returns {Promise<string>} The poll ID (taskId or jobId) to use for download
  */
-export const downloadCCDV2 = (
+const pollCCDV2Status = async (jobId, requestedFormat, retryAfterSeconds) => {
+  const startTime = Date.now();
+  let delay = Math.min(
+    Math.max(retryAfterSeconds * 1000, MIN_DELAY),
+    MAX_DELAY,
+  );
+  // Start polling with the UUID jobId. Once the backend assigns a taskId
+  // we switch to polling with that instead.
+  let pollId = jobId;
+
+  const isReady = value =>
+    typeof value === 'string' && value.toUpperCase() === 'READY';
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const elapsed = Date.now() - startTime;
+    if (elapsed >= MAX_DURATION) {
+      throw new Error('CCD generation timed out.');
+    }
+
+    // Wait for the retry interval before polling
+    const currentDelay = delay;
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise(resolve => setTimeout(resolve, currentDelay));
+
+    // eslint-disable-next-line no-await-in-loop
+    const statusResponse = await statusCCDV2(pollId);
+    const attrs = statusResponse?.data?.attributes;
+
+    // Once a taskId is available, switch to polling with it
+    if (attrs?.taskId) {
+      pollId = attrs.taskId;
+    }
+
+    // The requested format must be READY before we can download
+    if (isReady(attrs?.[requestedFormat])) {
+      return pollId;
+    }
+
+    // Update delay from the response if available
+    if (attrs?.retryAfterSeconds) {
+      delay = Math.min(
+        Math.max(attrs.retryAfterSeconds * 1000, MIN_DELAY),
+        MAX_DELAY,
+      );
+    }
+  }
+};
+
+/**
+ * Downloads CCD from Oracle Health (V2 endpoint)
+ *
+ * Flow: generate -> poll status until READY -> download
+ */
+export const genAndDownloadCCDV2 = (
   firstName,
   lastName,
   fileType = 'xml',
@@ -157,36 +219,49 @@ export const downloadCCDV2 = (
   dispatch({ type: Actions.Downloads.GENERATE_CCD });
 
   try {
-    const response = await downloadCCDV2Api(fileType);
     const extension = fileType.toLowerCase();
+    const mediaType = validateAndGetMediaType(extension);
 
-    // Filename includes "OH" to distinguish Oracle Health data from VistA
-    // Example: VA-Continuity-of-care-document-OH-John-Doe-10-28-2025_023755pm.xml
+    // Step 1: Generate the CCD – returns a jobId and retryAfterSeconds
+    const generateResponse = await generateCCDV2();
+    const generateAttrs = generateResponse?.data?.attributes;
+    const { jobId, retryAfterSeconds, authoredOn, message } = generateAttrs;
+
+    if (!jobId) {
+      dispatch({
+        type: Actions.Downloads.CCD_GENERATION_ERROR,
+        response: authoredOn || new Date().toISOString(),
+      });
+      throw new Error(
+        `CCD generation error: ${message || 'No job ID returned.'}`,
+      );
+    }
+
+    // Step 2: Poll statusCCDV2 until the requested format is READY
+    const downloadId = await pollCCDV2Status(
+      jobId,
+      extension,
+      retryAfterSeconds || 10,
+    );
+
+    // Step 3: Download the document in the requested format
+    const response = await downloadCCDV2Api(downloadId, extension);
+
     const fileName = `VA-Continuity-of-care-document-OH-${
       firstName ? `${firstName}-` : ''
     }${lastName}-${format(new Date(), 'M-d-yyyy_hhmmssaaa')}.${extension}`;
 
-    // Validate file type and create blob with correct MIME type
-    const mediaType = validateAndGetMediaType(fileType);
     const blob = await createBlobWithType(response, mediaType);
+    triggerFileDownload(blob, fileName);
 
     dispatch({
       type: Actions.Downloads.DOWNLOAD_CCD,
       response: new Date().toISOString(),
     });
-
-    triggerFileDownload(blob, fileName);
   } catch (error) {
     dispatch({ type: Actions.Downloads.CANCEL_CCD });
-
-    if (error.status === 404 || error.message?.includes('not found')) {
-      const customError = new Error(
-        'Your Oracle Health medical records are not yet available. Please download your CCD from the Legacy System section above, which contains your complete medical history.',
-      );
-      dispatch(addAlert('Oracle Health Records Not Available', customError));
-    } else {
-      dispatch(addAlert(Constants.ALERT_TYPE_CCD_ERROR, error));
-    }
+    dispatch(addAlert(Constants.ALERT_TYPE_CCD_ERROR, error));
+    sendDatadogError(error, 'actions_downloads_downloadCCDV2');
   }
 };
 

@@ -77,6 +77,15 @@ class DownloadReportsPage {
       .and('contain', 'Continuity of Care Document download started');
   };
 
+  /**
+   * Verifies the unified CCD loading spinner is shown.
+   * Used by VistaAndOHContent (both-sources and OH-only users)
+   * where a single spinner replaces all download sections.
+   */
+  verifyUnifiedCcdSpinner = () => {
+    cy.get('[data-testid="generating-ccd-indicator"]').should('exist');
+  };
+
   verifySelfEnteredDownloadButton = () => {
     cy.get('[data-testid="downloadSelfEnteredButton"]').should('be.visible');
   };
@@ -118,13 +127,75 @@ class DownloadReportsPage {
     );
   };
 
+  /**
+   * Sets up all three intercepts for the V2 CCD download flow,
+   * simulating real polling by matching on specific IDs:
+   *
+   * 1. generate → returns jobId ("test-job-id-12345") with taskId null
+   * 2. status/test-job-id-12345 → NOT_READY, returns taskId "12345"
+   *    (app switches pollId to the taskId)
+   * 3. status/12345 → READY for all formats
+   * 4. download/12345.{format} → returns the document body
+   */
+  interceptCcdV2Flow = ({
+    format,
+    contentType,
+    body,
+    generateFixture = './applications/mhv-medical-records/tests/e2e/fixtures/ccd-generate-response-v2.json',
+    statusNotReadyFixture = './applications/mhv-medical-records/tests/e2e/fixtures/ccd-status-not-ready-v2.json',
+    statusReadyFixture = './applications/mhv-medical-records/tests/e2e/fixtures/ccd-status-ready-v2.json',
+  }) => {
+    // Step 1: Intercept generate endpoint
+    cy.fixture(generateFixture).then(generateBody => {
+      cy.intercept(
+        'GET',
+        '/my_health/v2/medical_records/ccd/generate',
+        generateBody,
+      ).as('generateCcdV2');
+
+      // const jobId = generateBody.data.attributes.jobId;
+
+      // Step 2a: First status poll uses the jobId from generate → NOT_READY.
+      // The response includes a taskId, causing the app to switch its pollId.
+      cy.fixture(statusNotReadyFixture).then(notReadyBody => {
+        cy.intercept(
+          'GET',
+          `/my_health/v2/medical_records/ccd/status/test-job-id-12345`,
+          notReadyBody,
+        ).as('statusCcdV2NotReady');
+      });
+
+      // Step 2b: Second status poll uses the taskId from the NOT_READY response → READY.
+      cy.fixture(statusReadyFixture).then(readyBody => {
+        // const taskId = readyBody.data.attributes.taskId;
+
+        cy.intercept(
+          'GET',
+          `/my_health/v2/medical_records/ccd/status/12345`,
+          readyBody,
+        ).as('statusCcdV2Ready');
+
+        // Step 3: Download endpoint uses the taskId (final pollId returned to caller)
+        cy.intercept(
+          'GET',
+          `/my_health/v2/medical_records/ccd/download/12345.${format}`,
+          {
+            statusCode: 200,
+            headers: { 'Content-Type': contentType },
+            body,
+          },
+        ).as('downloadCcdV2');
+      });
+    });
+  };
+
   clickCcdDownloadXmlButtonV2 = pathToFixture => {
     cy.fixture(pathToFixture, 'utf8').then(xmlBody => {
-      cy.intercept('GET', '/my_health/v2/medical_records/ccd/download.xml', {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/xml' },
+      this.interceptCcdV2Flow({
+        format: 'xml',
+        contentType: 'application/xml',
         body: xmlBody,
-      }).as('downloadCcdV2Xml');
+      });
 
       // Use shadow DOM to access the link inside the web component
       // Using { force: true } to bypass visibility checks - web component links can have 0x0 dimensions during hydration
@@ -133,17 +204,21 @@ class DownloadReportsPage {
         .find('a')
         .click({ force: true });
 
-      cy.wait('@downloadCcdV2Xml', { timeout: 15000 });
+      cy.wait('@generateCcdV2', { timeout: 15000 });
+      // Wait for both polling calls: NOT_READY (jobId), then READY (taskId)
+      cy.wait('@statusCcdV2NotReady', { timeout: 15000 });
+      cy.wait('@statusCcdV2Ready', { timeout: 15000 });
+      cy.wait('@downloadCcdV2', { timeout: 15000 });
     });
   };
 
   clickCcdDownloadHtmlButtonV2 = pathToFixture => {
     cy.fixture(pathToFixture, 'utf8').then(htmlBody => {
-      cy.intercept('GET', '/my_health/v2/medical_records/ccd/download.html', {
-        statusCode: 200,
-        headers: { 'Content-Type': 'text/html' },
+      this.interceptCcdV2Flow({
+        format: 'html',
+        contentType: 'text/html',
         body: htmlBody,
-      }).as('downloadCcdV2Html');
+      });
 
       // Use shadow DOM to access the link inside the web component
       // Using { force: true } to bypass visibility checks - web component links can have 0x0 dimensions during hydration
@@ -152,18 +227,22 @@ class DownloadReportsPage {
         .find('a')
         .click({ force: true });
 
-      cy.wait('@downloadCcdV2Html', { timeout: 15000 });
+      cy.wait('@generateCcdV2', { timeout: 15000 });
+      // Wait for both polling calls: NOT_READY (jobId), then READY (taskId)
+      cy.wait('@statusCcdV2NotReady', { timeout: 15000 });
+      cy.wait('@statusCcdV2Ready', { timeout: 15000 });
+      cy.wait('@downloadCcdV2', { timeout: 15000 });
     });
   };
 
   clickCcdDownloadPdfButtonV2 = () => {
     const pdfMock = '%PDF-1.4\n%mock pdf content\n%%EOF';
 
-    cy.intercept('GET', '/my_health/v2/medical_records/ccd/download.pdf', {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/pdf' },
+    this.interceptCcdV2Flow({
+      format: 'pdf',
+      contentType: 'application/pdf',
       body: pdfMock,
-    }).as('downloadCcdV2Pdf');
+    });
 
     // Use shadow DOM to access the link inside the web component
     // Using { force: true } to bypass visibility checks - web component links can have 0x0 dimensions during hydration
@@ -172,7 +251,11 @@ class DownloadReportsPage {
       .find('a')
       .click({ force: true });
 
-    cy.wait('@downloadCcdV2Pdf', { timeout: 15000 });
+    cy.wait('@generateCcdV2', { timeout: 15000 });
+    // Wait for both polling calls: NOT_READY (jobId), then READY (taskId)
+    cy.wait('@statusCcdV2NotReady', { timeout: 15000 });
+    cy.wait('@statusCcdV2Ready', { timeout: 15000 });
+    cy.wait('@downloadCcdV2', { timeout: 15000 });
   };
 
   verifyDualAccordionVisible = () => {

@@ -39,45 +39,60 @@ const VistaAndOHContent = () => {
       />
       <CCDDescription showXmlFormatText={!ccdExtendedFileTypeFlag} />
       <div className="vads-u-margin-top--3 vads-u-margin-bottom--4">
-        {ccdExtendedFileTypeFlag ? (
+        {generatingCCD ? (
+          <div
+            id="generating-ccd-indicator"
+            data-testid="generating-ccd-indicator"
+          >
+            <TrackedSpinner
+              id="download-ccd-spinner"
+              label="Loading"
+              message="Preparing your download..."
+            />
+          </div>
+        ) : (
           <>
-            <p className="vads-u-font-weight--bold">
-              Download your CCD for these facilities:
-            </p>
-            {formatFacilityUnorderedList([
-              ...vistaFacilityNames,
-              ...ohFacilityNamesBeforeCutover,
-            ])}
-            <div className="vads-u-margin-bottom--4">
+            {ccdExtendedFileTypeFlag ? (
+              <>
+                <p className="vads-u-font-weight--bold">
+                  Download your CCD for these facilities:
+                </p>
+                {formatFacilityUnorderedList([
+                  ...vistaFacilityNames,
+                  ...ohFacilityNamesBeforeCutover,
+                ])}
+                <div className="vads-u-margin-bottom--4">
+                  <CCDDownloadSection
+                    isExtendedFileType={ccdExtendedFileTypeFlag}
+                    isLoading={false}
+                    handleDownload={handleDownloadCCD}
+                    testIdSuffix="VistA"
+                    ddSuffix="VistA"
+                  />
+                </div>
+
+                <p className="vads-u-font-weight--bold">
+                  Download your CCD for these facilities:
+                </p>
+                {formatFacilityUnorderedList(ohFacilityNamesAfterCutover)}
+                <CCDDownloadSection
+                  isExtendedFileType={ccdExtendedFileTypeFlag}
+                  isLoading={false}
+                  handleDownload={handleDownloadCCDV2}
+                  testIdSuffix="OH"
+                  ddSuffix="OH"
+                />
+              </>
+            ) : (
               <CCDDownloadSection
                 isExtendedFileType={ccdExtendedFileTypeFlag}
-                isLoading={generatingCCD}
+                isLoading={false}
                 handleDownload={handleDownloadCCD}
-                testIdSuffix="VistA"
-                ddSuffix="VistA"
+                testIdSuffix=""
+                ddSuffix=""
               />
-            </div>
-
-            <p className="vads-u-font-weight--bold">
-              Download your CCD for these facilities:
-            </p>
-            {formatFacilityUnorderedList(ohFacilityNamesAfterCutover)}
-            <CCDDownloadSection
-              isExtendedFileType={ccdExtendedFileTypeFlag}
-              isLoading={generatingCCD}
-              handleDownload={handleDownloadCCDV2}
-              testIdSuffix="OH"
-              ddSuffix="OH"
-            />
+            )}
           </>
-        ) : (
-          <CCDDownloadSection
-            isExtendedFileType={ccdExtendedFileTypeFlag}
-            isLoading={generatingCCD}
-            handleDownload={handleDownloadCCD}
-            testIdSuffix=""
-            ddSuffix=""
-          />
         )}
       </div>
       <h2>Download your self-entered health information</h2>
