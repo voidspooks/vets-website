@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { expect } from 'chai';
 import formConfig from '../../config/form';
 import IntroductionPage from '../../containers/IntroductionPage';
@@ -113,14 +113,14 @@ describe('IntroductionPage', () => {
       loggedIn: false,
       showLoadingIndicator: false,
     };
-    const { container, getByTestId } = render(
+    const { container } = render(
       <Provider store={mockStore}>
         <IntroductionPage {...loggedInProps} />
       </Provider>,
     );
-    const signInButton = container.querySelector('va-alert-sign-in va-button');
-    fireEvent.click(signInButton);
-    expect(getByTestId('sign-in-alert')).to.exist;
+    expect(
+      container.querySelector('va-alert-sign-in[variant="signInRequired"]'),
+    ).to.exist;
   });
 
   it('should not render sign-in alert when user is logged in', () => {
