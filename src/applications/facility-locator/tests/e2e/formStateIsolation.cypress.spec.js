@@ -152,6 +152,7 @@ describe('Form State Isolation - Draft State Pattern', () => {
 
     cy.wait('@searchFacilitiesVA');
     cy.get('.facility-result', { timeout: 10000 }).should('exist');
+    cy.axeCheck();
 
     // Click submit again to allow any initial re-request to settle
     cy.get('#facility-search').click();
@@ -160,7 +161,9 @@ describe('Form State Isolation - Draft State Pattern', () => {
 
     cy.get('@searchFacilitiesVA.all').then(calls => {
       const initialCount = calls.length;
+      // Click submit again with same unchanged values
       cy.get('#facility-search').click();
+      // Verify form and results are stable (implicit wait via assertions)
       cy.get('#street-city-state-zip').should('have.value', 'Austin TX');
       cy.get('#facility-type-dropdown')
         .shadow()

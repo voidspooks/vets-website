@@ -294,6 +294,9 @@ export default function useServiceType() {
 
       return [];
     },
+    // filterServicesByFacilityType, populateInitialServiceList, and filterMatches
+    // are plain functions redefined each render; only selector.data drives output
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selector],
   );
 

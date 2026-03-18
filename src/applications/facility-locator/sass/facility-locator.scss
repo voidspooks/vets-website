@@ -23,11 +23,6 @@ $text-color: rgba(27, 27, 27, 1);
     color: var(--vads-color-base-darker);
   }
 
-  .service-hint-text {
-    color: var(--vads-color-base-darker);
-    margin: 0.25rem 0 0.5rem 0;
-  }
-
   .p1 {
     padding: 0.5em 0;
   }
@@ -47,7 +42,7 @@ $text-color: rgba(27, 27, 27, 1);
   }
 
   #skip-map-link {
-    position: absolute!important ;
+    position: absolute !important ;
     right: -9999px;
     top: auto;
     width: 1px;
@@ -56,8 +51,8 @@ $text-color: rgba(27, 27, 27, 1);
     border-radius: 0.25rem;
 
     &:focus {
-      right: .5rem;
-      top: .5rem;
+      right: 0.5rem;
+      top: 0.5rem;
       width: auto;
       height: auto;
       padding: 0.5em 1em;
@@ -152,7 +147,7 @@ $text-color: rgba(27, 27, 27, 1);
   }
 
   @media screen and (max-width: $small-screen) {
-    .facility-result+.facility-result {
+    .facility-result + .facility-result {
       border-top: solid 1px var(--vads-color-base-light);
     }
   }
@@ -208,7 +203,7 @@ $text-color: rgba(27, 27, 27, 1);
     padding: 0;
   }
 
-  .react-tabs__tab+.react-tabs__tab {
+  .react-tabs__tab + .react-tabs__tab {
     border-left: none;
   }
 
@@ -369,13 +364,12 @@ $text-color: rgba(27, 27, 27, 1);
       width: 100%;
     }
 
-    .service-type-dropdown-mobile>select,
-    .service-type-dropdown-tablet>select,
-    .service-type-dropdown-desktop>select {
+    .service-type-dropdown-mobile > select,
+    .service-type-dropdown-tablet > select,
+    .service-type-dropdown-desktop > select {
       font-size: 1rem;
       height: auto;
     }
-
 
     .usa-input-error {
       right: 0;
@@ -510,6 +504,11 @@ $text-color: rgba(27, 27, 27, 1);
         column-gap: 12px;
         align-items: flex-end;
       }
+    }
+
+    p.service-hint-text {
+      color: $vads-label-hint-text-color-on-light;
+      margin: 0.5em 0;
     }
   }
 

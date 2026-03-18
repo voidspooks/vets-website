@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { isEmpty, compact } from 'lodash';
-import moment from 'moment';
+import { format, isValid, parseISO } from 'date-fns';
 
 import StatsBar from './StatsBar';
 
@@ -49,18 +50,19 @@ export default function AccessToCare({ location }) {
     );
   };
 
+  const parsedDate = parseISO(
+    effectiveDate || healthFeedbackAttrs.effectiveDate,
+  );
+
   return (
     <div className="vads-u-margin-bottom--4">
       <h3 className="highlight">Veteran-reported Satisfaction Scores</h3>
       <div className="vads-u-margin-bottom--4">
-        <p>
-          Current as of{' '}
-          <strong>
-            {moment(effectiveDate || healthFeedbackAttrs.effectiveDate).format(
-              'LL',
-            )}
-          </strong>
-        </p>
+        {isValid(parsedDate) && (
+          <p>
+            Current as of <strong>{format(parsedDate, 'MMMM d, yyyy')}</strong>
+          </p>
+        )}
         <p>
           Veteran-reported satisfaction scores come from the Consumer Assessment
           of Health and Systems survey, which measures satisfaction of nearly
@@ -105,3 +107,21 @@ export default function AccessToCare({ location }) {
     </div>
   );
 }
+
+AccessToCare.propTypes = {
+  location: PropTypes.shape({
+    attributes: PropTypes.shape({
+      facilityType: PropTypes.string,
+      feedback: PropTypes.shape({
+        effectiveDate: PropTypes.string,
+        health: PropTypes.shape({
+          effectiveDate: PropTypes.string,
+          primaryCareRoutine: PropTypes.number,
+          primaryCareUrgent: PropTypes.number,
+          specialtyCareRoutine: PropTypes.number,
+          specialtyCareUrgent: PropTypes.number,
+        }),
+      }),
+    }),
+  }),
+};

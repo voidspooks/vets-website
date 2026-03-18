@@ -28,7 +28,7 @@ describe('URL Parameter Handling', () => {
     ).as('searchFacilitiesCCP');
   });
 
-  describe('Complete URL Parameters (should populate form)', () => {
+  describe('Complete URL Parameters (should auto-search)', () => {
     it('should populate all form fields and trigger search with complete valid parameters', () => {
       cy.visit(
         '/find-locations?address=Austin%20TX&facilityType=health&serviceType=PrimaryCare',
@@ -231,6 +231,8 @@ describe('URL Parameter Handling', () => {
         .shadow()
         .find('select')
         .should('have.value', 'health');
+
+      cy.axeCheck();
     });
 
     it('should handle browser refresh with URL parameters', () => {
