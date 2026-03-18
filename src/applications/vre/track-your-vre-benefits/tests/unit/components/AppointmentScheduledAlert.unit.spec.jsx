@@ -18,7 +18,7 @@ describe('AppointmentScheduledAlert', () => {
     const headline = container.querySelector('h2[slot="headline"]');
     expect(alert).to.exist;
     expect(headline).to.exist;
-    expect(headline.textContent).to.equal('You have an appointment scheduled');
+    expect(headline.textContent).to.equal('Appointment scheduled');
     expect(alert.getAttribute('status')).to.equal('info');
     expect(alert.hasAttribute('visible')).to.be.true;
 
@@ -47,7 +47,7 @@ describe('AppointmentScheduledAlert', () => {
     const headline = container.querySelector('h2[slot="headline"]');
     expect(alert).to.exist;
     expect(headline).to.exist;
-    expect(headline.textContent).to.equal('You have an appointment scheduled');
+    expect(headline.textContent).to.equal('Appointment scheduled');
     expect(alert.getAttribute('status')).to.equal('info');
     expect(alert.hasAttribute('visible')).to.be.true;
 

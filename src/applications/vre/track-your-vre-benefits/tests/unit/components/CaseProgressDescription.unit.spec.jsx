@@ -128,7 +128,7 @@ describe('CaseProgressDescription', () => {
       },
       {
         step: 7,
-        text: /Rehabilitation Plan or Career Track has started/i,
+        text: /Your Chapter 31 benefits have been initiated/i,
       },
     ];
 

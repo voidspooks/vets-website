@@ -47,14 +47,14 @@ const CaseProgressDescription = ({
       return (
         <>
           <p>
-            VR&E has received and processed your application for Chapter 31
-            benefits. Your next step is to complete the orientation video online
-            or during your initial evaluation counselor meeting.
+            VR&E is processing your Chapter 31 application. Your next step is to
+            complete the orientation video online or during your initial
+            evaluation counselor meeting.
           </p>
           <p>
-            After you make your selection and a counselor is assigned to your
-            case, we will send the initial evaluation scheduling link to you by
-            email or text message.
+            After you make your selection we’ll send you a scheduling link via
+            email or text. In the meantime, we’re assigning a counselor to your
+            case.
           </p>
           <SelectPreferenceView />
           <va-card background class="vads-u-margin-top--2">
@@ -104,8 +104,8 @@ const CaseProgressDescription = ({
             We’ve received and processed your application for Chapter 31
             benefits. Check your email to schedule your meeting with your
             counselor. After scheduling, you’ll get a confirmation email and an
-            appointment notification letter. To get ready for your Initial
-            Evaluation Counselor Meeting, visit the "Career Planning" page
+            appointment notification letter. To get ready for your initial
+            evaluation counselor meeting, visit the "Career planning" page
             linked below.
           </p>
         );
@@ -114,7 +114,7 @@ const CaseProgressDescription = ({
       return (
         <>
           <p>
-            Your Initial Evaluation Appointment has been scheduled. If you need
+            Your initial evaluation appointment has been scheduled. If you need
             to reschedule, use your appointment confirmation rescheduling link
             sent to you via email and text. If you need further assistance,
             contact your counselor.
@@ -131,8 +131,8 @@ const CaseProgressDescription = ({
       return (
         <>
           <p>
-            Your counselor is completing the Entitlement Determination Review.
-            Visit the "Career Planning" page for more information about career
+            Your counselor is completing the entitlement determination review.
+            Visit the “Career planning” page for more information about career
             paths, support, and rehabilitation resources.
           </p>
           {hubCards}
@@ -145,7 +145,7 @@ const CaseProgressDescription = ({
         <>
           <p>
             Your counselor is working with you to establish your Chapter 31
-            Rehabilitation Plan or Career Track.
+            rehabilitation plan or career track.
           </p>
           {hubCards}
         </>
@@ -155,9 +155,7 @@ const CaseProgressDescription = ({
     case 7: {
       return (
         <>
-          <p>
-            Your Chapter 31 Rehabilitation Plan or Career Track has started.
-          </p>
+          <p>Your Chapter 31 benefits have been initiated.</p>
           {hubCards}
         </>
       );

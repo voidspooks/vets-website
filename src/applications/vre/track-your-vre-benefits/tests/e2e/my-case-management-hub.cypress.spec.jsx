@@ -162,7 +162,7 @@ describe('CH31 My Case Management Hub', () => {
     {
       step: 7,
       label: 'benefits initiated',
-      copy: /rehabilitation plan or career track has started/i,
+      copy: /Your Chapter 31 benefits have been initiated/i,
     },
   ];
 
