@@ -5,11 +5,14 @@ import {
   VaSelect,
   VaTextInput,
 } from '@department-of-veterans-affairs/web-components/react-bindings';
-import { standardFileChecks } from 'platform/forms-system/src/js/utilities/file';
 import { debounce } from 'lodash';
-
-// Debounce wait time for text inputs
-const DEBOUNCE_WAIT = 1000;
+import {
+  DEBOUNCE_WAIT,
+  shouldSimulateError,
+  simulateUploadProgress,
+  createUploadResponse,
+  checkIfEncrypted,
+} from './VaFileInputUtilities';
 
 export default function VaFileInputMultiplePage() {
   const componentRef = useRef(null);
@@ -35,55 +38,7 @@ export default function VaFileInputMultiplePage() {
       return newFileErrors;
     });
 
-    // Simulate various error scenarios based on filename
-    const shouldSimulateError = () => {
-      const fileName = file.name.toLowerCase();
-
-      // Network/connection errors
-      if (fileName.includes('error')) {
-        return {
-          type: 'network',
-          message: 'Network error occurred during upload. Please try again.',
-        };
-      }
-
-      // Server errors
-      if (fileName.includes('server')) {
-        return {
-          type: 'server',
-          message: 'Server error: Unable to process file at this time.',
-        };
-      }
-
-      // Rate limiting
-      if (fileName.includes('limit')) {
-        return {
-          type: 'rate_limit',
-          message: 'Rate limit exceeded. Please wait before uploading again.',
-        };
-      }
-
-      // File size validation (simulated - can be handled by component if needed)
-      if (file.size > 1024 * 1024) {
-        // 1MB limit for demo
-        return {
-          type: 'file_size',
-          message: 'File size exceeds 1MB limit.',
-        };
-      }
-
-      // Simulate invalid password for encrypted files
-      if (password && password.length < 8) {
-        return {
-          type: 'password',
-          message: 'Password must be at least 8 characters long.',
-        };
-      }
-
-      return null;
-    };
-
-    const errorScenario = shouldSimulateError();
+    const errorScenario = shouldSimulateError(file, password);
 
     if (errorScenario) {
       // Brief delay to simulate network attempt
@@ -121,31 +76,7 @@ export default function VaFileInputMultiplePage() {
       return newPercents;
     });
 
-    // Simulate progress updates using recursive setTimeout
-    const updateProgress = () => {
-      return new Promise(resolve => {
-        let currentProgress = 0;
-
-        const incrementProgress = () => {
-          setPercentsUploaded(prev => {
-            const newPercents = [...prev];
-            newPercents[index] = currentProgress;
-            return newPercents;
-          });
-
-          currentProgress += 20;
-
-          if (currentProgress <= 100) {
-            setTimeout(incrementProgress, 100);
-          } else {
-            resolve(); // Resolve promise when progress is complete
-          }
-        };
-
-        incrementProgress();
-      });
-    };
-    await updateProgress();
+    await simulateUploadProgress(setPercentsUploaded, index);
 
     // Clear progress after completion so component shows uploaded file
     setPercentsUploaded(prev => {
@@ -156,18 +87,7 @@ export default function VaFileInputMultiplePage() {
 
     // Simulate successful upload
     // eslint-disable-next-line consistent-return
-    return {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      status: 'uploaded',
-      encrypted: false,
-      confirmationCode: `CONF-${Date.now()}-${Math.random()
-        .toString(36)
-        .substring(2, 8)}`,
-      uploadDate: new Date().toISOString(),
-      _originalFile: file,
-    };
+    return createUploadResponse(file);
   };
 
   // Handle file processing
@@ -181,8 +101,7 @@ export default function VaFileInputMultiplePage() {
 
     try {
       // Check if file is encrypted using platform utility
-      const fileChecks = await standardFileChecks(file);
-      const isEncrypted = fileChecks.checkIsEncryptedPdf;
+      const isEncrypted = await checkIfEncrypted(file);
 
       // Update encrypted state
       setEncrypted(prev => {
