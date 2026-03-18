@@ -132,11 +132,13 @@ describe('Representative Search', () => {
 
     cy.get('#street-city-state-zip')
       .find('input[type="text"]')
+      .not('[disabled]')
       .type('Austin, TX');
 
     cy.get('.organization-select')
       .find('input[type="text"]')
-      .type('American Legion{enter}');
+      .not('[disabled]')
+      .type('American Legion{enter}', { force: true });
 
     cy.intercept(
       'GET',
@@ -156,7 +158,7 @@ describe('Representative Search', () => {
     cy.get('.organization-select')
       .find('input[type="text"]')
       .not('[disabled]')
-      .type('{selectAll}{del}{enter}');
+      .type('{selectAll}{del}{enter}', { force: true });
 
     cy.get('va-button[text="Search"]').click({ waitForAnimations: true });
 
@@ -177,6 +179,7 @@ describe('Representative Search', () => {
 
     cy.get('#street-city-state-zip')
       .find('input[type="text"]')
+      .not('[disabled]')
       .type('Austin, TX');
 
     cy.get('.organization-select').should('not.exist');

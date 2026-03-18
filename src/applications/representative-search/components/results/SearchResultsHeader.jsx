@@ -12,6 +12,7 @@ export const SearchResultsHeader = props => {
   const { inProgress } = query;
   const {
     context,
+    organization,
     representativeType,
     sortType,
     searchArea,
@@ -84,6 +85,12 @@ export const SearchResultsHeader = props => {
           {handleNumberOfResults()} for
           {` `}
           <b>{repFormat[representativeType]}</b>
+          {representativeType === 'veteran_service_officer' &&
+            organization && (
+              <>
+                , <b>{organization}</b>
+              </>
+            )}
           {context.repOrgName && (
             <>
               {` `}

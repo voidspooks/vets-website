@@ -432,4 +432,109 @@ describe('SearchResultsHeader', () => {
 
     wrapper.unmount();
   });
+
+  it('should render organization name if vso is selected and organization value exists', () => {
+    const query = {
+      representativeType: 'veteran_service_officer',
+      organization: 'American Legion',
+      inProgress: false,
+      context: { location: 'new york' },
+      searchArea: '50',
+      sortType: 'distance_asc',
+    };
+
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <SearchResultsHeader
+          searchResults={testDataResponse.data}
+          query={{
+            ...query,
+            committedSearchQuery: query,
+          }}
+          pagination={{ totalEntries: 5 }}
+        />
+      </Provider>,
+    );
+    const expectedString =
+      'Showing 5 results for Accredited VSO Representative, American Legion within 50 miles of new york sorted by Distance (closest to farthest)';
+    const actualString = wrapper.find('#search-results-subheader').text();
+
+    // Remove whitespaces and special characters
+    const cleanExpected = expectedString.replace(/\s+/g, '');
+    const cleanActual = actualString.replace(/\s+/g, '');
+
+    expect(cleanActual).to.equal(cleanExpected);
+
+    wrapper.unmount();
+  });
+
+  it('should not render organization name if vso is selected and organization value is empty', () => {
+    const query = {
+      representativeType: 'veteran_service_officer',
+      organization: '',
+      inProgress: false,
+      context: { location: 'new york' },
+      searchArea: '50',
+      sortType: 'distance_asc',
+    };
+
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <SearchResultsHeader
+          searchResults={testDataResponse.data}
+          query={{
+            ...query,
+            committedSearchQuery: query,
+          }}
+          pagination={{ totalEntries: 5 }}
+        />
+      </Provider>,
+    );
+    const expectedString =
+      'Showing 5 results for Accredited VSO Representative within 50 miles of new york sorted by Distance (closest to farthest)';
+    const actualString = wrapper.find('#search-results-subheader').text();
+
+    // Remove whitespaces and special characters
+    const cleanExpected = expectedString.replace(/\s+/g, '');
+    const cleanActual = actualString.replace(/\s+/g, '');
+
+    expect(cleanActual).to.equal(cleanExpected);
+
+    wrapper.unmount();
+  });
+
+  it('should not render organization name if vso is not selected and organization value exists', () => {
+    const query = {
+      representativeType: 'attorney',
+      organization: 'American Legion',
+      inProgress: false,
+      context: { location: 'new york' },
+      searchArea: '50',
+      sortType: 'distance_asc',
+    };
+
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <SearchResultsHeader
+          searchResults={testDataResponse.data}
+          query={{
+            ...query,
+            committedSearchQuery: query,
+          }}
+          pagination={{ totalEntries: 5 }}
+        />
+      </Provider>,
+    );
+    const expectedString =
+      'Showing 5 results for Accredited attorney within 50 miles of new york sorted by Distance (closest to farthest)';
+    const actualString = wrapper.find('#search-results-subheader').text();
+
+    // Remove whitespaces and special characters
+    const cleanExpected = expectedString.replace(/\s+/g, '');
+    const cleanActual = actualString.replace(/\s+/g, '');
+
+    expect(cleanActual).to.equal(cleanExpected);
+
+    wrapper.unmount();
+  });
 });
