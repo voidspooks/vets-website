@@ -1,4 +1,5 @@
 import PageObject from './PageObject';
+import { URLS } from '../../../utils/constants';
 
 export class VerifyPageObject extends PageObject {
   /**
@@ -8,6 +9,9 @@ export class VerifyPageObject extends PageObject {
    * @returns {VerifyPageObject}
    */
   assertVerifyPage({ cancellationFlow = false } = {}) {
+    // Assert the URL is correct
+    this.assertUrl(URLS.VERIFY);
+
     // Assert correct heading based on flow
     const headingText = cancellationFlow
       ? 'Cancel VA Solid Start appointment'

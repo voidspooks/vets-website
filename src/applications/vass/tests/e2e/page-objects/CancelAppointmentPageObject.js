@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { VASS_PHONE_NUMBER } from '../../../utils/constants';
+import { VASS_PHONE_NUMBER, URLS } from '../../../utils/constants';
 
 export class CancelAppointmentPageObject extends PageObject {
   /**
@@ -9,6 +9,9 @@ export class CancelAppointmentPageObject extends PageObject {
    * @returns {CancelAppointmentPageObject}
    */
   assertCancelAppointmentPage({ agentName = 'Agent Smith' } = {}) {
+    // Assert the URL is correct
+    this.assertUrl(URLS.CANCEL_APPOINTMENT);
+
     // Page heading
     this.assertHeading({
       name: 'Would you like to cancel this appointment?',

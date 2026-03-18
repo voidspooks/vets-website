@@ -196,4 +196,18 @@ export default class PageObject {
 
     return this;
   }
+
+  /**
+   * Assert the current URL matches the expected URL
+   * @param {string|RegExp} pathSegmentOrRegex - The path segment or regex to assert
+   * @returns {PageObject}
+   */
+  assertUrl(pathSegmentOrRegex) {
+    if (pathSegmentOrRegex instanceof RegExp) {
+      cy.url().and('match', pathSegmentOrRegex);
+    } else {
+      cy.url().should('include', `${this.rootUrl}${pathSegmentOrRegex}`);
+    }
+    return this;
+  }
 }

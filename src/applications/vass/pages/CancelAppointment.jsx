@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import { VaButtonPair } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useNavigate, useParams } from 'react-router-dom-v5-compat';
 import Wrapper from '../layout/Wrapper';
@@ -9,7 +8,6 @@ import {
   useCancelAppointmentMutation,
 } from '../redux/api/vassApi';
 import { FLOW_TYPES, URLS } from '../utils/constants';
-import { setFlowType } from '../redux/slices/formSlice';
 import {
   isCancellationFailedError,
   isMissingParameterError,
@@ -27,7 +25,6 @@ const getLoadingMessage = isCanceling => {
 const CancelAppointment = () => {
   const { appointmentId } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const {
     data: appointmentData,
     isLoading,
@@ -55,12 +52,11 @@ const CancelAppointment = () => {
 
   const onAbortCancelAppointment = useCallback(
     () => {
-      dispatch(setFlowType(FLOW_TYPES.SCHEDULE));
       navigate(
         `${URLS.CONFIRMATION}/${appointmentData?.appointmentId}?details=true`,
       );
     },
-    [appointmentData?.appointmentId, dispatch, navigate],
+    [appointmentData?.appointmentId, navigate],
   );
 
   const loadingMessage = getLoadingMessage(isCanceling);

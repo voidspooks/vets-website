@@ -4,6 +4,7 @@ import DateTimeSelectionPageObject from './page-objects/DateTimeSelectionPageObj
 import TopicSelectionPageObject from './page-objects/TopicSelectionPageObject';
 import ReviewPageObject from './page-objects/ReviewPageObject';
 import CancelAppointmentPageObject from './page-objects/CancelAppointmentPageObject';
+import CancelConfirmationPageObject from './page-objects/CancelConfirmationPageObject';
 import ConfirmationPageObject from './page-objects/ConfirmationPageObject';
 import AlreadyScheduledPageObject from './page-objects/AlreadyScheduledPageObject';
 import {
@@ -25,7 +26,7 @@ import MockCreateAppointmentResponse from '../fixtures/MockCreateAppointmentResp
 import MockAppointmentDetailsResponse from '../fixtures/MockAppointmentDetailsResponse';
 import MockCancelAppointmentResponse from '../fixtures/MockCancelAppointmentResponse';
 import { createMockJwt } from '../../utils/mock-helpers';
-import { FLOW_TYPES } from '../../utils/constants';
+import { FLOW_TYPES, URLS } from '../../utils/constants';
 
 const uuid = 'c0ffee-1234-beef-5678';
 const expiresIn = 3600;
@@ -1153,6 +1154,285 @@ describe('VASS Error Paths', () => {
         });
         cy.injectAxeThenAxeCheck();
         saveScreenshot('vass_error_navigation_noCancelAppointment');
+      });
+    });
+
+    describe('when the user attempts to schedule then lands on already scheduled, cancels, decides not to cancel, then cancels again', () => {
+      const appointmentId = 'abcdef123456';
+      beforeEach(() => {
+        mockRequestOtpApi();
+        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
+          token: createMockJwt(uuid, expiresIn),
+          expiresIn,
+        }).toJSON();
+        mockAuthenticateOtpApi({
+          response: authenticateOtpResponse,
+          responseCode: 200,
+        });
+        mockAppointmentAvailabilityApi({
+          response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
+            { appointmentId },
+          ),
+          responseCode: 409,
+        });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+
+        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        VerifyPageObject.fillAndSubmitForm();
+        cy.wait('@vass:post:request-otp');
+      });
+
+      it('should show correct page at each step without flow guard errors', () => {
+        // Schedule flow -> already booked -> AlreadyScheduled
+        EnterOTPPageObject.fillAndSubmitOTP();
+        cy.wait('@vass:get:appointment-availability');
+        cy.wait('@vass:get:appointment-details');
+        AlreadyScheduledPageObject.assertAlreadyScheduledPage();
+
+        // Click cancel -> CancelAppointment (cancel flow)
+        AlreadyScheduledPageObject.clickCancelAppointment();
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
+
+        // No don't cancel -> Confirmation (details-only, schedule flow)
+        CancelAppointmentPageObject.clickNoDontCancel();
+        ConfirmationPageObject.assertDetailsOnlyPage({
+          agentName: 'Agent Smith',
+        });
+
+        // Cancel again -> CancelAppointment (cancel flow)
+        ConfirmationPageObject.clickCancelAppointment();
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
+        cy.injectAxeThenAxeCheck();
+        saveScreenshot(
+          'vass_error_navigation_scheduleAlreadyScheduledCancelNoCancelCancelAgain',
+        );
+      });
+    });
+
+    describe('when the user attempts to cancel from URL, decides not to cancel, then cancels again and completes cancellation', () => {
+      const appointmentId = 'abcdef123456';
+      beforeEach(() => {
+        mockRequestOtpApi();
+        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
+          token: createMockJwt(uuid, expiresIn),
+          expiresIn,
+        }).toJSON();
+        mockAuthenticateOtpApi({
+          response: authenticateOtpResponse,
+          responseCode: 200,
+        });
+        mockAppointmentAvailabilityApi({
+          response: new MockAppointmentAvailabilityResponse({
+            appointmentId,
+            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
+          }).toJSON(),
+          responseCode: 200,
+        });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+        mockCancelAppointmentApi({
+          response: new MockCancelAppointmentResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+
+        cy.visit(
+          `/service-member/benefits/solid-start/schedule?uuid=${uuid}&cancel=true`,
+        );
+        VerifyPageObject.fillAndSubmitForm();
+        cy.wait('@vass:post:request-otp');
+      });
+
+      it('should complete full flow without flow guard errors', () => {
+        EnterOTPPageObject.fillAndSubmitOTP();
+        cy.wait('@vass:post:authenticate-otp');
+        cy.wait('@vass:get:appointment-availability');
+        cy.wait('@vass:get:appointment-details');
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
+
+        CancelAppointmentPageObject.clickNoDontCancel();
+        ConfirmationPageObject.assertDetailsOnlyPage({
+          agentName: 'Agent Smith',
+        });
+
+        ConfirmationPageObject.clickCancelAppointment();
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
+
+        CancelAppointmentPageObject.clickYesCancelAppointment();
+        cy.wait('@vass:post:cancel-appointment');
+        CancelConfirmationPageObject.assertCancelConfirmationPage({
+          agentName: 'Agent Smith',
+        });
+        cy.injectAxeThenAxeCheck();
+      });
+    });
+
+    describe('when the user in schedule flow navigates directly to a cancel-only URL', () => {
+      const appointmentId = 'abcdef123456';
+      const rootUrl = '/service-member/benefits/solid-start/schedule';
+      beforeEach(() => {
+        mockRequestOtpApi();
+        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
+          token: createMockJwt(uuid, expiresIn),
+          expiresIn,
+        }).toJSON();
+        mockAuthenticateOtpApi({
+          response: authenticateOtpResponse,
+          responseCode: 200,
+        });
+        mockAppointmentAvailabilityApi({
+          response: new MockAppointmentAvailabilityResponse({
+            appointmentId,
+            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
+          }).toJSON(),
+          responseCode: 200,
+        });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+
+        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        VerifyPageObject.fillAndSubmitForm();
+        cy.wait('@vass:post:request-otp');
+      });
+
+      it('should redirect to Verify with uuid and no cancel param (withFlowGuard)', () => {
+        // Get to AlreadyScheduled (schedule flow) so we have token + appointmentId
+        EnterOTPPageObject.fillAndSubmitOTP();
+        cy.wait('@vass:get:appointment-availability');
+
+        // Direct visit to cancel-only URL while in schedule flow
+        cy.visit(`${rootUrl}${URLS.CANCEL_APPOINTMENT}/${appointmentId}`);
+
+        // withFlowGuard should redirect to Verify with uuid, without cancel=true
+        cy.url().should('include', rootUrl);
+        cy.url().should('include', `uuid=${uuid}`);
+        cy.url().should('not.include', 'cancel=true');
+        VerifyPageObject.assertVerifyPage({ cancellationFlow: false });
+        cy.injectAxeThenAxeCheck();
+        saveScreenshot('vass_error_navigation_scheduleFlowHitsCancelUrl');
+      });
+    });
+
+    describe('when the user in cancel flow navigates directly to a schedule-only URL', () => {
+      const appointmentId = 'abcdef123456';
+      const rootUrl = '/service-member/benefits/solid-start/schedule';
+      beforeEach(() => {
+        mockRequestOtpApi();
+        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
+          token: createMockJwt(uuid, expiresIn),
+          expiresIn,
+        }).toJSON();
+        mockAuthenticateOtpApi({
+          response: authenticateOtpResponse,
+          responseCode: 200,
+        });
+        mockAppointmentAvailabilityApi({
+          response: new MockAppointmentAvailabilityResponse({
+            appointmentId,
+            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
+          }).toJSON(),
+          responseCode: 200,
+        });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+
+        cy.visit(`${rootUrl}?uuid=${uuid}&cancel=true`);
+        VerifyPageObject.fillAndSubmitForm();
+        cy.wait('@vass:post:request-otp');
+      });
+
+      it('should redirect to Verify with uuid and cancel=true (withFlowGuard)', () => {
+        EnterOTPPageObject.fillAndSubmitOTP();
+        cy.wait('@vass:post:authenticate-otp');
+        cy.wait('@vass:get:appointment-availability');
+        cy.wait('@vass:get:appointment-details');
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
+
+        // Direct visit to schedule-only URL while in cancel flow
+        cy.visit(`${rootUrl}${URLS.DATE_TIME}`);
+
+        // withFlowGuard should redirect to Verify with uuid and cancel=true
+        cy.url().should('include', rootUrl);
+        cy.url().should('include', `uuid=${uuid}`);
+        cy.url().should('include', 'cancel=true');
+        VerifyPageObject.assertVerifyPage({ cancellationFlow: true });
+        cy.injectAxeThenAxeCheck();
+        saveScreenshot('vass_error_navigation_cancelFlowHitsScheduleUrl');
+      });
+    });
+
+    describe('when the user lands on already scheduled then cancels successfully', () => {
+      const appointmentId = 'abcdef123456';
+      beforeEach(() => {
+        mockRequestOtpApi();
+        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
+          token: createMockJwt(uuid, expiresIn),
+          expiresIn,
+        }).toJSON();
+        mockAuthenticateOtpApi({
+          response: authenticateOtpResponse,
+          responseCode: 200,
+        });
+        mockAppointmentAvailabilityApi({
+          response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
+            { appointmentId },
+          ),
+          responseCode: 409,
+        });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+        mockCancelAppointmentApi({
+          response: new MockCancelAppointmentResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
+
+        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        VerifyPageObject.fillAndSubmitForm();
+        cy.wait('@vass:post:request-otp');
+      });
+
+      it('should show cancel confirmation after cancelling from already scheduled page', () => {
+        EnterOTPPageObject.fillAndSubmitOTP();
+        cy.wait('@vass:get:appointment-availability');
+        cy.wait('@vass:get:appointment-details');
+        AlreadyScheduledPageObject.assertAlreadyScheduledPage();
+
+        AlreadyScheduledPageObject.clickCancelAppointment();
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
+
+        CancelAppointmentPageObject.clickYesCancelAppointment();
+        cy.wait('@vass:post:cancel-appointment');
+        CancelConfirmationPageObject.assertCancelConfirmationPage({
+          agentName: 'Agent Smith',
+        });
+        cy.injectAxeThenAxeCheck();
+        saveScreenshot(
+          'vass_error_navigation_alreadyScheduledThenCancelSuccess',
+        );
       });
     });
   });

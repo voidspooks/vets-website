@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { VASS_PHONE_NUMBER } from '../../../utils/constants';
+import { VASS_PHONE_NUMBER, URLS } from '../../../utils/constants';
 
 export class EnterOTPPageObject extends PageObject {
   /**
@@ -7,6 +7,9 @@ export class EnterOTPPageObject extends PageObject {
    * @returns {EnterOTPPageObject}
    */
   assertEnterOTPPage({ cancellationFlow = false } = {}) {
+    // Assert the URL is correct
+    this.assertUrl(URLS.ENTER_OTP);
+
     const headingText = cancellationFlow
       ? 'Cancel VA Solid Start appointment'
       : 'Schedule an appointment with VA Solid Start';

@@ -1,4 +1,5 @@
 import PageObject from './PageObject';
+import { URLS } from '../../../utils/constants';
 
 export class TopicSelectionPageObject extends PageObject {
   /**
@@ -7,6 +8,9 @@ export class TopicSelectionPageObject extends PageObject {
    * @returns {TopicSelectionPageObject}
    */
   assertTopicSelectionPage(numberOfTopics = 17) {
+    // Assert the URL is correct
+    this.assertUrl(URLS.TOPIC_SELECTION);
+
     this.assertHeading({
       name: 'What do you want to learn more about?(*Required)',
       level: 1,

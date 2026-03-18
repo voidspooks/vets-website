@@ -101,7 +101,7 @@ export const routes = [
     permissions: {
       requiresAuthorization: AUTH_LEVELS.TOKEN,
     },
-    flowType: FLOW_TYPES.SCHEDULE,
+    flowType: FLOW_TYPES.ANY,
   },
   // Cancel Appointment Routes
   {

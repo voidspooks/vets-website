@@ -1,4 +1,5 @@
 import PageObject from './PageObject';
+import { URLS } from '../../../utils/constants';
 
 export class ReviewPageObject extends PageObject {
   /**
@@ -6,6 +7,9 @@ export class ReviewPageObject extends PageObject {
    * @returns {ReviewPageObject}
    */
   assertReviewPage() {
+    // Assert the URL is correct
+    this.assertUrl(URLS.REVIEW);
+
     this.assertHeading({
       name: 'Review your VA Solid Start appointment details',
       level: 1,

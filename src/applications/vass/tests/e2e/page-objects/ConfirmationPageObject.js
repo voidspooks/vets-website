@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { VASS_PHONE_NUMBER } from '../../../utils/constants';
+import { VASS_PHONE_NUMBER, URLS } from '../../../utils/constants';
 
 export class ConfirmationPageObject extends PageObject {
   /**
@@ -10,6 +10,9 @@ export class ConfirmationPageObject extends PageObject {
    * @returns {ConfirmationPageObject}
    */
   assertConfirmationPage({ agentName = 'Agent Smith', topics = [] } = {}) {
+    // Assert the URL is correct
+    this.assertUrl(URLS.CONFIRMATION);
+
     // Page heading
     this.assertHeading({
       name: 'Your VA Solid Start appointment is scheduled',
@@ -77,6 +80,9 @@ export class ConfirmationPageObject extends PageObject {
    * @returns {ConfirmationPageObject}
    */
   assertDetailsOnlyPage({ agentName = 'Agent Smith', topics = [] } = {}) {
+    // Assert the URL is correct
+    this.assertUrl(URLS.CONFIRMATION);
+
     // Page structure without confirmation message
     this.assertElement('confirmation-page');
     this.assertElement('confirmation-message', { exist: false });

@@ -1,4 +1,5 @@
 import PageObject from './PageObject';
+import { URLS } from '../../../utils/constants';
 
 export class DateTimeSelectionPageObject extends PageObject {
   /**
@@ -6,6 +7,9 @@ export class DateTimeSelectionPageObject extends PageObject {
    * @returns {DateTimeSelectionPageObject}
    */
   assertDateTimeSelectionPage() {
+    // Assert the URL is correct
+    this.assertUrl(URLS.DATE_TIME);
+
     this.assertHeading({
       name: 'When do you want to schedule your appointment?(*Required)',
       level: 1,

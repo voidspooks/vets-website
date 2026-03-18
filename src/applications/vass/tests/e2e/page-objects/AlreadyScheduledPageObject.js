@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { VASS_PHONE_NUMBER } from '../../../utils/constants';
+import { VASS_PHONE_NUMBER, URLS } from '../../../utils/constants';
 
 export class AlreadyScheduledPageObject extends PageObject {
   /**
@@ -7,6 +7,9 @@ export class AlreadyScheduledPageObject extends PageObject {
    * @returns {AlreadyScheduledPageObject}
    */
   assertAlreadyScheduledPage() {
+    // Assert the URL is correct
+    this.assertUrl(URLS.ALREADY_SCHEDULED);
+
     // Page heading
     this.assertHeading({
       name: 'You already scheduled your appointment with VA Solid Start',
