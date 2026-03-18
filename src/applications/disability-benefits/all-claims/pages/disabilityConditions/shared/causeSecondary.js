@@ -6,10 +6,12 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 
 import { conditionOptions } from '../../../content/conditionOptions';
+
 import {
   arrayOptions,
   createNewConditionName,
   isPlaceholderRated,
+  disallowWhitespaceOnly,
 } from './utils';
 
 const getOtherConditions = (fullData, currentIndex) => {
@@ -27,6 +29,7 @@ const getOtherConditions = (fullData, currentIndex) => {
 
   const combined = [...ratedDisabilities, ...otherNewConditions];
   const seen = new Set();
+
   return combined.filter(Boolean).filter(label => {
     const key = label;
     if (seen.has(key)) return false;
@@ -43,6 +46,7 @@ const causeSecondaryPage = {
       undefined,
       false,
     ),
+
     causedByDisability: selectUI({
       title:
         'Choose the service-connected disability that caused your new condition.',
@@ -54,16 +58,22 @@ const causeSecondaryPage = {
       updateSchema: (_formData, _schema, _uiSchema, index, _path, fullData) =>
         selectSchema(getOtherConditions(fullData, index)),
     }),
-    causedByDisabilityDescription: textareaUI({
-      title: 'Briefly describe how this disability led to your new condition. ',
-      updateUiSchema: (_formData, fullData, index) => ({
-        'ui:title': `Briefly describe how this disability or condition caused ${createNewConditionName(
-          fullData?.[arrayOptions.arrayPath]?.[index],
-        )}.`,
+
+    causedByDisabilityDescription: {
+      ...textareaUI({
+        title:
+          'Briefly describe how this disability led to your new condition.',
+        updateUiSchema: (_formData, fullData, index) => ({
+          'ui:title': `Briefly describe how this disability or condition caused ${createNewConditionName(
+            fullData?.[arrayOptions.arrayPath]?.[index],
+          )}.`,
+        }),
+        charcount: true,
       }),
-      charcount: true,
-    }),
+      'ui:validations': [disallowWhitespaceOnly],
+    },
   },
+
   schema: {
     type: 'object',
     properties: {

@@ -36,4 +36,33 @@ describe('claimType utils', () => {
       'view:claimingIncrease': true,
     });
   });
+
+  it('detects new condition without ratedDisability', () => {
+    const items = [{ condition: 'lung cancer' }];
+    expect(computeClaimTypeFromItems(items)).to.deep.equal({
+      'view:claimingNew': true,
+      'view:claimingIncrease': false,
+    });
+  });
+
+  it('detects new condition and ratedDisability', () => {
+    const items = [
+      { ratedDisability: 'Tinnitus' },
+      { condition: 'lung cancer' },
+    ];
+
+    expect(computeClaimTypeFromItems(items)).to.deep.equal({
+      'view:claimingNew': true,
+      'view:claimingIncrease': true,
+    });
+  });
+
+  it('does not treat an initialized array with an empty item as a new condition', () => {
+    const items = [{}];
+
+    expect(computeClaimTypeFromItems(items)).to.deep.equal({
+      'view:claimingNew': false,
+      'view:claimingIncrease': false,
+    });
+  });
 });

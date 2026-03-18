@@ -294,3 +294,11 @@ export const backfillCauseForIncreaseRows = formData => {
 };
 
 export const isPlaceholderRated = v => v === 'Rated Disability';
+
+export const disallowWhitespaceOnly = (errors, value) => {
+  if (value === undefined || value === null || value === '') return;
+
+  if (typeof value === 'string' && value.trim().length === 0) {
+    errors.addError('Please provide a response.');
+  }
+};
