@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { expect } from 'chai';
-import { veteranInformationPage } from '../../../pages/veteranInformation';
+import { veteranInformationPage } from '../../../pages/526ezVeteranInformation';
 
 describe('veteranInformationPage', () => {
   const subject = () => render(<veteranInformationPage />);

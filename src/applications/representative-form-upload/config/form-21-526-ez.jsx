@@ -4,7 +4,7 @@ import manifest from '../manifest.json';
 import ConfirmationPage from '../containers/ConfirmationPage';
 import IntroductionPage526 from '../containers/IntroductionPage526';
 import { uploadPage } from '../pages/upload';
-import { veteranInformationPage } from '../pages/veteranInformation';
+import { veteranInformationPage } from '../pages/526ezVeteranInformation';
 import { transformForSubmit } from './submit-transformer';
 import { getMockData, scrollAndFocusTarget, getFormContent } from '../helpers';
 import { CustomTopContent } from '../pages/helpers';

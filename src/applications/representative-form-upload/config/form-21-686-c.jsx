@@ -5,7 +5,7 @@ import ConfirmationPage from '../containers/ConfirmationPage';
 import IntroductionPage from '../containers/IntroductionPage';
 import { uploadPage } from '../pages/upload';
 import { claimantInformationPage } from '../pages/claimantInformation';
-import { veteranInformationPage } from '../pages/veteranInformation';
+import { veteranInformationPage } from '../pages/686cVeteranInformation';
 import { IsVeteranPage, isVeteranPage } from '../pages/isVeteranPage';
 import { transformForSubmit } from './submit-transformer';
 import { getMockData, scrollAndFocusTarget, getFormContent } from '../helpers';
