@@ -224,9 +224,16 @@ const buildAppointmentsFromClaims = (
  * @param {number} [daysOffset=-3] - Days in the past relative to today
  * @returns {Object} VAOS-formatted CC appointment
  */
-function buildCCAppointment(daysOffset = -1) {
-  const id = 'cc-appt-001';
-  const { start, end, localStartTime } = generateAppointmentDates(daysOffset);
+function buildCCAppointment(daysOffset = -1, id = 'cc-appt-001') {
+  // Use startHour=14 (2 PM base) so CC appointment times never collide with
+  // regular VA appointments (startHour=8). Regular appointments cover offsets
+  // -2 through -16 and produce times from ~0:30 AM to 8:00 AM; CC appointments
+  // at 2 PM base produce times from ~6:00 PM down to ~10:00 AM — no overlap.
+  // This ensures getAppointmentDataByDateTime always finds the correct appointment.
+  const { start, end, localStartTime } = generateAppointmentDates(
+    daysOffset,
+    14,
+  );
 
   return {
     id,
@@ -237,7 +244,7 @@ function buildCCAppointment(daysOffset = -1) {
       identifier: [
         {
           system: 'Appointment/',
-          value: 'cc-external-appt-001',
+          value: `cc-external-${id}`,
         },
       ],
       kind: 'cc',
@@ -266,15 +273,15 @@ function buildCCAppointment(daysOffset = -1) {
       modality: 'vaInPerson',
       isPastAppointment: true,
       preferredProviderName: 'Test Preferred Provider',
+      // The real API always returns a travelPayClaim object even when no claim exists.
+      // createClaimHandler will replace this with the linked claim after creation.
       travelPayClaim: {
         metadata: {
           status: 200,
           success: true,
           message: 'Data retrieved successfully.',
         },
-        claims: {
-          // No travelPayClaim — lets you test creating a new claim and uploading PoA from scratch
-        },
+        claim: null,
       },
     },
   };

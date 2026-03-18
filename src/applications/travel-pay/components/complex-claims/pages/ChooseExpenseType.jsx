@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom-v5-compat';
+import { useNavigate, useParams, Navigate } from 'react-router-dom-v5-compat';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   VaRadio,
   VaButtonPair,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import useSetPageTitle from '../../../hooks/useSetPageTitle';
 import useSetFocus from '../../../hooks/useSetFocus';
 import { EXPENSE_TYPES, EXPENSE_TYPE_KEYS } from '../../../constants';
 import {
+  selectAppointment,
   selectComplexClaim,
   selectExpenseBackDestination,
+  selectHasProofOfAttendance,
 } from '../../../redux/selectors';
 import { setExpenseBackDestination } from '../../../redux/actions';
 
@@ -22,8 +25,13 @@ const ChooseExpenseType = () => {
   const [showError, setShowError] = useState(false);
   const [mileageError, setMileageError] = useState(false);
 
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const ccEnabled = useToggleValue(TOGGLE_NAMES.travelPayEnableCommunityCare);
+
+  const { data: appointment } = useSelector(selectAppointment);
   // Get claim data
   const { data: claim } = useSelector(selectComplexClaim);
+  const hasProofOfAttendance = useSelector(selectHasProofOfAttendance);
 
   const backDestination = useSelector(selectExpenseBackDestination);
 
@@ -31,6 +39,17 @@ const ChooseExpenseType = () => {
 
   useSetPageTitle(title);
   useSetFocus();
+
+  // CC appointments must upload POA before adding expenses
+  const isCCAppt = appointment?.isCC;
+  if (ccEnabled && isCCAppt && !hasProofOfAttendance) {
+    return (
+      <Navigate
+        to={`/file-new-claim/${apptId}/${claimId}/proof-of-attendance`}
+        replace
+      />
+    );
+  }
 
   // Check if claim already has a mileage expense
   const hasExistingMileageExpense = () => {

@@ -59,6 +59,7 @@ describe('Travel Pay – ExpensePage (Dynamic w/ EXPENSE_TYPES)', () => {
   //
   const getData = () => ({
     travelPay: {
+      appointment: { data: null, isLoading: false, error: null },
       claimSubmission: { isSubmitting: false, error: null, data: null },
       complexClaim: {
         claim: {

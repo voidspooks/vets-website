@@ -8,7 +8,10 @@ import {
   useLocation,
 } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
+import { commonReducer } from 'platform/startup/store';
 import { $ } from 'platform/forms-system/src/js/utilities/ui';
 
 import { EXPENSE_TYPES } from '../../../../constants';
@@ -39,6 +42,7 @@ describe('ChooseExpenseType', () => {
       {
         initialState: {
           travelPay: {
+            appointment: { data: null, isLoading: false, error: null },
             complexClaim: {
               claim: {
                 data: {
@@ -294,6 +298,7 @@ describe('ChooseExpenseType', () => {
         {
           initialState: {
             travelPay: {
+              appointment: { data: null, isLoading: false, error: null },
               complexClaim: {
                 claim: {
                   data: {
@@ -665,6 +670,142 @@ describe('ChooseExpenseType', () => {
           'choose-expense',
         );
       });
+    });
+  });
+
+  describe('CC Proof of Attendance guard', () => {
+    const ProofOfAttendancePage = () => (
+      <div data-testid="proof-of-attendance-page">Proof of Attendance</div>
+    );
+
+    const buildCCState = (hasPoa = false) => ({
+      featureToggles: { loading: false },
+      travelPay: {
+        appointment: {
+          data: { id: '12345', isCC: true },
+          error: null,
+          isLoading: false,
+        },
+        complexClaim: {
+          claim: {
+            data: {
+              claimId: 'claim123',
+              expenses: [],
+              documents: hasPoa
+                ? [{ filename: 'proof-of-attendance.pdf', expenseId: null }]
+                : [],
+            },
+            fetch: { isLoading: false, error: null },
+            creation: { isLoading: false, error: null },
+            submission: {
+              id: '',
+              isSubmitting: false,
+              error: null,
+              data: null,
+            },
+          },
+          expenses: {
+            data: [],
+            creation: { isLoading: false, error: null },
+            update: { id: '', isLoading: false, error: null },
+            delete: { id: '', isLoading: false, error: null },
+          },
+          expenseBackDestination: null,
+          proofOfAttendance: { isLoading: false, error: null },
+          unsavedChangesModal: { visible: false, source: null },
+          reviewPageAlert: null,
+        },
+        downtimeWindow: { startTime: null, endTime: null },
+        reviewPageAlert: null,
+      },
+    });
+
+    const createCCStore = (initialState, ccFlagEnabled = true) => {
+      const store = createStore(
+        combineReducers({ ...commonReducer, ...reducer }),
+        initialState,
+        applyMiddleware(thunk),
+      );
+      store.dispatch({
+        type: 'FETCH_TOGGLE_VALUES_SUCCEEDED',
+        // eslint-disable-next-line camelcase
+        payload: { travel_pay_enable_community_care: ccFlagEnabled },
+      });
+      return store;
+    };
+
+    it('redirects to proof-of-attendance when CC flag is on, appointment is CC, and no POA uploaded', () => {
+      const store = createCCStore(buildCCState(false));
+
+      const { getByTestId } = renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={['/file-new-claim/12345/claim123/choose-expense']}
+        >
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId/:claimId/choose-expense"
+              element={<ChooseExpenseType />}
+            />
+            <Route
+              path="/file-new-claim/:apptId/:claimId/proof-of-attendance"
+              element={<ProofOfAttendancePage />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        { store },
+      );
+
+      expect(getByTestId('proof-of-attendance-page')).to.exist;
+    });
+
+    it('does not redirect when CC flag is on and POA has been uploaded', () => {
+      const store = createCCStore(buildCCState(true));
+
+      const { getByRole } = renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={['/file-new-claim/12345/claim123/choose-expense']}
+        >
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId/:claimId/choose-expense"
+              element={<ChooseExpenseType />}
+            />
+            <Route
+              path="/file-new-claim/:apptId/:claimId/proof-of-attendance"
+              element={<ProofOfAttendancePage />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        { store },
+      );
+
+      expect(getByRole('heading', { level: 1, name: /What type of expense/i }))
+        .to.exist;
+    });
+
+    it('does not redirect when CC flag is disabled even if appointment is CC', () => {
+      const store = createCCStore(buildCCState(false), false);
+
+      const { getByRole } = renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={['/file-new-claim/12345/claim123/choose-expense']}
+        >
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId/:claimId/choose-expense"
+              element={<ChooseExpenseType />}
+            />
+            <Route
+              path="/file-new-claim/:apptId/:claimId/proof-of-attendance"
+              element={<ProofOfAttendancePage />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        { store },
+      );
+
+      expect(getByRole('heading', { level: 1, name: /What type of expense/i }))
+        .to.exist;
     });
   });
 });

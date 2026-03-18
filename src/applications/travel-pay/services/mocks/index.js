@@ -1,4 +1,3 @@
-const fs = require('fs');
 const delay = require('mocker-api/lib/delay');
 
 const {
@@ -13,11 +12,17 @@ const {
   getClaimByIdHandler,
   updateClaimHandler,
   createClaimHandler,
+  submitClaimHandler,
 } = require('./claims/claimHandlers');
 const {
   getAppointmentsHandler,
   getAppointmentByIdHandler,
 } = require('./vaos/appointmentHandlers');
+const {
+  uploadDocumentHandler,
+  deleteDocumentHandler,
+  downloadDocumentHandler,
+} = require('./documents/documentHandlers');
 const { EXPENSE_TYPES } = require('./constants');
 const TOGGLE_NAMES = require('../../../../platform/utilities/feature-toggles/featureFlagNames.json');
 
@@ -157,57 +162,23 @@ const responses = {
 
   // Create a new complex claim
   // POST /travel_pay/v0/complex_claims
-  'POST /travel_pay/v0/complex_claims': (req, res) => {
-    return res.json({
-      claimId: 'bd427107-91ac-4a4a-94ae-177df5aa32dc',
-    });
-  },
+  'POST /travel_pay/v0/complex_claims': createClaimHandler(),
 
   // Submitting a complex claim
   // PATCH /travel_pay/v0/complex_claims/:claimId/submit
-  'PATCH /travel_pay/v0/complex_claims/:claimId/submit': (req, res) => {
-    return res.json({
-      id: req.params.claimId,
-    });
-  },
+  'PATCH /travel_pay/v0/complex_claims/:claimId/submit': submitClaimHandler(),
+
+  // Upload proof of attendance document
+  // POST /travel_pay/v0/claims/:claimId/documents
+  'POST /travel_pay/v0/claims/:claimId/documents': uploadDocumentHandler(),
 
   // Deleting documents
   // DELETE /travel_pay/v0/claims/:claimId/documents/:documentId
-  'DELETE /travel_pay/v0/claims/:claimId/documents/:documentId': (req, res) => {
-    return res.status(200).json({
-      id: req.params.documentId,
-    });
-  },
+  'DELETE /travel_pay/v0/claims/:claimId/documents/:documentId': deleteDocumentHandler(),
 
   // Document download
-  'GET /travel_pay/v0/claims/:claimId/documents/:docId': (req, res) => {
-    // Document download
-    // Error condition for screenshot-2 from the mock data
-    if (req.params.docId === '12fcfecc-5132-4c16-8a9a-7af07b714cd4') {
-      return res.status(503).json({
-        errors: [
-          {
-            title: 'Service unavailable',
-            status: 503,
-            detail: 'An unknown error has occured.',
-            code: 'VA900',
-          },
-        ],
-      });
-    }
-
-    // Absolute path to our mock docx file
-    const docx = fs.readFileSync(
-      'src/applications/travel-pay/services/mocks/sample-decision-letter.docx',
-    );
-    res.writeHead(200, {
-      'Content-Disposition': 'attachment; filename="Rejection Letter.docx"',
-      'Content-Type':
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'Content-Length': docx.length,
-    });
-    return res.end(Buffer.from(docx, 'binary'));
-  },
+  // GET /travel_pay/v0/claims/:claimId/documents/:docId
+  'GET /travel_pay/v0/claims/:claimId/documents/:docId': downloadDocumentHandler(),
 };
 
 EXPENSE_TYPES.forEach(type => {
