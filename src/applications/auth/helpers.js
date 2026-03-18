@@ -127,18 +127,20 @@ export const checkPortalRequirements = ({
   userAttributes,
   provisioned,
 }) => {
-  const { vaPatient = false } = userAttributes?.vaProfile || {};
-  const {
-    userFacilityReadyForInfoAlert = false,
-    userAtPretransitionedOhFacility = false,
-  } = userAttributes?.vaProfile?.ohMigrationInfo || {};
+  const { isCernerPatient = false, vaPatient = false } =
+    userAttributes?.vaProfile || {};
+  const { userAtPretransitionedOhFacility = false } =
+    userAttributes?.vaProfile?.ohMigrationInfo || {};
 
-  const redirectElligible =
+  const redirectEligible =
     isPortalNoticeInterstitialEnabled && provisioned && vaPatient;
 
   return {
-    needsPortalNotice: redirectElligible && userFacilityReadyForInfoAlert,
-    needsMyHealth: redirectElligible && !userAtPretransitionedOhFacility,
+    needsPortalNotice:
+      redirectEligible && isCernerPatient && userAtPretransitionedOhFacility,
+    needsMyHealth:
+      redirectEligible &&
+      (!isCernerPatient || !userAtPretransitionedOhFacility),
   };
 };
 
