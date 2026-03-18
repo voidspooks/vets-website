@@ -13,7 +13,8 @@ class PatientReplyPage {
     ).as(`getMessageRequest`);
     cy.findByTestId(Locators.BUTTONS.REPLY)
       .should('be.visible')
-      .click();
+      .click({ force: true, waitForAnimations: true });
+    cy.wait('@getMessageRequest');
   };
 
   clickSendReplyMessageButton = mockReplyMessage => {

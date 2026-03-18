@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import useOhMigrationAlertMetric from 'platform/mhv/hooks/useOhMigrationAlertMetric';
 import { hasMessageMigratedToOracleHealth } from '../../util/helpers';
+import { Paths } from '../../util/constants';
+import RouterLinkAction from './RouterLinkAction';
 
-const DATADOG_FIND_VA_FACILITY_LINK =
-  'Find your VA health facility link - in migrated message alert';
+const DATADOG_START_NEW_MESSAGE_LINK =
+  'Start a new message link - in migrated message alert';
 
 // MigratedMessageAlert displays an alert when a message has been migrated to Oracle Health.
 const MigratedMessageAlert = () => {
@@ -51,10 +52,10 @@ const MigratedMessageAlert = () => {
             Or you can send a new message to this care team. To send a message,
             you’ll need to select your care team’s updated name.
           </p>
-          <VaLinkAction
-            data-dd-action-name={`${DATADOG_FIND_VA_FACILITY_LINK} - expandable`}
-            href="/find-locations/"
-            text="Find your VA health facility"
+          <RouterLinkAction
+            data-dd-action-name={DATADOG_START_NEW_MESSAGE_LINK}
+            href={Paths.COMPOSE}
+            text="Start a new message"
           />
         </div>
       </va-alert-expandable>

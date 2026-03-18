@@ -7,6 +7,7 @@ import * as useOhMigrationAlertMetricModule from 'platform/mhv/hooks/useOhMigrat
 import reducer from '../../../reducers';
 import messageResponse from '../../fixtures/message-response.json';
 import MigratedMessageAlert from '../../../components/shared/MigratedMessageAlert';
+import { Paths } from '../../../util/constants';
 
 describe('MigratedMessageAlert', () => {
   const defaultMessage = {
@@ -34,6 +35,17 @@ describe('MigratedMessageAlert', () => {
     featureToggles: {},
   };
 
+  const migratedState = {
+    ...defaultState,
+    sm: {
+      ...defaultState.sm,
+      threadDetails: {
+        ...defaultState.sm.threadDetails,
+        messages: [{ ...defaultMessage, migratedToOracleHealth: true }],
+      },
+    },
+  };
+
   const setup = (state = defaultState) => {
     return renderWithStoreAndRouter(<MigratedMessageAlert />, {
       initialState: state,
@@ -42,21 +54,7 @@ describe('MigratedMessageAlert', () => {
   };
 
   it('renders MigratedMessageAlert when at least one message has migratedToOracleHealth', async () => {
-    const migratedMessage = {
-      ...defaultMessage,
-      migratedToOracleHealth: true,
-    };
-    const state = {
-      ...defaultState,
-      sm: {
-        ...defaultState.sm,
-        threadDetails: {
-          ...defaultState.sm.threadDetails,
-          messages: [migratedMessage],
-        },
-      },
-    };
-    const screen = setup(state);
+    const screen = setup(migratedState);
     await waitFor(() => {
       expect(screen.queryByTestId('migrated-message-alert')).to.exist;
     });
@@ -80,6 +78,18 @@ describe('MigratedMessageAlert', () => {
     const screen = setup(state);
     await waitFor(() => {
       expect(screen.queryByTestId('migrated-message-alert')).to.not.exist;
+    });
+  });
+
+  it('renders the Start a new message link with compose URL', async () => {
+    const screen = setup(migratedState);
+    const expectedHref = `${Paths.ROOT_URL}${Paths.COMPOSE}`;
+    await waitFor(() => {
+      const link = screen.container.querySelector(
+        `va-link-action[href="${expectedHref}"]`,
+      );
+      expect(link).to.exist;
+      expect(link.getAttribute('text')).to.equal('Start a new message');
     });
   });
 
