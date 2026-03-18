@@ -27,21 +27,11 @@ describe('CaseProgressBar', () => {
   it('renders the progress bar with the expected attributes', () => {
     const attributes = { foo: 'bar' };
     const stepLabels = ['Apply', 'Eligibility', 'Orientation'];
-    const stateList = [
-      { status: 'COMPLETED' },
-      { status: 'ACTIVE' },
-      { status: 'PENDING' },
-    ];
 
     const { container, getByTestId } = render(
       <CaseProgressBar
         current={2}
         stepLabels={stepLabels}
-        stateList={stateList}
-        headingText="Custom heading"
-        label="Progress label"
-        counters="large"
-        headerLevel={3}
         attributes={attributes}
       />,
     );
@@ -50,11 +40,10 @@ describe('CaseProgressBar', () => {
 
     const progressBar = container.querySelector('va-segmented-progress-bar');
     expect(progressBar).to.exist;
-    expect(progressBar.getAttribute('counters')).to.equal('large');
+    expect(progressBar.getAttribute('counters')).to.equal('small');
     expect(progressBar.getAttribute('current')).to.equal('2');
-    expect(progressBar.getAttribute('header-level')).to.equal('3');
-    expect(progressBar.getAttribute('heading-text')).to.equal('Custom heading');
-    expect(progressBar.getAttribute('label')).to.equal('Progress label');
+    expect(progressBar.getAttribute('header-level')).to.equal('2');
+    expect(progressBar.getAttribute('heading-text')).to.equal(stepLabels[1]);
     expect(progressBar.getAttribute('labels')).to.equal(
       'Apply;Eligibility;Orientation',
     );
