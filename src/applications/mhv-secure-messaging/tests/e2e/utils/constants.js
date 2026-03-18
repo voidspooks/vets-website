@@ -500,7 +500,7 @@ export const Data = {
     SAVE_DRAFT_WO_ATTCH: `Save draft without attachments`,
   },
   LINKS: {
-    PROFILE_SIGNATURE: `/profile/personal-information#messaging-signature`,
+    PROFILE_SIGNATURE: `/profile/health-care-settings/message-signature`,
     HOME: '/my-health/secure-messages/',
     CONTACT_LIST: '/my-health/secure-messages/contact-list/',
     SELECT_CARE_TEAM:
