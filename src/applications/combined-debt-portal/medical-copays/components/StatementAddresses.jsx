@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useLighthouseCopays } from '../../combined/utils/helpers';
+import { useSelector } from 'react-redux';
+import { showVHAPaymentHistory } from '../../combined/utils/helpers';
 
 const StatementAddresses = ({ copay }) => {
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = useSelector(state =>
+    showVHAPaymentHistory(state),
+  );
 
   const normalizeVHACopay = () => {
     const facilityName = copay?.attributes?.facility.name;
@@ -45,7 +48,7 @@ const StatementAddresses = ({ copay }) => {
     };
   };
 
-  const normalizedCopay = shouldUseLighthouseCopays
+  const normalizedCopay = shouldShowVHAPaymentHistory
     ? normalizeVHACopay()
     : normalizeStandardCopay();
 

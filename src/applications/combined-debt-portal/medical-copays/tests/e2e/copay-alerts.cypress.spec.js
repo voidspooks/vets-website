@@ -16,7 +16,7 @@ describe('CDP - VHA Copay Alerts', () => {
 
   describe('Copay Balances Page - copays ok', () => {
     beforeEach(() => {
-      copayResponses.goodLegacy('copays');
+      copayResponses.good('copays');
     });
     // Has both VHA and VBA balances
     it('should display valid copay balances & other VA debt information', () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import recordEvent from '~/platform/monitoring/record-event';
@@ -13,7 +13,7 @@ import {
   calcDueDate,
   formatDate,
   verifyCurrentBalance,
-  useLighthouseCopays,
+  showVHAPaymentHistory,
 } from '../../combined/utils/helpers';
 import { getCopayDetailStatement } from '../../combined/actions/copays';
 
@@ -43,7 +43,9 @@ PastDueContent.propTypes = {
 };
 
 const BalanceCard = ({ id, amount, facility, city, date }) => {
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
+    useSelector(state => state),
+  );
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -97,7 +99,7 @@ const BalanceCard = ({ id, amount, facility, city, date }) => {
             data-testid={`detail-link-${id}`}
             onClick={event => {
               event.preventDefault();
-              if (shouldUseLighthouseCopays) {
+              if (shouldShowVHAPaymentHistory) {
                 dispatch(getCopayDetailStatement(`${id}`));
               }
               recordEvent({ event: 'cta-link-click-copay-balance-card' });
@@ -115,7 +117,7 @@ const BalanceCard = ({ id, amount, facility, city, date }) => {
             data-testid={`resolve-link-${id}`}
             onClick={event => {
               event.preventDefault();
-              if (shouldUseLighthouseCopays) {
+              if (shouldShowVHAPaymentHistory) {
                 dispatch(getCopayDetailStatement(`${id}`));
               }
               recordEvent({ event: 'cta-link-click-copay-balance-card' });

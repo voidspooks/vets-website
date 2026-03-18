@@ -22,10 +22,10 @@ export const phoneContent = () => {
 export const getCopayAlertContent = (
   copay,
   type,
-  shouldUseLighthouseCopays = false,
+  shouldShowVHAPaymentHistory = false,
 ) => {
   const statementDate = formatDate(
-    shouldUseLighthouseCopays
+    shouldShowVHAPaymentHistory
       ? formatISODateToMMDDYYYY(copay?.attributes?.invoiceDate)
       : copay?.pSStatementDateOutput,
   );
@@ -74,7 +74,7 @@ export const getCopayAlertContent = (
             To avoid late fees or collection action on your bill, you must pay
             your full balance or request financial help before
             <span className="vads-u-margin-left--0p5">
-              {shouldUseLighthouseCopays
+              {shouldShowVHAPaymentHistory
                 ? copay?.attributes?.paymentDueDate
                 : calcDueDate(copay?.pSStatementDateOutput, 30)}
             </span>
@@ -127,7 +127,7 @@ export const getCopayAlertContent = (
             was{' '}
             <strong>
               {currency(
-                shouldUseLighthouseCopays
+                shouldShowVHAPaymentHistory
                   ? copay?.attributes?.principalBalance
                   : copay?.pHAmtDue,
               )}

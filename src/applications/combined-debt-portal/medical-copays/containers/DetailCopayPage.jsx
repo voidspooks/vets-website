@@ -10,7 +10,7 @@ import PreviousStatements from '../components/PreviousStatements';
 import StatementAddresses from '../components/StatementAddresses';
 import NeedHelpCopay from '../components/NeedHelpCopay';
 import {
-  useLighthouseCopays,
+  showVHAPaymentHistory,
   formatDate,
   verifyCurrentBalance,
   setPageFocus,
@@ -27,7 +27,9 @@ const DetailCopayPage = ({ match }) => {
   const dispatch = useDispatch();
 
   const [alert, setAlert] = useState('status');
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
+    useSelector(state => state),
+  );
 
   const copayDetail =
     useSelector(state => state.combinedPortal.mcp.selectedStatement) || {};
@@ -38,7 +40,7 @@ const DetailCopayPage = ({ match }) => {
     useSelector(state => state.combinedPortal.mcp.statements) || [];
 
   const selectedId = match.params.id;
-  const selectedCopay = shouldUseLighthouseCopays
+  const selectedCopay = shouldShowVHAPaymentHistory
     ? copayDetail
     : allStatements?.find(({ id }) => id === selectedId);
 
@@ -47,7 +49,7 @@ const DetailCopayPage = ({ match }) => {
       if (!selectedCopay?.id) return DEFAULT_COPAY_ATTRIBUTES;
 
       /* eslint-disable no-nested-ternary */
-      return shouldUseLighthouseCopays
+      return shouldShowVHAPaymentHistory
         ? {
             TITLE: `Copay bill for ${selectedCopay?.attributes.facility.name}`,
             INVOICE_DATE: selectedCopay?.attributes?.invoiceDate,
@@ -72,7 +74,7 @@ const DetailCopayPage = ({ match }) => {
           };
       /* eslint-disable no-nested-ternary */
     },
-    [selectedCopay?.id, shouldUseLighthouseCopays],
+    [selectedCopay?.id, shouldShowVHAPaymentHistory],
   );
 
   // Handle alert separately
@@ -92,7 +94,7 @@ const DetailCopayPage = ({ match }) => {
         !copayDetail?.id &&
         copayDetail.id !== selectedId &&
         !isCopayDetailLoading &&
-        shouldUseLighthouseCopays
+        shouldShowVHAPaymentHistory
       ) {
         dispatch(getCopayDetailStatement(`${selectedId}`));
       }
@@ -102,7 +104,7 @@ const DetailCopayPage = ({ match }) => {
       dispatch,
       copayDetail?.id,
       isCopayDetailLoading,
-      shouldUseLighthouseCopays,
+      shouldShowVHAPaymentHistory,
     ],
   );
 
@@ -113,7 +115,7 @@ const DetailCopayPage = ({ match }) => {
     : `${userFullName.first} ${userFullName.last}`;
 
   const getPaymentDueDate = () => {
-    if (shouldUseLighthouseCopays) {
+    if (shouldShowVHAPaymentHistory) {
       return copayAttributes.INVOICE_DATE;
     }
 
@@ -189,7 +191,7 @@ const DetailCopayPage = ({ match }) => {
               <dt>Current balance:</dt>
               <dd className="vads-u-margin-left--1 vads-u-font-weight--bold">
                 {formatCurrency(
-                  shouldUseLighthouseCopays
+                  shouldShowVHAPaymentHistory
                     ? selectedCopay.attributes?.principalBalance
                     : selectedCopay.pHNewBalance,
                 )}
@@ -198,7 +200,7 @@ const DetailCopayPage = ({ match }) => {
             <div className="vads-u-display--flex vads-u-flex-direction--row">
               <dt>Payment due:</dt>
               <dd className="vads-u-margin-left--1 vads-u-font-weight--bold">
-                {shouldUseLighthouseCopays
+                {shouldShowVHAPaymentHistory
                   ? selectedCopay.attributes?.paymentDueDate
                   : formatDate(getPaymentDueDate())}
               </dd>
@@ -208,7 +210,7 @@ const DetailCopayPage = ({ match }) => {
                 <dt>New charges:</dt>
                 <dd className="vads-u-margin-left--1 vads-u-font-weight--bold">
                   {formatCurrency(
-                    shouldUseLighthouseCopays
+                    shouldShowVHAPaymentHistory
                       ? selectedCopay.attributes.principalPaid
                       : selectedCopay.pHTotCharges,
                   )}
@@ -223,7 +225,7 @@ const DetailCopayPage = ({ match }) => {
         </div>
         <div className="vads-u-margin-y--4">
           {/* Show VHA Lighthouse data | or Current CDW Statement */}
-          {shouldUseLighthouseCopays ? (
+          {shouldShowVHAPaymentHistory ? (
             <StatementTable
               charges={copayAttributes.CHARGES}
               formatCurrency={formatCurrency}
@@ -239,7 +241,7 @@ const DetailCopayPage = ({ match }) => {
             key={selectedId}
             statementId={selectedId}
             statementDate={
-              shouldUseLighthouseCopays
+              shouldShowVHAPaymentHistory
                 ? formatISODateToMMDDYYYY(copayAttributes.INVOICE_DATE)
                 : selectedCopay.pSStatementDate
             }

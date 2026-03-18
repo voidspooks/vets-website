@@ -6,6 +6,7 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Balances from '../../components/Balances';
+import { showVHAPaymentHistory } from '../../../combined/utils/helpers';
 
 /**
  * Helper to render components with a mock Redux store
@@ -28,7 +29,7 @@ const renderWithStore = (component, initialState) => {
 };
 
 describe('Balances', () => {
-  it('flag true and isCerner false - renders with new data structure (Lighthouse)', () => {
+  it('showVHAPaymentHistory is true - renders with new data structure', () => {
     const mockState = {
       user: {},
       combinedPortal: {
@@ -47,7 +48,6 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: null,
-          isCerner: false,
           statements: {
             data: [
               {
@@ -100,7 +100,7 @@ describe('Balances', () => {
       <Balances
         statements={mockState.combinedPortal.mcp.statements.data}
         paginationText="TRUE SET"
-        useLighthouseCopays
+        showVHAPaymentHistory
       />,
       mockState,
     );
@@ -141,86 +141,10 @@ describe('Balances', () => {
     );
     expect(resolveLink).to.exist;
     expect(resolveLink.text).to.include('Resolve this bill');
-  });
 
-  it('showVHAPaymentHistory is true and isCerner is false - renders with new data structure (Lighthouse)', () => {
-    const mockState = {
-      user: {},
-      combinedPortal: {
-        debtLetters: {
-          isProfileUpdating: false,
-          isPending: false,
-          isPendingVBMS: false,
-          isError: false,
-          isVBMSError: false,
-          debts: [],
-          selectedDebt: {},
-          debtLinks: [],
-          errors: [],
-          hasDependentDebts: false,
-        },
-        mcp: {
-          pending: false,
-          error: null,
-          isCerner: false,
-          statements: {
-            data: [
-              {
-                id: '4-cerner-lh',
-                type: 'medicalCopays',
-                attributes: {
-                  url: null,
-                  facility: 'Cerner Lighthouse VAMC',
-                  facilityId: '4-O3d8XK44ejMS',
-                  city: 'LYONS',
-                  externalId: '4-cerner-lh',
-                  latestBillingRef: '4-6c9ZE23XQm5VawK',
-                  currentBalance: 99.99,
-                  previousBalance: 65.71,
-                  previousUnpaidBalance: 0,
-                  lastUpdatedAt: '2025-08-29T00:00:00Z',
-                },
-              },
-            ],
-            meta: {
-              total: 10,
-              page: 1,
-              perPage: 3,
-              copaySummary: {
-                totalCurrentBalance: 99.99,
-                copayBillCount: 1,
-                lastUpdatedOn: '2025-08-29T00:00:00Z',
-              },
-            },
-            links: {},
-          },
-        },
-      },
-      featureToggles: {
-        [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-        loading: false,
-      },
-    };
-
-    const { container } = renderWithStore(
-      <Balances
-        statements={mockState.combinedPortal.mcp.statements.data}
-        paginationText="FLAG TRUE CERNER FALSE"
-        useLighthouseCopays
-      />,
-      mockState,
-    );
-
-    expect(container).to.exist;
-    const balanceCard = container.querySelector(
-      '[data-testid="balance-card-4-cerner-lh"]',
-    );
-    expect(balanceCard).to.exist;
-    const cardAmount = container.querySelector(
-      '[data-testid="amount-4-cerner-lh"]',
-    );
-    expect(cardAmount).to.exist;
-    expect(cardAmount.textContent).to.include('$99.99');
+    // Verify helper function returns true
+    const result = showVHAPaymentHistory(mockState);
+    expect(result).to.be.true;
   });
 
   // TODO: to be removed once toggle is fully enabled
@@ -243,7 +167,6 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: null,
-          isCerner: true,
           statements: [
             {
               id: '1',
@@ -267,7 +190,7 @@ describe('Balances', () => {
       <Balances
         statements={mockState.combinedPortal.mcp.statements}
         paginationText="FALSE SET"
-        useLighthouseCopays={false}
+        showVHAPaymentHistory={false}
       />,
       mockState,
     );
@@ -302,5 +225,9 @@ describe('Balances', () => {
     );
     expect(resolveLink).to.exist;
     expect(resolveLink.text).to.include('Resolve this bill');
+
+    // Verify helper function returns false
+    const result = showVHAPaymentHistory(mockState);
+    expect(result).to.be.false;
   });
 });

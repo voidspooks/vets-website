@@ -40,52 +40,13 @@ describe('DetailCopayPage', () => {
 
   const mockMatch = { params: { id: '123' } };
 
-  it('uses station.facilityName for TITLE when flag is true and isCerner is true (legacy)', () => {
-    const mockStatement = {
-      id: '123',
-      attributes: { facility: { name: 'Lighthouse Name' } },
-      station: { facilityName: 'Legacy VA Medical Center' },
-      pSStatementDateOutput: '01/15/2024',
-      accountNumber: 'ACC123',
-      details: [],
-      pHNewBalance: 100,
-      pHTotCharges: 25,
-    };
-
-    const mockState = {
-      user: {
-        profile: {
-          userFullName: { first: 'John', last: 'Doe' },
-        },
-      },
-      combinedPortal: {
-        mcp: {
-          selectedStatement: mockStatement,
-          statements: [mockStatement],
-          isCerner: true,
-        },
-      },
-      featureToggles: {
-        [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-        loading: false,
-      },
-    };
-
-    const { container } = renderWithStore(
-      <DetailCopayPage match={mockMatch} />,
-      mockState,
-    );
-
-    expect(container.textContent).to.include(
-      'Copay bill for Legacy VA Medical Center',
-    );
-  });
-
-  it('uses attributes.facility for TITLE when flag is true and isCerner is false (Lighthouse)', () => {
+  it('uses attributes.facility for TITLE when VHA payment history flag is true', () => {
     const mockStatement = {
       id: '123',
       attributes: {
-        facility: { name: 'Lighthouse Facility When Cerner' },
+        facility: {
+          name: 'James A. Haley',
+        },
         invoiceDate: '2024-01-15',
         accountNumber: 'ACC123',
         lineItems: [],
@@ -94,7 +55,7 @@ describe('DetailCopayPage', () => {
         principalPaid: 25,
       },
       station: {
-        facilityName: 'Legacy Tampa VA Medical Center',
+        facilityName: 'James A. Haley',
       },
     };
 
@@ -108,7 +69,6 @@ describe('DetailCopayPage', () => {
         mcp: {
           selectedStatement: mockStatement,
           statements: [mockStatement],
-          isCerner: false,
         },
       },
       featureToggles: {
@@ -122,9 +82,7 @@ describe('DetailCopayPage', () => {
       mockState,
     );
 
-    expect(container.textContent).to.include(
-      'Copay bill for Lighthouse Facility When Cerner',
-    );
+    expect(container.textContent).to.include('Copay bill for James A. Haley');
   });
 
   it('uses station.facilityName for TITLE when VHA payment history flag is false', () => {
@@ -150,7 +108,6 @@ describe('DetailCopayPage', () => {
         mcp: {
           selectedStatement: mockStatement,
           statements: [mockStatement],
-          isCerner: true,
         },
       },
       featureToggles: {

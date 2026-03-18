@@ -11,7 +11,7 @@ import {
   sortStatementsByDate,
   ALERT_TYPES,
   APP_TYPES,
-  useLighthouseCopays,
+  showVHAPaymentHistory,
 } from '../../combined/utils/helpers';
 import Balances from '../components/Balances';
 import OtherVADebts from '../../combined/components/OtherVADebts';
@@ -82,7 +82,9 @@ const OverviewPage = () => {
   // boolean value to represent if toggles are still loading or not
   const togglesLoading = useToggleLoadingValue();
   // value of specific toggle
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
+    useSelector(state => state),
+  );
 
   const {
     debts,
@@ -93,11 +95,11 @@ const OverviewPage = () => {
   const debtLoading = isDebtPending || isProfileUpdating;
   const { statements, error: mcpError, pending: mcpLoading } = mcp;
   const statementsEmpty = statements?.length === 0;
-  const sortedStatements = shouldUseLighthouseCopays
-    ? statements ?? []
+  const sortedStatements = shouldShowVHAPaymentHistory
+    ? mcp.statements.data ?? []
     : sortStatementsByDate(statements || []);
-  const statementsByUniqueFacility = shouldUseLighthouseCopays
-    ? uniqBy(statements ?? [], 'facilityId')
+  const statementsByUniqueFacility = shouldShowVHAPaymentHistory
+    ? uniqBy(mcp.statements.data, 'facilityId')
     : uniqBy(sortedStatements, 'pSFacilityNum');
   const title = 'Copay balances';
   useHeaderPageTitle(title);
@@ -185,7 +187,7 @@ const OverviewPage = () => {
       <article className="vads-u-padding-x--0 vads-u-padding-bottom--0">
         <Balances
           statements={currentData}
-          useLighthouseCopays={shouldUseLighthouseCopays}
+          showVHAPaymentHistory={shouldShowVHAPaymentHistory}
           paginationText={getPaginationText(
             currentPage,
             MAX_ROWS,

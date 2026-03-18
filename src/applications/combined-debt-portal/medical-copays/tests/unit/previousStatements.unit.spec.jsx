@@ -56,7 +56,6 @@ const vhaState = recentStatements =>
     },
     combinedPortal: {
       mcp: {
-        isCerner: false,
         selectedStatement: {
           attributes: { recentStatements },
         },
@@ -71,7 +70,6 @@ const vhaStateWithSelected = (recentStatements, selectedStatement) =>
     },
     combinedPortal: {
       mcp: {
-        isCerner: false,
         selectedStatement,
       },
     },
@@ -82,13 +80,12 @@ const legacyState = statements =>
     combinedPortal: {
       mcp: {
         statements,
-        isCerner: true,
       },
     },
   });
 
 describe('PreviousStatements', () => {
-  describe('when useLighthouseCopays is true', () => {
+  describe('when showVHAPaymentHistory is true', () => {
     it('should render when recentStatements exist', () => {
       const store = createMockStore(
         vhaState([
@@ -183,7 +180,7 @@ describe('PreviousStatements', () => {
     });
   });
 
-  describe('when useLighthouseCopays is false', () => {
+  describe('when showVHAPaymentHistory is false', () => {
     it('should render when previous statements exist and filter out current statement', () => {
       const store = createMockStore(
         legacyState([

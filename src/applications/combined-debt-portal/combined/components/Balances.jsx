@@ -10,7 +10,7 @@ import {
   getLatestDebt,
   calculateTotalBills,
 } from '../utils/balance-helpers';
-import { APP_TYPES, useLighthouseCopays } from '../utils/helpers';
+import { APP_TYPES, showVHAPaymentHistory } from '../utils/helpers';
 import CopayAlertContainer from '../../medical-copays/components/CopayAlertContainer';
 
 // Some terminology that could be helpful:
@@ -22,7 +22,10 @@ const Balances = () => {
     ({ combinedPortal }) => combinedPortal,
   );
 
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
+    useSelector(state => state),
+  );
+
   // Single out errors
   const billError = mcp.error;
   const debtError = debtLetters.errors?.length > 0;
@@ -35,13 +38,13 @@ const Balances = () => {
 
   // get Bill info
   const copayData = mcp.statements || [];
-  const { copayBillCount } = shouldUseLighthouseCopays
+  const { copayBillCount } = shouldShowVHAPaymentHistory
     ? copayData.meta.copaySummary
     : { copayBillCount: copayData.length };
-  const copayTotal = shouldUseLighthouseCopays
+  const copayTotal = shouldShowVHAPaymentHistory
     ? copayData.meta.copaySummary.totalCurrentBalance
     : calculateTotalBills(copayData || []);
-  const latestBillDate = shouldUseLighthouseCopays
+  const latestBillDate = shouldShowVHAPaymentHistory
     ? new Date(copayData.meta.copaySummary.lastUpdatedOn)
     : getLatestBill(copayData || []);
 

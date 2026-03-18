@@ -21,7 +21,7 @@ describe('CDP - Copay card content', () => {
       'features',
     );
     debtResponses.good('debts');
-    copayResponses.goodLegacy('copays');
+    copayResponses.good('copays');
     cy.visit('/manage-va-debt/summary/copay-balances');
 
     // Page load

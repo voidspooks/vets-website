@@ -12,7 +12,7 @@ describe('CDP - Debt Letters downloads enabled', () => {
       'features',
     );
     debtResponses.good('debts');
-    copayResponses.goodLegacy('copays');
+    copayResponses.good('copays');
     cy.visit('/manage-va-debt/summary/debt-balances');
     cy.wait(['@features', '@debts']);
   });
@@ -48,7 +48,7 @@ describe('Debt Letters - downloads disabled', () => {
       },
     }).as('features');
     debtResponses.good('debts');
-    copayResponses.goodLegacy('copays');
+    copayResponses.good('copays');
     cy.visit('/manage-va-debt/summary/debt-balances');
     cy.wait(['@copays', '@debts', '@features']);
   });

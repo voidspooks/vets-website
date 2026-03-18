@@ -26,8 +26,7 @@ describe('CDP - Copay navigation and content w/ vha_show_payment_history enabled
       'features',
     );
     debtResponses.good('debts');
-    // isCerner: false so useLighthouseCopays is true (ff on && !isCerner); mock data is Lighthouse shape
-    copayResponses.goodv1('copays', { isCerner: false });
+    copayResponses.goodv1('copays');
     cy.visit('/manage-va-debt/summary/copay-balances');
 
     // Page load

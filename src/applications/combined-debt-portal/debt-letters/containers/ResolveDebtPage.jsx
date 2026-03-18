@@ -7,7 +7,7 @@ import HowDoIPay from '../components/HowDoIPay';
 import NeedHelp from '../components/NeedHelp';
 import {
   setPageFocus,
-  useLighthouseCopays,
+  showVHAPaymentHistory,
 } from '../../combined/utils/helpers';
 import useHeaderPageTitle from '../../combined/hooks/useHeaderPageTitle';
 import { getCurrentDebt } from '../utils/page';
@@ -22,7 +22,9 @@ const ResolveDebtPage = ({ match }) => {
   const currentDebt = getCurrentDebt(selectedDebt, debts, location);
   const selectedId = currentDebt?.id || match?.params?.id;
 
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
+    useSelector(state => state),
+  );
 
   const howToUserData = {
     currentAr: currentDebt.currentAr,
@@ -76,7 +78,7 @@ const ResolveDebtPage = ({ match }) => {
         </p>
         <va-on-this-page class="medium-screen:vads-u-margin-top--0" />
         <HowDoIPay userData={howToUserData} />
-        <HowDoIGetHelp useLighthouseCopays={shouldUseLighthouseCopays} />
+        <HowDoIGetHelp showVHAPaymentHistory={shouldShowVHAPaymentHistory} />
         <NeedHelp />
       </div>
     </article>

@@ -3,19 +3,22 @@ import PropTypes from 'prop-types';
 import recordEvent from '~/platform/monitoring/record-event';
 import { useHistory } from 'react-router-dom';
 import { VaLinkAction } from '@department-of-veterans-affairs/web-components/react-bindings';
+import { useSelector } from 'react-redux';
 import {
   getCopayAlertContent,
   phoneContent,
 } from '../../combined/utils/copayAlertContent';
-import { useLighthouseCopays } from '../../combined/utils/helpers';
+import { showVHAPaymentHistory } from '../../combined/utils/helpers';
 
 const CopayAlertContainer = ({ type, copay }) => {
   const history = useHistory();
-  const shouldUseLighthouseCopays = useLighthouseCopays();
+  const shouldShowVHAPaymentHistory = useSelector(state =>
+    showVHAPaymentHistory(state),
+  );
   const copayAlertContent = getCopayAlertContent(
     copay,
     type,
-    shouldUseLighthouseCopays,
+    shouldShowVHAPaymentHistory,
   );
 
   return (

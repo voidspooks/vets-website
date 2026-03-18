@@ -3,21 +3,18 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import AccountSummary from '../../components/AccountSummary';
 import StatementAddresses from '../../components/StatementAddresses';
 import StatementCharges from '../../components/StatementCharges';
 import StatementTable from '../../components/StatementTable';
 import DownloadStatement from '../../components/DownloadStatement';
 
-const createMockStore = (useLighthouse = false) => {
+// Helper to create a minimal Redux store for components that use useSelector
+const createMockStore = (featureToggleValue = false) => {
   return createStore(() => ({
     featureToggles: {
       loading: false,
-      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-    },
-    combinedPortal: {
-      mcp: { isCerner: !useLighthouse },
+      showVHAPaymentHistory: featureToggleValue,
     },
   }));
 };
@@ -79,12 +76,11 @@ describe('mcp statement view', () => {
       const store = createStore(() => ({
         featureToggles: {
           loading: false,
-          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: false,
+          showVHAPaymentHistory: false,
         },
         combinedPortal: {
           mcp: {
             selectedStatement: selectedCopay,
-            isCerner: false,
           },
         },
       }));
@@ -249,65 +245,6 @@ describe('mcp statement view', () => {
         row.textContent.includes('Total Credits'),
       );
       expect(totalCreditsRow).to.not.exist;
-    });
-
-    it('displays VHA billing reference in reference column when isCerner is false (Lighthouse)', () => {
-      const vhaCharges = [
-        {
-          datePosted: '2024-05-15',
-          description: 'VHA charge',
-          billingReference: 'BILL-REF-123',
-          priceComponents: [{ amount: 50.0 }],
-          providerName: 'Test Provider',
-        },
-      ];
-
-      const store = createStore(() => ({
-        featureToggles: {
-          loading: false,
-          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-        },
-        combinedPortal: { mcp: { isCerner: false } },
-      }));
-      const { getByText } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={vhaCharges}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={mockSelectedCopay}
-          />
-        </Provider>,
-      );
-
-      expect(getByText('BILL-REF-123')).to.exist;
-    });
-
-    it('uses legacy reference column when isCerner is true (legacy)', () => {
-      const legacyCharges = [
-        {
-          pDDatePostedOutput: '05/15/2024',
-          pDTransDescOutput: 'Legacy charge',
-          pDRefNo: 'LEGACY-REF',
-          pDTransAmt: 50.0,
-        },
-      ];
-      const storeLegacy = createStore(() => ({
-        featureToggles: {
-          loading: false,
-          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-        },
-        combinedPortal: { mcp: { isCerner: true } },
-      }));
-      const { getByText } = render(
-        <Provider store={storeLegacy}>
-          <StatementTable
-            charges={legacyCharges}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={mockSelectedCopay}
-          />
-        </Provider>,
-      );
-      expect(getByText('LEGACY-REF')).to.exist;
     });
   });
 

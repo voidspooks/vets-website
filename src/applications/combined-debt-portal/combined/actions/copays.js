@@ -3,8 +3,6 @@ import { apiRequest } from 'platform/utilities/api';
 import { getMedicalCenterNameByID } from 'platform/utilities/medical-centers/medical-centers';
 import environment from 'platform/utilities/environment';
 
-import { selectVistaLighthouse } from '../utils/helpers';
-
 export const MCP_STATEMENTS_FETCH_INIT = 'MCP_STATEMENTS_FETCH_INIT';
 export const MCP_STATEMENTS_FETCH_SUCCESS = 'MCP_STATEMENTS_FETCH_SUCCESS';
 export const MCP_STATEMENTS_FETCH_FAILURE = 'MCP_STATEMENTS_FETCH_FAILURE';
@@ -58,11 +56,10 @@ export const getAllCopayStatements = async dispatch => {
   const dataUrl = `${environment.API_URL}/v0/medical_copays`;
 
   return apiRequest(dataUrl)
-    .then(response => {
+    .then(({ data }) => {
       return dispatch({
         type: MCP_STATEMENTS_FETCH_SUCCESS,
-        response: transform(response.data),
-        isCerner: response.isCerner,
+        response: transform(data),
       });
     })
     .catch(({ errors }) => {
@@ -78,8 +75,7 @@ export const getAllCopayStatements = async dispatch => {
     });
 };
 
-export const getCopaySummaryStatements = () => async (dispatch, getState) => {
-  const shouldUseLighthouseCopays = selectVistaLighthouse(getState());
+export const getCopaySummaryStatements = async dispatch => {
   dispatch({ type: MCP_STATEMENTS_FETCH_INIT });
 
   const dataUrl = `${environment.API_URL}/v1/medical_copays`;
@@ -88,10 +84,7 @@ export const getCopaySummaryStatements = () => async (dispatch, getState) => {
     .then(responseData => {
       return dispatch({
         type: MCP_STATEMENTS_FETCH_SUCCESS,
-        response: shouldUseLighthouseCopays
-          ? responseData.data
-          : transform(responseData.data),
-        isCerner: responseData.isCerner,
+        response: responseData,
       });
     })
     .catch(({ errors }) => {
