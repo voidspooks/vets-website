@@ -444,7 +444,7 @@ describe('MessageThreadHeader component', () => {
       expect(screen.queryByTestId('cannot-reply-alert-message')).to.not.exist;
     });
 
-    it('still shows StaleMessageAlert in migration phase when isStale is true and replyDisabled is false', () => {
+    it('hides StaleMessageAlert in migration phase when isStale is true and replyDisabled is false', () => {
       const state = {
         ...defaultState,
         sm: {
@@ -464,9 +464,8 @@ describe('MessageThreadHeader component', () => {
       const props = { ...defaultProps, cannotReply: true };
       const screen = setup(state, props);
 
-      // StaleMessageAlert in the useCanReplyField path does not check
-      // isInMigrationPhase, so it remains visible
-      expect(screen.queryByTestId('expired-alert-message')).to.exist;
+      // StaleMessageAlert should not render when in migration phase
+      expect(screen.queryByTestId('expired-alert-message')).to.not.exist;
     });
   });
 
