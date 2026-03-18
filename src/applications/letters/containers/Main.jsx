@@ -83,42 +83,32 @@ export class Main extends React.Component {
           </p>
           <ul className="vads-u-margin-bottom--9 bullet-disc">
             <li>
-              <a
+              <va-link
                 href="/education/download-letters/"
-                target="_blank"
-                className="vads-u-text-decoration--none"
-              >
-                VA education letters
-              </a>
+                external
+                text="VA education letters"
+              />
             </li>
             <li>
-              <a
+              <va-link
                 href="/education/gi-bill/post-9-11/ch-33-benefit"
-                target="_blank"
-                className="vads-u-text-decoration--none"
-              >
-                Post-9/11 GI Bill statement of benefits
-              </a>
+                external
+                text="Post-9/11 GI Bill statement of benefits"
+              />
             </li>
             <li>
-              <a
+              <va-link
                 href="/housing-assistance/home-loans/check-coe-status/"
-                rel="noopener noreferrer"
-                target="_blank"
-                className="vads-u-text-decoration--none"
-              >
-                Certificate of home loan benefits
-              </a>
+                external
+                text="Certificate of home loan benefits"
+              />
             </li>
             <li>
-              <a
+              <va-link
                 href="/records/get-military-service-records/"
-                rel="noopener noreferrer"
-                target="_blank"
-                className="vads-u-text-decoration--none"
-              >
-                Discharge or separation papers (DD214)
-              </a>
+                external
+                text="Discharge or separation papers (DD214)"
+              />
             </li>
           </ul>
           <va-need-help>

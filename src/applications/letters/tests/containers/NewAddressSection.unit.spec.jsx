@@ -50,28 +50,35 @@ const getStore = () => {
 
 describe('<NewAddressSection>', () => {
   it('should show intro text', () => {
-    const { container, getByText, getByRole } = render(
+    const { container, getByText } = render(
       <Provider store={getStore()}>
         <MemoryRouter>
           <NewAddressSection success />
         </MemoryRouter>
       </Provider>,
     );
-    const link = getByRole('link', {
-      name: /learn about changing your address in your VA\.gov profile/i,
-    });
+    const link = container.querySelector(
+      'va-link[href="https://www.va.gov/change-address/"]',
+    );
     expect(
       getByText(
         /This mailing address will be listed on your benefit letters and documentation. You can edit this address./,
-      ).exist,
-    );
+      ),
+    ).to.exist;
     const alert = container.querySelector('va-alert');
     expect(alert).to.exist;
     expect(
       getByText(
         /Changing your address here will also update it in your VA.gov profile. We use this address for several VA benefits and services./,
-      ).exist,
-    );
+      ),
+    ).to.exist;
     expect(link).to.exist;
+    expect(link.hasAttribute('external')).to.be.true;
+    expect(link.getAttribute('href')).to.equal(
+      'https://www.va.gov/change-address/',
+    );
+    expect(link.getAttribute('text')).to.equal(
+      'Learn about changing your address in your VA.gov profile',
+    );
   });
 });

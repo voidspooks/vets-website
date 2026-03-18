@@ -115,14 +115,11 @@ export function NewAddressSection({ success }) {
               Changing your address here will also update it in your VA.gov
               profile. We use this address for several VA benefits and services.
               <br />
-              <a
+              <va-link
                 href="https://www.va.gov/change-address/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn about changing your address in your VA.gov profile (opens
-                in new tab)
-              </a>
+                external
+                text="Learn about changing your address in your VA.gov profile"
+              />
             </p>
           </va-alert>
 
