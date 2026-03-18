@@ -10,6 +10,8 @@ export const medicationsUrls = {
   MEDICATIONS_LOGIN: '/my-health/medications?next=loginModal&oauth=true',
   MEDICATIONS_REFILL: '/my-health/medications/refill',
   PRESCRIPTION_DETAILS: '/my-health/medications/prescription',
+  RENEW_PRESCRIPTIONS_URL:
+    'https://www.va.gov/resources/how-to-renew-a-va-prescription/',
   subdirectories: {
     BASE: '/',
     DOCUMENTATION: '/documentation',

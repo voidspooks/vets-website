@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
+import { selectCernerFacilityIds } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/selectors';
 import ExtraDetails from '../shared/ExtraDetails';
 import LastFilledInfo from '../shared/LastFilledInfo';
+import SendRxRenewalMessage from '../shared/SendRxRenewalMessage';
+import StatusAlertBanner from '../shared/StatusAlertBanner';
 import { OracleHealthInCardAlert } from '../shared/OracleHealthTransitionAlerts';
 import {
   dateFormat,
@@ -11,6 +14,7 @@ import {
   getRxStatus,
   rxSourceIsNonVA,
   getTrackingUrl,
+  isOracleHealthPrescription,
 } from '../../util/helpers';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import {
@@ -78,14 +82,22 @@ const MedicationsListCard = ({ rx }) => {
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_SHIPPED &&
     rx.isTrackable &&
     Boolean(latestTrackingStatus);
-  const trackingUrl = getTrackingUrl(
-    latestTrackingStatus?.carrier,
-    latestTrackingStatus?.trackingNumber,
-  );
+  const trackingUrl =
+    getTrackingUrl(
+      latestTrackingStatus?.carrier,
+      latestTrackingStatus?.trackingNumber,
+    ) || latestTrackingStatus?.trackingNumber;
   const isNonVaPrescription = rxSourceIsNonVA(rx);
+  const cernerFacilityIds = useSelector(selectCernerFacilityIds);
+  const isOracleHealth = isOracleHealthPrescription(rx, cernerFacilityIds);
   const rxStatus = getRxStatus(rx);
-  const showSimplifiedCard =
-    isManagementImprovements && (isFillInProgress || isRecentlyShipped);
+  const isActiveNoRefills =
+    rx.dispStatus === DISPENSE_STATUS.ACTIVE &&
+    rx.refillRemaining === 0 &&
+    !isNonVaPrescription;
+  const showMedImprovementCard =
+    isManagementImprovements &&
+    (isFillInProgress || isRecentlyShipped || isActiveNoRefills);
 
   const cardBodyContent = () => {
     if (pendingRenewal || pendingMed) {
@@ -118,50 +130,32 @@ const MedicationsListCard = ({ rx }) => {
     }
     return (
       <>
-        {isManagementImprovements &&
+        {showMedImprovementCard &&
           isFillInProgress && (
-            <div
-              className="vads-u-display--flex vads-u-align-items--center vads-u-background-color--green-lightest vads-u-padding--1 vads-u-margin-top--1"
-              data-testid="fill-in-progress-alert"
-              role="status"
-            >
-              <va-icon icon="schedule" size={3} aria-hidden="true" />
-              <p className="vads-u-margin-y--0 vads-u-margin-left--1">
-                {isInitialFill ? 'Fill' : 'Refill'} in progress.{' '}
-                <Link to={medicationsUrls.MEDICATIONS_IN_PROGRESS}>
-                  Go to in-progress medications
-                </Link>
-              </p>
-            </div>
+            <StatusAlertBanner testId="fill-in-progress-alert" icon="schedule">
+              {isInitialFill ? 'Fill' : 'Refill'} in progress.{' '}
+              <Link to={medicationsUrls.MEDICATIONS_IN_PROGRESS}>
+                Go to in-progress medications
+              </Link>
+            </StatusAlertBanner>
           )}
-        {isManagementImprovements &&
+        {showMedImprovementCard &&
           isRecentlyShipped && (
-            <div
-              className="vads-u-display--flex vads-u-align-items--center vads-u-background-color--green-lightest vads-u-padding--1 vads-u-margin-top--1"
-              data-testid="shipped-alert"
-              role="status"
-            >
-              <va-icon icon="local_shipping" size={3} aria-hidden="true" />
-              <p className="vads-u-margin-y--0 vads-u-margin-left--1">
-                {isFirstFill ? 'Fill' : 'Refill'} has shipped.{' '}
-                {trackingUrl ? (
-                  <a
-                    href={trackingUrl}
-                    rel="noreferrer"
-                    data-testid="get-tracking-info-link"
-                  >
-                    Get tracking info
-                  </a>
-                ) : (
-                  <Link to={getPrescriptionDetailUrl(rx)}>
-                    Get tracking info
-                  </Link>
-                )}
-              </p>
-            </div>
+            <StatusAlertBanner testId="shipped-alert" icon="local_shipping">
+              {isFirstFill ? 'Fill' : 'Refill'} has shipped.{' '}
+              {trackingUrl && (
+                <a
+                  href={trackingUrl}
+                  rel="noreferrer"
+                  data-testid="get-tracking-info-link"
+                >
+                  Get tracking info
+                </a>
+              )}
+            </StatusAlertBanner>
           )}
         {rx &&
-          (rx.isRefillable || showSimplifiedCard) &&
+          (rx.isRefillable || showMedImprovementCard) &&
           rx.refillRemaining >= 0 && (
             <p
               className="vads-u-margin-bottom--0"
@@ -175,8 +169,31 @@ const MedicationsListCard = ({ rx }) => {
             </p>
           )}
         {rx && <LastFilledInfo {...rx} />}
+        {showMedImprovementCard &&
+          isActiveNoRefills && (
+            <div
+              className="vads-u-margin-top--1"
+              data-testid="no-refills-left-alert"
+            >
+              <p className="vads-u-margin-y--0">
+                You have no refills left. If you need more, request a renewal.
+              </p>
+              <SendRxRenewalMessage
+                rx={rx}
+                isOracleHealth={isOracleHealth}
+                fallbackContent={
+                  <a
+                    href={medicationsUrls.RENEW_PRESCRIPTIONS_URL}
+                    data-testid="learn-to-renew-prescriptions-link"
+                  >
+                    Learn how to renew prescriptions
+                  </a>
+                }
+              />
+            </div>
+          )}
         {latestTrackingStatus &&
-          !showSimplifiedCard && (
+          !showMedImprovementCard && (
             <p
               className="vads-u-margin-top--1p5 vads-u-padding-bottom--1p5 vads-u-border-bottom--1px vads-u-border-color--gray"
               data-testid="rx-card-details--shipped-on"
@@ -215,7 +232,7 @@ const MedicationsListCard = ({ rx }) => {
             />
           )}
         {rx &&
-          !showSimplifiedCard && (
+          !showMedImprovementCard && (
             <ExtraDetails
               {...rx}
               page={pageType.LIST}

@@ -16,7 +16,7 @@ const LastFilledInfo = rx => {
     <>
       {nonVA && (
         <p
-          className="vads-u-margin-top--0"
+          className="vads-u-margin-top--0 vads-u-margin-bottom--0"
           data-testid="rx-last-filled-info"
           data-dd-privacy="mask"
         >
@@ -30,7 +30,7 @@ const LastFilledInfo = rx => {
       )}
       {showLastFilledDate && (
         <p
-          className="vads-u-margin-top--0"
+          className="vads-u-margin-top--0 vads-u-margin-bottom--0"
           data-testid="rx-last-filled-date"
           data-dd-privacy="mask"
         >
@@ -46,7 +46,7 @@ const LastFilledInfo = rx => {
         !showLastFilledDate &&
         !isCernerPilot && (
           <p
-            className="vads-u-margin-top--0"
+            className="vads-u-margin-top--0 vads-u-margin-bottom--0"
             data-testid="active-not-filled-rx"
             data-dd-privacy="mask"
           >

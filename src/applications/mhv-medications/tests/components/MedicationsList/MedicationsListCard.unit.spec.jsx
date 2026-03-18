@@ -153,6 +153,13 @@ describe('Medication card component', () => {
       },
     };
 
+    const activeNoRefillsRx = {
+      ...prescriptionsListItem,
+      dispStatus: 'Active',
+      isRefillable: false,
+      refillRemaining: 0,
+    };
+
     const shippedRx = {
       ...prescriptionsListItem,
       dispStatus: 'Active: Shipped',
@@ -365,7 +372,7 @@ describe('Medication card component', () => {
       );
     });
 
-    it('shows shipped alert with detail page link for unknown carrier', () => {
+    it('shows shipped alert with tracking number fallback for unknown carrier', () => {
       const rx = {
         ...shippedRx,
         trackingList: [
@@ -379,9 +386,7 @@ describe('Medication card component', () => {
       const { getByTestId, getByText } = setup(rx, managementImprovementsState);
       expect(getByTestId('shipped-alert')).to.exist;
       const link = getByText('Get tracking info');
-      expect(link.getAttribute('href')).to.include(
-        `/prescription/${prescriptionsListItem.prescriptionId}`,
-      );
+      expect(link).to.have.attribute('href', 'ABC123');
     });
 
     it('shows "Refills left" for recently shipped prescription', () => {
@@ -418,6 +423,88 @@ describe('Medication card component', () => {
       const rx = shippedRx;
       const { getByText } = setup(rx, managementImprovementsState);
       expect(getByText(/Refill has shipped/)).to.exist;
+    });
+
+    it('shows no-refills-left alert, renew link, "Refills left: 0", and hides ExtraDetails for Active with 0 refills', () => {
+      const { getByTestId, container } = setup(
+        activeNoRefillsRx,
+        managementImprovementsState,
+      );
+      expect(getByTestId('no-refills-left-alert')).to.exist;
+      expect(getByTestId('no-refills-left-alert').textContent).to.include(
+        'You have no refills left. If you need more, request a renewal.',
+      );
+      const link = getByTestId('learn-to-renew-prescriptions-link');
+      expect(link).to.exist;
+      expect(link).to.have.attribute(
+        'href',
+        medicationsUrls.RENEW_PRESCRIPTIONS_URL,
+      );
+      expect(link.textContent).to.equal('Learn how to renew prescriptions');
+      expect(getByTestId('rx-refill-remaining')).to.have.text(
+        'Refills left: 0',
+      );
+      expect(container.querySelector('.shipping-info')).to.be.null;
+    });
+
+    it('does not show no-refills-left alert when refills remain', () => {
+      const rx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Active',
+        isRefillable: true,
+        refillRemaining: 3,
+      };
+      const { queryByTestId } = setup(rx, managementImprovementsState);
+      expect(queryByTestId('no-refills-left-alert')).to.be.null;
+    });
+
+    it('does not show no-refills-left alert for non-Active status with 0 refills', () => {
+      const rx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Expired',
+        isRefillable: false,
+        refillRemaining: 0,
+      };
+      const { queryByTestId } = setup(rx, managementImprovementsState);
+      expect(queryByTestId('no-refills-left-alert')).to.be.null;
+    });
+
+    it('shows "Send a renewal request message" for Oracle Health Active with 0 refills', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        isRenewable: true,
+        stationNumber: '668',
+        sourceEhr: 'OH',
+      };
+      const { getByTestId, queryByTestId } = setup(rx, {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+          [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: true,
+        },
+      });
+      expect(getByTestId('no-refills-left-alert')).to.exist;
+      expect(getByTestId('send-renewal-request-message-link')).to.exist;
+      expect(queryByTestId('learn-to-renew-prescriptions-link')).to.be.null;
+    });
+
+    it('shows "Learn how to renew" fallback for non-Oracle Health Active with 0 refills', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        isRenewable: true,
+        stationNumber: '001',
+        sourceEhr: 'VA',
+      };
+      const { getByTestId, queryByTestId } = setup(rx, {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+          [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: true,
+        },
+      });
+      expect(getByTestId('no-refills-left-alert')).to.exist;
+      expect(getByTestId('learn-to-renew-prescriptions-link')).to.exist;
+      expect(queryByTestId('send-renewal-request-message-link')).to.be.null;
     });
   });
 
