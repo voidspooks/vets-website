@@ -1,7 +1,7 @@
-import mockCopays from '../../../../medical-copays/tests/e2e/fixtures/mocks/copays.json';
 import mockDebts from '../../../../debt-letters/tests/e2e/fixtures/mocks/debts.json';
 import mockDebtVBMS from '../../../../debt-letters/tests/e2e/fixtures/mocks/debtsVBMS.json';
 import mockCopaysv1 from '../../../../medical-copays/tests/e2e/fixtures/mocks/copays-v1.json';
+import mockCopaysLegacy from '../../../../medical-copays/tests/e2e/fixtures/mocks/copays.json';
 
 const mockCopayEmpty = { data: [] };
 const mockDebtEmpty = {
@@ -53,34 +53,59 @@ export const vbmsResponses = {
   },
 };
 
+// Summary endpoint: /v1/medical_copays (no id). Match with or without query string.
+const copaysSummaryPattern = /\/v1\/medical_copays(\?.*)?$/;
+
 export const copayResponses = {
-  good: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', mockCopays).as(name);
+  // App uses v1/medical_copays for summary fetch (getCopaySummaryStatements)
+  // options.isCerner - when set, adds isCerner to response so useLighthouseCopays matches (ff && !isCerner)
+  good: (name = 'copays', options = {}) => {
+    const body = {
+      ...mockCopaysv1,
+      ...(options.isCerner !== undefined && { isCerner: options.isCerner }),
+    };
+    cy.intercept('GET', copaysSummaryPattern, body).as(name);
   },
-  goodv1: (name = 'copaysv1') => {
-    cy.intercept('GET', '/v1/medical_copays', mockCopaysv1).as(name);
+  goodv1: (name = 'copaysv1', options = {}) => {
+    const body = {
+      ...mockCopaysv1,
+      ...(options.isCerner !== undefined && { isCerner: options.isCerner }),
+    };
+    cy.intercept('GET', copaysSummaryPattern, body).as(name);
   },
   bad: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', req => reply404(req)).as(name);
+    cy.intercept('GET', copaysSummaryPattern, req => reply404(req)).as(name);
   },
   empty: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', mockCopayEmpty).as(name);
+    cy.intercept('GET', copaysSummaryPattern, mockCopayEmpty).as(name);
+  },
+  // Legacy-shaped data (pHAmtDue) for overview when vha_show_payment_history is off; first 2 items sum to 61
+  goodLegacy: (name = 'copays') => {
+    const legacyData = {
+      data: mockCopaysLegacy.data.slice(0, 2),
+      isCerner: true,
+    };
+    cy.intercept('GET', copaysSummaryPattern, legacyData).as(name);
   },
   notEnrolled: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', req => reply403(req)).as(name);
+    cy.intercept('GET', copaysSummaryPattern, req => reply403(req)).as(name);
   },
   detail: (id, name = 'copayDetail') => {
-    cy.intercept('GET', `/v1/medical_copays/${id}`, req => {
-      const copay = mockCopaysv1.data.find(c => c.id === id);
+    cy.intercept(
+      'GET',
+      new RegExp(`/v1/medical_copays/${id}(\\?.*)?$`),
+      req => {
+        const copay = mockCopaysv1.data.find(c => c.id === id);
 
-      if (copay) {
-        req.reply({
-          statusCode: 200,
-          body: { data: copay },
-        });
-      } else {
-        req.reply(404, { errors: ['Copay not found'] });
-      }
-    }).as(name);
+        if (copay) {
+          req.reply({
+            statusCode: 200,
+            body: { data: copay },
+          });
+        } else {
+          req.reply(404, { errors: ['Copay not found'] });
+        }
+      },
+    ).as(name);
   },
 };

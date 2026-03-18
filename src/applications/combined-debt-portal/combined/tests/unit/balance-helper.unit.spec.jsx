@@ -80,8 +80,8 @@ describe('combined debt portal helpers', () => {
   });
 
   describe('totalBills calculation: ', () => {
-    it('should use meta.total when showVHAPaymentHistory is true', () => {
-      const shouldShowVHAPaymentHistory = true;
+    it('should use meta.total when useLighthouseCopays is true', () => {
+      const shouldUseLighthouseCopays = true;
       const mcp = {
         statements: {
           meta: {
@@ -94,20 +94,20 @@ describe('combined debt portal helpers', () => {
         },
       };
 
-      const totalBills = shouldShowVHAPaymentHistory
+      const totalBills = shouldUseLighthouseCopays
         ? mcp.statements.meta.total
         : calculateTotalBills(mcp.statements);
 
       expect(totalBills).to.equal(150);
     });
 
-    it('should use calculateTotalBills when showVHAPaymentHistory is false', () => {
-      const shouldShowVHAPaymentHistory = false;
+    it('should use calculateTotalBills when useLighthouseCopays is false', () => {
+      const shouldUseLighthouseCopays = false;
       const mcp = {
         statements: [{ id: '1', pHAmtDue: 50 }, { id: '2', pHAmtDue: 100 }],
       };
 
-      const totalBills = shouldShowVHAPaymentHistory
+      const totalBills = shouldUseLighthouseCopays
         ? mcp.statements.meta.total
         : calculateTotalBills(mcp.statements);
 

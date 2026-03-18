@@ -11,7 +11,6 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import StatementTable from '../../components/StatementTable';
-import { showVHAPaymentHistory } from '../../../combined/utils/helpers';
 import StatementCharges from '../../components/StatementCharges';
 import mockstatements from '../../../combined/utils/mocks/mockStatements.json';
 
@@ -36,12 +35,15 @@ const createVHACharges = count => {
 
 const mockFormatCurrency = val => `$${val.toFixed(2)}`;
 
-// Helper to create a minimal Redux store
-const createMockStore = (featureToggleValue = false) => {
+// useLighthouseCopays() is true when isCerner is false (Lighthouse). Pass true for Lighthouse, false for legacy.
+const createMockStore = (useLighthouseCopaysValue = false) => {
   return createStore(() => ({
     featureToggles: {
       loading: false,
-      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: featureToggleValue,
+      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
+    },
+    combinedPortal: {
+      mcp: { isCerner: !useLighthouseCopaysValue },
     },
   }));
 };
@@ -52,12 +54,6 @@ describe('Feature Toggle Data Confirmation', () => {
   });
 
   it('showVHAPaymentHistory is true', () => {
-    const mockState = {
-      featureToggles: {
-        [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-      },
-    };
-
     const charges = createVHACharges(15);
     const store = createMockStore(true);
     const { container } = render(
@@ -74,9 +70,6 @@ describe('Feature Toggle Data Confirmation', () => {
     const rows = container.querySelectorAll('va-table-row');
 
     const firstRow = rows[1];
-
-    const result = showVHAPaymentHistory(mockState);
-    expect(result).to.be.true;
 
     expect(firstRow).to.exist;
     expect(
@@ -225,21 +218,12 @@ describe('Feature Toggle Data Confirmation', () => {
 
   // TODO: to be removed once toggle is fully enabled
   it('showVHAPaymentHistory is false', () => {
-    const mockState = {
-      featureToggles: {
-        [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: false,
-      },
-    };
-
     const { container } = render(
       <StatementCharges copay={mockstatements[2]} />,
     );
 
     // Query the custom elements directly
     const firstRow = container.querySelectorAll('va-table-row')[1];
-
-    const result = showVHAPaymentHistory(mockState);
-    expect(result).to.be.false;
 
     expect(firstRow).to.exist;
     expect(

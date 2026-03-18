@@ -27,7 +27,7 @@ describe('CDP - VBA Debt Alerts', () => {
 
     // Has both VBA and VHA balances
     it('displays the current debts section and Your Other VA section', () => {
-      copayResponses.good('copays');
+      copayResponses.goodLegacy('copays');
       cy.visit('/manage-va-debt/summary/debt-balances');
       cy.wait(['@copays', '@debts', '@debtVBMS', '@features']);
       // Page load
@@ -78,7 +78,7 @@ describe('CDP - VBA Debt Alerts', () => {
 
     // // VBA endpoint 404s & VHA has balance
     it('should display alert error message for VBA 404 response with Your Other VA section', () => {
-      copayResponses.good('copays');
+      copayResponses.goodLegacy('copays');
       cy.visit('/manage-va-debt/summary/debt-balances');
       cy.wait(['@copays', '@debts', '@features']);
       // Page load

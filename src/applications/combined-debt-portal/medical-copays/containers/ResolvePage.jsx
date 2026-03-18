@@ -11,7 +11,7 @@ import FinancialHelp from '../components/FinancialHelp';
 import NeedHelpCopay from '../components/NeedHelpCopay';
 import {
   setPageFocus,
-  showVHAPaymentHistory,
+  useLighthouseCopays,
   formatISODateToMMDDYYYY,
   isAnyElementFocused,
   DEFAULT_COPAY_ATTRIBUTES,
@@ -23,9 +23,7 @@ import { getCopayDetailStatement } from '../../combined/actions/copays';
 const ResolvePage = ({ match }) => {
   const dispatch = useDispatch();
 
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useLighthouseCopays();
 
   // Get the selected copay statement ID from the URL
   //  and the selected copay statement data from Redux
@@ -38,7 +36,7 @@ const ResolvePage = ({ match }) => {
     useSelector(state => state.combinedPortal.mcp.statements) || [];
 
   const selectedId = match.params.id;
-  const selectedCopay = shouldShowVHAPaymentHistory
+  const selectedCopay = shouldUseLighthouseCopays
     ? copayDetail
     : allStatements?.find(({ id }) => id === selectedId);
   const TITLE = `Resolve your copay bill`;
@@ -48,7 +46,7 @@ const ResolvePage = ({ match }) => {
       if (!selectedCopay?.id) return DEFAULT_COPAY_ATTRIBUTES;
 
       /* eslint-disable no-nested-ternary */
-      return shouldShowVHAPaymentHistory
+      return shouldUseLighthouseCopays
         ? {
             TITLE: `Copay bill for ${selectedCopay?.attributes.facility.name}`,
             FACILITY_NAME:
@@ -82,7 +80,7 @@ const ResolvePage = ({ match }) => {
           };
       /* eslint-disable no-nested-ternary */
     },
-    [selectedCopay?.id, shouldShowVHAPaymentHistory],
+    [selectedCopay?.id, shouldUseLighthouseCopays],
   );
 
   // get veteran name
@@ -98,7 +96,7 @@ const ResolvePage = ({ match }) => {
       if (!isAnyElementFocused()) setPageFocus();
 
       const shouldFetch =
-        shouldShowVHAPaymentHistory &&
+        shouldUseLighthouseCopays &&
         selectedId &&
         !isCopayDetailLoading &&
         copayDetail?.id !== selectedId;
@@ -112,7 +110,7 @@ const ResolvePage = ({ match }) => {
       dispatch,
       copayDetail?.id,
       isCopayDetailLoading,
-      shouldShowVHAPaymentHistory,
+      shouldUseLighthouseCopays,
     ],
   );
 
@@ -170,7 +168,7 @@ const ResolvePage = ({ match }) => {
           key={selectedId}
           statementId={selectedId}
           statementDate={
-            shouldShowVHAPaymentHistory
+            shouldUseLighthouseCopays
               ? formatISODateToMMDDYYYY(copayAttributes.INVOICE_DATE)
               : selectedCopay.pSStatementDateOutput
           }

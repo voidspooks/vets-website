@@ -108,6 +108,7 @@ describe('Copay Actions', () => {
           },
         },
       ],
+      isCerner: false,
     };
     mockApiRequest(mockResponse);
     return getAllCopayStatements(dispatch).then(() => {
@@ -122,6 +123,7 @@ describe('Copay Actions', () => {
       expect(allCalls[allCalls.length - 1]).to.eql({
         type: MCP_STATEMENTS_FETCH_SUCCESS,
         response: mockResponse.data,
+        isCerner: false,
       });
     });
   });

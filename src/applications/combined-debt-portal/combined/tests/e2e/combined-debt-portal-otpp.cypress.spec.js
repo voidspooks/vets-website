@@ -20,7 +20,7 @@ describe('CDP - One Thing Per Page', () => {
         },
       }).as('features');
 
-      copayResponses.good('copays');
+      copayResponses.goodLegacy('copays');
       debtResponses.good('debts');
 
       cy.visit('/manage-va-debt/summary');
@@ -164,8 +164,8 @@ describe('CDP - One Thing Per Page', () => {
           },
         }).as('features2');
 
-        // Then setup data intercepts
-        copayResponses.good('copays2');
+        // Then setup data intercepts (isCerner: false so useLighthouseCopays when ff on)
+        copayResponses.good('copays2', { isCerner: false });
         debtResponses.good('debts2');
         copayResponses.detail(id);
 

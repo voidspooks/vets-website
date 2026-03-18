@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import { toggleValues } from 'platform/site-wide/feature-toggles/selectors';
 import { addDays, format, isBefore, isEqual, isValid } from 'date-fns';
@@ -48,6 +49,13 @@ export const selectLoadingFeatureFlags = state =>
 
 export const showVHAPaymentHistory = state =>
   toggleValues(state)[FEATURE_FLAG_NAMES.showVHAPaymentHistory];
+
+const selectIsCerner = state => state.combinedPortal?.mcp?.isCerner;
+
+export const selectVistaLighthouse = state =>
+  showVHAPaymentHistory(state) && !selectIsCerner(state);
+
+export const useLighthouseCopays = () => useSelector(selectVistaLighthouse);
 
 /**
  * Helper function to consisently format date strings

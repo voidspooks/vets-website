@@ -6,7 +6,6 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Balances from '../../../combined/components/Balances';
-import { showVHAPaymentHistory } from '../../../combined/utils/helpers';
 
 /**
  * Helper to render components with a mock Redux store
@@ -29,7 +28,7 @@ const renderWithStore = (component, initialState) => {
 };
 
 describe('Balances', () => {
-  it('shouldShowVHAPaymentHistory is true - renders with new data structure', () => {
+  it('flag true and isCerner false - renders with new data structure (Lighthouse)', () => {
     const mockState = {
       user: {},
       combinedPortal: {
@@ -48,6 +47,7 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: null,
+          isCerner: false,
           statements: {
             data: [
               {
@@ -114,14 +114,10 @@ describe('Balances', () => {
     // Verify link is present
     const cardLink = container.querySelector('[data-testid="card-link"]');
     expect(cardLink).to.exist;
-
-    // Verify helper function returns true
-    const result = showVHAPaymentHistory(mockState);
-    expect(result).to.be.true;
   });
 
   // TODO: to be removed once toggle is fully enabled
-  it('shouldShowVHAPaymentHistory is false - renders with legacy data structure', () => {
+  it('flag false - renders with legacy data structure', () => {
     const mockState = {
       user: {},
       combinedPortal: {
@@ -140,6 +136,7 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: null,
+          isCerner: false,
           statements: [
             {
               id: '1',
@@ -177,10 +174,6 @@ describe('Balances', () => {
     // Verify link is present
     const cardLink = container.querySelector('[data-testid="card-link"]');
     expect(cardLink).to.exist;
-
-    // Verify helper function returns false
-    const result = showVHAPaymentHistory(mockState);
-    expect(result).to.be.false;
   });
 
   it('renders no-health-care alert when billError code is 403', () => {

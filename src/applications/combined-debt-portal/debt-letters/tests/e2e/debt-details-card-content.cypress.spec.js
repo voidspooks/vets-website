@@ -12,7 +12,7 @@ describe('CDP - Debt Balances Page Diary Codes', () => {
       'features',
     );
     debtResponses.good('debts');
-    copayResponses.good('copays');
+    copayResponses.goodLegacy('copays');
     cy.visit('/manage-va-debt/summary/debt-balances');
     cy.wait(['@copays', '@debts', '@features']);
   });

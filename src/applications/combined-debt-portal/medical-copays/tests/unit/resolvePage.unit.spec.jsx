@@ -55,6 +55,7 @@ describe('Resolve Page Tests', () => {
         selectedStatement: {},
         isCopayDetailLoading: false,
         statements: [],
+        isCerner: false,
       },
       debtLetters: { debts: [], errors: [] },
     },

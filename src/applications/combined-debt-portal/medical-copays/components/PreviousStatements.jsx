@@ -1,20 +1,18 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { showVHAPaymentHistory } from '../../combined/utils/helpers';
+import { useLighthouseCopays } from '../../combined/utils/helpers';
 import HTMLStatementLink from './HTMLStatementLink';
 
 const PreviousStatements = ({ selectedId }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useLighthouseCopays();
 
   const copayDetail =
     useSelector(state => state.combinedPortal.mcp.selectedStatement) || {};
   const allStatements =
     useSelector(state => state.combinedPortal.mcp.statements) || [];
 
-  const previousStatements = shouldShowVHAPaymentHistory
+  const previousStatements = shouldUseLighthouseCopays
     ? copayDetail?.attributes?.recentStatements || []
     : (() => {
         // Legacy logic for old data
@@ -52,7 +50,7 @@ const PreviousStatements = ({ selectedId }) => {
           <HTMLStatementLink
             id={statement.id}
             statementDate={
-              shouldShowVHAPaymentHistory
+              shouldUseLighthouseCopays
                 ? statement.invoiceDate
                 : statement.pSStatementDateOutput
             }

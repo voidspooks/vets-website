@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-
 import PropTypes from 'prop-types';
 import { VaPagination } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import {
   formatDate,
   formatISODateToMMDDYYYY,
   setPageFocus,
-  showVHAPaymentHistory,
+  useLighthouseCopays,
 } from '../../combined/utils/helpers';
 
 const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useLighthouseCopays();
   const columns = ['Date', 'Description', 'Billing Reference', 'Amount'];
 
   const MAX_ROWS = 10;
@@ -38,7 +34,7 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
     return `Showing ${start}-${end} of ${totalItems} ${label}`;
   };
 
-  const normalizedCharges = shouldShowVHAPaymentHistory
+  const normalizedCharges = shouldUseLighthouseCopays
     ? charges.map(item => ({
         date: item.datePosted,
         description: item.description,
@@ -135,7 +131,7 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   );
 
   const getDate = charge => {
-    if (shouldShowVHAPaymentHistory) {
+    if (shouldUseLighthouseCopays) {
       return formatISODateToMMDDYYYY(charge.date);
     }
 

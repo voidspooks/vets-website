@@ -55,6 +55,7 @@ export const medicalCopaysReducer = (state = mcpInitialState, action) => {
         ...state,
         pending: false,
         statements: action.response,
+        isCerner: action.isCerner,
       };
     case MCP_DETAIL_FETCH_SUCCESS:
       return {

@@ -48,7 +48,7 @@ describe('CDP - Overpayments and copay bills (overview)', () => {
 
   context('User has Copays only', () => {
     beforeEach(() => {
-      copayResponses.good('copaysB');
+      copayResponses.goodLegacy('copaysB');
       debtResponses.empty('debtsB');
 
       cy.visit('/manage-va-debt/summary');
@@ -120,7 +120,7 @@ describe('CDP - Overpayments and copay bills (overview)', () => {
 
   context('User has both Copays and Debts', () => {
     beforeEach(() => {
-      copayResponses.good('copaysD');
+      copayResponses.goodLegacy('copaysD');
       debtResponses.good('debtsD');
 
       cy.visit('/manage-va-debt/summary');
@@ -197,7 +197,7 @@ describe('CDP - Overpayments and copay bills (overview)', () => {
     });
 
     it('should display Debts error message upon debts API-404-error - C18217', () => {
-      copayResponses.good('copaysE2');
+      copayResponses.goodLegacy('copaysE2');
       debtResponses.bad('debtsE2');
 
       cy.visit('/manage-va-debt/summary');

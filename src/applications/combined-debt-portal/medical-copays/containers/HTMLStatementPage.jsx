@@ -5,7 +5,7 @@ import { format, isValid } from 'date-fns';
 import { VaBreadcrumbs } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import {
   setPageFocus,
-  showVHAPaymentHistory,
+  useLighthouseCopays,
 } from '../../combined/utils/helpers';
 import Modals from '../../combined/components/Modals';
 import StatementAddresses from '../components/StatementAddresses';
@@ -16,9 +16,7 @@ import NeedHelpCopay from '../components/NeedHelpCopay';
 import useHeaderPageTitle from '../../combined/hooks/useHeaderPageTitle';
 
 const HTMLStatementPage = ({ match }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useLighthouseCopays();
 
   const selectedId = match.params.id;
   const combinedPortalData = useSelector(state => state.combinedPortal);
@@ -99,7 +97,7 @@ const HTMLStatementPage = ({ match }) => {
           previousBalance={selectedCopay.pHPrevBal}
           statementDate={statementDate}
         />
-        {shouldShowVHAPaymentHistory && (
+        {shouldUseLighthouseCopays && (
           <StatementTable
             charges={charges}
             formatCurrency={formatCurrency}

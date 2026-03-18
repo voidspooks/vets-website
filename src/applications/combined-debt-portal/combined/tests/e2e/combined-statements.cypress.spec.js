@@ -45,7 +45,7 @@ describe('CDP - Combined statements', () => {
 
   context('User has Copays only', () => {
     beforeEach(() => {
-      copayResponses.good('copaysB');
+      copayResponses.goodLegacy('copaysB');
       debtResponses.empty('debtsB');
 
       cy.visit('/manage-va-debt/summary/combined-statements');
@@ -89,7 +89,7 @@ describe('CDP - Combined statements', () => {
 
   context('User has both Copays and Debts', () => {
     beforeEach(() => {
-      copayResponses.good('copaysD');
+      copayResponses.goodLegacy('copaysD');
       debtResponses.good('debtsD');
 
       cy.visit('/manage-va-debt/summary/combined-statements');

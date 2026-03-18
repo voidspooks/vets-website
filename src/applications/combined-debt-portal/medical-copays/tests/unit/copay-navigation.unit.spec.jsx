@@ -3,6 +3,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
+import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 
 import OverviewPage from '../../containers/SummaryPage';
 import DetailCopayPage from '../../containers/DetailCopayPage';
@@ -54,6 +55,7 @@ describe('CDP – Copay Pages (unit)', () => {
         statements: [selectedCopay],
         selectedStatement: selectedCopay,
         error: null,
+        isCerner: true,
       },
       debtLetters: {
         debts: [],
@@ -67,7 +69,7 @@ describe('CDP – Copay Pages (unit)', () => {
     },
     featureToggles: {
       loading: false,
-      showVHAPaymentHistory: false,
+      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: false,
     },
   };
 
