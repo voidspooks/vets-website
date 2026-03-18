@@ -62,7 +62,6 @@ const withFormData = (Component, requiredFields = []) => {
           const searchParams = new URLSearchParams();
           // If redirecting to root, clear form data and add current UUID to query params
           if (redirectPath === URLS.VERIFY) {
-            dispatch(clearFormData());
             const currentUUID = store.getState().vassForm.uuid;
             if (currentUUID) {
               searchParams.set('uuid', currentUUID);
@@ -70,6 +69,7 @@ const withFormData = (Component, requiredFields = []) => {
             if (store.getState().vassForm.flowType === FLOW_TYPES.CANCEL) {
               searchParams.set('cancel', 'true');
             }
+            dispatch(clearFormData());
           }
 
           if (searchParams.size > 0) {

@@ -1,7 +1,7 @@
 import environment from 'platform/utilities/environment';
 import { apiRequest } from 'platform/utilities/api';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { setObfuscatedEmail, setLowAuthFormData } from '../slices/formSlice';
+import { setLowAuthFormData } from '../slices/formSlice';
 import { setVassToken, getVassToken } from '../../utils/auth';
 import { createInvalidTokenError } from '../../services/mocks/utils/errors';
 
@@ -43,8 +43,14 @@ export const vassApi = createApi({
               dob,
             }),
           });
-          dispatch(setLowAuthFormData({ uuid, lastName, dob }));
-          dispatch(setObfuscatedEmail(response.data.email));
+          dispatch(
+            setLowAuthFormData({
+              uuid,
+              lastName,
+              dob,
+              obfuscatedEmail: response.data.email,
+            }),
+          );
           return response;
         } catch ({ errors }) {
           return {

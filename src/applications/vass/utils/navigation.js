@@ -87,8 +87,6 @@ export const routes = [
       requiresAuthorization: AUTH_LEVELS.TOKEN,
       requireFormData: [
         'uuid',
-        'lastName',
-        'dob',
         'obfuscatedEmail',
         'selectedSlot',
         'selectedTopics',

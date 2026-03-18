@@ -95,12 +95,14 @@ const Verify = () => {
   };
 
   const pageTitle = getPageTitle(cancellationFlow, verificationError);
+  const dirty = lastName !== '' || dob !== '';
 
   return (
     <Wrapper
       errorAlert={!uuid || isServerError(postAuthenticationError)}
       pageTitle={pageTitle}
       verificationError={verificationError}
+      disableBeforeUnload={!dirty}
     >
       <p data-testid="verify-intro-text">
         First, we’ll need your information so we can send you a one-time

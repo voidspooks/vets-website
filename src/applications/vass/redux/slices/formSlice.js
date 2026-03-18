@@ -6,6 +6,19 @@ import { FLOW_TYPES } from '../../utils/constants';
 const VASS_CURRENT_UUID_KEY = 'vass_current_uuid';
 const VASS_FORM_KEY_PREFIX = 'vass_form';
 
+const PII_FIELDS = ['lastName', 'dob'];
+
+/**
+ * Sanitize PII data for storage by removing PII fields
+ * @param {object} data
+ * @returns {object}
+ */
+const sanitizeForStorage = data => {
+  return Object.fromEntries(
+    Object.entries(data).filter(([key]) => !PII_FIELDS.includes(key)),
+  );
+};
+
 // Safe sessionStorage helpers
 const getSessionItem = key => {
   try {
@@ -46,7 +59,7 @@ const getSessionStorageKey = () => VASS_FORM_KEY_PREFIX;
 const saveFormDataToStorage = (uuid, data) => {
   if (!uuid) return;
   setSessionItem(VASS_CURRENT_UUID_KEY, uuid);
-  setSessionItem(getSessionStorageKey(), data);
+  setSessionItem(getSessionStorageKey(), sanitizeForStorage(data));
 };
 
 /**
@@ -109,26 +122,18 @@ export const formSlice = createSlice({
         });
       }
     },
-    setObfuscatedEmail: (state, action) => {
-      state.obfuscatedEmail = action.payload;
-      if (state.uuid) {
-        saveFormDataToStorage(state.uuid, {
-          ...state,
-          obfuscatedEmail: action.payload,
-        });
-      }
-    },
     setLowAuthFormData: (state, action) => {
       state.uuid = action.payload.uuid;
       state.lastName = action.payload.lastName;
       state.dob = action.payload.dob;
-      // Save to storage keyed by UUID
-      saveFormDataToStorage(action.payload.uuid, {
-        ...state,
-        uuid: action.payload.uuid,
-        lastName: action.payload.lastName,
-        dob: action.payload.dob,
-      });
+      state.obfuscatedEmail = action.payload.obfuscatedEmail;
+      if (state.uuid) {
+        saveFormDataToStorage(state.uuid, {
+          ...state,
+          uuid: action.payload.uuid,
+          obfuscatedEmail: action.payload.obfuscatedEmail,
+        });
+      }
     },
     setFlowType: (state, action) => {
       state.flowType = action.payload;
@@ -179,7 +184,6 @@ export const {
   setSelectedSlot,
   setSelectedTopics,
   setLowAuthFormData,
-  setObfuscatedEmail,
   setFlowType,
   clearFormData,
   hydrateFormData,

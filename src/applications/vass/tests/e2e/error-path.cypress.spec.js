@@ -915,6 +915,37 @@ describe('VASS Error Paths', () => {
       });
     });
 
+    describe('when the user reloads the page on the Enter OTP page', () => {
+      beforeEach(() => {
+        mockRequestOtpApi();
+
+        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        VerifyPageObject.fillAndSubmitForm();
+        cy.wait('@vass:post:request-otp');
+      });
+
+      it('should warn about unsaved changes and redirect to Verify with uuid after accepting the reload prompt', () => {
+        EnterOTPPageObject.assertEnterOTPPage();
+
+        const beforeUnloadFired = cy.stub();
+        cy.on('window:before:unload', beforeUnloadFired);
+
+        cy.on('window:confirm', text => {
+          expect(text).to.contains(
+            'information you’ve entered may not be saved',
+          );
+          return true;
+        });
+
+        cy.reload();
+
+        cy.url().should('include', `uuid=${uuid}`);
+        VerifyPageObject.assertVerifyPage();
+        cy.injectAxeThenAxeCheck();
+        saveScreenshot('vass_error_navigation_reloadEnterOTP');
+      });
+    });
+
     describe('when the user navigates to the solid start page without a uuid', () => {
       beforeEach(() => {
         cy.visit('/service-member/benefits/solid-start/schedule');

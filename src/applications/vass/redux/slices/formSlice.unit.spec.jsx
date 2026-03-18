@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import formReducer, {
   setSelectedSlot,
   setSelectedTopics,
-  setObfuscatedEmail,
   setLowAuthFormData,
   setFlowType,
   clearFormData,
@@ -104,34 +103,13 @@ describe('formSlice', () => {
       });
     });
 
-    describe('setObfuscatedEmail', () => {
-      it('should set the obfuscated email', () => {
-        const email = 't***@example.com';
-        const actual = formReducer(
-          createFormState(),
-          setObfuscatedEmail(email),
-        );
-
-        expect(actual.obfuscatedEmail).to.equal(email);
-      });
-
-      it('should update the obfuscated email when one already exists', () => {
-        const initialState = createFormState({
-          obfuscatedEmail: 'old***@example.com',
-        });
-        const newEmail = 'new***@example.com';
-        const actual = formReducer(initialState, setObfuscatedEmail(newEmail));
-
-        expect(actual.obfuscatedEmail).to.equal(newEmail);
-      });
-    });
-
     describe('setLowAuthFormData', () => {
-      it('should set uuid, lastname, and dob', () => {
+      it('should set uuid, lastName, dob, and obfuscatedEmail', () => {
         const payload = {
           uuid: 'c0ffee-1234-beef-5678',
           lastName: 'Doe',
           dob: '1990-01-15',
+          obfuscatedEmail: 't***@example.com',
         };
         const actual = formReducer(
           createFormState(),
@@ -141,24 +119,28 @@ describe('formSlice', () => {
         expect(actual.uuid).to.equal(payload.uuid);
         expect(actual.lastName).to.equal(payload.lastName);
         expect(actual.dob).to.equal(payload.dob);
+        expect(actual.obfuscatedEmail).to.equal(payload.obfuscatedEmail);
       });
 
-      it('should update uuid, lastname, and dob when they already exist', () => {
+      it('should update all fields when they already exist', () => {
         const initialState = createFormState({
           uuid: 'old-uuid',
           lastName: 'OldName',
           dob: '1980-05-20',
+          obfuscatedEmail: 'old***@example.com',
         });
         const payload = {
           uuid: 'new-uuid',
           lastName: 'NewName',
           dob: '1995-12-25',
+          obfuscatedEmail: 'new***@example.com',
         };
         const actual = formReducer(initialState, setLowAuthFormData(payload));
 
         expect(actual.uuid).to.equal(payload.uuid);
         expect(actual.lastName).to.equal(payload.lastName);
         expect(actual.dob).to.equal(payload.dob);
+        expect(actual.obfuscatedEmail).to.equal(payload.obfuscatedEmail);
       });
     });
 
@@ -441,6 +423,82 @@ describe('formSlice', () => {
 
       const result = loadFormDataFromStorage();
       expect(result).to.deep.equal(formData);
+    });
+  });
+
+  describe('PII sanitization in sessionStorage', () => {
+    beforeEach(() => {
+      sessionStorage.clear();
+    });
+
+    afterEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('should not store lastName or dob when setLowAuthFormData triggers a save', () => {
+      formReducer(
+        createFormState(),
+        setLowAuthFormData({
+          uuid: 'test-uuid',
+          lastName: 'Doe',
+          dob: '1990-01-15',
+          obfuscatedEmail: 't***@example.com',
+        }),
+      );
+
+      const storedData = JSON.parse(sessionStorage.getItem('vass_form'));
+      expect(storedData).to.not.be.null;
+      expect(storedData).to.not.have.property('lastName');
+      expect(storedData).to.not.have.property('dob');
+    });
+
+    it('should not store lastName or dob when setSelectedSlot triggers a save', () => {
+      const stateWithPII = createFormState({
+        uuid: 'test-uuid',
+        lastName: 'Doe',
+        dob: '1990-01-15',
+      });
+      const slot = {
+        dtStartUtc: '2025-01-15T10:00:00.000Z',
+        dtEndUtc: '2025-01-15T11:00:00.000Z',
+      };
+      formReducer(stateWithPII, setSelectedSlot(slot));
+
+      const storedData = JSON.parse(sessionStorage.getItem('vass_form'));
+      expect(storedData).to.not.be.null;
+      expect(storedData).to.not.have.property('lastName');
+      expect(storedData).to.not.have.property('dob');
+    });
+
+    it('should not store lastName or dob when setSelectedTopics triggers a save', () => {
+      const stateWithPII = createFormState({
+        uuid: 'test-uuid',
+        lastName: 'Doe',
+        dob: '1990-01-15',
+      });
+      const topics = createTopics('1', '2');
+      formReducer(stateWithPII, setSelectedTopics(topics));
+
+      const storedData = JSON.parse(sessionStorage.getItem('vass_form'));
+      expect(storedData).to.not.be.null;
+      expect(storedData).to.not.have.property('lastName');
+      expect(storedData).to.not.have.property('dob');
+    });
+
+    it('should preserve non-PII fields in sessionStorage', () => {
+      formReducer(
+        createFormState(),
+        setLowAuthFormData({
+          uuid: 'test-uuid',
+          lastName: 'Doe',
+          dob: '1990-01-15',
+          obfuscatedEmail: 't***@example.com',
+        }),
+      );
+
+      const storedData = JSON.parse(sessionStorage.getItem('vass_form'));
+      expect(storedData.uuid).to.equal('test-uuid');
+      expect(storedData.obfuscatedEmail).to.equal('t***@example.com');
     });
   });
 });
