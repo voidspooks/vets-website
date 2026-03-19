@@ -206,9 +206,34 @@ describe('Medications List Card Extra Details', () => {
         ...prescription,
         dispStatus: dispStatusObj.onHold,
       });
-      expect(await screen.findByTestId('active-onHold')).to.exist;
+      const el = await screen.findByTestId('active-onHold');
+      expect(el).to.exist;
+      expect(el.textContent).to.include(
+        'Contact your VA provider if you need more of this medication.',
+      );
       expect(screen.queryByTestId('send-renewal-request-message-link')).to.not
         .exist;
+    });
+
+    it('displays updated text for onHold when management improvements flag is enabled', async () => {
+      const screen = setup(
+        {
+          ...prescription,
+          dispStatus: dispStatusObj.onHold,
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      const el = await screen.findByTestId('active-onHold');
+      expect(el.textContent).to.include(
+        'You can’t refill this prescription online right now.',
+      );
+      expect(el.textContent).to.include(
+        'If you need a refill, call your VA pharmacy',
+      );
     });
   });
 

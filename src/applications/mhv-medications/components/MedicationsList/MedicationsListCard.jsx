@@ -93,6 +93,7 @@ const MedicationsListCard = ({ rx }) => {
   const cernerFacilityIds = useSelector(selectCernerFacilityIds);
   const isOracleHealth = isOracleHealthPrescription(rx, cernerFacilityIds);
   const rxStatus = getRxStatus(rx);
+  const isOnHold = rx.dispStatus === dispStatusObj.onHold;
   const isDiscontinued = rx.dispStatus === dispStatusObj.discontinued;
   const isTransferred = rx.dispStatus === dispStatusObj.transferred;
   const isActiveNoRefills =
@@ -200,7 +201,7 @@ const MedicationsListCard = ({ rx }) => {
                 : `Refills remaining: ${rx.refillRemaining}`}
             </p>
           )}
-        {rx && <LastFilledInfo {...rx} />}
+        {rx && !(isMedsImprovements && isOnHold) && <LastFilledInfo {...rx} />}
         {showMedImprovementCard &&
           isActiveNoRefills && (
             <div
@@ -264,14 +265,24 @@ const MedicationsListCard = ({ rx }) => {
             />
           )}
         {rx &&
-          !showMedImprovementCard && (
+          !showMedImprovementCard &&
+          (isMedsImprovements && isOnHold ? (
+            <div className="vads-u-margin-top--1p5">
+              <ExtraDetails
+                {...rx}
+                page={pageType.LIST}
+                isRefillBlocked={isRefillBlocked}
+                isRenewalBlocked={isRenewalBlocked}
+              />
+            </div>
+          ) : (
             <ExtraDetails
               {...rx}
               page={pageType.LIST}
               isRefillBlocked={isRefillBlocked}
               isRenewalBlocked={isRenewalBlocked}
             />
-          )}
+          ))}
       </>
     );
   };

@@ -351,7 +351,33 @@ describe('Medication card component', () => {
       const { container } = setup(rx, managementImprovementsState);
       expect(container.querySelector('.shipping-info')).to.be.null;
     });
+    describe('On Hold prescription card', () => {
+      const onHoldRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Active: On Hold',
+        isRefillable: false,
+        refillRemaining: 1,
+        sortedDispensedDate: '2026-01-05T05:00:00.000Z',
+      };
 
+      it('hides last filled info, status label, and rx number', () => {
+        const rx = { ...onHoldRx, prescriptionNumber: '12345' };
+        const { queryByTestId } = setup(rx, managementImprovementsState);
+        expect(queryByTestId('rx-last-filled-date')).to.be.null;
+        expect(queryByTestId('rxStatus')).to.be.null;
+        expect(queryByTestId('rx-number')).to.be.null;
+      });
+
+      it('shows updated on-hold message text', () => {
+        const { getByTestId } = setup(onHoldRx, managementImprovementsState);
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'You can’t refill this prescription online right now.',
+        );
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'If you need a refill, call your VA pharmacy',
+        );
+      });
+    });
     describe('Transferred prescription card', () => {
       const transferredRx = {
         ...prescriptionsListItem,
