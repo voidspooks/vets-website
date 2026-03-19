@@ -758,7 +758,7 @@ describe('validateIncompleteItems', () => {
     );
 
     // Similar to clicking "continue" on a form page
-    navigationState.setNavigationEvent();
+    navigationState.handleNavigation();
 
     const isValid = helpers.validateIncompleteItems({
       arrayData,
@@ -788,7 +788,7 @@ describe('validateIncompleteItems', () => {
     );
 
     // Similar to clicking "continue" on a form page
-    navigationState.setNavigationEvent();
+    navigationState.handleNavigation();
 
     const isValid = helpers.validateIncompleteItems({
       arrayData,

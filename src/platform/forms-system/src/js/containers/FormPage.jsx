@@ -12,6 +12,7 @@ import {
 } from 'platform/utilities/ui';
 import { scrollToTop, customScrollAndFocus } from 'platform/utilities/scroll';
 
+import navigationState from 'platform/forms-system/src/js/utilities/navigation/navigationState';
 import get from '../../../../utilities/data/get';
 import set from '../../../../utilities/data/set';
 
@@ -86,6 +87,7 @@ class FormPage extends React.Component {
         this.props.route.pageConfig.pageKey ||
       get('params.index', prevProps) !== get('params.index', this.props)
     ) {
+      navigationState.resetNavigation();
       this.prePopulateArrayData();
       focusForm(this.props.route, this.props?.params?.index);
     }

@@ -159,7 +159,7 @@ export const testNumberOfErrorsOnSubmitForWebComponents = (
       );
 
       // this is only relevant for pages with components whose validation relies on navigation state, e.g. va-telephone-input
-      navigationState.setNavigationEvent();
+      navigationState.handleNavigation();
       getByRole('button', { name: /submit/i }).click();
 
       // Wait for the DOM to update after form validation

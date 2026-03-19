@@ -714,7 +714,7 @@ export function rectifyData(data) {
 export function validateTelephoneInput(errors, data) {
   const { isValid, error, touched, required, contact } = rectifyData(data);
   // was validation triggered by navigation attempt
-  const navState = navigationState.getNavigationEventStatus();
+  const navState = navigationState.getNavigationAttemptStatus();
 
   let valid = isValid;
   const notRequiredEmpty = !required && !contact;

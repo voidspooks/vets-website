@@ -27,7 +27,7 @@ const ProgressButton = props => {
   const id = uniqueId();
 
   const handleClick = e => {
-    navigationState.setNavigationEvent();
+    navigationState.handleNavigation();
     // onButtonClick may not be present (see FormNavButtons)
     if (onButtonClick) {
       onButtonClick(e);
