@@ -106,7 +106,7 @@ export const getMockData = (dependent = false) => {
   if (!environment.isLocalhost() || window.Cypress) {
     return undefined;
   }
-  return dependent ? mockData : claimantMockData;
+  return dependent ? claimantMockData : mockData;
 };
 
 // TODO: Consolidate into single getMockData when all ARP
