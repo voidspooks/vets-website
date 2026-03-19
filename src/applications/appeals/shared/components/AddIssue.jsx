@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { getYear } from 'date-fns';
 import {
   VaMemorableDate,
   VaTextInput,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-
 import { focusElement } from 'platform/utilities/ui/focus';
 import { scrollToFirstError } from 'platform/utilities/scroll';
 import { $ } from 'platform/forms-system/src/js/utilities/ui';
@@ -237,6 +237,9 @@ const AddIssue = ({
           invalidYear={isInvalid('year')}
           aria-describedby="decision-date-description"
           month-select={false}
+          custom-year-error-message={`Enter a year from 1900 to ${getYear(
+            new Date(),
+          )}`}
         />
         <p className="vads-u-margin-top--6">
           <va-button
