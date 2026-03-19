@@ -174,7 +174,6 @@ describe('transformPicklistToV2', () => {
           state: 'AS',
         },
       },
-      spouseIncome: 'N',
     });
   });
 
@@ -199,7 +198,7 @@ describe('transformPicklistToV2', () => {
     };
     const result = transformPicklistToV2(data);
 
-    expect(result.reportDivorce.reasonMarriageEnded).to.equal('Annulment');
+    expect(result.reportDivorce.reasonMarriageEnded).to.equal('Other');
     expect(result.reportDivorce.explanationOfOther).to.equal(
       'Test description',
     );

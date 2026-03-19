@@ -131,20 +131,16 @@ function transformSpouseDivorce(item) {
   // Map V3 endType to V2 reasonMarriageEnded
   const reasonMap = {
     divorce: 'Divorce',
-    annulmentOrVoid: 'Annulment',
-    other: 'Other',
+    annulmentOrVoid: 'Other',
   };
 
   const result = {
     fullName: item.fullName,
     birthDate: item.dateOfBirth,
     date: item.endDate,
-    // TODO: Should we support Other option or default to annulmentOrVoid
     reasonMarriageEnded: reasonMap[item.endType] || 'Other',
     explanationOfOther: item.endAnnulmentOrVoidDescription || '',
     divorceLocation: buildLocation(item),
-    // TODO: Confirm income field source - currently defaulting to 'N'
-    spouseIncome: 'N',
   };
 
   // Only include SSN if it's exactly 9 digits, and normalize to digits only
