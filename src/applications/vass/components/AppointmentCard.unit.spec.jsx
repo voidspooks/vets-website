@@ -1,6 +1,7 @@
 import React from 'react';
+import sinon from 'sinon';
 import { expect } from 'chai';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 
 import AppointmentCard from './AppointmentCard';
 import { createAppointmentData } from '../utils/appointments';
@@ -62,6 +63,24 @@ describe('VASS Component: AppointmentCard', () => {
     );
 
     expect(queryByTestId('add-to-calendar-button')).not.to.exist;
+  });
+
+  it('should call window.print when the print button is clicked', () => {
+    const appointmentData = createAppointmentData();
+    const printStub = sinon.stub(window, 'print');
+
+    const { getByTestId } = render(
+      <AppointmentCard
+        appointmentData={appointmentData}
+        handleCancelAppointment={() => {}}
+        showAddToCalendarButton
+      />,
+    );
+
+    fireEvent.click(getByTestId('print-button'));
+
+    expect(printStub.calledOnce).to.be.true;
+    printStub.restore();
   });
 
   it('omits topics section when no topics are provided', () => {

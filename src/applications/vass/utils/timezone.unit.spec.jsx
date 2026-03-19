@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 import {
   stripDST,
   mapGmtToAbbreviation,
@@ -116,8 +117,9 @@ describe('VASS Utils: timezone', () => {
 
     it('should handle DST correctly by stripping daylight saving time indicators', () => {
       // Test with a summer date to ensure DST handling
-      const originalNow = Date.now;
-      Date.now = () => new Date('2024-07-15T12:00:00Z').getTime(); // Summer date
+      let clock = sinon.useFakeTimers(
+        new Date('2024-07-15T12:00:00Z').getTime(),
+      );
 
       expect(getTimezoneDescByTimeZoneString('America/New_York')).to.equal(
         'Eastern time (ET)',
@@ -125,9 +127,11 @@ describe('VASS Utils: timezone', () => {
       expect(getTimezoneDescByTimeZoneString('America/Chicago')).to.equal(
         'Central time (CT)',
       );
+
+      clock.restore();
 
       // Test with a winter date
-      Date.now = () => new Date('2024-01-15T12:00:00Z').getTime(); // Winter date
+      clock = sinon.useFakeTimers(new Date('2024-01-15T12:00:00Z').getTime());
 
       expect(getTimezoneDescByTimeZoneString('America/New_York')).to.equal(
         'Eastern time (ET)',
@@ -136,8 +140,7 @@ describe('VASS Utils: timezone', () => {
         'Central time (CT)',
       );
 
-      // Restore original Date.now
-      Date.now = originalNow;
+      clock.restore();
     });
   });
 });

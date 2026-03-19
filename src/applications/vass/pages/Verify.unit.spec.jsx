@@ -58,6 +58,59 @@ describe('VASS Component: Verify', () => {
     expect(queryByTestId('verify-error-alert')).to.not.exist;
   });
 
+  describe('form validation', () => {
+    it('should display validation errors when submit is clicked with no inputs', async () => {
+      const { getByTestId, container } = renderWithStoreAndRouterV6(
+        <Verify />,
+        defaultRenderOptionsWithUuid,
+      );
+
+      const submitButton = getByTestId('submit-button');
+      submitButton.click();
+
+      await waitFor(() => {
+        expect(getByTestId('last-name-input').getAttribute('error')).to.equal(
+          'Please enter your last name',
+        );
+        expect(
+          container
+            .querySelector('va-memorable-date[data-testid="dob-input"]')
+            .getAttribute('error'),
+        ).to.equal('Please enter your date of birth');
+      });
+    });
+
+    it('should clear last name error on blur after entering a value', async () => {
+      const { getByTestId, container } = renderWithStoreAndRouterV6(
+        <Verify />,
+        defaultRenderOptionsWithUuid,
+      );
+
+      getByTestId('submit-button').click();
+
+      await waitFor(() => {
+        expect(getByTestId('last-name-input').getAttribute('error')).to.equal(
+          'Please enter your last name',
+        );
+      });
+
+      inputVaTextInput(
+        container,
+        'Smith',
+        'va-text-input[data-testid="last-name-input"]',
+      );
+
+      const lastNameInput = getByTestId('last-name-input');
+      lastNameInput.dispatchEvent(
+        new FocusEvent('focusout', { bubbles: true }),
+      );
+
+      await waitFor(() => {
+        expect(lastNameInput.getAttribute('error')).to.equal('');
+      });
+    });
+  });
+
   describe('when URL does not have a UUID', () => {
     it('should display error alert when URL does not have a UUID', () => {
       const { getByTestId, queryByTestId } = renderWithStoreAndRouterV6(

@@ -1,9 +1,15 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { generateSlots } from './mock-helpers';
 
 const TZ_PT = 'America/Los_Angeles';
+
+// Fixed to a Monday so weekday counts are deterministic:
+// 14 days from Jan 5 = Jan 6 (Tue) – Jan 19 (Mon) = 10 weekdays
+// 7 days from Jan 5 = Jan 6 (Tue) – Jan 12 (Mon) = 5 weekdays
+const FIXED_DATE = new Date('2026-01-05T12:00:00Z');
 
 const getExpectedPacific8amUtc = utcDateString => {
   const dateStr = format(new Date(utcDateString), 'yyyy-MM-dd');
@@ -11,6 +17,16 @@ const getExpectedPacific8amUtc = utcDateString => {
 };
 
 describe('generateSlots', () => {
+  let clock;
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers(FIXED_DATE.getTime());
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
+
   it('should generate default 14 days of slots with 12 slots per day', () => {
     const slots = generateSlots();
 

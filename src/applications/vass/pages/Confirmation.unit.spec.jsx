@@ -1,10 +1,12 @@
 import React from 'react';
 import { expect } from 'chai';
+import { waitFor, fireEvent } from '@testing-library/react';
 import { Routes, Route } from 'react-router-dom-v5-compat';
 import { renderWithStoreAndRouterV6 as renderWithStoreAndRouter } from 'platform/testing/unit/react-testing-library-helpers';
 
 import Confirmation from './Confirmation';
-import { getDefaultRenderOptions } from '../utils/test-utils';
+import { getDefaultRenderOptions, LocationDisplay } from '../utils/test-utils';
+import { URLS } from '../utils/constants';
 import {
   createAppointmentData,
   createVassApiStateWithAppointment,
@@ -51,6 +53,38 @@ describe('VASS Component: Confirmation', () => {
       expect(getByTestId('confirmation-page')).to.exist;
       expect(queryByTestId('confirmation-message')).to.not.exist;
       expect(getByTestId('appointment-card')).to.exist;
+    });
+  });
+
+  describe('navigation', () => {
+    it('should navigate to the cancel appointment page when cancel button is clicked', async () => {
+      const { getByTestId } = renderWithStoreAndRouter(
+        <>
+          <Routes>
+            <Route
+              path="/confirmation/:appointmentId"
+              element={<Confirmation />}
+            />
+            <Route
+              path={`${URLS.CANCEL_APPOINTMENT}/:appointmentId`}
+              element={<div>Cancel Appointment Page</div>}
+            />
+          </Routes>
+          <LocationDisplay />
+        </>,
+        {
+          ...getDefaultRenderOptions({}, { vassApi: getVassApiState() }),
+          initialEntries: [`/confirmation/${appointmentId}`],
+        },
+      );
+
+      fireEvent.click(getByTestId('cancel-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('location-display').textContent).to.equal(
+          `${URLS.CANCEL_APPOINTMENT}/${appointmentId}`,
+        );
+      });
     });
   });
 });

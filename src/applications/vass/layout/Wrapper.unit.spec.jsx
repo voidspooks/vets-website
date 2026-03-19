@@ -1,12 +1,14 @@
 import React from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { addDays, addMinutes, subDays, format } from 'date-fns';
 import { createServiceMap } from '@department-of-veterans-affairs/platform-monitoring';
 import { renderWithStoreAndRouterV6 as renderWithStoreAndRouter } from 'platform/testing/unit/react-testing-library-helpers';
+import { $ } from 'platform/forms-system/src/js/utilities/ui';
 
 import Wrapper from './Wrapper';
-import { getDefaultRenderOptions } from '../utils/test-utils';
+import { getDefaultRenderOptions, LocationDisplay } from '../utils/test-utils';
 
 const defaultRenderOptions = getDefaultRenderOptions();
 
@@ -93,6 +95,34 @@ describe('VASS Component: Wrapper', () => {
     );
 
     expect(screen.getByTestId('back-link')).to.exist;
+  });
+
+  it('should navigate back when back link is clicked', async () => {
+    const { container, getByTestId } = renderWithStoreAndRouter(
+      <>
+        <Wrapper showBackLink>
+          <div>Content</div>
+        </Wrapper>
+        <LocationDisplay />
+      </>,
+      {
+        ...defaultRenderOptions,
+        initialEntries: ['/previous-page', '/current-page'],
+        initialIndex: 1,
+      },
+    );
+
+    expect(getByTestId('location-display').textContent).to.equal(
+      '/current-page',
+    );
+
+    fireEvent.click($('va-link[data-testid="back-link"]', container));
+
+    await waitFor(() => {
+      expect(getByTestId('location-display').textContent).to.equal(
+        '/previous-page',
+      );
+    });
   });
 
   it('should display *Required text when required prop is passed with pageTitle', () => {
@@ -362,6 +392,18 @@ describe('VASS Component: Wrapper', () => {
   });
 
   describe('maintenance window', () => {
+    // Use a fixed date so maintenance window calculations are deterministic
+    const FIXED_DATE = new Date('2026-01-15T12:00:00Z');
+    let clock;
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers(FIXED_DATE.getTime());
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
     it('should render maintenance message when service is down', () => {
       const serviceMap = createServiceMap([
         {

@@ -15,18 +15,24 @@ import { generateSlots } from '../utils/mock-helpers';
 import { getDefaultRenderOptions } from '../utils/test-utils';
 import * as auth from '../utils/auth';
 
-// Mock appointment availability data
-const mockAppointmentAvailability = {
-  data: {
-    appointmentId: 'test-uuid',
-    availableTimeSlots: generateSlots(),
-  },
-};
+// Use a fixed Monday date so generateSlots produces deterministic results
+const FIXED_DATE = new Date('2026-01-05T12:00:00Z');
 
 describe('VASS Component: DateTimeSelection', () => {
   let getVassTokenStub;
+  let clock;
+  let mockAppointmentAvailability;
 
   beforeEach(() => {
+    clock = sinon.useFakeTimers(FIXED_DATE.getTime());
+    mockAppointmentAvailability = {
+      data: {
+        appointmentId: 'test-uuid',
+        availableSlots: generateSlots(),
+      },
+    };
+    clock.restore();
+
     mockFetch();
     getVassTokenStub = sinon.stub(auth, 'getVassToken').returns('mock-token');
     setFetchJSONResponse(global.fetch.onCall(0), mockAppointmentAvailability);
@@ -78,7 +84,7 @@ describe('VASS Component: DateTimeSelection', () => {
 
   it('should not deselect date when onChange is called with empty array', async () => {
     // Render component with a pre-selected date
-    const selectedSlot = mockAppointmentAvailability.data.availableTimeSlots[0];
+    const selectedSlot = mockAppointmentAvailability.data.availableSlots[0];
     const screen = renderComponent(selectedSlot);
     await waitFor(() => {
       expect(screen.getByTestId('date-time-selection')).to.exist;
@@ -121,6 +127,10 @@ describe('VASS Component: DateTimeSelection', () => {
   describe('navigation prevention', () => {
     let addEventListenerSpy;
     let removeEventListenerSpy;
+    let confirmStub;
+    let pushStateSpy;
+    let backSpy;
+    let removeVassTokenSpy;
 
     beforeEach(() => {
       addEventListenerSpy = sinon.spy(window, 'addEventListener');
@@ -130,6 +140,22 @@ describe('VASS Component: DateTimeSelection', () => {
     afterEach(() => {
       addEventListenerSpy.restore();
       removeEventListenerSpy.restore();
+      if (confirmStub) {
+        confirmStub.restore();
+        confirmStub = null;
+      }
+      if (pushStateSpy) {
+        pushStateSpy.restore();
+        pushStateSpy = null;
+      }
+      if (backSpy) {
+        backSpy.restore();
+        backSpy = null;
+      }
+      if (removeVassTokenSpy) {
+        removeVassTokenSpy.restore();
+        removeVassTokenSpy = null;
+      }
     });
 
     it('should add popstate listener on mount', async () => {
@@ -155,7 +181,7 @@ describe('VASS Component: DateTimeSelection', () => {
     });
 
     it('should push history state on mount', async () => {
-      const pushStateSpy = sinon.spy(window.history, 'pushState');
+      pushStateSpy = sinon.spy(window.history, 'pushState');
 
       const screen = renderComponent();
       await waitFor(() => {
@@ -163,12 +189,11 @@ describe('VASS Component: DateTimeSelection', () => {
       });
 
       expect(pushStateSpy.called).to.be.true;
-      pushStateSpy.restore();
     });
 
     it('should prevent back navigation when user cancels confirm dialog', async () => {
-      const confirmStub = sinon.stub(window, 'confirm').returns(false);
-      const pushStateSpy = sinon.spy(window.history, 'pushState');
+      confirmStub = sinon.stub(window, 'confirm').returns(false);
+      pushStateSpy = sinon.spy(window.history, 'pushState');
 
       const screen = renderComponent();
       await waitFor(() => {
@@ -185,14 +210,11 @@ describe('VASS Component: DateTimeSelection', () => {
 
       // Should push state again to stay on page
       expect(pushStateSpy.callCount).to.be.at.least(2);
-
-      confirmStub.restore();
-      pushStateSpy.restore();
     });
 
     it('should allow back navigation when user confirms dialog', async () => {
-      const confirmStub = sinon.stub(window, 'confirm').returns(true);
-      const backSpy = sinon.spy(window.history, 'back');
+      confirmStub = sinon.stub(window, 'confirm').returns(true);
+      backSpy = sinon.spy(window.history, 'back');
 
       const screen = renderComponent();
       await waitFor(() => {
@@ -208,15 +230,12 @@ describe('VASS Component: DateTimeSelection', () => {
       });
 
       expect(backSpy.called).to.be.true;
-
-      confirmStub.restore();
-      backSpy.restore();
     });
 
     it('should remove VASS token when user confirms navigation', async () => {
-      const confirmStub = sinon.stub(window, 'confirm').returns(true);
-      const removeVassTokenSpy = sinon.spy(auth, 'removeVassToken');
-      const backSpy = sinon.spy(window.history, 'back');
+      confirmStub = sinon.stub(window, 'confirm').returns(true);
+      removeVassTokenSpy = sinon.spy(auth, 'removeVassToken');
+      backSpy = sinon.spy(window.history, 'back');
 
       const screen = renderComponent();
       await waitFor(() => {
@@ -233,16 +252,12 @@ describe('VASS Component: DateTimeSelection', () => {
       });
 
       expect(backSpy.called).to.be.true;
-
-      confirmStub.restore();
-      removeVassTokenSpy.restore();
-      backSpy.restore();
     });
 
     it('should not remove VASS token when user cancels navigation', async () => {
-      const confirmStub = sinon.stub(window, 'confirm').returns(false);
-      const removeVassTokenSpy = sinon.spy(auth, 'removeVassToken');
-      const pushStateSpy = sinon.spy(window.history, 'pushState');
+      confirmStub = sinon.stub(window, 'confirm').returns(false);
+      removeVassTokenSpy = sinon.spy(auth, 'removeVassToken');
+      pushStateSpy = sinon.spy(window.history, 'pushState');
 
       const screen = renderComponent();
       await waitFor(() => {
@@ -259,10 +274,58 @@ describe('VASS Component: DateTimeSelection', () => {
 
       expect(removeVassTokenSpy.called).to.be.false;
       expect(pushStateSpy.callCount).to.be.at.least(2);
+    });
+  });
 
-      confirmStub.restore();
-      removeVassTokenSpy.restore();
-      pushStateSpy.restore();
+  describe('onChange behavior', () => {
+    let dateClock;
+
+    afterEach(() => {
+      if (dateClock) {
+        dateClock.restore();
+        dateClock = null;
+      }
+    });
+
+    it('should update the selected slot when a time slot is clicked', async () => {
+      dateClock = sinon.useFakeTimers({
+        now: FIXED_DATE.getTime(),
+        toFake: ['Date'],
+      });
+
+      const screen = renderComponent();
+      await waitFor(() => {
+        expect(screen.getByTestId('date-time-selection')).to.exist;
+      });
+
+      const firstSlot = mockAppointmentAvailability.data.availableSlots[0];
+      const firstSlotDate = firstSlot.dtStartUtc.split('T')[0];
+
+      const dateButton = screen.container.querySelector(
+        `#date-cell-${firstSlotDate}`,
+      );
+      await userEvent.click(dateButton);
+
+      await waitFor(() => {
+        expect(
+          screen.container.querySelector(
+            `input[type="radio"][value="${firstSlot.dtStartUtc}"]`,
+          ),
+        ).to.exist;
+      });
+
+      const radio = screen.container.querySelector(
+        `input[type="radio"][value="${firstSlot.dtStartUtc}"]`,
+      );
+      await userEvent.click(radio);
+
+      const continueButton = screen.getByTestId('continue-button');
+      await userEvent.click(continueButton);
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Please select a preferred date and time/)).to
+          .not.exist;
+      });
     });
   });
 });

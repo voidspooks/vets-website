@@ -135,6 +135,10 @@ describe('VASS Utils: auth', () => {
   });
 
   describe('setVassToken', () => {
+    afterEach(() => {
+      Cookies.remove(VASS_TOKEN_COOKIE_NAME);
+    });
+
     it('should set the VASS token in cookies', () => {
       const token = createMockJwt('test-uuid');
       setVassToken(token);
