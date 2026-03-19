@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 
 import {
+  hasGenericUpdateError,
   isFailedTransaction,
   isPendingTransaction,
   isSuccessfulTransaction,
@@ -61,5 +62,43 @@ describe('isSuccessfulTransaction', () => {
     transaction.data.attributes.transactionStatus =
       'COMPLETED_NO_CHANGES_DETECTED';
     expect(isSuccessfulTransaction(transaction)).to.be.true;
+  });
+});
+
+describe('hasGenericUpdateError', () => {
+  it('returns `true` when metadata contains CORE103', () => {
+    const transaction = {
+      data: {
+        attributes: {
+          metadata: [{ code: 'CORE103' }],
+        },
+      },
+    };
+
+    expect(hasGenericUpdateError(transaction)).to.be.true;
+  });
+
+  it('returns `true` when metadata contains VET360_CORE103', () => {
+    const transaction = {
+      data: {
+        attributes: {
+          metadata: [{ code: 'VET360_CORE103' }],
+        },
+      },
+    };
+
+    expect(hasGenericUpdateError(transaction)).to.be.true;
+  });
+
+  it('returns `false` when metadata does not contain a generic update error code', () => {
+    const transaction = {
+      data: {
+        attributes: {
+          metadata: [{ code: 'NOT_A_GENERIC_UPDATE_CODE' }],
+        },
+      },
+    };
+
+    expect(hasGenericUpdateError(transaction)).to.be.false;
   });
 });

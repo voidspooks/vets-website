@@ -27,6 +27,7 @@ export const UPDATE_ERROR_CODES = new Set([
   'PHON125',
   'CORE101',
   'CORE102',
+  'CORE103',
   'CORE105',
   'CORE106',
   'CORE107',
