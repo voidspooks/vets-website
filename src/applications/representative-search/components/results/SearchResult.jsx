@@ -87,6 +87,7 @@ const SearchResult = ({
         'representative-type': query?.representativeType,
         'search-radius': query?.searchArea,
         'representative-name': query?.representativeQueryString,
+        organization: query?.organization,
       },
       'search-selection': 'Find VA Accredited Rep',
       'search-results-id': representativeId,

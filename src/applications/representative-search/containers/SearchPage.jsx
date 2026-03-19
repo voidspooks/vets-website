@@ -42,6 +42,7 @@ const SearchPage = props => {
   const previousRepresentativeInputString = useRef(
     props.currentQuery.representativeInputString,
   );
+  const previousOrganization = useRef(props.currentQuery.organization);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDisplayingResults, setIsDisplayingResults] = useState(false);
@@ -165,12 +166,14 @@ const SearchPage = props => {
         currentSortType,
         currentRepresentativeType,
         currentRepresentativeInputString,
+        currentOrganization,
       ) => {
         const dataLayerProps = {
           locationInputString: context.location,
           representativeType,
           searchRadius: distance,
           representativeName: representativeInputString,
+          organization,
           sortType,
           totalCount: searchResults?.meta?.totalEntries,
           totalPages: searchResults?.meta?.totalPages,
@@ -188,6 +191,9 @@ const SearchPage = props => {
         const repNameUpdated =
           currentRepresentativeInputString !==
           previousRepresentativeInputString.current;
+
+        const organizationUpdated =
+          currentOrganization !== previousOrganization.current;
 
         if (locationUpdated) {
           recordSearchResultsChange(dataLayerProps, 'location');
@@ -216,6 +222,10 @@ const SearchPage = props => {
           );
           previousRepresentativeInputString.current = currentRepresentativeInputString;
         }
+        if (organizationUpdated) {
+          recordSearchResultsChange(dataLayerProps, 'filter', organization);
+          previousOrganization.current = currentOrganization;
+        }
       };
     };
 
@@ -227,6 +237,7 @@ const SearchPage = props => {
         sortType,
         representativeType,
         representativeInputString,
+        organization,
       );
 
       props.searchWithInput({

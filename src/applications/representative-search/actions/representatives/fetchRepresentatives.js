@@ -55,6 +55,7 @@ export const fetchRepresentatives = async (
           'representative-type': type,
           'search-radius': distance,
           'representative-name': name,
+          organization,
         },
         'search-selection': 'Find VA Accredited Rep',
         'search-results-total-count': dataList?.meta?.pagination?.totalEntries,

@@ -34,6 +34,7 @@ export const searchWithInput = ({
         'Type of accredited representative': type,
         'Search area': distance,
         'Name of accredited representative': name,
+        Organization: organization,
       },
       'search-selection': 'Find VA Accredited Rep',
     });
