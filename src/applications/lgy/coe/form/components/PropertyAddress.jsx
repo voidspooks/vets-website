@@ -10,7 +10,7 @@ export const PropertyAddress = ({ formData }) => {
   }
 
   return (
-    <p className="va-address-block vads-u-margin-top--6 vads-u-margin-left--0">
+    <p className="va-address-block vads-u-margin-top--6 vads-u-margin-left--0 coe-property-address">
       <span className="vads-u-font-weight--bold">Property Address</span>
       <br />
       {street1}
