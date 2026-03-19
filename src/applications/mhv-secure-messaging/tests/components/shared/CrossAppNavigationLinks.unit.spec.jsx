@@ -139,9 +139,7 @@ describe('Cross-App Navigation Links', () => {
       // Should be va-link (standard link, not action link)
       expect(link.tagName).to.equal('VA-LINK');
       // Cross-app destination
-      expect(link.getAttribute('href')).to.equal(
-        '/profile/health-care-settings/message-signature',
-      );
+      expect(link.getAttribute('href')).to.equal('/profile/message-signature');
       expect(link.getAttribute('text')).to.equal(
         'Edit signature for all messages',
       );
