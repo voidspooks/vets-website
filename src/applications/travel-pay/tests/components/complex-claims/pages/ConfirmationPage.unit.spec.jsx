@@ -78,7 +78,9 @@ const getData = () => ({
           error: null,
           data: null,
         },
-        data: null,
+        data: {
+          totalCostRequested: defaultClaim.totalCostRequested,
+        },
       },
       expenses: {
         creation: {
@@ -388,5 +390,60 @@ describe('Complex Claims ConfirmationPage', () => {
     expect(errorAlert.textContent).to.not.include(
       'This claim is for your appointment',
     );
+  });
+
+  describe('EstimatedReimbursementCard', () => {
+    it('renders the card when there is no error', () => {
+      const { getByTestId } = renderConfirmationPage();
+
+      expect(getByTestId('estimated-reimbursement-card')).to.exist;
+    });
+
+    it('does not render the card when submission fails', () => {
+      const { queryByTestId } = renderConfirmationPage(stateWithError);
+
+      expect(queryByTestId('estimated-reimbursement-card')).to.not.exist;
+    });
+
+    it('renders per-type expense totals', () => {
+      const { getByTestId } = renderConfirmationPage();
+
+      const card = getByTestId('estimated-reimbursement-card');
+      expect(card.textContent).to.include('Mileage');
+      expect(card.textContent).to.include('$50.25');
+      expect(card.textContent).to.include('Parking');
+      expect(card.textContent).to.include('$50.00');
+    });
+
+    it('renders the total cost requested from claim data', () => {
+      const { getByTestId } = renderConfirmationPage();
+
+      const card = getByTestId('estimated-reimbursement-card');
+      expect(card.textContent).to.include('Total: $100.25');
+    });
+
+    it('renders the deductible information', () => {
+      const { getByTestId } = renderConfirmationPage();
+
+      const card = getByTestId('estimated-reimbursement-card');
+      expect(card.textContent).to.include(
+        'Before we can pay you back for expenses, you must pay a deductible.',
+      );
+      expect(card.textContent).to.include('$3');
+      expect(card.textContent).to.include('$6');
+      expect(card.textContent).to.include('$18');
+    });
+
+    it('renders the deductibles link', () => {
+      const { container } = renderConfirmationPage();
+
+      const link = container.querySelector(
+        'va-link[href="/resources/reimbursed-va-travel-expenses-and-mileage-rate/#monthlydeductible"]',
+      );
+      expect(link).to.exist;
+      expect(link.getAttribute('text')).to.equal(
+        'Learn more about deductibles for VA travel claims',
+      );
+    });
   });
 });

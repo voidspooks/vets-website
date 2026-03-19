@@ -193,8 +193,8 @@ describe('Travel Pay – ReviewPage', () => {
     // Delete modals
     expect(queryAllByTestId('delete-expense-modal').length).to.eq(2);
 
-    // SummaryBox should render
-    expect(getByTestId('summary-box')).to.exist;
+    // EstimatedReimbursementCard should render
+    expect(getByTestId('estimated-reimbursement-card')).to.exist;
 
     // SummaryBox description text about deductible
     expect(
@@ -457,11 +457,11 @@ describe('Travel Pay – ReviewPage', () => {
       { initialState: stateWithZeroExpense, reducers: reducer },
     );
 
-    const summaryBox = getByTestId('summary-box');
-    expect(summaryBox).to.exist;
+    const reimbursementCard = getByTestId('estimated-reimbursement-card');
+    expect(reimbursementCard).to.exist;
 
     // Check total
-    expect(summaryBox.textContent).to.include('Total: $0.00');
+    expect(reimbursementCard.textContent).to.include('Total: $0.00');
 
     // No individual <li> should exist because totals are 0
     const expenseTotals = container.querySelectorAll('ul li');

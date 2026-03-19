@@ -10,9 +10,11 @@ import {
   selectAppointment,
   selectAllExpenses,
   selectAllDocuments,
+  selectComplexClaim,
   selectComplexClaimSubmissionState,
 } from '../../../redux/selectors';
 import ExpensesAccordion from './ExpensesAccordion';
+import EstimatedReimbursementCard from '../../EstimatedReimbursementCard';
 import { TRAVEL_PAY_INFO_LINK } from '../../../constants';
 import WhatHappensNextSection from './WhatHappensNextSection';
 
@@ -21,6 +23,7 @@ const ConfirmationPage = () => {
   const expenses = useSelector(selectAllExpenses) ?? [];
   const documents = useSelector(selectAllDocuments) ?? [];
   const appointmentData = useSelector(selectAppointment)?.data ?? null;
+  const { data: claimDetails = {} } = useSelector(selectComplexClaim);
   const submissionState = useSelector(selectComplexClaimSubmissionState);
 
   const { isSubmitting, error: submitError, data: submitResponse } =
@@ -125,6 +128,12 @@ const ConfirmationPage = () => {
                 documents={documents}
                 headerLevel={3}
               />
+              <div className="vads-u-margin-top--3">
+                <EstimatedReimbursementCard
+                  expenses={expenses}
+                  totalCostRequested={claimDetails?.totalCostRequested}
+                />
+              </div>
             </>
           )}
           <WhatHappensNextSection isError={!!submitError} />
