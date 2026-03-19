@@ -352,6 +352,51 @@ describe('Medication card component', () => {
       expect(container.querySelector('.shipping-info')).to.be.null;
     });
 
+    describe('Transferred prescription card', () => {
+      const transferredRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Transferred',
+        isRefillable: false,
+        refillRemaining: 0,
+      };
+
+      it('shows previous record message', () => {
+        const { getByTestId } = setup(
+          transferredRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('transferred-content')).to.exist;
+        expect(getByTestId('transferred-content').textContent).to.include(
+          'This is a previous record of your medication',
+        );
+      });
+
+      it('hides status label, prescription number, refills, and last filled date', () => {
+        const rx = {
+          ...transferredRx,
+          prescriptionNumber: '12345',
+        };
+        const { queryByTestId } = setup(rx, managementImprovementsState);
+        expect(queryByTestId('rxStatus')).to.be.null;
+        expect(queryByTestId('rx-number')).to.be.null;
+        expect(queryByTestId('rx-refill-remaining')).to.be.null;
+        expect(queryByTestId('rx-last-filled-date')).to.be.null;
+      });
+
+      it('shows medication name link', () => {
+        const { getByTestId } = setup(
+          transferredRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('medications-history-details-link')).to.exist;
+      });
+
+      it('renders with gray background card', () => {
+        const { container } = setup(transferredRx, managementImprovementsState);
+        expect(container.querySelector('va-card[background]')).to.exist;
+      });
+    });
+
     it('does not show fill-in-progress alert for Active status', () => {
       const rx = {
         ...prescriptionsListItem,

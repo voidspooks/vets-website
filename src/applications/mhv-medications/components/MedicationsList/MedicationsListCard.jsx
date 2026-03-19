@@ -32,6 +32,7 @@ import {
   DATETIME_FORMATS,
   RX_SOURCE,
   DISPENSE_STATUS,
+  dispStatusObj,
   dispStatusObjV2,
   medicationsUrls,
   NON_VA_MEDICATION_MESSAGE,
@@ -92,6 +93,8 @@ const MedicationsListCard = ({ rx }) => {
   const cernerFacilityIds = useSelector(selectCernerFacilityIds);
   const isOracleHealth = isOracleHealthPrescription(rx, cernerFacilityIds);
   const rxStatus = getRxStatus(rx);
+  const isDiscontinued = rx.dispStatus === dispStatusObj.discontinued;
+  const isTransferred = rx.dispStatus === dispStatusObj.transferred;
   const isActiveNoRefills =
     rx.dispStatus === DISPENSE_STATUS.ACTIVE &&
     rx.refillRemaining === 0 &&
@@ -139,8 +142,20 @@ const MedicationsListCard = ({ rx }) => {
     </div>
   );
 
+  const renderTransferredCard = () => (
+    <p
+      className="vads-u-margin-top--1 vads-u-margin-bottom--0"
+      data-testid="transferred-content"
+    >
+      This is a previous record of your medication. If you need a refill, find
+      the current medication in your medications list. If you don’t have a
+      current one, contact your provider.
+    </p>
+  );
+
   const cardBodyContent = () => {
     if (isMedsImprovements && isNonVaPrescription) return renderNonVaCard();
+    if (isMedsImprovements && isTransferred) return renderTransferredCard();
     if (pendingRenewal || pendingMed) return renderPendingCard();
 
     return (
@@ -261,10 +276,18 @@ const MedicationsListCard = ({ rx }) => {
     );
   };
 
+  const displayGrayBackground =
+    isMedsImprovements && (isDiscontinued || isTransferred);
+
   return (
     <va-card
+      background={displayGrayBackground || undefined}
       class={`no-print rx-card-container ${
         pendingMed || pendingRenewal ? 'pending-med-or-renewal' : ''
+      }${
+        displayGrayBackground
+          ? ' vads-u-border--1px vads-u-border-color--gray-medium'
+          : ''
       } vads-u-margin-y--2 no-break`}
     >
       <div className="rx-card-details" data-testid="rx-card-info">
