@@ -127,6 +127,18 @@ export const pageHooks = cy => ({
       selectRadioWebComponent('root_view:separationDocuments', 'N');
     });
   },
+  [pagePaths.deathCertificateRequired]: () => {
+    cy.get('@testData').then(() => {
+      cy.fillPage();
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(500);
+      cy.get('va-button[continue]')
+        .shadow()
+        .find('button')
+        .should('be.visible')
+        .click();
+    });
+  },
   [pagePaths.previousNamesQuestion]: () => {
     cy.get('@testData').then(() => {
       selectRadioWebComponent('root_view:servedUnderOtherNames', 'N');

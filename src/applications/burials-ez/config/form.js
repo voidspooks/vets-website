@@ -332,9 +332,7 @@ const formConfig = {
         },
         servicePeriod: {
           title: 'Service period',
-          reviewTitle: () => (
-            <span className="vads-u-font-size--h3">Service period</span>
-          ),
+          reviewTitle: ' ',
           path: 'military-history/service-period',
           depends: form =>
             showPdfFormAlignment() && !get('view:separationDocuments', form),
@@ -514,9 +512,7 @@ const formConfig = {
         directDeposit: createDirectDepositPage(),
         supportingDocuments: {
           title: 'Supporting Documents',
-          reviewTitle: () => (
-            <span className="vads-u-font-size--h3">Supporting Documents</span>
-          ),
+          reviewTitle: () => ' ',
           path: 'additional-information/supporting-documents',
           uiSchema: supportingDocuments.uiSchema,
           schema: supportingDocuments.schema,

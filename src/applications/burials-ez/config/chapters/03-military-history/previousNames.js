@@ -47,6 +47,7 @@ export default {
         hideTitle: true,
         classNames: 'vads-u-margin--0',
         reviewTitle: 'Previous names',
+        reviewItemHeaderLevel: '4',
         keepInPageOnReview: true,
         customTitle: ' ',
         confirmRemove: true,

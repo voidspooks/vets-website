@@ -153,6 +153,9 @@ export default function createDirectDepositPage() {
 
   return {
     title: 'Direct deposit',
+    reviewTitle: () => (
+      <span className="vads-u-font-size--h3">Direct Deposit</span>
+    ),
     path: 'additional-information/direct-deposit',
     uiSchema,
     schema,

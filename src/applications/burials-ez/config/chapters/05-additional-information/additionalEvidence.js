@@ -14,7 +14,7 @@ export default {
         <p>
           Upload any additional supporting documents with your application here.
         </p>
-        <h4>Medical Records</h4>
+        <h2 className="vads-u-font-size--h3">Medical Records</h2>
         <p>
           If you’re applying for a burial allowance for a service-connected
           death, you can submit supporting documents about their medical
@@ -26,13 +26,13 @@ export default {
           application and confirm details about the deceased Veteran’s medical
           information at the time of their death.
         </p>
-        <h5>If you have access</h5>
+        <h3 className="vads-u-font-size--h4">If you have access</h3>
         <p>
           If you have access to the Veteran’s medical records, you can submit
           copies of them with your online application or send them to us by
           mail.
         </p>
-        <h5>If you don’t have access</h5>
+        <h3 className="vads-u-font-size--h4">If you don’t have access</h3>
         <p>
           If you don’t have access to the Veteran’s medical records, you’ll need
           to authorize the release of their records to us. How you release their

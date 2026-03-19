@@ -80,7 +80,7 @@ function Description(props) {
 
       {supportingDocumentsContent}
 
-      <h3>Medical records</h3>
+      <h2 className="vads-u-font-size--h3">Medical records</h2>
       <p>
         If you’re applying for a burial allowance for a service-connected death,
         we recommend submitting the Veteran’s medical records. How you submit
@@ -94,13 +94,13 @@ function Description(props) {
         their death.
       </p>
 
-      <h4>If you have access</h4>
+      <h3 className="vads-u-font-size--h4">If you have access</h3>
       <p>
         If you have access to the Veteran’s medical records, you can submit
         copies of them with your online application or send them to us by mail.
       </p>
 
-      <h4>If you don’t have access</h4>
+      <h3 className="vads-u-font-size--h4">If you don’t have access</h3>
       <p>
         If you don’t have access to the Veteran’s medical records, you’ll need
         to authorize the release of their records to us. How you release their

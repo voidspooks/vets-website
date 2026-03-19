@@ -80,6 +80,7 @@ export default {
         viewField: ServicePeriodView,
         classNames: 'vads-u-margin--0',
         reviewTitle: 'Service periods',
+        reviewItemHeaderLevel: '4',
         keepInPageOnReview: true,
         customTitle: ' ',
         confirmRemove: true,
