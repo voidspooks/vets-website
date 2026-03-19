@@ -105,4 +105,26 @@ describe('526 cause shared page', () => {
 
     await waitFor(() => expect(onSubmit.called).to.be.true);
   });
+
+  it('is still required even when ratedDisability exists', async () => {
+    const { container, getByRole } = mountPage({
+      ratedDisability: 'Sciatica',
+    });
+
+    fireEvent.click(getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      const radio = container.querySelector('va-radio');
+      expect(radio).to.have.attribute('error', 'You must provide a response');
+    });
+  });
+
+  it('does not show SECONDARY when there are no possible parent disabilities', () => {
+    const { container } = mountPage();
+
+    const options = [...container.querySelectorAll('va-radio-option')];
+    const values = options.map(o => o.getAttribute('value'));
+
+    expect(values).to.not.include('SECONDARY');
+  });
 });

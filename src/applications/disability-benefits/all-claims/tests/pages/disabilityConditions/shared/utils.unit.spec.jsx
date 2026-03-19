@@ -216,6 +216,24 @@ describe('526 utils shared page', () => {
     expect(canDeleteItem({ itemData: { isLocked: true }, isReview: true })).to
       .be.false;
   });
+
+  it('arrayOptions.canAddItem hides Add another condition on review and for locked items', () => {
+    const { canAddItem } = utils.arrayOptions;
+
+    expect(canAddItem({ itemData: { isLocked: false }, isReview: false })).to.be
+      .true;
+
+    expect(canAddItem({ itemData: {}, isReview: false })).to.be.true;
+
+    expect(canAddItem({ itemData: { isLocked: true }, isReview: false })).to.be
+      .false;
+
+    expect(canAddItem({ itemData: { isLocked: false }, isReview: true })).to.be
+      .false;
+
+    expect(canAddItem({ itemData: { isLocked: true }, isReview: true })).to.be
+      .false;
+  });
 });
 
 describe('disallowWhitespaceOnly', () => {

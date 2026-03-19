@@ -86,12 +86,12 @@ const causePage = {
           };
         },
       },
-      'ui:required': formData => !formData?.ratedDisability,
     },
   },
 
   schema: {
     type: 'object',
+    required: ['cause'],
     properties: {
       cause: radioSchema(Object.keys(causeOptions)),
     },
