@@ -99,6 +99,19 @@ describe('The My VA Dashboard', () => {
     cy.intercept('/v0/health_care_applications/enrollment_status', () => {
       getEnrollmentStatusStub();
     });
+
+    // Stub remaining requests from the dashboard to avoid network failures
+    cy.intercept('GET', '/v0/my_va/submission_statuses', {
+      data: [],
+      errors: [],
+    });
+    cy.intercept('GET', '/v0/debts?countOnly=true', {
+      debtsCount: 0,
+    });
+    cy.intercept('GET', '/v0/medical_copays', {
+      data: [],
+      errors: [],
+    });
   });
 
   it('should handle LOA1 users at desktop size', () => {
