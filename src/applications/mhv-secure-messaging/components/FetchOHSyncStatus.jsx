@@ -1,15 +1,21 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectProfile } from '@department-of-veterans-affairs/platform-user/selectors';
 import { fetchOHSyncStatus } from '../actions/ohSyncStatus';
 
 const FetchOHSyncStatus = () => {
   const dispatch = useDispatch();
+  const isAtPretransitionedOhFacility = useSelector(
+    state => selectProfile(state)?.userAtPretransitionedOhFacility,
+  );
 
   useEffect(
     () => {
-      dispatch(fetchOHSyncStatus());
+      if (isAtPretransitionedOhFacility) {
+        dispatch(fetchOHSyncStatus());
+      }
     },
-    [dispatch],
+    [dispatch, isAtPretransitionedOhFacility],
   );
 
   return null;

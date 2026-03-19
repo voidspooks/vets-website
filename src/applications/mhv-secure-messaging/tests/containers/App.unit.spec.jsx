@@ -500,7 +500,7 @@ describe('App', () => {
     }
   });
 
-  it('renders FetchOHSyncStatus component', async () => {
+  it('calls oh_sync_status API for pre-transitioned OH facility user', async () => {
     const sandbox = sinon.createSandbox();
     const getOHSyncStatusStub = sandbox
       .stub(SmApi, 'getOHSyncStatus')
@@ -514,6 +514,37 @@ describe('App', () => {
         },
       });
 
+    const pretransitionedState = {
+      ...initialState,
+      user: {
+        ...initialState.user,
+        profile: {
+          ...initialState.user.profile,
+          userAtPretransitionedOhFacility: true,
+        },
+      },
+    };
+
+    try {
+      renderWithStoreAndRouter(<App />, {
+        initialState: pretransitionedState,
+        reducers: reducer,
+      });
+
+      await waitFor(() => {
+        expect(getOHSyncStatusStub.calledOnce).to.be.true;
+      });
+    } finally {
+      sandbox.restore();
+    }
+  });
+
+  it('does not call oh_sync_status API for Vista-only user', async () => {
+    const sandbox = sinon.createSandbox();
+    const getOHSyncStatusStub = sandbox
+      .stub(SmApi, 'getOHSyncStatus')
+      .resolves({});
+
     try {
       renderWithStoreAndRouter(<App />, {
         initialState,
@@ -521,7 +552,7 @@ describe('App', () => {
       });
 
       await waitFor(() => {
-        expect(getOHSyncStatusStub.calledOnce).to.be.true;
+        expect(getOHSyncStatusStub.called).to.be.false;
       });
     } finally {
       sandbox.restore();

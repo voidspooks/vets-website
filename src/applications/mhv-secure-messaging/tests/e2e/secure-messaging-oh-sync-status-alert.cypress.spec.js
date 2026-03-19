@@ -6,11 +6,18 @@ import mockSentThreads from './fixtures/sentResponse/sent-messages-response.json
 import mockDrafts from './fixtures/drafts-response.json';
 import mockOHSyncComplete from './fixtures/ohSyncStatus/oh-sync-complete.json';
 import mockOHSyncIncomplete from './fixtures/ohSyncStatus/oh-sync-incomplete.json';
+import mockPretransitionedUser from './fixtures/userResponse/user-cerner-mixed-pretransitioned.json';
 import { AXE_CONTEXT, Locators, Paths, Alerts } from './utils/constants';
 
 describe('Secure Messaging OH Sync Status Alert', () => {
   beforeEach(() => {
-    SecureMessagingSite.login();
+    // Use pretransitioned OH user so oh_sync_status API is called
+    SecureMessagingSite.login(
+      undefined,
+      undefined,
+      true,
+      mockPretransitionedUser,
+    );
   });
 
   it('displays alert when syncComplete is false', () => {
@@ -25,26 +32,26 @@ describe('Secure Messaging OH Sync Status Alert', () => {
     cy.wait('@ohSyncStatus');
 
     // Verify alert is displayed
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('be.visible');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('be.visible');
 
     // Verify alert content
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT)
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT)
       .find('h2[slot="headline"]')
       .should('contain.text', Alerts.OH_SYNC_STATUS.HEADER);
 
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT)
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT)
       .find('p')
       .should('contain.text', Alerts.OH_SYNC_STATUS.BODY);
 
     // Verify alert type
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should(
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should(
       'have.attr',
       'status',
       'warning',
     );
 
     // Verify alert is closeable
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should(
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should(
       'have.attr',
       'closeable',
     );
@@ -62,7 +69,7 @@ describe('Secure Messaging OH Sync Status Alert', () => {
 
     cy.wait('@ohSyncStatus');
 
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
 
     cy.injectAxe();
     cy.axeCheck(AXE_CONTEXT);
@@ -80,7 +87,7 @@ describe('Secure Messaging OH Sync Status Alert', () => {
     cy.wait('@ohSyncStatus');
 
     // Verify alert is displayed on inbox
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('be.visible');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('be.visible');
 
     // Navigate to sent folder by URL
     cy.intercept(
@@ -106,7 +113,7 @@ describe('Secure Messaging OH Sync Status Alert', () => {
     cy.wait('@sentThreads');
 
     // Verify alert is NOT displayed on sent folder
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
 
     cy.injectAxe();
     cy.axeCheck(AXE_CONTEXT);
@@ -124,7 +131,7 @@ describe('Secure Messaging OH Sync Status Alert', () => {
     cy.wait('@ohSyncStatus');
 
     // Verify alert is displayed on inbox
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('be.visible');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('be.visible');
 
     // Navigate to drafts folder by URL
     cy.intercept('GET', `${Paths.INTERCEPT.MESSAGE_FOLDERS}/-2*`, {
@@ -150,7 +157,7 @@ describe('Secure Messaging OH Sync Status Alert', () => {
     cy.wait('@drafts');
 
     // Verify alert is NOT displayed on drafts folder
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
 
     cy.injectAxe();
     cy.axeCheck(AXE_CONTEXT);
@@ -167,7 +174,25 @@ describe('Secure Messaging OH Sync Status Alert', () => {
     cy.wait('@ohSyncStatusError');
 
     // Verify alert is NOT displayed when API fails
-    cy.get(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
+
+    cy.injectAxe();
+    cy.axeCheck(AXE_CONTEXT);
+  });
+});
+
+describe('Secure Messaging OH Sync Status - Vista-only user', () => {
+  it('does not call oh_sync_status API or display alert for Vista-only user', () => {
+    // Default SecureMessagingSite.login() uses user with userAtPretransitionedOhFacility: false
+    SecureMessagingSite.login();
+
+    PatientInboxPage.loadInboxMessages(mockMessages, undefined, mockRecipients);
+
+    // Verify alert is NOT displayed for Vista-only user
+    cy.findByTestId(Locators.ALERTS.OH_SYNC_STATUS_ALERT).should('not.exist');
+
+    // Verify oh_sync_status API was NOT called
+    cy.get('@ohSyncStatus.all').should('have.length', 0);
 
     cy.injectAxe();
     cy.axeCheck(AXE_CONTEXT);
