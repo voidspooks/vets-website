@@ -152,7 +152,7 @@ describe('CH31 My Case Management Hub', () => {
     {
       step: 5,
       label: 'entitlement determination',
-      copy: /completing the entitlement determination review/i,
+      copy: /Your counselor is completing your entitlement determination review/i,
     },
     {
       step: 6,

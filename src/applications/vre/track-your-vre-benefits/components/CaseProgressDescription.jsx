@@ -100,14 +100,18 @@ const CaseProgressDescription = ({
 
       if (!appointmentDetails?.appointmentDateTime) {
         return (
-          <p>
-            We’ve received and processed your application for Chapter 31
-            benefits. Check your email to schedule your meeting with your
-            counselor. After scheduling, you’ll get a confirmation email and an
-            appointment notification letter. To get ready for your initial
-            evaluation counselor meeting, visit the "Career planning" page
-            linked below.
-          </p>
+          <>
+            <p>
+              We’ve processed your application for Chapter 31 benefits. Check
+              your email to schedule your meeting with your counselor. After
+              scheduling, you’ll get a confirmation email and an appointment
+              notification letter.
+            </p>
+            <p>
+              Use the career planning tools and resources link below to prepare
+              for your initial evaluation counselor meeting.
+            </p>
+          </>
         );
       }
 
@@ -131,9 +135,9 @@ const CaseProgressDescription = ({
       return (
         <>
           <p>
-            Your counselor is completing the entitlement determination review.
-            Visit the “Career planning” page for more information about career
-            paths, support, and rehabilitation resources.
+            Your counselor is completing your entitlement determination review.
+            While you wait, you can look at the career planning tools and
+            resources. The link is in the section below.
           </p>
           {hubCards}
         </>
