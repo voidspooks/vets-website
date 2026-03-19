@@ -31,6 +31,15 @@ export const uiSchema = {
     'ui:options': {
       showFieldLabel: true,
       expandUnder: 'view:hasEvidence',
+      updateUiSchema: formData => {
+        return {
+          'view:hasOtherEvidence': {
+            'ui:title': formData.disability526NewBddShaEnforcementWorkflowEnabled
+              ? 'Other evidence'
+              : 'Required Separation Health Assessment - Part A Self-Assessment or other documents like your DD Form 214, supporting (lay) statements, or other evidence',
+          },
+        };
+      },
     },
     'ui:required': formData => get('view:hasEvidence', formData, false),
     'ui:validations': [
@@ -55,13 +64,16 @@ export const uiSchema = {
     'ui:description': evidenceTypeHelp,
     'ui:options': {
       expandUnder: 'view:hasEvidence',
+      hideIf: data => data.disability526NewBddShaEnforcementWorkflowEnabled,
     },
   },
   'view:evidenceSubmitLater': {
     'ui:title': '',
     'ui:description': BddEvidenceSubmitLater,
     'ui:options': {
-      hideIf: data => _.get('view:hasEvidence', data, true),
+      hideIf: data =>
+        _.get('view:hasEvidence', data, true) ||
+        data.disability526NewBddShaEnforcementWorkflowEnabled,
     },
   },
 };
