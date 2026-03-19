@@ -28,27 +28,22 @@ const TechnologyProgramAccordion = () => {
       </va-accordion-item>
       <va-accordion-item header="View Respondent Burden" id="second">
         <p>
-          We need this information to release your private benefit and/or claim
-          information to a designated third party(ies). The execution of this
-          form does not authorize the release of information other than that
-          specifically described. The information requested on this form will
-          authorize release of the information you specify. Title 38, United
-          States Code, allows us to ask for this information. We estimate that
-          you will need an average of 5 minutes to review the instructions, find
-          the information, and complete this form. VA cannot conduct or sponsor
-          a collection of information unless a valid OMB control number is
-          displayed. You are not required to respond to a collection of
-          information if this number is not displayed. Valid OMB control numbers
-          can be located on the OMB Internet Page at{' '}
-          <a
-            href="https://www.reginfo.gov/public/do/PRAMain"
-            rel="noreferrer"
-            target="_blank"
-          >
-            www.reginfo.gov/public/do/PRAMain
+          An agency may not conduct or sponsor, and a person is not required to
+          respond to, a collection of information unless it displays a currently
+          valid OMB control number. The OMB control number for this project is
+          2900-0914, and it expires 12/31/2028. Public reporting burden for this
+          collection of information is estimated to average 5 minutes per
+          respondent, per year, including the time for reviewing instructions,
+          searching existing data sources, gathering and maintaining the data
+          needed, and completing and reviewing the collection of information.
+          Send comments regarding this burden estimate and any other aspect of
+          this collection of information, including suggestions for reducing the
+          burden, to VA Reports Clearance Officer at{' '}
+          <a href="mailto:vapra@va.gov" target="_blank" rel="noreferrer">
+            vapra@va.gov
           </a>
-          . If desired, you can call 1-800-827-1000 to get information on where
-          to send comments or suggestions about this form.
+          . Please refer to OMB Control No. 2900-0914 in any correspondence. Do
+          not send your completed VA Form 22-10278 to this email address.
         </p>
       </va-accordion-item>
     </va-accordion>

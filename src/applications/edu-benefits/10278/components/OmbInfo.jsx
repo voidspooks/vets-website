@@ -13,7 +13,7 @@ const OmbInfo = () => {
       </p>
       <p className="vads-u-margin--0">
         <span>Expiration date:</span>{' '}
-        <span className="vads-u-font-weight--bold">09/30/2025</span>
+        <span className="vads-u-font-weight--bold">12/31/2028</span>
       </p>
     </div>
   );
