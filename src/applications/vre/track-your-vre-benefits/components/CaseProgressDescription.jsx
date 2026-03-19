@@ -59,7 +59,7 @@ const CaseProgressDescription = ({
           <SelectPreferenceView />
           <va-card background class="vads-u-margin-top--2">
             <h3 className="va-nav-linkslist-heading vads-u-margin-top--0 vads-u-margin-bottom--0">
-              Reading Material
+              Reading material
             </h3>
             <ul className="va-nav-linkslist-list vads-u-margin-bottom--2">
               <li>
