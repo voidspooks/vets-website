@@ -100,9 +100,17 @@ const MedicationsListCard = ({ rx }) => {
     rx.dispStatus === DISPENSE_STATUS.ACTIVE &&
     rx.refillRemaining === 0 &&
     !isNonVaPrescription;
+  const isExpiredRenewable =
+    rx.dispStatus === DISPENSE_STATUS.EXPIRED &&
+    rx.isRenewable &&
+    rx.refillRemaining === 0 &&
+    !isNonVaPrescription;
   const showMedImprovementCard =
     isMedsImprovements &&
-    (isFillInProgress || isRecentlyShipped || isActiveNoRefills);
+    (isFillInProgress ||
+      isRecentlyShipped ||
+      isActiveNoRefills ||
+      isExpiredRenewable);
 
   const renderNonVaCard = () => (
     <>
@@ -203,7 +211,7 @@ const MedicationsListCard = ({ rx }) => {
           )}
         {rx && !(isMedsImprovements && isOnHold) && <LastFilledInfo {...rx} />}
         {showMedImprovementCard &&
-          isActiveNoRefills && (
+          (isActiveNoRefills || isExpiredRenewable) && (
             <div
               className="vads-u-margin-top--1"
               data-testid="no-refills-left-alert"
@@ -214,6 +222,7 @@ const MedicationsListCard = ({ rx }) => {
               <SendRxRenewalMessage
                 rx={rx}
                 isOracleHealth={isOracleHealth}
+                hideExpiredMessage
                 fallbackContent={
                   <a
                     href={medicationsUrls.RENEW_PRESCRIPTIONS_URL}

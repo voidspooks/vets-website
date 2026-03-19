@@ -12,6 +12,7 @@ const SendRxRenewalMessage = ({
   rx,
   fallbackContent = null,
   suppressRenewalLink = false,
+  hideExpiredMessage = false,
   isActionLink = false,
   isOracleHealth = false,
 }) => {
@@ -94,7 +95,7 @@ const SendRxRenewalMessage = ({
       <RenderLinkVariation
         isActionLink={isActionLink}
         setShowRenewalModal={handleOpenModal}
-        isExpired={isExpiredLessThan120Days}
+        isExpired={isExpiredLessThan120Days && !hideExpiredMessage}
       />
       <VaModal
         modalTitle="You're leaving medications to send a message"
@@ -127,6 +128,7 @@ SendRxRenewalMessage.propTypes = {
   isActionLink: PropTypes.bool,
   isActiveNoRefills: PropTypes.bool,
   isOracleHealth: PropTypes.bool,
+  hideExpiredMessage: PropTypes.bool,
   rx: PropTypes.shape({
     refillRemaining: PropTypes.number,
     dispStatus: PropTypes.string,

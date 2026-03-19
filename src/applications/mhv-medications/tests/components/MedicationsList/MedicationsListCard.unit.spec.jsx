@@ -543,6 +543,83 @@ describe('Medication card component', () => {
       expect(queryByTestId('no-refills-left-alert')).to.be.null;
     });
 
+    it('does not show no-refills-left alert for Expired status with 0 refills when isRenewable is false', () => {
+      const rx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Expired',
+        isRefillable: false,
+        isRenewable: false,
+        refillRemaining: 0,
+      };
+      const { queryByTestId } = setup(rx, managementImprovementsState);
+      expect(queryByTestId('no-refills-left-alert')).to.be.null;
+    });
+
+    describe('Scenario 10 — Expired ≤120 days, renewable', () => {
+      const expiredRenewableRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Expired',
+        isRefillable: false,
+        isRenewable: true,
+        refillRemaining: 0,
+      };
+
+      it('shows no-refills-left alert, "Refills left: 0", and hides ExtraDetails for Expired renewable prescription', () => {
+        const { getByTestId, container } = setup(
+          expiredRenewableRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('no-refills-left-alert')).to.exist;
+        expect(getByTestId('no-refills-left-alert').textContent).to.include(
+          'You have no refills left. If you need more, request a renewal.',
+        );
+        expect(getByTestId('rx-refill-remaining')).to.have.text(
+          'Refills left: 0',
+        );
+        expect(container.querySelector('.shipping-info')).to.be.null;
+      });
+
+      it('shows "Learn how to renew" fallback for non-Oracle Health Expired renewable prescription', () => {
+        const rx = {
+          ...expiredRenewableRx,
+          stationNumber: '001',
+          sourceEhr: 'VA',
+        };
+        const { getByTestId, queryByTestId } = setup(rx, {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+            [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+            [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: true,
+          },
+        });
+        expect(getByTestId('no-refills-left-alert')).to.exist;
+        expect(getByTestId('learn-to-renew-prescriptions-link')).to.exist;
+        expect(queryByTestId('send-renewal-request-message-link')).to.be.null;
+      });
+
+      it('shows "Send a renewal request message" for Oracle Health Expired renewable prescription without duplicate expired text', () => {
+        const rx = {
+          ...expiredRenewableRx,
+          stationNumber: '668',
+          sourceEhr: 'OH',
+          expirationDate: new Date(
+            Date.now() - 60 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+        };
+        const { getByTestId, queryByTestId } = setup(rx, {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+            [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+            [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: true,
+          },
+        });
+        expect(getByTestId('no-refills-left-alert')).to.exist;
+        expect(getByTestId('send-renewal-request-message-link')).to.exist;
+        expect(queryByTestId('learn-to-renew-prescriptions-link')).to.be.null;
+        expect(queryByTestId('expired-less-than-120-days')).to.be.null;
+      });
+    });
+
     it('shows "Send a renewal request message" for Oracle Health Active with 0 refills', () => {
       const rx = {
         ...activeNoRefillsRx,
