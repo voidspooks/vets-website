@@ -105,58 +105,6 @@ describe('Refill Button component', () => {
     expect(screen.queryByTestId('refill-request-button')).to.not.exist;
   });
 
-  describe('15-day suppression period', () => {
-    it('does not render the refill button when refillSubmitDate is within 15 days', () => {
-      const today = new Date().toISOString();
-      const screen = setup({ refillSubmitDate: today });
-      expect(screen.queryByTestId('refill-request-button')).to.not.exist;
-    });
-
-    it('does not render the refill button when refillSubmitDate is exactly 14 days ago', () => {
-      const fourteenDaysAgo = new Date(
-        Date.now() - 14 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const screen = setup({ refillSubmitDate: fourteenDaysAgo });
-      expect(screen.queryByTestId('refill-request-button')).to.not.exist;
-    });
-
-    it('renders the refill button when refillSubmitDate is exactly 15 days ago', () => {
-      const fifteenDaysAgo = new Date(
-        Date.now() - 15 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const screen = setup({ refillSubmitDate: fifteenDaysAgo });
-      const button = screen.getByTestId('refill-request-button');
-      expect(button).to.exist;
-    });
-
-    it('renders the refill button when refillSubmitDate is more than 15 days ago', () => {
-      const twentyDaysAgo = new Date(
-        Date.now() - 20 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const screen = setup({ refillSubmitDate: twentyDaysAgo });
-      const button = screen.getByTestId('refill-request-button');
-      expect(button).to.exist;
-    });
-
-    it('renders the refill button when refillSubmitDate is null', () => {
-      const screen = setup({ refillSubmitDate: null });
-      const button = screen.getByTestId('refill-request-button');
-      expect(button).to.exist;
-    });
-
-    it('renders the refill button when refillSubmitDate is undefined', () => {
-      const screen = setup({ refillSubmitDate: undefined });
-      const button = screen.getByTestId('refill-request-button');
-      expect(button).to.exist;
-    });
-
-    it('renders the refill button when refillSubmitDate is an invalid date string', () => {
-      const screen = setup({ refillSubmitDate: 'invalid-date' });
-      const button = screen.getByTestId('refill-request-button');
-      expect(button).to.exist;
-    });
-  });
-
   describe('when mhvMedicationsManagementImprovements flag is enabled', () => {
     it('renders "Request refill"', () => {
       const screen = renderWithStoreAndRouterV6(<RefillButton {...rx} />, {

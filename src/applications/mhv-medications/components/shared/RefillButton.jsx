@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { differenceInDays, parseISO } from 'date-fns';
 import { VaButton } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { pharmacyPhoneNumber } from '@department-of-veterans-affairs/mhv/exports';
 import { datadogRum } from '@datadog/browser-rum';
@@ -9,25 +8,6 @@ import { useRefillPrescriptionMutation } from '../../api/prescriptionsApi';
 import CallPharmacyPhone from './CallPharmacyPhone';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import { selectMedicationsManagementImprovementsFlag } from '../../util/selectors';
-
-const REFILL_SUPPRESSION_DAYS = 15;
-
-/**
- * Check if a refill was recently submitted (within suppression period)
- * @param {string} refillSubmitDate - ISO date string of last refill submission
- * @returns {boolean} true if refill was submitted within suppression period
- */
-const wasRecentlySubmitted = refillSubmitDate => {
-  if (!refillSubmitDate) return false;
-
-  try {
-    const submitDate = parseISO(refillSubmitDate);
-    const daysSinceSubmit = differenceInDays(new Date(), submitDate);
-    return daysSinceSubmit < REFILL_SUPPRESSION_DAYS;
-  } catch {
-    return false;
-  }
-};
 
 const RefillButton = rx => {
   const [
@@ -38,7 +18,7 @@ const RefillButton = rx => {
     selectMedicationsManagementImprovementsFlag,
   );
 
-  const { prescriptionId, isRefillable, refillSubmitDate, stationNumber } = rx;
+  const { prescriptionId, isRefillable, stationNumber } = rx;
 
   const pharmacyPhone = pharmacyPhoneNumber(rx);
 
@@ -49,7 +29,7 @@ const RefillButton = rx => {
     refillPrescription({ id: prescriptionId, stationNumber });
   };
 
-  if (!isRefillable || wasRecentlySubmitted(refillSubmitDate)) {
+  if (!isRefillable) {
     return null;
   }
 
