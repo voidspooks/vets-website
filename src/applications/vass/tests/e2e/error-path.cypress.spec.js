@@ -16,7 +16,9 @@ import {
   mockAppointmentDetailsApi,
   mockCancelAppointmentApi,
   patchCookiesForCI,
+  seedAppState,
   saveScreenshot,
+  mockSuccessfulAuth,
 } from './vass-e2e-helpers';
 import MockRequestOtpResponse from '../fixtures/MockRequestOtpResponse';
 import MockAuthenticateOtpResponse from '../fixtures/MockAuthenticateOtpResponse';
@@ -25,11 +27,17 @@ import MockTopicsResponse from '../fixtures/MockTopicsResponse';
 import MockCreateAppointmentResponse from '../fixtures/MockCreateAppointmentResponse';
 import MockAppointmentDetailsResponse from '../fixtures/MockAppointmentDetailsResponse';
 import MockCancelAppointmentResponse from '../fixtures/MockCancelAppointmentResponse';
-import { createMockJwt } from '../../utils/mock-helpers';
 import { FLOW_TYPES, URLS } from '../../utils/constants';
+import manifest from '../../manifest.json';
 
+const { rootUrl } = manifest;
 const uuid = 'c0ffee-1234-beef-5678';
-const expiresIn = 3600;
+
+function visitAndVerify(url) {
+  cy.visit(url);
+  VerifyPageObject.fillAndSubmitForm();
+  cy.wait('@vass:post:request-otp');
+}
 
 describe('VASS Error Paths', () => {
   beforeEach(() => {
@@ -46,9 +54,7 @@ describe('VASS Error Paths', () => {
             response: MockRequestOtpResponse.createInvalidCredentialsError(),
             responseCode: 401,
           });
-          cy.visit(
-            `/service-member/benefits/solid-start/schedule?uuid=${uuid}`,
-          );
+          cy.visit(`${rootUrl}?uuid=${uuid}`);
         });
 
         it('should display an error when identity verification fails for the first time', () => {
@@ -92,9 +98,7 @@ describe('VASS Error Paths', () => {
             response: MockRequestOtpResponse.createRateLimitExceededError(),
             responseCode: 429,
           });
-          cy.visit(
-            `/service-member/benefits/solid-start/schedule?uuid=${uuid}`,
-          );
+          cy.visit(`${rootUrl}?uuid=${uuid}`);
         });
 
         it('should display a verification error alert', () => {
@@ -118,9 +122,7 @@ describe('VASS Error Paths', () => {
             response: MockRequestOtpResponse.createVassApiError(),
             responseCode: 500,
           });
-          cy.visit(
-            `/service-member/benefits/solid-start/schedule?uuid=${uuid}`,
-          );
+          cy.visit(`${rootUrl}?uuid=${uuid}`);
         });
 
         it('should display a wrapper error alert', () => {
@@ -142,9 +144,7 @@ describe('VASS Error Paths', () => {
             response: MockRequestOtpResponse.createServiceError(),
             responseCode: 503,
           });
-          cy.visit(
-            `/service-member/benefits/solid-start/schedule?uuid=${uuid}`,
-          );
+          cy.visit(`${rootUrl}?uuid=${uuid}`);
         });
 
         it('should display a wrapper error alert', () => {
@@ -163,7 +163,7 @@ describe('VASS Error Paths', () => {
 
     describe('UI Errors', () => {
       beforeEach(() => {
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        cy.visit(`${rootUrl}?uuid=${uuid}`);
       });
       describe('when the user leaves the last name input empty', () => {
         it('should not submit the form and display an error when the user submits the form', () => {
@@ -199,9 +199,7 @@ describe('VASS Error Paths', () => {
   describe('OTP Verification Errors', () => {
     beforeEach(() => {
       mockRequestOtpApi();
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-      VerifyPageObject.fillAndSubmitForm();
-      cy.wait('@vass:post:request-otp');
+      visitAndVerify(`${rootUrl}?uuid=${uuid}`);
     });
 
     describe('API Errors', () => {
@@ -396,33 +394,18 @@ describe('VASS Error Paths', () => {
   });
 
   describe('Appointment Availability Errors', () => {
-    beforeEach(() => {
-      mockRequestOtpApi();
-      const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-        token: createMockJwt(uuid, expiresIn),
-        expiresIn,
-      }).toJSON();
-      mockAuthenticateOtpApi({
-        response: authenticateOtpResponse,
-        responseCode: 200,
-      });
-
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-      VerifyPageObject.fillAndSubmitForm();
-      cy.wait('@vass:post:request-otp');
-    });
-
     describe('API Errors', () => {
       describe('when the user is not within the cohort window', () => {
         beforeEach(() => {
+          seedAppState({ uuid });
           mockAppointmentAvailabilityApi({
             response: MockAppointmentAvailabilityResponse.createNotWithinCohortError(),
             responseCode: 403,
           });
+          cy.visit(`${rootUrl}${URLS.DATE_TIME}`);
         });
 
         it('should display a wrapper error alert', () => {
-          EnterOTPPageObject.fillAndSubmitOTP();
           cy.wait('@vass:get:appointment-availability');
 
           DateTimeSelectionPageObject.assertWrapperErrorAlert({ exist: true });
@@ -431,8 +414,12 @@ describe('VASS Error Paths', () => {
         });
       });
 
+      // "already booked" and "no slots" are handled by the EnterOTP page
+      // (not DateTimeSelection), so these tests must go through the OTP flow.
       describe('when the user already has an appointment booked', () => {
         beforeEach(() => {
+          mockSuccessfulAuth({ uuid });
+
           const appointmentId = 'e61e1a40-1e63-f011-bec2-001dd80351ea';
           mockAppointmentAvailabilityApi({
             response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
@@ -446,6 +433,7 @@ describe('VASS Error Paths', () => {
             }).toJSON(),
             responseCode: 200,
           });
+          visitAndVerify(`${rootUrl}?uuid=${uuid}`);
         });
 
         it('should redirect to the already scheduled page', () => {
@@ -461,10 +449,14 @@ describe('VASS Error Paths', () => {
 
       describe('when no slots are available', () => {
         beforeEach(() => {
+          mockSuccessfulAuth({ uuid });
+
           mockAppointmentAvailabilityApi({
             response: MockAppointmentAvailabilityResponse.createNoSlotsAvailableError(),
             responseCode: 404,
           });
+
+          visitAndVerify(`${rootUrl}?uuid=${uuid}`);
         });
 
         it('should display a wrapper error alert', () => {
@@ -479,14 +471,15 @@ describe('VASS Error Paths', () => {
 
       describe('when the API returns a server error', () => {
         beforeEach(() => {
+          seedAppState({ uuid });
           mockAppointmentAvailabilityApi({
             response: MockAppointmentAvailabilityResponse.createVassApiError(),
             responseCode: 500,
           });
+          cy.visit(`${rootUrl}${URLS.DATE_TIME}`);
         });
 
         it('should display a wrapper error alert', () => {
-          EnterOTPPageObject.fillAndSubmitOTP();
           cy.wait('@vass:get:appointment-availability');
 
           DateTimeSelectionPageObject.assertWrapperErrorAlert({ exist: true });
@@ -497,14 +490,15 @@ describe('VASS Error Paths', () => {
 
       describe('when the service is unavailable', () => {
         beforeEach(() => {
+          seedAppState({ uuid });
           mockAppointmentAvailabilityApi({
             response: MockAppointmentAvailabilityResponse.createServiceError(),
             responseCode: 503,
           });
+          cy.visit(`${rootUrl}${URLS.DATE_TIME}`);
         });
 
         it('should display a wrapper error alert', () => {
-          EnterOTPPageObject.fillAndSubmitOTP();
           cy.wait('@vass:get:appointment-availability');
 
           DateTimeSelectionPageObject.assertWrapperErrorAlert({ exist: true });
@@ -515,25 +509,16 @@ describe('VASS Error Paths', () => {
     });
 
     describe('UI Errors', () => {
-      const appointmentId = 'appointment-id';
       beforeEach(() => {
-        mockAppointmentAvailabilityApi({
-          response: new MockAppointmentAvailabilityResponse({
-            appointmentId,
-            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
-          }).toJSON(),
-          responseCode: 200,
-        });
+        seedAppState({ uuid });
+        mockAppointmentAvailabilityApi();
+        cy.visit(`${rootUrl}${URLS.DATE_TIME}`);
+        cy.wait('@vass:get:appointment-availability');
+        DateTimeSelectionPageObject.assertDateTimeSelectionPage();
       });
-      describe('when does not select a date and time slot', () => {
+
+      describe('when the user does not select a date and time slot', () => {
         it('should not submit the form and display an error when the user submits the form', () => {
-          EnterOTPPageObject.assertEnterOTPPage();
-
-          EnterOTPPageObject.fillAndSubmitOTP();
-          cy.wait('@vass:post:authenticate-otp');
-          cy.wait('@vass:get:appointment-availability');
-
-          DateTimeSelectionPageObject.assertDateTimeSelectionPage();
           DateTimeSelectionPageObject.submitWithoutSelection();
 
           DateTimeSelectionPageObject.assertValidationError(
@@ -546,13 +531,6 @@ describe('VASS Error Paths', () => {
 
       describe('when the user submits the form without selecting a time slot after selecting a date', () => {
         it('should not submit the form and display an error when the user submits the form', () => {
-          EnterOTPPageObject.assertEnterOTPPage();
-
-          EnterOTPPageObject.fillAndSubmitOTP();
-          cy.wait('@vass:post:authenticate-otp');
-          cy.wait('@vass:get:appointment-availability');
-
-          DateTimeSelectionPageObject.assertDateTimeSelectionPage();
           DateTimeSelectionPageObject.selectFirstAvailableDate();
           DateTimeSelectionPageObject.clickContinue();
 
@@ -568,13 +546,6 @@ describe('VASS Error Paths', () => {
         it('should clear the validation error and proceed to topic selection', () => {
           mockTopicsApi();
 
-          EnterOTPPageObject.assertEnterOTPPage();
-
-          EnterOTPPageObject.fillAndSubmitOTP();
-          cy.wait('@vass:post:authenticate-otp');
-          cy.wait('@vass:get:appointment-availability');
-
-          DateTimeSelectionPageObject.assertDateTimeSelectionPage();
           DateTimeSelectionPageObject.submitWithoutSelection();
           DateTimeSelectionPageObject.assertValidationError(
             'Please select a preferred date and time for your appointment.',
@@ -592,37 +563,21 @@ describe('VASS Error Paths', () => {
   });
 
   describe('Topics Errors', () => {
-    beforeEach(() => {
-      mockRequestOtpApi();
-
-      const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-        token: createMockJwt(uuid, expiresIn),
-        expiresIn,
-      }).toJSON();
-      mockAuthenticateOtpApi({
-        response: authenticateOtpResponse,
-        responseCode: 200,
+    describe('API Errors', () => {
+      beforeEach(() => {
+        seedAppState({ uuid });
       });
 
-      mockAppointmentAvailabilityApi();
-
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-      VerifyPageObject.fillAndSubmitForm();
-      cy.wait('@vass:post:request-otp');
-      EnterOTPPageObject.fillAndSubmitOTP();
-    });
-
-    describe('API Errors', () => {
       describe('when the API returns a server error', () => {
         beforeEach(() => {
           mockTopicsApi({
             response: MockTopicsResponse.createVassApiError(),
             responseCode: 500,
           });
+          cy.visit(`${rootUrl}${URLS.TOPIC_SELECTION}`);
         });
 
         it('should display a wrapper error alert', () => {
-          DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
           cy.wait('@vass:get:topics');
 
           TopicSelectionPageObject.assertWrapperErrorAlert({ exist: true });
@@ -637,10 +592,10 @@ describe('VASS Error Paths', () => {
             response: MockTopicsResponse.createServiceError(),
             responseCode: 503,
           });
+          cy.visit(`${rootUrl}${URLS.TOPIC_SELECTION}`);
         });
 
         it('should display a wrapper error alert', () => {
-          DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
           cy.wait('@vass:get:topics');
 
           TopicSelectionPageObject.assertWrapperErrorAlert({ exist: true });
@@ -651,14 +606,22 @@ describe('VASS Error Paths', () => {
     });
 
     describe('UI Errors', () => {
+      beforeEach(() => {
+        seedAppState({
+          uuid,
+          selectedSlot: {
+            dtStartUtc: '2025-06-15T14:00:00.000Z',
+            dtEndUtc: '2025-06-15T14:30:00.000Z',
+          },
+        });
+        mockTopicsApi();
+        cy.visit(`${rootUrl}${URLS.TOPIC_SELECTION}`);
+        cy.wait('@vass:get:topics');
+        TopicSelectionPageObject.assertTopicSelectionPage();
+      });
+
       describe('when the user leaves all topic selections empty', () => {
         it('should not submit the form and display an error when the user submits the form', () => {
-          mockTopicsApi();
-
-          DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
-          cy.wait('@vass:get:topics');
-
-          TopicSelectionPageObject.assertTopicSelectionPage();
           TopicSelectionPageObject.submitWithoutSelection();
 
           TopicSelectionPageObject.assertValidationError(
@@ -671,12 +634,6 @@ describe('VASS Error Paths', () => {
 
       describe('when the user unselects all topics after making a selection', () => {
         it('should not submit the form and display an error when the user submits the form', () => {
-          mockTopicsApi();
-
-          DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
-          cy.wait('@vass:get:topics');
-
-          TopicSelectionPageObject.assertTopicSelectionPage();
           TopicSelectionPageObject.selectTopicByName('General VA benefits');
           TopicSelectionPageObject.unselectTopicByTestId(
             'topic-checkbox-general-va-benefits',
@@ -693,12 +650,6 @@ describe('VASS Error Paths', () => {
 
       describe('when the user selects a valid topic after triggering a validation error', () => {
         it('should clear the validation error and proceed to review', () => {
-          mockTopicsApi();
-
-          DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
-          cy.wait('@vass:get:topics');
-
-          TopicSelectionPageObject.assertTopicSelectionPage();
           TopicSelectionPageObject.submitWithoutSelection();
           TopicSelectionPageObject.assertValidationError(
             'Please choose a topic for your appointment.',
@@ -718,26 +669,16 @@ describe('VASS Error Paths', () => {
 
   describe('Create Appointment Errors', () => {
     beforeEach(() => {
-      mockRequestOtpApi();
-
-      const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-        token: createMockJwt(uuid, expiresIn),
-        expiresIn,
-      }).toJSON();
-      mockAuthenticateOtpApi({
-        response: authenticateOtpResponse,
-        responseCode: 200,
+      seedAppState({
+        uuid,
+        selectedSlot: {
+          dtStartUtc: '2025-06-15T14:00:00.000Z',
+          dtEndUtc: '2025-06-15T14:30:00.000Z',
+        },
+        selectedTopics: [{ topicId: '1', topicName: 'General VA benefits' }],
       });
-
-      mockAppointmentAvailabilityApi();
-      mockTopicsApi();
-
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-      VerifyPageObject.fillAndSubmitForm();
-      cy.wait('@vass:post:request-otp');
-      EnterOTPPageObject.fillAndSubmitOTP();
-      DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
-      TopicSelectionPageObject.selectTopicAndContinue('General VA benefits');
+      cy.visit(`${rootUrl}${URLS.REVIEW}`);
+      ReviewPageObject.assertReviewPage();
     });
 
     describe('when the appointment fails to save', () => {
@@ -797,27 +738,17 @@ describe('VASS Error Paths', () => {
 
   describe('Appointment Details Errors', () => {
     beforeEach(() => {
-      mockRequestOtpApi();
-
-      const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-        token: createMockJwt(uuid, expiresIn),
-        expiresIn,
-      }).toJSON();
-      mockAuthenticateOtpApi({
-        response: authenticateOtpResponse,
-        responseCode: 200,
+      seedAppState({
+        uuid,
+        selectedSlot: {
+          dtStartUtc: '2025-06-15T14:00:00.000Z',
+          dtEndUtc: '2025-06-15T14:30:00.000Z',
+        },
+        selectedTopics: [{ topicId: '1', topicName: 'General VA benefits' }],
       });
-
-      mockAppointmentAvailabilityApi();
-      mockTopicsApi();
       mockCreateAppointmentApi();
-
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-      VerifyPageObject.fillAndSubmitForm();
-      cy.wait('@vass:post:request-otp');
-      EnterOTPPageObject.fillAndSubmitOTP();
-      DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
-      TopicSelectionPageObject.selectTopicAndContinue('General VA benefits');
+      cy.visit(`${rootUrl}${URLS.REVIEW}`);
+      ReviewPageObject.assertReviewPage();
     });
 
     describe('when the appointment is not found', () => {
@@ -876,53 +807,28 @@ describe('VASS Error Paths', () => {
   });
 
   describe('Cancel Appointment Errors', () => {
-    beforeEach(() => {
-      mockRequestOtpApi();
-
-      const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-        token: createMockJwt(uuid, expiresIn),
-        expiresIn,
-      }).toJSON();
-      mockAuthenticateOtpApi({
-        response: authenticateOtpResponse,
-        responseCode: 200,
-      });
-
-      const appointmentId = 'abcdef123456';
-      mockAppointmentAvailabilityApi({
-        response: new MockAppointmentAvailabilityResponse({
-          appointmentId,
-          availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
-        }).toJSON(),
-        responseCode: 200,
-      });
-      mockTopicsApi();
-      mockCreateAppointmentApi();
-      mockAppointmentDetailsApi({
-        response: new MockAppointmentDetailsResponse({
-          appointmentId,
-        }).toJSON(),
-        responseCode: 200,
-      });
-
-      cy.visit(
-        `/service-member/benefits/solid-start/schedule?uuid=${uuid}&cancel=true`,
-      );
-      VerifyPageObject.fillAndSubmitForm();
-      cy.wait('@vass:post:request-otp');
-    });
+    const appointmentId = 'abcdef123456';
+    const cancelUrl = `${rootUrl}${URLS.CANCEL_APPOINTMENT}/${appointmentId}`;
 
     describe('when cancellation fails', () => {
       beforeEach(() => {
+        seedAppState({ uuid, flowType: FLOW_TYPES.CANCEL });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
         mockCancelAppointmentApi({
           response: MockCancelAppointmentResponse.createCancellationFailedError(),
           responseCode: 500,
         });
+        cy.visit(cancelUrl);
+        cy.wait('@vass:get:appointment-details');
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
       });
 
       it('should display a wrapper error alert', () => {
-        EnterOTPPageObject.fillAndSubmitOTP();
-        cy.wait('@vass:post:authenticate-otp');
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
 
@@ -937,17 +843,16 @@ describe('VASS Error Paths', () => {
 
     describe('when the appointment to cancel is not found', () => {
       beforeEach(() => {
+        seedAppState({ uuid, flowType: FLOW_TYPES.CANCEL });
         mockAppointmentDetailsApi({
           response: MockAppointmentDetailsResponse.createAppointmentNotFoundError(),
           responseCode: 404,
         });
+        cy.visit(cancelUrl);
+        cy.wait('@vass:get:appointment-details');
       });
 
       it('should display a wrapper error alert', () => {
-        EnterOTPPageObject.fillAndSubmitOTP();
-        cy.wait('@vass:post:authenticate-otp');
-        cy.wait('@vass:get:appointment-details');
-
         CancelAppointmentPageObject.assertWrapperErrorAlert({
           exist: true,
           flowType: FLOW_TYPES.CANCEL,
@@ -959,15 +864,23 @@ describe('VASS Error Paths', () => {
 
     describe('when the cancellation returns appointment not found', () => {
       beforeEach(() => {
+        seedAppState({ uuid, flowType: FLOW_TYPES.CANCEL });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
         mockCancelAppointmentApi({
           response: MockCancelAppointmentResponse.createAppointmentNotFoundError(),
           responseCode: 404,
         });
+        cy.visit(cancelUrl);
+        cy.wait('@vass:get:appointment-details');
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
       });
 
       it('should display a wrapper error alert', () => {
-        EnterOTPPageObject.fillAndSubmitOTP();
-        cy.wait('@vass:post:authenticate-otp');
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
 
@@ -982,15 +895,23 @@ describe('VASS Error Paths', () => {
 
     describe('when the API returns a server error', () => {
       beforeEach(() => {
+        seedAppState({ uuid, flowType: FLOW_TYPES.CANCEL });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
         mockCancelAppointmentApi({
           response: MockCancelAppointmentResponse.createVassApiError(),
           responseCode: 500,
         });
+        cy.visit(cancelUrl);
+        cy.wait('@vass:get:appointment-details');
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
       });
 
       it('should display a wrapper error alert', () => {
-        EnterOTPPageObject.fillAndSubmitOTP();
-        cy.wait('@vass:post:authenticate-otp');
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
 
@@ -1005,15 +926,23 @@ describe('VASS Error Paths', () => {
 
     describe('when the service is unavailable', () => {
       beforeEach(() => {
+        seedAppState({ uuid, flowType: FLOW_TYPES.CANCEL });
+        mockAppointmentDetailsApi({
+          response: new MockAppointmentDetailsResponse({
+            appointmentId,
+          }).toJSON(),
+          responseCode: 200,
+        });
         mockCancelAppointmentApi({
           response: MockCancelAppointmentResponse.createServiceError(),
           responseCode: 503,
         });
+        cy.visit(cancelUrl);
+        cy.wait('@vass:get:appointment-details');
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
       });
 
       it('should display a wrapper error alert', () => {
-        EnterOTPPageObject.fillAndSubmitOTP();
-        cy.wait('@vass:post:authenticate-otp');
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
 
@@ -1031,19 +960,9 @@ describe('VASS Error Paths', () => {
     describe('when the user attempt to navigate back from the Date/Time Selection page', () => {
       beforeEach(() => {
         mockAppointmentAvailabilityApi();
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
 
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-        VerifyPageObject.fillAndSubmitForm();
-        cy.wait('@vass:post:request-otp');
+        visitAndVerify(`${rootUrl}?uuid=${uuid}`);
       });
 
       it('should trigger a confirmation dialog', () => {
@@ -1065,10 +984,7 @@ describe('VASS Error Paths', () => {
     describe('when the user reloads the page on the Enter OTP page', () => {
       beforeEach(() => {
         mockRequestOtpApi();
-
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-        VerifyPageObject.fillAndSubmitForm();
-        cy.wait('@vass:post:request-otp');
+        visitAndVerify(`${rootUrl}?uuid=${uuid}`);
       });
 
       it('should warn about unsaved changes and redirect to Verify with uuid after accepting the reload prompt', () => {
@@ -1089,6 +1005,7 @@ describe('VASS Error Paths', () => {
         cy.url().should('include', `uuid=${uuid}`);
         VerifyPageObject.assertVerifyPage();
         cy.injectAxeThenAxeCheck();
+        cy.wrap(beforeUnloadFired).should('have.been.called');
         saveScreenshot('vass_error_navigation_reloadEnterOTP');
       });
     });
@@ -1108,15 +1025,7 @@ describe('VASS Error Paths', () => {
     describe('when the user decides not to cancel the appointment', () => {
       const appointmentId = 'abcdef123456';
       beforeEach(() => {
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
           response: new MockAppointmentAvailabilityResponse({
             appointmentId,
@@ -1131,11 +1040,7 @@ describe('VASS Error Paths', () => {
           responseCode: 200,
         });
 
-        cy.visit(
-          `/service-member/benefits/solid-start/schedule?uuid=${uuid}&cancel=true`,
-        );
-        VerifyPageObject.fillAndSubmitForm();
-        cy.wait('@vass:post:request-otp');
+        visitAndVerify(`${rootUrl}?uuid=${uuid}&cancel=true`);
       });
 
       it('should navigate to the appointment details page', () => {
@@ -1160,15 +1065,7 @@ describe('VASS Error Paths', () => {
     describe('when the user attempts to schedule then lands on already scheduled, cancels, decides not to cancel, then cancels again', () => {
       const appointmentId = 'abcdef123456';
       beforeEach(() => {
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
           response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
             { appointmentId },
@@ -1182,9 +1079,7 @@ describe('VASS Error Paths', () => {
           responseCode: 200,
         });
 
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-        VerifyPageObject.fillAndSubmitForm();
-        cy.wait('@vass:post:request-otp');
+        visitAndVerify(`${rootUrl}?uuid=${uuid}`);
       });
 
       it('should show correct page at each step without flow guard errors', () => {
@@ -1217,15 +1112,7 @@ describe('VASS Error Paths', () => {
     describe('when the user attempts to cancel from URL, decides not to cancel, then cancels again and completes cancellation', () => {
       const appointmentId = 'abcdef123456';
       beforeEach(() => {
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
           response: new MockAppointmentAvailabilityResponse({
             appointmentId,
@@ -1246,11 +1133,7 @@ describe('VASS Error Paths', () => {
           responseCode: 200,
         });
 
-        cy.visit(
-          `/service-member/benefits/solid-start/schedule?uuid=${uuid}&cancel=true`,
-        );
-        VerifyPageObject.fillAndSubmitForm();
-        cy.wait('@vass:post:request-otp');
+        visitAndVerify(`${rootUrl}?uuid=${uuid}&cancel=true`);
       });
 
       it('should complete full flow without flow guard errors', () => {
@@ -1279,17 +1162,8 @@ describe('VASS Error Paths', () => {
 
     describe('when the user in schedule flow navigates directly to a cancel-only URL', () => {
       const appointmentId = 'abcdef123456';
-      const rootUrl = '/service-member/benefits/solid-start/schedule';
       beforeEach(() => {
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
           response: new MockAppointmentAvailabilityResponse({
             appointmentId,
@@ -1304,9 +1178,7 @@ describe('VASS Error Paths', () => {
           responseCode: 200,
         });
 
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-        VerifyPageObject.fillAndSubmitForm();
-        cy.wait('@vass:post:request-otp');
+        visitAndVerify(`${rootUrl}?uuid=${uuid}`);
       });
 
       it('should redirect to Verify with uuid and no cancel param (withFlowGuard)', () => {
@@ -1329,17 +1201,8 @@ describe('VASS Error Paths', () => {
 
     describe('when the user in cancel flow navigates directly to a schedule-only URL', () => {
       const appointmentId = 'abcdef123456';
-      const rootUrl = '/service-member/benefits/solid-start/schedule';
       beforeEach(() => {
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
           response: new MockAppointmentAvailabilityResponse({
             appointmentId,
@@ -1382,15 +1245,7 @@ describe('VASS Error Paths', () => {
     describe('when the user lands on already scheduled then cancels successfully', () => {
       const appointmentId = 'abcdef123456';
       beforeEach(() => {
-        mockRequestOtpApi();
-        const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-          token: createMockJwt(uuid, expiresIn),
-          expiresIn,
-        }).toJSON();
-        mockAuthenticateOtpApi({
-          response: authenticateOtpResponse,
-          responseCode: 200,
-        });
+        mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
           response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
             { appointmentId },
@@ -1410,7 +1265,7 @@ describe('VASS Error Paths', () => {
           responseCode: 200,
         });
 
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        cy.visit(`${rootUrl}?uuid=${uuid}`);
         VerifyPageObject.fillAndSubmitForm();
         cy.wait('@vass:post:request-otp');
       });

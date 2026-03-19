@@ -4,30 +4,30 @@ import EnterOTPPageObject from './page-objects/EnterOTPPageObject';
 import DateTimeSelectionPageObject from './page-objects/DateTimeSelectionPageObject';
 import TopicSelectionPageObject from './page-objects/TopicSelectionPageObject';
 import {
-  mockRequestOtpApi,
-  mockAuthenticateOtpApi,
   mockAppointmentAvailabilityApi,
   mockTopicsApi,
   mockCreateAppointmentApi,
   mockAppointmentDetailsApi,
   mockCancelAppointmentApi,
   patchCookiesForCI,
+  seedAppState,
   saveScreenshot,
+  mockSuccessfulAuth,
 } from './vass-e2e-helpers';
 import MockAppointmentAvailabilityResponse from '../fixtures/MockAppointmentAvailabilityResponse';
 import MockAppointmentDetailsResponse from '../fixtures/MockAppointmentDetailsResponse';
-import { createMockJwt } from '../../utils/mock-helpers';
-import MockAuthenticateOtpResponse from '../fixtures/MockAuthenticateOtpResponse';
 import ReviewPageObject from './page-objects/ReviewPageObject';
 import ConfirmationPageObject from './page-objects/ConfirmationPageObject';
 import CancelAppointmentPageObject from './page-objects/CancelAppointmentPageObject';
 import CancelConfirmationPageObject from './page-objects/CancelConfirmationPageObject';
 import AlreadyScheduledPageObject from './page-objects/AlreadyScheduledPageObject';
 import { createAppointmentAlreadyBookedError } from '../../services/mocks/utils/errors';
+import { URLS } from '../../utils/constants';
 import MockCancelAppointmentResponse from '../fixtures/MockCancelAppointmentResponse';
+import manifest from '../../manifest.json';
 
 const uuid = 'c0ffee-1234-beef-5678';
-const expiresIn = 3600;
+const { rootUrl } = manifest;
 
 // Fixed "today" for consistent calendar and slot selection (same pattern as VAOS referral-appointments)
 const mockToday = new Date('2025-06-02T12:00:00Z');
@@ -39,16 +39,7 @@ describe('VASS Schedule Appointment', () => {
     patchCookiesForCI();
 
     // Setup API mocks before visiting the page
-    mockRequestOtpApi();
-
-    const authenticateOtpResponse = new MockAuthenticateOtpResponse({
-      token: createMockJwt(uuid, expiresIn),
-      expiresIn,
-    }).toJSON();
-    mockAuthenticateOtpApi({
-      response: authenticateOtpResponse,
-      responseCode: 200,
-    });
+    mockSuccessfulAuth({ uuid });
   });
 
   describe('Schedule Appointment', () => {
@@ -60,7 +51,7 @@ describe('VASS Schedule Appointment', () => {
       mockCreateAppointmentApi();
 
       mockAppointmentDetailsApi();
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+      cy.visit(`${rootUrl}?uuid=${uuid}`);
     });
 
     it('should schedule an appointment', () => {
@@ -96,7 +87,6 @@ describe('VASS Schedule Appointment', () => {
       ReviewPageObject.clickConfirmAppointment();
 
       cy.wait('@vass:post:appointment');
-      cy.injectAxeThenAxeCheck();
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
@@ -108,7 +98,9 @@ describe('VASS Schedule Appointment', () => {
       ConfirmationPageObject.assertAddToCalendarButton();
       ConfirmationPageObject.assertPrintFunctionality();
     });
+  });
 
+  describe('Change Date and Time', () => {
     it('should allow the user to change the date and time', () => {
       const topic = 'General VA benefits';
 
@@ -123,13 +115,15 @@ describe('VASS Schedule Appointment', () => {
         dtStartUtc: secondSlotStart,
         dtEndUtc: '2025-06-03T14:00:00.000Z',
       });
+
       mockAppointmentAvailabilityApi({
         response: new MockAppointmentAvailabilityResponse({
           availableSlots: [firstSlot, secondSlot],
         }).toJSON(),
         responseCode: 200,
       });
-
+      mockTopicsApi();
+      mockCreateAppointmentApi();
       mockAppointmentDetailsApi({
         response: new MockAppointmentDetailsResponse({
           appointmentId: 'abcdef123456',
@@ -149,17 +143,9 @@ describe('VASS Schedule Appointment', () => {
       const expectedTime1 = formatInTimeZone(firstSlotStart, tz, 'hh:mm a');
       const expectedTime2 = formatInTimeZone(secondSlotStart, tz, 'hh:mm a');
 
-      // Control time so calendar and slots are consistent
       cy.clock(mockToday, ['Date']);
-
-      VerifyPageObject.assertVerifyPage();
-      cy.injectAxeThenAxeCheck();
-      VerifyPageObject.fillAndSubmitForm();
-
-      cy.wait('@vass:post:request-otp');
-      EnterOTPPageObject.assertEnterOTPPage();
-      cy.injectAxeThenAxeCheck();
-      EnterOTPPageObject.fillAndSubmitOTP();
+      seedAppState({ uuid });
+      cy.visit(`${rootUrl}${URLS.DATE_TIME}`);
 
       cy.wait('@vass:get:appointment-availability');
       DateTimeSelectionPageObject.assertDateTimeSelectionPage();
@@ -201,7 +187,6 @@ describe('VASS Schedule Appointment', () => {
       ReviewPageObject.clickConfirmAppointment();
 
       cy.wait('@vass:post:appointment');
-      cy.injectAxeThenAxeCheck();
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
@@ -213,28 +198,29 @@ describe('VASS Schedule Appointment', () => {
       cy.injectAxeThenAxeCheck();
       saveScreenshot('vass_schedule_confirmation_changedDateTime');
     });
+  });
 
+  describe('Change Topic', () => {
     it('should allow the user to change the topic', () => {
       const firstTopic = 'General VA benefits';
       const secondTopic = 'Education';
 
-      VerifyPageObject.assertVerifyPage();
-      cy.injectAxeThenAxeCheck();
-      VerifyPageObject.fillAndSubmitForm();
+      mockTopicsApi();
+      mockCreateAppointmentApi();
+      mockAppointmentDetailsApi();
 
-      cy.wait('@vass:post:request-otp');
-      EnterOTPPageObject.assertEnterOTPPage();
-      cy.injectAxeThenAxeCheck();
-      EnterOTPPageObject.fillAndSubmitOTP();
-
-      cy.wait('@vass:get:appointment-availability');
-      DateTimeSelectionPageObject.assertDateTimeSelectionPage();
-      cy.injectAxeThenAxeCheck();
-      DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
+      seedAppState({
+        uuid,
+        selectedSlot: {
+          dtStartUtc: '2025-06-15T14:00:00.000Z',
+          dtEndUtc: '2025-06-15T14:30:00.000Z',
+        },
+      });
+      cy.visit(`${rootUrl}${URLS.TOPIC_SELECTION}`);
 
       cy.wait('@vass:get:topics');
-      cy.injectAxeThenAxeCheck();
       TopicSelectionPageObject.assertTopicSelectionPage();
+      cy.injectAxeThenAxeCheck();
       TopicSelectionPageObject.selectTopicAndContinue(firstTopic);
 
       ReviewPageObject.assertReviewPage();
@@ -260,7 +246,6 @@ describe('VASS Schedule Appointment', () => {
       ReviewPageObject.clickConfirmAppointment();
 
       cy.wait('@vass:post:appointment');
-      cy.injectAxeThenAxeCheck();
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
@@ -297,38 +282,28 @@ describe('VASS Schedule Appointment', () => {
       mockCancelAppointmentApi();
     });
 
-    it('should cancel an appointment from the schdelued appointment confirmation page', () => {
-      cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
-
-      VerifyPageObject.assertVerifyPage();
-      cy.injectAxeThenAxeCheck();
-
-      VerifyPageObject.fillAndSubmitForm();
-
-      cy.wait('@vass:post:request-otp');
-      EnterOTPPageObject.assertEnterOTPPage();
-
-      cy.injectAxeThenAxeCheck();
-      EnterOTPPageObject.fillAndSubmitOTP();
-
-      cy.wait('@vass:get:appointment-availability');
-      DateTimeSelectionPageObject.assertDateTimeSelectionPage();
-      cy.injectAxeThenAxeCheck();
-      DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
-
-      cy.wait('@vass:get:topics');
-      cy.injectAxeThenAxeCheck();
-      TopicSelectionPageObject.assertTopicSelectionPage();
-      TopicSelectionPageObject.selectTopicAndContinue('General VA benefits');
+    it('should cancel an appointment from the scheduled appointment confirmation page', () => {
+      seedAppState({
+        uuid,
+        selectedSlot: {
+          dtStartUtc: '2025-06-15T14:00:00.000Z',
+          dtEndUtc: '2025-06-15T14:30:00.000Z',
+        },
+        selectedTopics: [{ topicId: '1', topicName: 'General VA benefits' }],
+      });
+      cy.visit(`${rootUrl}${URLS.REVIEW}`);
 
       ReviewPageObject.assertReviewPage();
       cy.injectAxeThenAxeCheck();
       ReviewPageObject.clickConfirmAppointment();
 
       cy.wait('@vass:post:appointment');
-      cy.injectAxeThenAxeCheck();
       cy.wait('@vass:get:appointment-details');
 
+      ConfirmationPageObject.assertConfirmationPage({
+        agentName: 'Agent Smith',
+        topics: ['General VA benefits'],
+      });
       cy.injectAxeThenAxeCheck();
       ConfirmationPageObject.clickCancelAppointment();
 
@@ -349,9 +324,7 @@ describe('VASS Schedule Appointment', () => {
     });
 
     it('should cancel an appointment from a cancelation link', () => {
-      cy.visit(
-        `/service-member/benefits/solid-start/schedule?uuid=${uuid}&cancel=true`,
-      );
+      cy.visit(`${rootUrl}?uuid=${uuid}&cancel=true`);
 
       VerifyPageObject.assertVerifyPage({ cancellationFlow: true });
       cy.injectAxeThenAxeCheck();
@@ -418,7 +391,7 @@ describe('VASS Schedule Appointment', () => {
 
     describe('when the user attempts to schedule an appointment that is already scheduled', () => {
       it('should redirect to the already scheduled appointment page', () => {
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        cy.visit(`${rootUrl}?uuid=${uuid}`);
 
         VerifyPageObject.assertVerifyPage();
         cy.injectAxeThenAxeCheck();
@@ -437,7 +410,7 @@ describe('VASS Schedule Appointment', () => {
       });
 
       it('should allow the user to cancel', () => {
-        cy.visit(`/service-member/benefits/solid-start/schedule?uuid=${uuid}`);
+        cy.visit(`${rootUrl}?uuid=${uuid}`);
 
         VerifyPageObject.assertVerifyPage();
         cy.injectAxeThenAxeCheck();

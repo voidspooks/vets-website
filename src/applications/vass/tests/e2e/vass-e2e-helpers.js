@@ -5,6 +5,53 @@ import MockTopicsResponse from '../fixtures/MockTopicsResponse';
 import MockCreateAppointmentResponse from '../fixtures/MockCreateAppointmentResponse';
 import MockAppointmentDetailsResponse from '../fixtures/MockAppointmentDetailsResponse';
 import MockCancelAppointmentResponse from '../fixtures/MockCancelAppointmentResponse';
+import { createMockJwt } from '../../utils/mock-helpers';
+import { FLOW_TYPES, VASS_TOKEN_COOKIE_NAME } from '../../utils/constants';
+
+const VASS_CURRENT_UUID_KEY = 'vass_current_uuid';
+const VASS_FORM_KEY = 'vass_form';
+
+/**
+ * Seeds the VASS JWT cookie and sessionStorage so Cypress can visit
+ * a mid-flow page directly, bypassing Verify → OTP UI navigation.
+ *
+ * The app's route guards (`withAuthorization`, `withFormData`, `withFlowGuard`)
+ * will hydrate from these two sources on mount, so the target page renders
+ * without walking through earlier pages.
+ *
+ * Must be called AFTER `patchCookiesForCI()` and BEFORE `cy.visit()`.
+ *
+ * @param {Object} options
+ * @param {string} options.uuid - The session UUID (required)
+ * @param {number} [options.expiresIn=3600] - JWT lifetime in seconds
+ * @param {string} [options.flowType='schedule'] - FLOW_TYPES value
+ * @param {string} [options.obfuscatedEmail] - Obfuscated email for form data
+ * @param {{ dtStartUtc: string, dtEndUtc: string }} [options.selectedSlot] - Pre-selected time slot
+ * @param {Array<{ topicId: string, topicName: string }>} [options.selectedTopics] - Pre-selected topics
+ */
+export function seedAppState({
+  uuid,
+  expiresIn = 3600,
+  flowType = FLOW_TYPES.SCHEDULE,
+  obfuscatedEmail = 's***@example.com',
+  selectedSlot,
+  selectedTopics,
+} = {}) {
+  const token = createMockJwt(uuid, expiresIn);
+
+  cy.on('window:before:load', win => {
+    const { document } = win;
+    document.cookie = `${VASS_TOKEN_COOKIE_NAME}=${token}; path=/`;
+
+    win.sessionStorage.setItem(VASS_CURRENT_UUID_KEY, JSON.stringify(uuid));
+
+    const formData = { uuid, obfuscatedEmail, flowType };
+    if (selectedSlot) formData.selectedSlot = selectedSlot;
+    if (selectedTopics) formData.selectedTopics = selectedTopics;
+
+    win.sessionStorage.setItem(VASS_FORM_KEY, JSON.stringify(formData));
+  });
+}
 
 /**
  * Patches document.cookie to strip `Secure` and `Domain` attributes.
@@ -386,4 +433,23 @@ export function saveScreenshot(
   if (options.capture === 'fullPage') {
     restoreScrollerAfterShot();
   }
+}
+
+/**
+ * Mocks a successful authentication response.
+ *
+ * @param {Object} arguments - Function arguments.
+ * @param {string} [arguments.uuid='mock-uuid'] - UUID of the user.
+ * @param {number} [arguments.expiresIn=3600] - Token expiration in seconds (1 hour).
+ */
+export function mockSuccessfulAuth({ uuid: id, expiresIn: exp = 3600 } = {}) {
+  mockRequestOtpApi();
+  const authenticateOtpResponse = new MockAuthenticateOtpResponse({
+    token: createMockJwt(id, exp),
+    expiresIn: exp,
+  }).toJSON();
+  mockAuthenticateOtpApi({
+    response: authenticateOtpResponse,
+    responseCode: 200,
+  });
 }
