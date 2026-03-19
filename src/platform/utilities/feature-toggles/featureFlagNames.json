@@ -60,6 +60,8 @@
   "combinedDebtPortalAccess": "combined_debt_portal_access",
   "confirmationPageNew": "confirmation_page_new",
   "confirmContactEmailInterstitialEnabled": "confirm_contact_email_interstitial_enabled",
+  "cstAlertImprovementsBoardAppeals": "cst_alert_improvements_board_appeals",
+  "cstAlertImprovementsEvidenceRequests": "cst_alert_improvements_evidence_requests",
   "cstClaimPhases": "cst_claim_phases",
   "cstClaimsListFilter": "cst_claims_list_filter",
   "cstMultiClaimProvider": "cst_multi_claim_provider",
