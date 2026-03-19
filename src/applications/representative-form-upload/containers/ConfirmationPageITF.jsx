@@ -23,6 +23,7 @@ const ConfirmationPageITF = () => {
 
   const address = { city, state, postalCode };
   const name = { first, last };
+  const claimantId = form.submission?.response?.claimantId;
 
   useEffect(() => {
     sessionStorage.removeItem('formIncompleteARP');
@@ -30,6 +31,7 @@ const ConfirmationPageITF = () => {
 
   return (
     <ConfirmationPageViewITF
+      claimantId={claimantId}
       submitDate={submitDate}
       expirationDate={expirationDate}
       benefitType={benefitType}

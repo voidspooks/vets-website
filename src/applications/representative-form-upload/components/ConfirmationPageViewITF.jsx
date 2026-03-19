@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { scrollTo } from 'platform/utilities/scroll';
+import { Toggler } from 'platform/utilities/feature-toggles';
 import { waitForRenderThenFocus } from 'platform/utilities/ui/focus';
 import PropTypes from 'prop-types';
 import { benefitCopy } from '../helpers/index';
@@ -11,6 +12,7 @@ export const ConfirmationPageViewITF = ({
   benefitType,
   address,
   name,
+  claimantId,
 }) => {
   const { first, last } = name;
   const alertRef = useRef(null);
@@ -78,7 +80,21 @@ export const ConfirmationPageViewITF = ({
         </ul>
       </va-card>
       <div>
-        <h2 className="vads-u-margin-top--4">What to expect</h2>
+        <Toggler
+          toggleName={
+            Toggler.TOGGLE_NAMES.accreditedRepresentativePortalClaimantDetails
+          }
+        >
+          <Toggler.Enabled>
+            <va-link-action
+              href={`/representative/find-claimant/submission-history/${claimantId}`}
+              class="vads-u-margin-top--2"
+              text={`Go to ${first} ${last}'s submission history`}
+              type="secondary"
+            />
+          </Toggler.Enabled>
+        </Toggler>
+        <h2 className="vads-u-margin-top--3">What to expect</h2>
         <va-process-list>
           <va-process-list-item header="We'll confirm the intent to file was recorded" />
           <va-process-list-item
@@ -98,7 +114,7 @@ export const ConfirmationPageViewITF = ({
         label="Go back to submissions"
         class="vads-u-margin-bottom--4"
         text="Go back to submissions"
-        type="primary"
+        type="secondary"
       />
     </section>
   );
@@ -111,6 +127,7 @@ ConfirmationPageViewITF.propTypes = {
     state: PropTypes.string,
   }),
   benefitType: PropTypes.string,
+  claimantId: PropTypes.string,
   expirationDate: PropTypes.string,
   name: PropTypes.shape({
     first: PropTypes.string,

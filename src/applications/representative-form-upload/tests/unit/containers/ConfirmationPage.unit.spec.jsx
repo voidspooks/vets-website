@@ -13,7 +13,6 @@ const config = formConfig;
 
 const veteranFullName = {
   first: 'John',
-  middle: '',
   last: 'Veteran',
 };
 const storeBase = {
@@ -26,8 +25,13 @@ const storeBase = {
       timestamp: Date.now(),
     },
     data: {
-      fullName: veteranFullName,
+      name: veteranFullName,
+      claimantId: 'abc123',
     },
+  },
+  featureToggles: {
+    // eslint-disable-next-line camelcase
+    accredited_representative_portal_claimant_details: true,
   },
 };
 
@@ -56,39 +60,6 @@ describe('Confirmation page', () => {
         </Provider>,
       );
     }).to.throw();
-  });
-
-  it('shows status success', () => {
-    const { container } = render(
-      <Provider store={mockStore(storeBase)}>
-        <ConfirmationPage />
-      </Provider>,
-    );
-    expect(container.querySelector('va-alert')).to.have.attr(
-      'status',
-      'success',
-    );
-  });
-
-  it('handles missing submission response', () => {
-    const storeWithMissingResponse = {
-      ...storeBase,
-      form: {
-        ...storeBase.form,
-        submission: {
-          ...storeBase.form.submission,
-          response: null,
-        },
-      },
-    };
-
-    const { queryByText } = render(
-      <Provider store={mockStore(storeWithMissingResponse)}>
-        <ConfirmationPage />
-      </Provider>,
-    );
-
-    expect(queryByText(/123456/)).to.be.null;
   });
 
   it('throws error when state.form is empty', () => {

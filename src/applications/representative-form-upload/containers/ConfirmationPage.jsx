@@ -18,13 +18,20 @@ const ConfirmationPage = () => {
   const confirmationNumber = submission.response?.confirmationNumber;
 
   const { formNumber } = getFormContent();
-
+  const { first, last } =
+    form.data.isVeteran === 'no'
+      ? form.data.claimantFullName
+      : form.data.veteranFullName;
+  const name = { first, last };
+  const claimantId = form.submission?.response?.claimantId;
   useEffect(() => {
     sessionStorage.removeItem('formIncompleteARP');
   }, []);
 
   return (
     <ConfirmationPageView
+      claimantId={claimantId}
+      name={name}
       formType="submission"
       submitterHeader="Who submitted this form"
       submitDate={submitDate}

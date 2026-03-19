@@ -1,14 +1,18 @@
 import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { format } from 'date-fns';
-
+import { Toggler } from 'platform/utilities/feature-toggles';
 import { scrollTo } from 'platform/utilities/scroll';
 import { waitForRenderThenFocus } from 'platform/utilities/ui/focus';
 
 export const ConfirmationPageView = ({
+  name,
   submitDate,
   confirmationNumber,
   childContent = null,
+  claimantId,
 }) => {
+  const { first, last } = name;
   const alertRef = useRef(null);
 
   const formattedSubmitDate =
@@ -52,8 +56,22 @@ export const ConfirmationPageView = ({
           for your records.
         </p>
       </va-alert>
+      <Toggler
+        toggleName={
+          Toggler.TOGGLE_NAMES.accreditedRepresentativePortalClaimantDetails
+        }
+      >
+        <Toggler.Enabled>
+          <va-link-action
+            href={`/representative/find-claimant/submission-history/${claimantId}`}
+            class="vads-u-margin-top--2"
+            text={`Go to ${first} ${last}'s submission history`}
+            type="secondary"
+          />
+        </Toggler.Enabled>
+      </Toggler>
       <section>
-        <h2>What to expect</h2>
+        <h2 className="vads-u-margin-top--3">What to expect</h2>
         <va-process-list>
           <va-process-list-item header="Now, we'll process your form">
             <p>
@@ -71,12 +89,22 @@ export const ConfirmationPageView = ({
       </section>
       <va-link-action
         href="/representative/submissions"
-        label="Review submissions history"
         class="vads-u-margin-bottom--4"
-        text="Review submissions history"
-        type="primary"
+        text="Go back to submissions"
+        type="secondary"
       />
       {childContent || null}
     </div>
   );
+};
+
+ConfirmationPageView.propTypes = {
+  childContent: PropTypes.object,
+  claimantId: PropTypes.string,
+  confirmationNumber: PropTypes.string,
+  name: PropTypes.shape({
+    first: PropTypes.string,
+    last: PropTypes.string,
+  }),
+  submitDate: PropTypes.object,
 };
