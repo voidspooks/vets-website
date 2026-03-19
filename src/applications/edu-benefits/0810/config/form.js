@@ -10,13 +10,14 @@ import prefillTransform from './prefillTransform';
 // Components
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
-import * as PayeeNumber from '../pages/PayeeNumber';
 
 // Pages
 import {
   educationBenefitsEligibility,
   hasPreviouslyApplied,
   selectVaBenefit,
+  payeeNumber,
+  remarks,
 } from '../pages';
 
 /** @type {FormConfig} */
@@ -101,8 +102,8 @@ const formConfig = {
         payeeNumber: {
           path: 'payee-number',
           title: 'Payee Number',
-          uiSchema: PayeeNumber.uiSchema,
-          schema: PayeeNumber.schema,
+          uiSchema: payeeNumber.uiSchema,
+          schema: payeeNumber.schema,
           depends: formData =>
             formData?.vaBenefitProgram === 'chapter35' &&
             !!formData.vaFileNumber,
@@ -115,6 +116,17 @@ const formConfig = {
             description: null,
           },
         }),
+      },
+    },
+    remarksChapter: {
+      title: 'Remarks',
+      pages: {
+        remarksPage: {
+          path: 'remarks',
+          title: 'Remarks',
+          uiSchema: remarks.uiSchema,
+          schema: remarks.schema,
+        },
       },
     },
   },
