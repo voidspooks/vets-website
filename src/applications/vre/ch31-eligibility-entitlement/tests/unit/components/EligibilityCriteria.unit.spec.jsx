@@ -50,7 +50,7 @@ describe('EligibilityCriteria', () => {
     expect(getByText(/Released:/i)).to.exist;
   });
 
-  it('icons reflect status props for all rows', () => {
+  it('renders status icons for visible indicator rows', () => {
     const { container } = renderComp({
       qualifyingMilitaryServiceStatus: 'Eligible', // check + green
       characterOfDischargeStatus: 'Ineligible', // close + secondary-dark
@@ -78,6 +78,14 @@ describe('EligibilityCriteria', () => {
       const icon = li.querySelector('va-icon');
       expect(icon).to.have.attribute('icon', 'check');
       expect(icon).to.have.class('vads-u-color--green');
+    }
+
+    {
+      const li = getRowLi(container, 'Initial rating notification date:');
+      const alignedText = li.querySelector('div.vads-u-margin-left--4');
+      expect(li.querySelector('va-icon')).not.to.exist;
+      expect(alignedText).to.exist;
+      expect(alignedText.textContent).to.include('Data unavailable');
     }
 
     {

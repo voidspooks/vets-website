@@ -5,18 +5,18 @@ import { formatDate, pickStatusStyle } from '../helpers';
 const EligibilityCriteria = ({
   veteranProfile,
   disabilityRating,
-  irndDate,
+  // irndDate,
   eligibilityTerminationDate,
   qualifyingMilitaryServiceStatus,
   characterOfDischargeStatus,
   disabilityRatingStatus,
-  irndStatus,
+  // irndStatus,
   eligibilityTerminationDateStatus,
 }) => {
   const svcStyle = pickStatusStyle(qualifyingMilitaryServiceStatus);
   const codStyle = pickStatusStyle(characterOfDischargeStatus);
   const drStyle = pickStatusStyle(disabilityRatingStatus);
-  const irndStyle = pickStatusStyle(irndStatus);
+  // const irndStyle = pickStatusStyle(irndStatus);
   const etdStyle = pickStatusStyle(eligibilityTerminationDateStatus);
 
   const periods = veteranProfile?.servicePeriod || [];
@@ -128,18 +128,8 @@ const EligibilityCriteria = ({
         </li>
 
         <li className="vads-u-display--flex vads-u-align-items--flex-start vads-u-margin-bottom--2">
-          <va-icon
-            icon={irndStyle.icon}
-            srtext={irndStyle.icon}
-            size={3}
-            class={`${
-              irndStyle.cls
-            } vads-u-margin-right--1 vads-u-margin-top--0p5`}
-          />
-          <div>
-            <strong>
-              Initial rating notification date: {formatDate(irndDate)}
-            </strong>
+          <div className="vads-u-display--block vads-u-margin-left--4">
+            <strong>Initial rating notification date: Data unavailable</strong>
           </div>
         </li>
 
