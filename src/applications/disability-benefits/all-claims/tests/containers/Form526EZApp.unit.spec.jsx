@@ -139,9 +139,33 @@ describe('Form 526EZ Entry Page', () => {
     items: [{ description: '1' }, { description: '2' }, { description: '3' }],
   };
 
+  let originalMatchMedia;
+
   beforeEach(() => {
     sessionStorage.removeItem(WIZARD_STATUS);
     clearBranches();
+
+    // Save original window.matchMedia implementation
+    originalMatchMedia = global.window.matchMedia;
+
+    // Mock window.matchMedia for useMediaQuery hook
+    global.window.matchMedia = query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => {},
+    });
+  });
+
+  afterEach(() => {
+    // Restore original window.matchMedia to prevent test pollution
+    if (originalMatchMedia) {
+      global.window.matchMedia = originalMatchMedia;
+    }
   });
 
   // Not logged in

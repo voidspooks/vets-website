@@ -94,6 +94,12 @@ const testConfig = createTestConfig(
         // Switch to mobile temporarily
         cy.viewport('iphone-x');
 
+        // Verify side nav uses mobile wrapper class
+        // Cypress automatically retries until element exists
+        cy.get('.vads-u-margin-bottom--2')
+          .find('#default-sidenav')
+          .should('exist');
+
         // Verify accordion exists and can be opened on mobile
         cy.get('#default-sidenav')
           .shadow()
@@ -127,6 +133,16 @@ const testConfig = createTestConfig(
             cy.viewport(previousViewport.width, previousViewport.height);
           }
         });
+
+        // Verify desktop sidebar layout
+        // Side nav should be in 3-column grid on desktop
+        // Cypress automatically retries until element exists
+        cy.get('.medium-screen\\:vads-grid-col-3')
+          .find('#default-sidenav')
+          .should('exist');
+
+        // Main content should be in 9-column grid
+        cy.get('.medium-screen\\:vads-grid-col-9').should('exist');
       },
 
       // Chapter 3: Mental Health

@@ -24,6 +24,9 @@ const PREVIOUS_STEP_STYLE =
  * future chapter links. Rebuilds navigation when save-in-progress data loads and updates
  * active state when navigating between pages.
  *
+ * Note: This component is conditionally rendered based on screen size - only one instance
+ * is mounted at a time (desktop sidebar OR mobile position below progress bar).
+ *
  * @param {Object} props - Component props
  * @param {boolean} [props.enableAnalytics=false] - Whether to track navigation clicks in Google Analytics
  * @param {Object} props.formData - Current form data from Redux store, used to evaluate conditional pages
@@ -32,7 +35,7 @@ const PREVIOUS_STEP_STYLE =
  * @param {Function} props.setFormData - Redux action to update form data
  * @returns {React.ReactElement} Side navigation component
  */
-export default function ClaimFormSideNav({
+function ClaimFormSideNav({
   enableAnalytics = false,
   formData,
   pathname,
@@ -236,3 +239,6 @@ ClaimFormSideNav.propTypes = {
   setFormData: PropTypes.func,
   shouldHide: PropTypes.bool,
 };
+
+// Memoize to prevent unnecessary re-renders when props haven't changed
+export default React.memo(ClaimFormSideNav);

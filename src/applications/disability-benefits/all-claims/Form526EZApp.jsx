@@ -38,6 +38,7 @@ import {
   DATA_DOG_VERSION,
   TRACKING_526EZ_SIDENAV_FORM_START,
   TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE,
+  MEDIUM_SCREEN_WIDTH,
 } from './constants';
 import {
   isBDD,
@@ -61,6 +62,7 @@ import {
 import ClaimFormSideNav from './components/ClaimFormSideNav';
 import ClaimFormSideNavErrorBoundary from './components/ClaimFormSideNavErrorBoundary';
 import NavButtonsWithTracking from './components/NavButtonsWithTracking';
+import useMediaQuery from './hooks/useMediaQuery';
 import {
   trackFormStarted,
   trackFormSubmitted,
@@ -241,6 +243,9 @@ export const Form526Entry = ({
     TOGGLE_NAMES.disability526SidenavEnabled,
   );
 
+  // Detect screen size for conditional rendering of sidenav component
+  const isWideScreen = useMediaQuery(`(min-width: ${MEDIUM_SCREEN_WIDTH}px)`);
+
   // Persist the sidenav toggle to sessionStorage so tracking functions
   // (which run outside React) can read it without prop drilling.
   useEffect(
@@ -390,6 +395,38 @@ export const Form526Entry = ({
       ? ``
       : ` medium-screen:vads-grid-col-9`;
 
+    // Create side nav component (conditionally rendered based on screen size)
+    const sideNavComponent = (
+      <ClaimFormSideNavErrorBoundary pathname={pathname} formData={form?.data}>
+        <ClaimFormSideNav
+          enableAnalytics
+          formData={form?.data}
+          pathname={pathname}
+          router={router}
+          setFormData={setFormData}
+        />
+      </ClaimFormSideNavErrorBoundary>
+    );
+
+    // Mobile: Wrap children with mobile side nav to inject it after Progress Bar
+    // Only render on mobile screens (!isWideScreen)
+    const wrappedChildren = (
+      <>
+        {!isWideScreen &&
+          !shouldHideNav && (
+            <div className="vads-u-margin-bottom--2">{sideNavComponent}</div>
+          )}
+        {children}
+      </>
+    );
+
+    // Rebuild content with wrapped children for mobile side nav positioning
+    const contentWithMobileSideNav = (
+      <RoutedSavableApp formConfig={formConfig} currentLocation={location}>
+        {wrappedChildren}
+      </RoutedSavableApp>
+    );
+
     return wrapWithBreadcrumb(
       title,
       <article
@@ -398,22 +435,13 @@ export const Form526Entry = ({
         data-location={`${location?.pathname?.slice(1)}`}
       >
         <div className="vads-grid-row vads-u-margin-x--neg2p5">
-          {shouldHideNav ? null : (
-            <div className="vads-u-padding-x--2p5 vads-u-padding-bottom--3 vads-grid-col-12 medium-screen:vads-grid-col-3">
-              <ClaimFormSideNavErrorBoundary
-                pathname={pathname}
-                formData={form?.data}
-              >
-                <ClaimFormSideNav
-                  enableAnalytics
-                  formData={form?.data}
-                  pathname={pathname}
-                  router={router}
-                  setFormData={setFormData}
-                />
-              </ClaimFormSideNavErrorBoundary>
-            </div>
-          )}
+          {/* Desktop: Render side nav in left sidebar column */}
+          {isWideScreen &&
+            !shouldHideNav && (
+              <div className="vads-u-padding-x--2p5 vads-u-padding-bottom--3 vads-grid-col-12 medium-screen:vads-grid-col-3">
+                {sideNavComponent}
+              </div>
+            )}
           <div
             className={`vads-u-padding-x--2p5 vads-grid-col-12${contentHiddenSideNavClass}`}
           >
@@ -423,7 +451,7 @@ export const Form526Entry = ({
               verify
             >
               <ITFWrapper location={location} title={title}>
-                {content}
+                {contentWithMobileSideNav}
               </ITFWrapper>
             </RequiredLoginView>
           </div>
