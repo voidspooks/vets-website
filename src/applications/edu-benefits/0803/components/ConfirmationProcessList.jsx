@@ -53,7 +53,7 @@ export default function ProcessList({ pdfUrl, trackingPrefix }) {
             <va-link
               external
               text="QuickSubmit on AccessVA"
-              href="https://www.my.va.gov/EducationFileUploads/s/"
+              href="https://eauth.va.gov/accessva/?cspSelectFor=quicksubmit"
             />{' '}
             and upload your saved VA Form 22-0803 as well as your receipt and
             exam results. This is the fastest way for us to process your form.
