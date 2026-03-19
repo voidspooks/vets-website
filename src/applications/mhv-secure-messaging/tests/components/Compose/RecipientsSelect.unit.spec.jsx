@@ -284,11 +284,11 @@ describe('RecipientsSelect', () => {
 
       const optionOne = optgroups[0].querySelector('option');
       expect(optionOne.value).to.equal('2');
-      expect(optionOne.text).to.equal('Recipient 2 (Facility 402)');
+      expect(optionOne.text).to.equal('Recipient 2');
 
       const optionTwo = optgroups[1].querySelector('option');
       expect(optionTwo.value).to.equal('1');
-      expect(optionTwo.text).to.equal('Recipient 1 (Facility 552)');
+      expect(optionTwo.text).to.equal('Recipient 1');
     });
   });
 
@@ -394,7 +394,7 @@ describe('RecipientsSelect', () => {
       expect(optgroups[0].getAttribute('label')).to.equal('Recent care teams');
       expect(optgroups[0].querySelectorAll('option').length).to.equal(2);
       expect(optgroups[0].querySelectorAll('option')[0].textContent).to.equal(
-        'Recipient 2\t(Facility 402)',
+        'Recipient 2',
       );
     });
   });
@@ -452,7 +452,7 @@ describe('RecipientsSelect', () => {
   });
 
   describe('Facility name display in options', () => {
-    it('displays shortened facility name for recent recipients', async () => {
+    it('does not append system name to recent recipient options', async () => {
       const customState = {
         ...initialState,
         sm: {
@@ -491,22 +491,12 @@ describe('RecipientsSelect', () => {
         const options = recentOptgroup.querySelectorAll('option');
         expect(options.length).to.equal(2);
 
-        // Verify first option includes shortened facility name
-        expect(options[0].textContent).to.include('Recent Team 1');
-        expect(options[0].textContent).to.include('(Madison)');
-        expect(options[0].textContent).to.not.include('VA Madison health care');
-
-        // Verify second option includes shortened facility name
-        expect(options[1].textContent).to.include('Recent Team 2');
-        expect(options[1].textContent).to.include('(Kansas City)');
-        expect(options[1].textContent).to.not.include(
-          'VA Kansas City health care',
-        );
+        expect(options[0].textContent).to.equal('Recent Team 1');
+        expect(options[1].textContent).to.equal('Recent Team 2');
       });
     });
 
-    it('displays shortened facility name for grouped options', async () => {
-      // Use a custom recipients list that only includes stations defined in ehrDataByVhaId
+    it('does not append system name to grouped options', async () => {
       const customRecipientsList = [
         {
           id: 1,
@@ -583,102 +573,25 @@ describe('RecipientsSelect', () => {
       await waitFor(() => {
         const comboBox = screen.getByTestId('compose-recipient-combobox');
 
-        // Find the Madison health care optgroup (alphabetically second after Kansas City)
         const madisonOptgroup = comboBox.querySelector(
           'optgroup[label="VA Madison health care"]',
         );
         expect(madisonOptgroup).to.exist;
 
         const madisonOptions = madisonOptgroup.querySelectorAll('option');
-        expect(madisonOptions.length).to.equal(2); // Madison Team 1 and 2
+        expect(madisonOptions.length).to.equal(2);
 
-        // Verify options include shortened facility name
-        madisonOptions.forEach(option => {
-          expect(option.textContent).to.include('(Madison)');
-          expect(option.textContent).to.not.include('VA Madison health care');
-        });
+        expect(madisonOptions[0].textContent).to.equal('Madison Team 1');
+        expect(madisonOptions[1].textContent).to.equal('Madison Team 2');
       });
     });
 
-    it('removes "VA" prefix and "health care" suffix from facility names', async () => {
-      const customState = {
-        ...initialState,
-        sm: {
-          recipients: {
-            recentRecipients: [
-              {
-                triageTeamId: 1,
-                name: 'Test Team',
-                stationNumber: '402',
-                healthCareSystemName: 'VA Northern Arizona health care',
-              },
-            ],
-          },
-        },
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow]: true,
-          [FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientOptGroups]: true,
-        },
-      };
-
-      const screen = setup({ state: customState });
-
-      await waitFor(() => {
-        const comboBox = screen.getByTestId('compose-recipient-combobox');
-        const recentOptgroup = comboBox.querySelector(
-          'optgroup[label="Recent care teams"]',
-        );
-        const option = recentOptgroup.querySelector('option');
-
-        // Should show "Northern Arizona" not "VA Northern Arizona health care"
-        expect(option.textContent).to.include('(Northern Arizona)');
-        expect(option.textContent).to.not.include('VA');
-        expect(option.textContent).to.not.include('health care');
-      });
-    });
-
-    it('handles facility names without "VA" prefix gracefully', async () => {
-      const customState = {
-        ...initialState,
-        sm: {
-          recipients: {
-            recentRecipients: [
-              {
-                triageTeamId: 1,
-                name: 'Test Team',
-                stationNumber: '402',
-                healthCareSystemName: 'Madison Medical Center',
-              },
-            ],
-          },
-        },
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow]: true,
-          [FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientOptGroups]: true,
-        },
-      };
-
-      const screen = setup({ state: customState });
-
-      await waitFor(() => {
-        const comboBox = screen.getByTestId('compose-recipient-combobox');
-        const recentOptgroup = comboBox.querySelector(
-          'optgroup[label="Recent care teams"]',
-        );
-        const option = recentOptgroup.querySelector('option');
-
-        // Should show full name if no "VA" prefix
-        expect(option.textContent).to.include('(Madison Medical Center)');
-      });
-    });
-
-    it('displays facility name for ungrouped options when stationNumber not in ehrDataByVhaId', async () => {
-      // Simulate a recipient with a stationNumber that doesn't exist in Drupal static data
+    it('displays only team name for ungrouped options when stationNumber not in ehrDataByVhaId', async () => {
       const recipientsWithUnknownStation = [
         {
           id: 1,
           name: 'Ungrouped Team',
-          stationNumber: '999', // This station doesn't exist in ehrDataByVhaId
+          stationNumber: '999',
           healthCareSystemName: 'VA Unknown Facility health care',
           signatureRequired: false,
         },
@@ -695,7 +608,6 @@ describe('RecipientsSelect', () => {
           [FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow]: true,
           [FEATURE_FLAG_NAMES.mhvSecureMessagingRecipientOptGroups]: true,
         },
-        // ehrDataByVhaId does NOT include '999', so vamcSystemName lookup will return undefined
       };
 
       const customProps = {
@@ -718,15 +630,12 @@ describe('RecipientsSelect', () => {
         const comboBox = screen.getByTestId('compose-recipient-combobox');
         const options = comboBox.querySelectorAll('option');
 
-        // Find the ungrouped option (not in an optgroup since vamcSystemName is undefined)
         const ungroupedOption = Array.from(options).find(opt =>
           opt.textContent.includes('Ungrouped Team'),
         );
 
         expect(ungroupedOption).to.exist;
-        // Should fall back to healthCareSystemName when vamcSystemName lookup fails
-        expect(ungroupedOption.textContent).to.include('Ungrouped Team');
-        expect(ungroupedOption.textContent).to.include('(Unknown Facility)');
+        expect(ungroupedOption.textContent).to.equal('Ungrouped Team');
       });
     });
   });
