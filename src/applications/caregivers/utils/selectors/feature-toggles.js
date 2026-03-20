@@ -8,5 +8,7 @@ export const selectFeatureToggles = state => {
     isBrowserMonitoringEnabled:
       toggles[FEATURE_FLAG_NAMES.caregiverBrowserMonitoringEnabled],
     useFacilitiesApi: toggles[FEATURE_FLAG_NAMES.caregiverUseFacilitiesApi],
+    caregiverUploadPatternEnabled:
+      toggles[FEATURE_FLAG_NAMES.caregiverUploadPatternEnabled],
   };
 };
