@@ -347,7 +347,7 @@ export const ContactInfoBase = ({
     ) : null;
   };
 
-  // Return boolean flag if a required field is among the missing info fields
+  // Return true if a required field is among the missing info fields
   const hasMissingRequiredInfo = key => {
     // get config for a field
     const config = Object.values(fieldConfig).find(field => field.key === key);
@@ -358,6 +358,8 @@ export const ContactInfoBase = ({
   };
 
   // Return true if a field object is missing relevant properties
+  // Different from the above function, in that it checks if the field is empty
+  // even if not required
   const isContactFieldEmpty = (contactField, contactFieldName) => {
     // If no data object exists, it's empty
     if (!contactField || typeof contactField !== 'object') {
@@ -408,14 +410,17 @@ export const ContactInfoBase = ({
     const missingRequiredAddress = hasMissingRequiredInfo(
       FIELD_NAMES.MAILING_ADDRESS,
     );
-    const linkText = isContactFieldEmpty(
+    const isAddressEmpty = isContactFieldEmpty(
       dataWrap[keys.address],
       FIELD_NAMES.MAILING_ADDRESS,
-    )
+    );
+    const linkText = isAddressEmpty
       ? `${content.add} mailing address`
       : `${content.edit} mailing address`;
-    const cardContent = missingRequiredAddress ? (
-      'None provided'
+    const cardContent = isAddressEmpty ? (
+      <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+        Not provided
+      </p>
     ) : (
       <AddressView data={dataWrap[keys.address]} />
     );
@@ -447,14 +452,17 @@ export const ContactInfoBase = ({
     const missingRequiredHomePhone = hasMissingRequiredInfo(
       FIELD_NAMES.HOME_PHONE,
     );
-    const linkText = isContactFieldEmpty(
+    const isHomePhoneEmpty = isContactFieldEmpty(
       dataWrap[keys.homePhone],
       FIELD_NAMES.HOME_PHONE,
-    )
+    );
+    const linkText = isHomePhoneEmpty
       ? `${content.add} home phone number`
       : `${content.edit} home phone number`;
-    const cardContent = missingRequiredHomePhone ? (
-      'None provided'
+    const cardContent = isHomePhoneEmpty ? (
+      <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+        Not provided
+      </p>
     ) : (
       <div className="dd-privacy-hidden" data-dd-action-name="home phone">
         {renderTelephone(dataWrap[keys.homePhone])}
@@ -489,14 +497,17 @@ export const ContactInfoBase = ({
     const missingRequiredMobilePhone = hasMissingRequiredInfo(
       FIELD_NAMES.MOBILE_PHONE,
     );
-    const linkText = isContactFieldEmpty(
+    const isMobilePhoneEmpty = isContactFieldEmpty(
       dataWrap[keys.mobilePhone],
       FIELD_NAMES.MOBILE_PHONE,
-    )
+    );
+    const linkText = isMobilePhoneEmpty
       ? `${content.add} mobile phone number`
       : `${content.edit} mobile phone number`;
-    const cardContent = missingRequiredMobilePhone ? (
-      'None provided'
+    const cardContent = isMobilePhoneEmpty ? (
+      <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+        Not provided
+      </p>
     ) : (
       <div className="dd-privacy-hidden" data-dd-action-name="mobile phone">
         {renderTelephone(dataWrap[keys.mobilePhone])}
@@ -530,14 +541,17 @@ export const ContactInfoBase = ({
   const renderEmailSection = () => {
     if (!keys.email) return null;
     const missingRequiredEmail = hasMissingRequiredInfo(FIELD_NAMES.EMAIL);
-    const linkText = isContactFieldEmpty(
+    const isEmailEmpty = isContactFieldEmpty(
       dataWrap[keys.email],
       FIELD_NAMES.EMAIL,
-    )
+    );
+    const linkText = isEmailEmpty
       ? `${content.add} email address`
       : `${content.edit} email address`;
-    const cardContent = missingRequiredEmail ? (
-      'None provided'
+    const cardContent = isEmailEmpty ? (
+      <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+        Not provided
+      </p>
     ) : (
       <div className="dd-privacy-hidden" data-dd-action-name="email">
         {renderEmail(dataWrap[keys.email])}

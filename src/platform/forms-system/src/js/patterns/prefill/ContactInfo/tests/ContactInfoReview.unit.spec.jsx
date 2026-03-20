@@ -77,7 +77,7 @@ describe('<ContactInfoReview>', () => {
     // homePhone, mobilePhone, email, country, street address, address line 2,
     // city, state, zip
     expect($$('dt', container).length).to.eq(9);
-    expect(container.innerHTML).to.contain(content.missingPhoneError);
+    expect(container.innerHTML).to.contain('Not provided');
   });
   it('should render international address', () => {
     const data = getData({ address: false });
@@ -114,89 +114,67 @@ describe('<ContactInfoReview>', () => {
     expect(editPageSpy.called).to.be.true;
   });
 
-  // Missing data errors
-  it('should show missing phone & email error messages', () => {
+  // Missing data
+  it('should show "Not provided" for missing phone & email', () => {
     const data = getData({
       home: false,
       mobile: false,
       email: false,
     });
     const { container } = render(<ContactInfoReview {...data} />);
-    // 3 missing errors: phone x2, email
-    const errorEls = $$('.usa-input-error-message', container);
-    expect(errorEls.length).to.eq(3);
-    expect(errorEls.map(el => el.textContent)).to.deep.equal([
-      'Missing phone number',
-      'Missing phone number',
-      'Missing email address',
-    ]);
+    const dds = $$('dd.dd-privacy-hidden', container);
+    const notProvidedCount = dds.filter(el => el.textContent === 'Not provided')
+      .length;
+    expect(notProvidedCount).to.eq(3);
   });
 
-  it('should show missing U.S. address error messages', () => {
+  it('should show "Not provided" for missing U.S. address fields', () => {
     const data = getData({ address: false });
     const { container } = render(<ContactInfoReview {...data} />);
-    // 6 missing errors: email, country, street address, city, state & zip
-    const errorEls = $$('.usa-input-error-message', container);
-    expect(errorEls.length).to.eq(6);
-    expect(errorEls.map(el => el.textContent)).to.deep.equal([
-      'Missing email address',
-      'Missing country',
-      'Missing street address',
-      'Missing city',
-      'Missing state',
-      'Missing zip code',
-    ]);
+    const dds = $$('dd.dd-privacy-hidden', container);
+    const notProvidedCount = dds.filter(el => el.textContent === 'Not provided')
+      .length;
+    // missing: email, country, street address, city, state, zip
+    expect(notProvidedCount).to.eq(6);
   });
 
-  it('should show missing international address error messages', () => {
+  it('should show "Not provided" for missing international address fields', () => {
     const data = getData({ address: false });
     data.data.veteran.mailingAddress = {
       addressType: ADDRESS_TYPES.international,
     };
     const { container } = render(<ContactInfoReview {...data} />);
-    // 4 missing errors: email, country, street address, city
-    const errorEls = $$('.usa-input-error-message', container);
-    expect(errorEls.length).to.eq(4);
-    expect(errorEls.map(el => el.textContent)).to.deep.equal([
-      'Missing email address',
-      'Missing country',
-      'Missing street address',
-      'Missing city',
-    ]);
+    const dds = $$('dd.dd-privacy-hidden', container);
+    const notProvidedCount = dds.filter(el => el.textContent === 'Not provided')
+      .length;
+    // missing: email, country, street address, city
+    expect(notProvidedCount).to.eq(4);
   });
 
-  // // Invalid data errors
-  it('should show invalid phone & zip code error messages', () => {
+  it('should show "Not provided" for invalid phone & zip code', () => {
     const data = getData();
     data.data.veteran.mailingAddress.zipCode = '123';
     data.data.veteran.homePhone.areaCode = '3';
     data.data.veteran.mobilePhone.areaCode = '3';
     const { container } = render(<ContactInfoReview {...data} />);
-    // 4 invalid errors: phone x2, email & zip
-    const errorEls = $$('.usa-input-error-message', container);
-    expect(errorEls.length).to.eq(4);
-    expect(errorEls.map(el => el.textContent)).to.deep.equal([
-      'Invalid phone number',
-      'Invalid phone number',
-      'Missing email address',
-      'Invalid zip code',
-    ]);
+    const dds = $$('dd.dd-privacy-hidden', container);
+    const notProvidedCount = dds.filter(el => el.textContent === 'Not provided')
+      .length;
+    // invalid: phone x2, email & zip
+    expect(notProvidedCount).to.eq(4);
   });
 
-  it('should show invalid phone error messages & no zip code error for non-U.S. address', () => {
+  it('should show "Not provided" for invalid phone & no zip error for non-U.S. address', () => {
     const data = getData();
     data.data.veteran.mailingAddress.zipCode = '123';
     data.data.veteran.mailingAddress.addressType = ADDRESS_TYPES.international;
     data.data.veteran.homePhone.areaCode = '3';
     data.data.veteran.mobilePhone.areaCode = '3';
     const { container } = render(<ContactInfoReview {...data} />);
-    // 3 invalid errors: phone x2 & email
-    const errorEls = $$('.usa-input-error-message', container);
-    expect(errorEls.length).to.eq(3);
-    expect(errorEls.map(el => el.textContent)).to.deep.equal([
-      'Invalid phone number',
-      'Invalid phone number',
-      'Missing email address',
-    ]);
+    const dds = $$('dd.dd-privacy-hidden', container);
+    const notProvidedCount = dds.filter(el => el.textContent === 'Not provided')
+      .length;
+    // invalid: phone x2 & email
+    expect(notProvidedCount).to.eq(3);
   });
 });

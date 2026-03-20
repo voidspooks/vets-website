@@ -54,18 +54,12 @@ const ContactInfoReview = ({
   const isUS = addressObj.addressType !== ADDRESS_TYPES.international;
 
   /**
-   * Renders value (if it isn't all whitespace) or an error message wrapped in
-   * a class that makes the text bold & red
+   * Renders value (if it isn't all whitespace) or 'Not provided'
    * @param {String} value - Field value to show
-   * @param {String} errorMessage - Error message text
-   * @returns {String|JSX} - value or error message
+   * @returns {String} - value or 'Not provided'
    */
-  const showValueOrErrorMessage = (value, errorMessage) =>
-    (value || '').trim() ||
-    (errorMessage && (
-      <span className="usa-input-error-message">{errorMessage}</span>
-    )) ||
-    '';
+  const showValueOrNotProvided = value =>
+    (value || '').trim() || 'Not provided';
 
   /**
    * Display field label & data (or error message) on the review & submit page
@@ -87,11 +81,9 @@ const ContactInfoReview = ({
         if (!keys.homePhone) {
           return ''; // Don't render row
         }
-        // content contains the error messages, homePhoneObj is the phone object
         const errorMsg = validatePhone(content, homePhoneObj);
-        // Pass showValueOrErrorMessage an empty string so error renders
         return errorMsg
-          ? showValueOrErrorMessage('', errorMsg)
+          ? showValueOrNotProvided('')
           : renderTelephone(homePhoneObj); // va-telephone web component
       },
     ],
@@ -104,9 +96,8 @@ const ContactInfoReview = ({
           return ''; // Don't render row
         }
         const errorMsg = validatePhone(content, mobilePhoneObj);
-        // Pass showValueOrErrorMessage an empty string so error renders
         return errorMsg
-          ? showValueOrErrorMessage('', errorMsg)
+          ? showValueOrNotProvided('')
           : renderTelephone(mobilePhoneObj); // va-telephone web component
       },
     ],
@@ -119,10 +110,7 @@ const ContactInfoReview = ({
           return ''; // Don't render row
         }
         const errorMsg = validateEmail(content, emailObj.emailAddress);
-        // Pass showValueOrErrorMessage an empty string so error renders
-        return errorMsg
-          ? showValueOrErrorMessage('', errorMsg)
-          : emailObj.emailAddress;
+        return errorMsg ? showValueOrNotProvided('') : emailObj.emailAddress;
       },
     ],
     [
@@ -133,11 +121,7 @@ const ContactInfoReview = ({
         if (!keys.address) {
           return ''; // Don't render row
         }
-        // showValueOrErrorMessage will render the trimmed value or an error
-        return showValueOrErrorMessage(
-          addressObj.countryName,
-          content.missingCountryError,
-        );
+        return showValueOrNotProvided(addressObj.countryName);
       },
     ],
     [
@@ -148,11 +132,7 @@ const ContactInfoReview = ({
         if (!keys.address) {
           return ''; // Don't render row
         }
-        // showValueOrErrorMessage will render the trimmed value or an error
-        return showValueOrErrorMessage(
-          addressObj.addressLine1,
-          content.missingStreetAddressError,
-        );
+        return showValueOrNotProvided(addressObj.addressLine1);
       },
     ],
     [
@@ -185,11 +165,7 @@ const ContactInfoReview = ({
         if (!keys.address) {
           return ''; // Don't render row
         }
-        // showValueOrErrorMessage will render the trimmed value or an error
-        return showValueOrErrorMessage(
-          addressObj.city,
-          content.missingCityError,
-        );
+        return showValueOrNotProvided(addressObj.city);
       },
     ],
     [
@@ -200,11 +176,7 @@ const ContactInfoReview = ({
         if (!keys.address || !isUS) {
           return ''; // Don't render row
         }
-        // showValueOrErrorMessage will render the trimmed value or an error
-        return showValueOrErrorMessage(
-          addressObj.stateCode,
-          content.missingStateError,
-        );
+        return showValueOrNotProvided(addressObj.stateCode);
       },
     ],
     [
@@ -230,8 +202,7 @@ const ContactInfoReview = ({
         // Profile should only provide a 5-digit zipcode; evaluate for missing
         // or invalid zipcode
         const errorMsg = validateZipcode(content, zipCode);
-        // Pass showValueOrErrorMessage an empty string so error renders
-        return errorMsg ? showValueOrErrorMessage('', errorMsg) : zipCode;
+        return errorMsg ? showValueOrNotProvided('') : zipCode;
       },
     ],
     [
