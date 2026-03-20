@@ -1,6 +1,7 @@
 import React from 'react';
 import { isAfter } from 'date-fns';
 import { useSelector } from 'react-redux';
+import { uniqBy } from 'lodash';
 import BalanceCard from './BalanceCard';
 import ZeroBalanceCard from './ZeroBalanceCard';
 import AlertCard from './AlertCard';
@@ -16,6 +17,21 @@ import CopayAlertContainer from '../../medical-copays/components/CopayAlertConta
 // Some terminology that could be helpful:
 // debt(s) = debtLetters
 // bill(s) = copays = mcp (medical-copays)
+
+const getVersionedCopayData = (rawCopays, shouldShowVHAPaymentHistory) => {
+  const version = shouldShowVHAPaymentHistory ? 'v1' : 'v0';
+  const uniqueFacilities =
+    version === 'v1'
+      ? uniqBy(rawCopays.data || [], 'attributes.facilityId')
+      : uniqBy(rawCopays || [], 'pSFacilityNum');
+
+  return {
+    copayBillCount: uniqueFacilities?.length,
+    copayTotal: calculateTotalBills(uniqueFacilities, version),
+    latestBillDate: getLatestBill(rawCopays, version),
+  };
+};
+
 const Balances = () => {
   // get balances from redux
   const { debtLetters, mcp } = useSelector(
@@ -36,21 +52,15 @@ const Balances = () => {
   const totalDebts = calculateTotalDebts(debts);
   const latestDebt = getLatestDebt(debts);
 
-  // get Bill info
-  const copayData = mcp.statements || [];
-  const { copayBillCount } = shouldShowVHAPaymentHistory
-    ? copayData.meta.copaySummary
-    : { copayBillCount: copayData.length };
-  const copayTotal = shouldShowVHAPaymentHistory
-    ? copayData.meta.copaySummary.totalCurrentBalance
-    : calculateTotalBills(copayData || []);
-  const latestBillDate = shouldShowVHAPaymentHistory
-    ? new Date(copayData.meta.copaySummary.lastUpdatedOn)
-    : getLatestBill(copayData || []);
+  // get Copay info
+  const { copayBillCount, copayTotal, latestBillDate } = getVersionedCopayData(
+    mcp.statements,
+    shouldShowVHAPaymentHistory,
+  );
 
   // Sort two valid BalancCards by date
   if (!debtError && !billError && totalDebts > 0 && copayBillCount > 0) {
-    const debtFirst = isAfter(new Date(latestDebt), latestBillDate);
+    const debtFirst = isAfter(new Date(latestDebt), new Date(latestBillDate));
     return (
       <>
         <BalanceCard

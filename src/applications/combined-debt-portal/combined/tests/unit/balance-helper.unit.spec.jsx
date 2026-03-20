@@ -34,21 +34,21 @@ describe('combined debt portal helpers', () => {
 
   describe('calculateTotalBills helper: ', () => {
     it('should calculate total bills', () => {
-      expect(calculateTotalBills(mockBill)).to.equal(87);
+      expect(calculateTotalBills(mockBill, 'v0')).to.equal(87);
     });
 
     it('should return 0 if no valid data', () => {
-      expect(calculateTotalBills(null)).to.equal(0);
+      expect(calculateTotalBills(null, 'v0')).to.equal(0);
     });
   });
 
   describe('getLatestBill helper: ', () => {
     it('should return latest bills', () => {
-      expect(getLatestBill(mockBill)).to.equal('12/05/2021');
+      expect(getLatestBill(mockBill, 'v0')).to.equal('12/05/2021');
     });
 
     it('should return latest bills', () => {
-      expect(getLatestBill(null)).to.equal(null);
+      expect(getLatestBill(null, 'v0')).to.equal(null);
     });
   });
 

@@ -26,29 +26,44 @@ export const getLatestDebt = debts => {
     : null;
 };
 
-export const calculateTotalBills = bills => {
+export const calculateTotalBills = (bills, version) => {
   return bills
     ? bills.reduce((acc, currDebt) => {
-        return acc + currDebt.pHAmtDue;
+        const amount =
+          version === 'v1'
+            ? currDebt.attributes?.currentBalance || 0
+            : currDebt.pHAmtDue || 0;
+        return acc + amount;
       }, 0)
     : 0;
 };
 
-export const getLatestBill = bills => {
-  return bills
-    ? bills.reduce((acc, currBill) => {
-        if (currBill.pSStatementDateOutput) {
-          if (!acc) {
-            return currBill.pSStatementDateOutput;
+export const getLatestBill = (bills, version) => {
+  // Check for v1 API date first
+  if (version === 'v1') {
+    const v1Date = bills?.meta?.copaySummary?.lastUpdatedOn;
+    return v1Date ? new Date(v1Date) : null;
+  }
+
+  // v0 API logic - bills is an array of statements
+  if (version === 'v0') {
+    return bills
+      ? bills.reduce((acc, currBill) => {
+          if (currBill.pSStatementDateOutput) {
+            if (!acc) {
+              return currBill.pSStatementDateOutput;
+            }
+            return isAfter(
+              new Date(acc),
+              new Date(currBill.pSStatementDateOutput),
+            )
+              ? acc
+              : currBill.pSStatementDateOutput;
           }
-          return isAfter(
-            new Date(acc),
-            new Date(currBill.pSStatementDateOutput),
-          )
-            ? acc
-            : currBill.pSStatementDateOutput;
-        }
-        return acc;
-      }, null)
-    : null;
+          return acc;
+        }, null)
+      : null;
+  }
+
+  return null;
 };
