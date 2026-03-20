@@ -686,9 +686,9 @@ export const ContactInfoBase = ({
             onSubmit={handlers.onSubmit}
           >
             <div className="vads-l-row">
-              <div
-                className="vads-l-col--12 medium-screen:vads-l-col--8"
-                style={{ maxWidth: '300px' }}
+              <ul
+                className="vads-l-col--12 medium-screen:vads-l-col--8 vads-u-padding-left--0 vads-u-margin-top--0"
+                style={{ maxWidth: '300px', listStyle: 'none' }}
               >
                 {[
                   renderAddressSection,
@@ -696,16 +696,16 @@ export const ContactInfoBase = ({
                   renderHomePhoneSection,
                   renderMobilePhoneSection,
                 ].map((func, i, arr) => (
-                  <div
+                  <li
                     key={func.name}
                     className={`vads-u-margin-bottom--${
                       i === arr.length - 1 ? '5' : '3'
                     }`}
                   >
                     {func()}
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </div>
         </div>
