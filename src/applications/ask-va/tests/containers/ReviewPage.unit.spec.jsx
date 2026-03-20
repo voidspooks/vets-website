@@ -1,11 +1,13 @@
+import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { expect } from 'chai';
-import React from 'react';
 import { Provider } from 'react-redux';
 import sinon from 'sinon';
+
 import * as FileUpload from '../../components/FileUpload';
 import * as ReviewCollapsibleChapter from '../../components/ReviewCollapsibleChapter';
 import * as ReviewSectionContent from '../../components/reviewPage/ReviewSectionContent';
+import * as UpdatePageButton from '../../components/reviewPage/UpdatePageButton';
 import ReviewPage from '../../containers/ReviewPage';
 import * as StorageAdapterModule from '../../utils/StorageAdapter';
 import { createMockStore } from '../common';
@@ -138,6 +140,157 @@ describe('<ReviewPage /> container', () => {
       const heading = alert.querySelector('h3');
       expect(heading).to.exist;
       expect(heading).to.have.text('Ask VA isn’t working right now');
+    });
+  });
+
+  describe('scroll element naming', () => {
+    it('should render scroll elements using chapter.name (not chapterTitles with special characters)', async () => {
+      stubReviewCollapsibleChapter();
+      stubReviewSectionContent();
+      stubFileUpload();
+      stubStorageAdapter();
+
+      const store = createMockStore({
+        askVA: mockData.askVA,
+        formData: mockData.data,
+      });
+
+      const { container, getByText } = render(
+        <Provider store={store}>
+          <ReviewPage />
+        </Provider>,
+      );
+
+      // Wait for the page to render
+      await waitFor(() => {
+        expect(getByText('Review and submit')).to.exist;
+      });
+
+      // Verify scroll elements use chapter.name format (no special characters)
+      // Filter to only chapter scroll elements (not topScrollElement, etc.)
+      const scrollElements = container.querySelectorAll(
+        '[name^="chapter"][name$="ScrollElement"]',
+      );
+      expect(scrollElements.length).to.be.greaterThan(0);
+
+      // Check that no scroll element name contains apostrophes or curly apostrophes
+      scrollElements.forEach(element => {
+        const name = element.getAttribute('name');
+        expect(name).to.not.include("'"); // single quote
+        expect(name).to.not.include('’'); // curly apostrophe
+        // Verify the format is chapter{camelCaseName}ScrollElement
+        expect(name).to.match(/^chapter[a-zA-Z]+ScrollElement$/);
+      });
+
+      // Check that the scroll element for the 'Your contact information' chapter exists with the correct name
+      const scrollElement = container.querySelector(
+        '[name="chapteryourContactInformationScrollElement"]',
+      );
+      expect(scrollElement).to.exist;
+    });
+  });
+
+  describe('UpdatePageButton scroll behavior', () => {
+    it('should pass scroll function that calls scrollToChapter with chapter.name (veteransPersonalInformation)', async () => {
+      stubReviewCollapsibleChapter();
+      stubFileUpload();
+      stubStorageAdapter();
+
+      const chapterKey = 'veteransPersonalInformation';
+      const chapterTitle = "Veteran's personal information";
+
+      // Spy on the scrollToChapter function to verify it's called with the correct chapter name
+      const scrollToChapterStub = sandbox.stub(formUtils, 'scrollToChapter');
+
+      // Variable to capture the editSection function for later use
+      let capturedEditSection = null;
+      let capturedKeys = null;
+
+      // Stub ReviewSectionContent to capture the editSection function
+      sandbox.stub(ReviewSectionContent, 'default').callsFake(props => {
+        // Capture the editSection function for the target section
+        if (props.title === chapterTitle) {
+          capturedEditSection = props.editSection;
+          capturedKeys = props.keys;
+        }
+        return (
+          <div data-testid={`review-section-${props.title}`}>
+            <span>Mock review section content for {props.title}</span>
+          </div>
+        );
+      });
+
+      // Capture the props passed to UpdatePageButton
+      const capturedProps = [];
+      sandbox.stub(UpdatePageButton, 'default').callsFake(props => {
+        capturedProps.push(props);
+        return (
+          // eslint-disable-next-line @department-of-veterans-affairs/prefer-button-component
+          <button type="button" data-testid={`update-btn-${props.title}`}>
+            Update page
+          </button>
+        );
+      });
+
+      const store = createMockStore({
+        openChapters: [chapterKey],
+        viewedPages: new Set([
+          'aboutTheVeteran_aboutmyselfrelationshipfamilymember',
+        ]),
+        formData: mockData.data,
+        form: {
+          data: mockData.data,
+          pages: {
+            // The page key used for veteransPersonalInformation chapter
+            /* eslint-disable-next-line camelcase */
+            aboutTheVeteran_aboutmyselfrelationshipfamilymember: {
+              showPagePerItem: false,
+              editMode: false,
+            },
+          },
+          reviewPageView: {
+            openChapters: [chapterKey],
+            viewedPages: new Set([
+              'aboutTheVeteran_aboutmyselfrelationshipfamilymember',
+            ]),
+          },
+        },
+      });
+
+      render(
+        <Provider store={store}>
+          <ReviewPage />
+        </Provider>,
+      );
+
+      // Verify that the section was rendered and we captured the editSection function
+      await waitFor(() => {
+        expect(capturedEditSection).to.exist;
+      });
+
+      // Manually trigger edit mode by calling the captured editSection
+      // This simulates clicking the Edit button
+      capturedEditSection(capturedKeys, chapterTitle);
+
+      // Wait for the component to re-render in edit mode and show UpdatePageButton
+      await waitFor(() => {
+        expect(capturedProps.length).to.be.at.least(1);
+      });
+
+      // Verify the scroll element exists in the DOM with the correct name
+      const scrollElement = document.querySelector(
+        `[name="chapter${chapterKey}ScrollElement"]`,
+      );
+      expect(scrollElement).to.exist;
+
+      // Call the scroll function passed to UpdatePageButton
+      const veteransInfoProps = capturedProps.find(
+        p => p.title === chapterTitle,
+      );
+      await veteransInfoProps.scroll();
+
+      // Verify scrollToChapter was called with the correct chapter name
+      expect(scrollToChapterStub.calledWith(chapterKey)).to.be.true;
     });
   });
 });

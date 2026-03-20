@@ -1,6 +1,9 @@
 import * as apiUtils from '@department-of-veterans-affairs/platform-utilities/api';
 import { expect } from 'chai';
 import sinon from 'sinon';
+
+import * as scrollUtils from 'platform/utilities/scroll/scroll';
+
 import * as constants from '../../constants';
 import { mockSubmitResponse } from '../../utils/mockData';
 import {
@@ -16,12 +19,33 @@ import {
   handleFormSubmission,
   handleSectionEdit,
   maskSocial,
+  scrollToChapter,
   scrollToElement,
   submitFormData,
 } from '../../utils/reviewPageUtils';
 import { askVAAttachmentStorage } from '../../utils/StorageAdapter';
 
 describe('Review Page Utils', () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  describe('scrollToChapter', () => {
+    it('should call scrollTo with the correct chapter key', () => {
+      const scrollToStub = sandbox.stub(scrollUtils, 'scrollTo');
+
+      scrollToChapter('testChapter');
+      expect(scrollToStub.calledWith('chaptertestChapterScrollElement')).to.be
+        .true;
+    });
+  });
+
   describe('getYesOrNoFromBool', () => {
     it('should return "Yes" for true', () => {
       expect(getYesOrNoFromBool(true)).to.equal('Yes');
@@ -111,16 +135,6 @@ describe('Review Page Utils', () => {
   });
 
   describe('Storage Operations', () => {
-    let sandbox;
-
-    beforeEach(() => {
-      sandbox = sinon.createSandbox();
-    });
-
-    afterEach(() => {
-      sandbox.restore();
-    });
-
     describe('getStoredAttachments', () => {
       it('should return stored attachments', async () => {
         const mockFiles = [{ fileID: '123', fileName: 'test.pdf' }];
@@ -352,12 +366,10 @@ describe('Review Page Utils', () => {
   });
 
   describe('Form Submission', () => {
-    let sandbox;
     let originalMockFlag;
     let originalEnvUrl;
 
     beforeEach(() => {
-      sandbox = sinon.createSandbox();
       originalMockFlag = constants.mockTestingFlagForAPI;
       originalEnvUrl = constants.envApiUrl;
 
@@ -375,8 +387,6 @@ describe('Review Page Utils', () => {
     });
 
     afterEach(() => {
-      sandbox.restore();
-
       Object.defineProperty(constants, 'mockTestingFlagForAPI', {
         value: originalMockFlag,
         configurable: true,

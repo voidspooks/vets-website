@@ -1,10 +1,16 @@
 import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/api';
+import { scrollTo } from 'platform/utilities/scroll/scroll';
+
 import { formatDate } from '../config/helpers';
 import submitTransformer from '../config/submit-transformer';
 import { mockTestingFlagForAPI } from '../constants';
 import { mockSubmitResponse } from './mockData';
 import { askVAAttachmentStorage } from './StorageAdapter';
 import { ENDPOINTS } from './api';
+
+export const scrollToChapter = chapterKey => {
+  scrollTo(`chapter${chapterKey}ScrollElement`);
+};
 
 export const getYesOrNoFromBool = answer => (answer ? 'Yes' : 'No');
 

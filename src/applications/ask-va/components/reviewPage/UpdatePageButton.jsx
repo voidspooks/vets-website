@@ -3,7 +3,14 @@ import PropTypes from 'prop-types';
 
 import ProgressButton from '@department-of-veterans-affairs/platform-forms-system/ProgressButton';
 
-const UpdatePageButton = ({ closeSection, keys, scroll, title }) => {
+const noop = () => {};
+
+const UpdatePageButton = ({
+  closeSection = noop,
+  keys = [],
+  scroll = noop,
+  title,
+}) => {
   return (
     <ProgressButton
       ariaLabel={`Update ${title}`}
@@ -11,7 +18,7 @@ const UpdatePageButton = ({ closeSection, keys, scroll, title }) => {
       buttonText="Update page"
       onButtonClick={() => {
         closeSection(keys, title);
-        scroll(title);
+        scroll();
       }}
       submitButton
       useWebComponents

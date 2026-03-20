@@ -13,13 +13,22 @@ export const mockData = {
       },
       dateOfBirth: '1999-01-03',
     },
-    relationshipToVeteran: "I'm the Veteran",
+    relationshipToVeteran: "I'm a family member of a Veteran",
+    moreAboutYourRelationshipToVeteran: "I'm the Veteran's spouse",
     onBaseOutsideUS: false,
     address: {
       militaryAddress: {},
     },
     aboutTheVeteran: {
-      socialOrServiceNum: {},
+      first: 'John',
+      middle: 'Q',
+      last: 'Veteran',
+      socialOrServiceNum: {
+        ssn: '123456780',
+      },
+      isVeteranDeceased: false,
+      dateOfBirth: '1970-01-15',
+      branchOfService: 'Army',
     },
     aboutTheFamilyMember: {
       socialOrServiceNum: {},
@@ -33,6 +42,7 @@ export const mockData = {
     allowAttachments: true,
     selectTopic: 'Certificate of Eligibility (COE) or Statement of Benefits',
     topicId: '5716ab8e-8276-ef11-a671-001dd8097cca',
+    whoIsYourQuestionAbout: 'Myself',
   },
   askVA: {
     categoryID: '75524deb-d864-eb11-bb24-000d3a579c45',
@@ -448,6 +458,79 @@ export const mockData = {
       name: 'yourQuestion',
       open: false,
       pageKeys: ['question'],
+      hasUnviewedPages: true,
+    },
+    {
+      expandedPages: [
+        {
+          path: 'your-contact-information',
+          title: 'Your contact information',
+          uiSchema: {},
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+          pageKey: 'contactInformation',
+          chapterKey: 'yourContactInformation',
+          editModeOnReviewPage: false,
+        },
+      ],
+      formConfig: {
+        pages: {
+          contactInformation: {
+            path: 'your-contact-information',
+            title: 'Your contact information',
+            uiSchema: {},
+            schema: {
+              type: 'object',
+              properties: {},
+            },
+            pageKey: 'contactInformation',
+            chapterKey: 'yourContactInformation',
+            editModeOnReviewPage: false,
+          },
+        },
+      },
+      name: 'yourContactInformation',
+      open: false,
+      pageKeys: ['contactInformation'],
+      hasUnviewedPages: true,
+    },
+    {
+      expandedPages: [
+        {
+          path: 'about-the-veteran',
+          title: "Veteran's personal information",
+          uiSchema: {},
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+          pageKey: 'aboutTheVeteran_aboutmyselfrelationshipfamilymember',
+          chapterKey: 'veteransPersonalInformation',
+          editModeOnReviewPage: false,
+        },
+      ],
+      formConfig: {
+        pages: {
+          // eslint-disable-next-line camelcase
+          aboutTheVeteran_aboutmyselfrelationshipfamilymember: {
+            path: 'about-the-veteran',
+            title: "Veteran's personal information",
+            uiSchema: {},
+            schema: {
+              type: 'object',
+              properties: {},
+            },
+            pageKey: 'aboutTheVeteran_aboutmyselfrelationshipfamilymember',
+            chapterKey: 'veteransPersonalInformation',
+            editModeOnReviewPage: false,
+          },
+        },
+      },
+      name: 'veteransPersonalInformation',
+      open: false,
+      pageKeys: ['aboutTheVeteran_aboutmyselfrelationshipfamilymember'],
       hasUnviewedPages: true,
     },
   ],
