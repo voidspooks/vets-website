@@ -20,7 +20,7 @@ export default function ConfirmationPage() {
   const alertRef = useRef(null);
   const { submission, data } = form;
   const response = submission?.response ?? {};
-  const submissionId = response?.submissionId;
+  const submissionId = response?.digitalFormsApi?.submission?.submissionId;
   const confirmationNumber = response?.attributes?.confirmationNumber;
   const veteranFirstName = data?.veteranInformation?.fullName?.first || '';
   const veteranLastName = data?.veteranInformation?.fullName?.last || '';

@@ -108,7 +108,7 @@ describe('Dependents Form (686c-674) confirmation page', () => {
         [`dependents_enable_form_viewer_mfe`]: true,
       },
       submissionResponse: {
-        submissionId,
+        digitalFormsApi: { submission: { submissionId } },
       },
     });
     const { container } = render(
