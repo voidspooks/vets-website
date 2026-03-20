@@ -3,23 +3,42 @@ import sinon from 'sinon';
 import * as api from 'platform/utilities/api';
 import { uploadDocument } from '../../../cave/upload';
 
-// FormData.append requires a Blob — use real File objects
-const makePdfFile = (name = 'test.pdf') =>
-  new File(['%PDF-1.4'], name, { type: 'application/pdf' });
+const TEST_PDF_B64 = 'JVBERi0xLjQ=';
 
-const makeJpegFile = () =>
-  new File(['data'], 'photo.jpg', { type: 'image/jpeg' });
+const makePdfFile = (name = 'test.pdf') => ({
+  name,
+  type: 'application/pdf',
+  base64: TEST_PDF_B64,
+});
+
+const makeJpegFile = () => ({
+  name: 'photo.jpg',
+  type: 'image/jpeg',
+});
 
 describe('cave/upload — uploadDocument', () => {
   let sandbox;
   let apiRequestStub;
+  let originalFileReader;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     apiRequestStub = sandbox.stub(api, 'apiRequest');
+    originalFileReader = global.FileReader;
+
+    global.FileReader = class {
+      readAsDataURL(file) {
+        this.result = `data:${file.type};base64,${file.base64 || ''}`;
+
+        if (this.onload) {
+          this.onload();
+        }
+      }
+    };
   });
 
   afterEach(() => {
+    global.FileReader = originalFileReader;
     sandbox.restore();
   });
 
@@ -36,18 +55,31 @@ describe('cave/upload — uploadDocument', () => {
 
   it('accepts a file whose name ends with .pdf regardless of MIME type', async () => {
     apiRequestStub.resolves({ id: 'doc-1', bucket: 'b', pdfKey: 'k' });
-    const file = new File(['data'], 'upload.pdf', {
+    const file = {
+      name: 'upload.pdf',
       type: 'application/octet-stream',
-    });
+      base64: TEST_PDF_B64,
+    };
     const result = await uploadDocument(file);
     expect(result.id).to.equal('doc-1');
   });
 
-  it('calls apiRequest with POST method', async () => {
+  it('calls apiRequest with POST method and the expected JSON payload', async () => {
     apiRequestStub.resolves({ id: 'doc-1', bucket: 'b', pdfKey: 'k' });
     await uploadDocument(makePdfFile());
+    const expectedBody = Object.fromEntries([
+      ['pdf_b64', TEST_PDF_B64],
+      ['file_name', 'test.pdf'],
+    ]);
+
     expect(apiRequestStub.calledOnce).to.be.true;
     expect(apiRequestStub.firstCall.args[1].method).to.equal('POST');
+    expect(apiRequestStub.firstCall.args[1].headers).to.deep.equal({
+      'Content-Type': 'application/json',
+    });
+    expect(JSON.parse(apiRequestStub.firstCall.args[1].body)).to.deep.equal(
+      expectedBody,
+    );
   });
 
   it('returns { id, bucket, pdfKey } on success', async () => {
