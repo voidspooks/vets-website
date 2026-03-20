@@ -115,6 +115,14 @@ export default function ClaimDetailsContent({
     { clerk: [], user: [], forms: [] },
   );
 
+  // If claim totalCostRequested is 0 then show "Current expenses: $0.00" instead of hiding the amount section or showing "Submitted amount: $0.00"
+  const formattedCost = currency(
+    totalCostRequested > 0 ? totalCostRequested : 0,
+  );
+  const costRequestedText = isClaimIncompleteOrSaved(claimStatus)
+    ? `Current expenses: ${formattedCost}`
+    : `Submitted amount: ${formattedCost}`;
+
   return (
     <>
       <h1>
@@ -201,21 +209,18 @@ export default function ClaimDetailsContent({
       <h2 className="vads-u-font-size--h3">Claim information</h2>
       {claimsMgmtToggle && (
         <>
-          {totalCostRequested > 0 && (
-            <div className="vads-u-margin-y--2">
-              <p className="vads-u-font-weight--bold vads-u-margin-bottom--0">
-                Amount
-              </p>
-              <p className="vads-u-margin--0">
-                Submitted amount of {currency(totalCostRequested)}
-              </p>
-              {reimbursementAmount > 0 && (
+          <div className="vads-u-margin-y--2">
+            <p className="vads-u-font-weight--bold vads-u-margin-bottom--0">
+              Amount
+            </p>
+            <p className="vads-u-margin--0">{costRequestedText}</p>
+            {totalCostRequested > 0 &&
+              reimbursementAmount > 0 && (
                 <p className="vads-u-margin--0">
-                  Reimbursement amount of {currency(reimbursementAmount)}
+                  Reimbursement amount: {currency(reimbursementAmount)}
                 </p>
               )}
-            </div>
-          )}
+          </div>
           {reimbursementAmount > 0 &&
             totalCostRequested !== reimbursementAmount && (
               <va-additional-info

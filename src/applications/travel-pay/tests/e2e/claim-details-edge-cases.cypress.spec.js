@@ -47,8 +47,8 @@ describe(`${appName} -- Claim Details Edge Cases`, () => {
         'Claim number: TC0000000000004',
       );
 
-      // Amount section should not be shown
-      cy.contains('p', 'Amount').should('not.exist');
+      // Amount section should be shown
+      cy.contains('p', 'Amount').should('exist');
 
       // Documents section should not be shown
       cy.get('[data-testid="user-submitted-documents"]').should('not.exist');
@@ -77,8 +77,8 @@ describe(`${appName} -- Claim Details Edge Cases`, () => {
       cy.visit(`${rootUrl}/claims/no-docs-claim-789`);
 
       // Should show claim info but no documents section
-      cy.contains('Submitted amount of $15').should('be.visible');
-      cy.contains('Reimbursement amount of $12').should('be.visible');
+      cy.contains('Submitted amount: $15').should('be.visible');
+      cy.contains('Reimbursement amount: $12').should('be.visible');
       cy.get('[data-testid="user-submitted-documents"]').should('not.exist');
     });
 
@@ -105,7 +105,7 @@ describe(`${appName} -- Claim Details Edge Cases`, () => {
       cy.visit(`${rootUrl}/claims/null-docs-claim-101`);
 
       // Should handle null gracefully without crashing
-      cy.contains('Submitted amount of $25').should('be.visible');
+      cy.contains('Current expenses: $25').should('be.visible');
       cy.get('[data-testid="user-submitted-documents"]').should('not.exist');
     });
 

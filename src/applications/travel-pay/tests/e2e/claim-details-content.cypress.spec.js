@@ -71,8 +71,8 @@ describe(`${appName} -- Claim Details Content`, () => {
         .should('have.class', 'vads-u-font-weight--bold')
         .should('be.visible');
 
-      cy.contains('Submitted amount of $20').should('be.visible');
-      cy.contains('Reimbursement amount of $14.52').should('be.visible');
+      cy.contains('Submitted amount: $20').should('be.visible');
+      cy.contains('Reimbursement amount: $14.52').should('be.visible');
     });
 
     it('shows additional info when amounts differ', () => {
@@ -442,86 +442,171 @@ describe(`${appName} -- Claim Details Content`, () => {
   });
 
   describe('Amount display scenarios', () => {
-    it('shows only submitted amount when reimbursement is zero', () => {
-      cy.intercept('GET', '/travel_pay/v0/claims/*', {
-        claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
-        claimNumber: 'TC0000000000001',
-        claimStatus: 'Approved for payment',
-        appointmentDate: '2024-01-01T16:45:34.465Z',
-        facilityName: 'Cheyenne VA Medical Center',
-        totalCostRequested: 25.0,
-        reimbursementAmount: 0,
-        createdOn: '2025-03-12T20:27:14.088Z',
-        modifiedOn: '2025-03-12T20:27:14.088Z',
-        appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
-        documents: [],
+    context('When claim status is Incomplete', () => {
+      it('shows only current expenses when reimbursement is zero', () => {
+        cy.intercept('GET', '/travel_pay/v0/claims/*', {
+          claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
+          claimNumber: 'TC0000000000001',
+          claimStatus: 'Incomplete',
+          appointmentDate: '2024-01-01T16:45:34.465Z',
+          facilityName: 'Cheyenne VA Medical Center',
+          totalCostRequested: 25.0,
+          reimbursementAmount: 0,
+          createdOn: '2025-03-12T20:27:14.088Z',
+          modifiedOn: '2025-03-12T20:27:14.088Z',
+          appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
+          documents: [],
+        });
+
+        ApiInitializer.initializeAppointment.byDateTime();
+
+        cy.login(user);
+        cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
+
+        cy.contains('Current expenses: $25').should('be.visible');
+        cy.contains('Reimbursement amount').should('not.exist');
+
+        // Additional info should not be shown when reimbursement is 0
+        cy.get(
+          'va-additional-info[trigger="Why are my amounts different"]',
+        ).should('not.exist');
       });
 
-      ApiInitializer.initializeAppointment.byDateTime();
+      it('doesnt hide amount section when no costs are requested', () => {
+        cy.intercept('GET', '/travel_pay/v0/claims/*', {
+          claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
+          claimNumber: 'TC0000000000001',
+          claimStatus: 'Incomplete',
+          appointmentDate: '2024-01-01T16:45:34.465Z',
+          facilityName: 'Cheyenne VA Medical Center',
+          totalCostRequested: 0,
+          reimbursementAmount: 0,
+          createdOn: '2025-03-12T20:27:14.088Z',
+          modifiedOn: '2025-03-12T20:27:14.088Z',
+          appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
+          documents: [],
+        });
 
-      cy.login(user);
-      cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
+        ApiInitializer.initializeAppointment.byDateTime();
 
-      cy.contains('Submitted amount of $25').should('be.visible');
-      cy.contains('Reimbursement amount').should('not.exist');
+        cy.login(user);
+        cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
 
-      // Additional info should not be shown when reimbursement is 0
-      cy.get(
-        'va-additional-info[trigger="Why are my amounts different"]',
-      ).should('not.exist');
+        cy.contains('p', 'Amount').should('not.exist');
+        cy.contains('Submitted amount').should('not.exist');
+      });
+
+      it('does not show additional info when reimbursementAmount is 0', () => {
+        cy.intercept('GET', '/travel_pay/v0/claims/*', {
+          claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
+          claimNumber: 'TC0000000000001',
+          claimStatus: 'Incomplete',
+          appointmentDate: '2024-01-01T16:45:34.465Z',
+          facilityName: 'Cheyenne VA Medical Center',
+          totalCostRequested: 20.0,
+          reimbursementAmount: 0.0,
+          createdOn: '2025-03-12T20:27:14.088Z',
+          modifiedOn: '2025-03-12T20:27:14.088Z',
+          appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
+          documents: [],
+        });
+
+        ApiInitializer.initializeAppointment.byDateTime();
+
+        cy.login(user);
+        cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
+
+        cy.contains('Current expenses: $20').should('be.visible');
+        cy.contains('Reimbursement amount').should('not.exist');
+
+        // Additional info should not be shown when amounts are equal
+        cy.get(
+          'va-additional-info[trigger="Why are my amounts different"]',
+        ).should('not.exist');
+      });
     });
+    context('When claim status is Approved for payment', () => {
+      it('shows only submitted amount when reimbursement is zero', () => {
+        cy.intercept('GET', '/travel_pay/v0/claims/*', {
+          claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
+          claimNumber: 'TC0000000000001',
+          claimStatus: 'Approved for payment',
+          appointmentDate: '2024-01-01T16:45:34.465Z',
+          facilityName: 'Cheyenne VA Medical Center',
+          totalCostRequested: 25.0,
+          reimbursementAmount: 0,
+          createdOn: '2025-03-12T20:27:14.088Z',
+          modifiedOn: '2025-03-12T20:27:14.088Z',
+          appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
+          documents: [],
+        });
 
-    it('hides amount section when no costs are requested', () => {
-      cy.intercept('GET', '/travel_pay/v0/claims/*', {
-        claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
-        claimNumber: 'TC0000000000001',
-        claimStatus: 'Approved for payment',
-        appointmentDate: '2024-01-01T16:45:34.465Z',
-        facilityName: 'Cheyenne VA Medical Center',
-        totalCostRequested: 0,
-        reimbursementAmount: 0,
-        createdOn: '2025-03-12T20:27:14.088Z',
-        modifiedOn: '2025-03-12T20:27:14.088Z',
-        appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
-        documents: [],
+        ApiInitializer.initializeAppointment.byDateTime();
+
+        cy.login(user);
+        cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
+
+        cy.contains('Submitted amount: $25').should('be.visible');
+        cy.contains('Reimbursement amount').should('not.exist');
+
+        // Additional info should not be shown when reimbursement is 0
+        cy.get(
+          'va-additional-info[trigger="Why are my amounts different"]',
+        ).should('not.exist');
       });
 
-      ApiInitializer.initializeAppointment.byDateTime();
+      it('doesnt hide amount section when no costs are requested', () => {
+        cy.intercept('GET', '/travel_pay/v0/claims/*', {
+          claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
+          claimNumber: 'TC0000000000001',
+          claimStatus: 'Approved for payment',
+          appointmentDate: '2024-01-01T16:45:34.465Z',
+          facilityName: 'Cheyenne VA Medical Center',
+          totalCostRequested: 0,
+          reimbursementAmount: 0,
+          createdOn: '2025-03-12T20:27:14.088Z',
+          modifiedOn: '2025-03-12T20:27:14.088Z',
+          appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
+          documents: [],
+        });
 
-      cy.login(user);
-      cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
+        ApiInitializer.initializeAppointment.byDateTime();
 
-      cy.contains('p', 'Amount').should('not.exist');
-      cy.contains('Submitted amount').should('not.exist');
-    });
+        cy.login(user);
+        cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
 
-    it('does not show additional info when amounts are equal', () => {
-      cy.intercept('GET', '/travel_pay/v0/claims/*', {
-        claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
-        claimNumber: 'TC0000000000001',
-        claimStatus: 'Approved for payment',
-        appointmentDate: '2024-01-01T16:45:34.465Z',
-        facilityName: 'Cheyenne VA Medical Center',
-        totalCostRequested: 20.0,
-        reimbursementAmount: 20.0,
-        createdOn: '2025-03-12T20:27:14.088Z',
-        modifiedOn: '2025-03-12T20:27:14.088Z',
-        appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
-        documents: [],
+        cy.contains('p', 'Amount').should('not.exist');
+        cy.contains('Submitted amount').should('not.exist');
       });
 
-      ApiInitializer.initializeAppointment.byDateTime();
+      it('does not show additional info when amounts are equal', () => {
+        cy.intercept('GET', '/travel_pay/v0/claims/*', {
+          claimId: '73611905-71bf-46ed-b1ec-e790593b8565',
+          claimNumber: 'TC0000000000001',
+          claimStatus: 'Approved for payment',
+          appointmentDate: '2024-01-01T16:45:34.465Z',
+          facilityName: 'Cheyenne VA Medical Center',
+          totalCostRequested: 20.0,
+          reimbursementAmount: 20.0,
+          createdOn: '2025-03-12T20:27:14.088Z',
+          modifiedOn: '2025-03-12T20:27:14.088Z',
+          appointment: { appointmentDateTime: '2024-01-01T16:45:34.465Z' },
+          documents: [],
+        });
 
-      cy.login(user);
-      cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
+        ApiInitializer.initializeAppointment.byDateTime();
 
-      cy.contains('Submitted amount of $20').should('be.visible');
-      cy.contains('Reimbursement amount of $20').should('be.visible');
+        cy.login(user);
+        cy.visit(`${rootUrl}/claims/73611905-71bf-46ed-b1ec-e790593b8565`);
 
-      // Additional info should not be shown when amounts are equal
-      cy.get(
-        'va-additional-info[trigger="Why are my amounts different"]',
-      ).should('not.exist');
+        cy.contains('Submitted amount: $20').should('be.visible');
+        cy.contains('Reimbursement amount: $20').should('be.visible');
+
+        // Additional info should not be shown when amounts are equal
+        cy.get(
+          'va-additional-info[trigger="Why are my amounts different"]',
+        ).should('not.exist');
+      });
     });
   });
 

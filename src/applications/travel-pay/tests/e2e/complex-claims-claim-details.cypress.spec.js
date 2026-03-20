@@ -662,7 +662,7 @@ describe(`${appName} -- Complex Claims Claim Details`, () => {
       );
 
       // Should show submitted amount
-      cy.contains('Submitted amount of $25').should('be.visible');
+      cy.contains('Current expenses: $25').should('be.visible');
     });
   });
 });

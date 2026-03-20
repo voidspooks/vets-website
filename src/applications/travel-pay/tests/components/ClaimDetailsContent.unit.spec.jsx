@@ -7,6 +7,7 @@ import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platfo
 import ClaimDetailsContent from '../../components/ClaimDetailsContent';
 import reducer from '../../redux/reducer';
 import { BTSSS_PORTAL_URL } from '../../constants';
+import { STATUS_KEYS } from '../../services/mocks/constants';
 
 describe('ClaimDetailsContent', () => {
   const claimDetailsProps = {
@@ -158,7 +159,7 @@ describe('ClaimDetailsContent', () => {
     expect(
       $('va-link[text="Appeal the claim decision"][href="/decision-reviews"]'),
     ).to.not.exist;
-    expect(screen.queryByText('Reimbursement amount of $46.93')).to.not.exist;
+    expect(screen.queryByText('Reimbursement amount: $46.93')).to.not.exist;
     expect($('va-link[text="Download your decision letter"]')).to.not.exist;
     expect($('va-link[text="screenshot.png"]')).to.not.exist;
   });
@@ -294,120 +295,178 @@ describe('ClaimDetailsContent', () => {
   });
 
   describe('Amounts', () => {
-    it('renders both submitted amount and reimbursement amount when both are > 0', () => {
-      const screen = renderWithStoreAndRouter(
-        <ClaimDetailsContent
-          {...claimDetailsProps}
-          totalCostRequested={120.5}
-          reimbursementAmount={100.25}
-        />,
-        {
-          initialState: getState(),
-          reducers: reducer,
-        },
-      );
-      expect(screen.getByText('Amount')).to.exist;
-      expect(screen.getByText('Submitted amount of $120.50')).to.exist;
-      expect(screen.getByText('Reimbursement amount of $100.25')).to.exist;
+    context('when the claim status is Incomplete or Saved', () => {
+      it('renders both submitted amount and reimbursement amount when both are > 0', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={120.5}
+            reimbursementAmount={100.25}
+            claimStatus={STATUS_KEYS.INCOMPLETE}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect(screen.getByText('Amount')).to.exist;
+        expect(screen.getByText('Current expenses: $120.50')).to.exist;
+        expect(screen.getByText('Reimbursement amount: $100.25')).to.exist;
+      });
+
+      it('renders only submitted amount when reimbursement amount is 0', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={75}
+            reimbursementAmount={0}
+            claimStatus={STATUS_KEYS.INCOMPLETE}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect(screen.getByText('Amount')).to.exist;
+        expect(screen.getByText('Current expenses: $75.00')).to.exist;
+        expect(screen.queryByText(/Reimbursement amount:/)).to.not.exist;
+      });
+
+      it('renders amount section with submitted amount when totalCostRequested is 0', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={0}
+            reimbursementAmount={0}
+            claimStatus={STATUS_KEYS.INCOMPLETE}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect(screen.queryByText('Amount')).to.exist;
+        expect(screen.queryByText('Current expenses: $0.00')).to.exist;
+        expect(screen.queryByText(/Reimbursement amount:/)).to.not.exist;
+      });
     });
 
-    it('renders only submitted amount when reimbursement amount is 0', () => {
-      const screen = renderWithStoreAndRouter(
-        <ClaimDetailsContent
-          {...claimDetailsProps}
-          totalCostRequested={75}
-          reimbursementAmount={0}
-        />,
-        {
-          initialState: getState(),
-          reducers: reducer,
-        },
-      );
-      expect(screen.getByText('Amount')).to.exist;
-      expect(screen.getByText('Submitted amount of $75.00')).to.exist;
-      expect(screen.queryByText(/Reimbursement amount of/)).to.not.exist;
-    });
+    context('when the claim status is not Incomplete or Saved', () => {
+      it('renders both submitted amount and reimbursement amount when both are > 0', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={120.5}
+            reimbursementAmount={100.25}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect(screen.getByText('Amount')).to.exist;
+        expect(screen.getByText('Submitted amount: $120.50')).to.exist;
+        expect(screen.getByText('Reimbursement amount: $100.25')).to.exist;
+      });
 
-    it('does not render amount section if both submitted and reimbursement amounts are 0', () => {
-      const screen = renderWithStoreAndRouter(
-        <ClaimDetailsContent
-          {...claimDetailsProps}
-          totalCostRequested={0}
-          reimbursementAmount={0}
-        />,
-        {
-          initialState: getState(),
-          reducers: reducer,
-        },
-      );
-      expect(screen.queryByText('Amount')).to.not.exist;
-      expect(screen.queryByText(/Submitted amount of/)).to.not.exist;
-      expect(screen.queryByText(/Reimbursement amount of/)).to.not.exist;
-    });
+      it('renders only submitted amount when reimbursement amount is 0', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={75}
+            reimbursementAmount={0}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect(screen.getByText('Amount')).to.exist;
+        expect(screen.getByText('Submitted amount: $75.00')).to.exist;
+        expect(screen.queryByText(/Reimbursement amount:/)).to.not.exist;
+      });
 
-    it('renders deductible info when submitted and reimbursement amounts are different', () => {
-      const screen = renderWithStoreAndRouter(
-        <ClaimDetailsContent
-          {...claimDetailsProps}
-          totalCostRequested={100}
-          reimbursementAmount={90}
-        />,
-        {
-          initialState: getState(),
-          reducers: reducer,
-        },
-      );
+      it('renders amount section with submitted amount when totalCostRequested is 0', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={0}
+            reimbursementAmount={0}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect(screen.queryByText('Amount')).to.exist;
+        expect(screen.queryByText('Submitted amount: $0.00')).to.exist;
+        expect(screen.queryByText(/Reimbursement amount:/)).to.not.exist;
+      });
 
-      expect($('va-additional-info[trigger="Why are my amounts different"]')).to
-        .exist;
-      expect(
-        screen.getByText(
-          /The VA travel pay deductible is \$3 for a one-way trip/i,
-        ),
-      ).to.exist;
-    });
+      it('renders deductible info when submitted and reimbursement amounts are different', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={100}
+            reimbursementAmount={90}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
 
-    it('does not render deductible info when submitted amount is present but reimbursement amount is not', () => {
-      const screen = renderWithStoreAndRouter(
-        <ClaimDetailsContent
-          {...claimDetailsProps}
-          totalCostRequested={100}
-          reimbursementAmount={0}
-        />,
-        {
-          initialState: getState(),
-          reducers: reducer,
-        },
-      );
+        expect($('va-additional-info[trigger="Why are my amounts different"]'))
+          .to.exist;
+        expect(
+          screen.getByText(
+            /The VA travel pay deductible is \$3 for a one-way trip/i,
+          ),
+        ).to.exist;
+      });
 
-      expect($('va-additional-info[trigger="Why are my amounts different"]')).to
-        .not.exist;
-      expect(
-        screen.queryByText(
-          /The VA travel pay deductible is \$3 for a one-way trip/i,
-        ),
-      ).to.not.exist;
-    });
+      it('does not render deductible info when submitted amount is present but reimbursement amount is not', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={100}
+            reimbursementAmount={0}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
 
-    it('does not render deductible info when submitted and reimbursement amounts are equal', () => {
-      const screen = renderWithStoreAndRouter(
-        <ClaimDetailsContent
-          {...claimDetailsProps}
-          totalCostRequested={50}
-          reimbursementAmount={50}
-        />,
-        {
-          initialState: getState(),
-          reducers: reducer,
-        },
-      );
-      expect($('va-additional-info[trigger="Why are my amounts different"]')).to
-        .not.exist;
-      expect(
-        screen.queryByText(
-          /The VA travel pay deductible is \$3 for a one-way trip/i,
-        ),
-      ).to.not.exist;
+        expect($('va-additional-info[trigger="Why are my amounts different"]'))
+          .to.not.exist;
+        expect(
+          screen.queryByText(
+            /The VA travel pay deductible is \$3 for a one-way trip/i,
+          ),
+        ).to.not.exist;
+      });
+
+      it('does not render deductible info when submitted and reimbursement amounts are equal', () => {
+        const screen = renderWithStoreAndRouter(
+          <ClaimDetailsContent
+            {...claimDetailsProps}
+            totalCostRequested={50}
+            reimbursementAmount={50}
+          />,
+          {
+            initialState: getState(),
+            reducers: reducer,
+          },
+        );
+        expect($('va-additional-info[trigger="Why are my amounts different"]'))
+          .to.not.exist;
+        expect(
+          screen.queryByText(
+            /The VA travel pay deductible is \$3 for a one-way trip/i,
+          ),
+        ).to.not.exist;
+      });
     });
   });
 

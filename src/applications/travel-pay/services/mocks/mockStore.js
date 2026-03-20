@@ -42,7 +42,7 @@ if (!global.__MOCK_STORE_INITIALIZED__) {
     id: ccClaimId,
     claimId: ccClaimId,
     claimNumber: `TC${Math.floor(Math.random() * 1_000_000_000)}`,
-    claimStatus: STATUS_KEYS.SAVED,
+    claimStatus: STATUS_KEYS.INCOMPLETE,
     claimSource: 'VaGov',
     expenses: [],
     documents: [],
