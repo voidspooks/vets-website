@@ -78,7 +78,12 @@ export default function ProcessList() {
         <p>
           This application does not submit automatically. After you review your
           information, download your completed VA Form 22-0989. Then upload the
-          form manually through QuickSubmit to complete the submission process.
+          form manually through{' '}
+          <va-link
+            href="https://eauth.va.gov/accessva/?cspSelectFor=quicksubmit"
+            text="QuickSubmit"
+          />{' '}
+          to complete the submission process.
         </p>
         <p>
           If you would rather print and mail your form and attachments, the
