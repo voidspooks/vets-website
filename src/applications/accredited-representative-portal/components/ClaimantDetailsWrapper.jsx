@@ -26,7 +26,7 @@ const ClaimantDetailsWrapper = ({ firstName, lastName, children }) => {
   const buildLink = path =>
     `/representative/find-claimant/${path}/${claimantId}`;
   return (
-    <div>
+    <div className="vads-grid-container vads-u-padding-x--0">
       <h1>
         <div className="vads-u-font-size--h2 vads-u-font-weight--normal">
           Claimant
@@ -34,27 +34,25 @@ const ClaimantDetailsWrapper = ({ firstName, lastName, children }) => {
         {lastName}, {firstName}
       </h1>
       <hr />
-      <div className="vads-grid-container vads-u-padding-x--0">
-        <div className="vads-grid-row">
-          <div className="vads-u-padding-right--2p5 vads-grid-col-12 tablet:vads-grid-col-4 desktop-lg:vads-grid-col-3">
-            <VaSidenav
-              header="Claimant"
-              icon-background-color="vads-color-primary"
-              icon-name="account_circle"
-            >
-              {sideNavLinks.map((sideNavLink, index) => (
-                <VaSidenavItem
-                  key={index}
-                  href={buildLink(sideNavLink.route)}
-                  label={sideNavLink.label}
-                  currentPage={isActive(sideNavLink.route)}
-                />
-              ))}
-            </VaSidenav>
-          </div>
-          <div className="vads-u-padding-left--2p5 vads-grid-col-12 tablet:vads-grid-col-8 desktop-lg:vads-grid-col-9">
-            {children}
-          </div>
+      <div className="vads-grid-row">
+        <div className="vads-u-padding-right--2p5 vads-grid-col-12 tablet:vads-grid-col-4 desktop-lg:vads-grid-col-3">
+          <VaSidenav
+            header="Claimant"
+            icon-background-color="vads-color-primary"
+            icon-name="account_circle"
+          >
+            {sideNavLinks.map((sideNavLink, index) => (
+              <VaSidenavItem
+                key={index}
+                href={buildLink(sideNavLink.route)}
+                label={sideNavLink.label}
+                currentPage={isActive(sideNavLink.route)}
+              />
+            ))}
+          </VaSidenav>
+        </div>
+        <div className="vads-u-padding-left--2p5 vads-grid-col-12 tablet:vads-grid-col-8 desktop-lg:vads-grid-col-9">
+          {children}
         </div>
       </div>
     </div>

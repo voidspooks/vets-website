@@ -237,6 +237,30 @@
     max-width: 627px;
   }
 }
+
+.claimant-overview {
+  .poa-request-details__list--info li {
+    border-bottom: 1px solid $vads-color-base-light;
+  }
+
+  .poa-request-details__list--info li:first-child {
+    border-top: 1px solid $vads-color-base-light;
+  }
+
+  .poa-request-details__list--info li p:first-child {
+    flex: 0 0 34%;
+  }
+
+  .poa-request-details__list--info li p:last-child {
+    flex: 0 0 66%;
+    padding-left: 16px;
+  }
+}
+
+.claimant-overview__section-heading {
+  margin-bottom: 20px;
+}
+
 .processing-date {
   > span {
     font-weight: bold;

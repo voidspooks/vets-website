@@ -6,10 +6,31 @@ import ClaimantDetailRow from '../components/ClaimantDetailRow';
 import ClaimantDetailsWrapper from '../components/ClaimantDetailsWrapper';
 import { claimantOverviewBC } from '../utilities/poaRequests';
 
+const toTitleCase = value => {
+  if (!value) return '';
+
+  return String(value)
+    .toLowerCase()
+    .replace(/\b([a-z])/g, char => char.toUpperCase());
+};
+
+const formatAddressPart = value => {
+  if (!value) return '';
+
+  return String(value)
+    .trim()
+    .split(/\s+/)
+    .map(part => {
+      if (/^[A-Z]{2}$/.test(part)) return part;
+      if (/^\d+[A-Za-z]?$/.test(part)) return part;
+      return toTitleCase(part);
+    })
+    .join(' ');
+};
+
 const formatAddress = address => {
   if (!address) return '—';
 
-  // ✅ Fix: camelcase lint. Alias postal_code -> postalCode
   const {
     street,
     line1,
@@ -20,15 +41,22 @@ const formatAddress = address => {
     postal_code: postalCode,
   } = address;
 
-  const streetPart = [street || line1, line2].filter(Boolean).join(' ');
-  const cityStateZip = [city, state, zip || postalCode]
+  const streetPart = [street || line1, line2]
+    .filter(Boolean)
+    .map(formatAddressPart)
+    .join(' ');
+
+  const cityPart = city ? toTitleCase(city) : '';
+  const statePart = state ? String(state).toUpperCase() : '';
+  const zipPart = zip || postalCode || '';
+
+  const full = [streetPart, cityPart, statePart, zipPart]
     .filter(Boolean)
     .join(', ');
-  const full = [streetPart, cityStateZip].filter(Boolean).join(', ');
+
   return full || '—';
 };
 
-// Display labels to match the target UI screenshot
 const ITF_SECTION_TITLES = {
   compensation: 'Disability compensation',
   pension: 'Pension',
@@ -41,7 +69,6 @@ const ITF_BENEFIT_LABELS = {
   survivor: 'Survivor benefits',
 };
 
-// Normalize backend ITF array (controller now returns payload[:data][:itf] as an array)
 const normalizeItfArray = rawItf => {
   if (!Array.isArray(rawItf)) return [];
 
@@ -73,15 +100,12 @@ const mapClaimantOverview = raw => ({
   lastName: raw?.last_name,
   dateOfBirth: raw?.birth_date,
   veteranSsn: raw?.ssn,
-
-  // survivor/dependent fields (ONLY if your API provides them)
   claimantSsn: raw?.claimant_ssn,
   claimantDateOfBirth: raw?.claimant_birth_date,
   claimantFullName:
     raw?.claimant_first_name || raw?.claimant_last_name
       ? { first: raw?.claimant_first_name, last: raw?.claimant_last_name }
       : null,
-
   phone: raw?.phone,
   email: raw?.email,
   address: raw?.address || null,
@@ -89,11 +113,6 @@ const mapClaimantOverview = raw => ({
   intentToFile: normalizeItfArray(raw?.itf),
 });
 
-// ✅ No cross-app date util needed.
-// Handles:
-// - "yyyyMMdd" (e.g. "19900101")
-// - ISO strings (e.g. "2025-01-01T00:00:00Z")
-// - "yyyy-MM-dd"
 const formatItfDate = value => {
   if (!value) return '—';
 
@@ -103,13 +122,11 @@ const formatItfDate = value => {
   let d;
 
   if (/^\d{8}$/.test(dateOnly)) {
-    // yyyyMMdd
     const y = Number(dateOnly.slice(0, 4));
     const m = Number(dateOnly.slice(4, 6)) - 1;
     const day = Number(dateOnly.slice(6, 8));
     d = new Date(y, m, day);
   } else {
-    // ISO / yyyy-MM-dd / other Date-parsable strings
     d = new Date(dateOnly);
   }
 
@@ -122,7 +139,6 @@ const formatItfDate = value => {
   });
 };
 
-// Computes "Expires in N days" from an ISO timestamp
 const daysUntil = isoDate => {
   if (!isoDate) return null;
   const end = new Date(isoDate);
@@ -147,12 +163,9 @@ const ClaimantOverviewPage = () => {
     useLoaderData() || {};
   const unauthorized = authorized === false;
 
-  // ✅ Keep ClaimantDetailsWrapper, but prevent required-prop crash on unauthorized
   const wrapperFirstName = claimant?.firstName || '—';
   const wrapperLastName = claimant?.lastName || '—';
 
-  // ✅ ADDITIVE FIX: When rep does NOT represent claimant, do NOT render ClaimantDetailsWrapper.
-  // This removes the claimant header + left rail and matches the target "Claimant not found" layout.
   if (unauthorized && notRepresented) {
     return (
       <section>
@@ -162,7 +175,9 @@ const ClaimantOverviewPage = () => {
           homeVeteransAffairs={false}
         />
 
-        <h1>Claimant not found</h1>
+        <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+          Claimant not found
+        </h2>
 
         <div className="vads-l-grid-row">
           <div className="vads-l-col--12 medium-screen:vads-l-col--8">
@@ -193,7 +208,7 @@ const ClaimantOverviewPage = () => {
   }
 
   return (
-    <section className="vads-u-width--full">
+    <section className="vads-u-width--full claimant-overview">
       <VaBreadcrumbs
         breadcrumbList={claimantOverviewBC}
         label="claimant overview breadcrumb"
@@ -207,7 +222,9 @@ const ClaimantOverviewPage = () => {
         {unauthorized &&
           notRepresented && (
             <>
-              <h2 className="vads-u-margin-top--0">Claimant not found</h2>
+              <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
+                Claimant not found
+              </h2>
 
               <div className="vads-u-margin-y--2">
                 <va-alert status="info">
@@ -228,7 +245,9 @@ const ClaimantOverviewPage = () => {
         {unauthorized &&
           !notRepresented && (
             <>
-              <h2 className="vads-u-margin-top--0">Claimant overview</h2>
+              <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--3">
+                Claimant overview
+              </h2>
               <div className="vads-u-margin-y--2">
                 <va-alert status="warning">
                   <h3 slot="headline">
@@ -245,115 +264,148 @@ const ClaimantOverviewPage = () => {
 
         {!unauthorized && (
           <>
-            <h2 className="vads-u-margin-top--0">Claimant overview</h2>
+            <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--3">
+              Claimant overview
+            </h2>
 
-            <section className="vads-u-margin-top--3">
-              <h3 className="vads-u-margin-bottom--2">Claimant information</h3>
+            <section className="vads-u-margin-top--0">
+              <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1 claimant-overview__section-heading">
+                Claimant information
+              </h3>
 
-              <div className="vads-u-padding-left--3">
-                <dl className="vads-u-margin--0">
-                  <ClaimantDetailRow
-                    label="Social Security number"
-                    value={
-                      claimant?.veteranSsn
-                        ? `***-**-${String(claimant.veteranSsn).slice(-4)}`
-                        : '—'
-                    }
-                  />
-                  <ClaimantDetailRow
-                    label="Date of birth"
-                    value={formatItfDate(claimant?.dateOfBirth)}
-                  />
-                  <ClaimantDetailRow
-                    label="Address"
-                    value={formatAddress(claimant?.address)}
-                  />
-                  <ClaimantDetailRow
-                    label="Phone"
-                    value={claimant?.phone?.replace(/\)(\d)/, ') $1') || '—'}
-                  />
-                  <ClaimantDetailRow
-                    label="Email"
-                    value={
-                      claimant?.email ? (
-                        <a href={`mailto:${claimant.email}`}>
-                          {claimant.email}
-                        </a>
-                      ) : (
-                        '—'
-                      )
-                    }
-                  />
-                </dl>
+              <div className="vads-grid-row">
+                <div className="vads-grid-col-11">
+                  <ul className="poa-request-details__list poa-request-details__list--info">
+                    <ClaimantDetailRow
+                      label="Social Security number"
+                      value={
+                        claimant?.veteranSsn
+                          ? `***-**-${String(claimant.veteranSsn).slice(-4)}`
+                          : '—'
+                      }
+                    />
+                    <ClaimantDetailRow
+                      label="Date of birth"
+                      value={formatItfDate(claimant?.dateOfBirth)}
+                    />
+                    <ClaimantDetailRow
+                      label="Address"
+                      value={formatAddress(claimant?.address)}
+                    />
+                    <ClaimantDetailRow
+                      label="Phone"
+                      value={
+                        claimant?.phone ? (
+                          <va-telephone
+                            contact={claimant.phone}
+                            not-clickable
+                          />
+                        ) : (
+                          '—'
+                        )
+                      }
+                    />
+                    <ClaimantDetailRow
+                      label="Email"
+                      value={
+                        claimant?.email ? (
+                          <a href={`mailto:${claimant.email}`}>
+                            {claimant.email}
+                          </a>
+                        ) : (
+                          'No email on file'
+                        )
+                      }
+                    />
+                  </ul>
+                </div>
               </div>
             </section>
 
-            <section className="vads-u-margin-top--4">
-              <h3 className="vads-u-margin-bottom--2">
+            <section className="vads-u-margin-top--2">
+              <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
                 Representative information
               </h3>
 
-              <div className="vads-u-padding-left--3">
-                <dl className="vads-u-margin--0">
-                  <ClaimantDetailRow
-                    label="Representative"
-                    value={claimant?.representativeName || '—'}
-                  />
-                </dl>
+              <div className="vads-grid-row">
+                <div className="vads-grid-col-11">
+                  <ul className="poa-request-details__list poa-request-details__list--info">
+                    <ClaimantDetailRow
+                      label="Representative"
+                      value={claimant?.representativeName || '—'}
+                    />
+                  </ul>
+                </div>
+              </div>
+
+              <div className="vads-u-margin-top--2">
+                <va-additional-info trigger="The portal doesn’t check for limited representation">
+                  <p className="vads-u-margin-y--0 vads-u-font-size--base vads-u-line-height--4">
+                    Limited representation means that the representation is only
+                    for a specific claim or claims. Check with the claimant or
+                    in VBMS for any existing limited representation.
+                  </p>
+                </va-additional-info>
               </div>
             </section>
 
-            <p className="vads-u-margin-top--3 vads-u-margin-bottom--1 vads-u-color--gray-medium vads-u-font-size--sm">
-              The portal doesn’t check for limited representation
-            </p>
-
-            <section className="vads-u-margin-top--4">
-              <h3 className="vads-u-margin-bottom--2">Intent to file status</h3>
+            <section className="vads-u-margin-top--3">
+              <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+                Intent to file status
+              </h3>
 
               {claimant?.intentToFile?.length ? (
-                <div className="vads-u-padding-left--3">
+                <>
                   {claimant.intentToFile.map(itf => (
                     <div
                       key={`${itf.benefitType}-${itf.itfDate ||
                         'no-date'}-${itf.expirationDate || 'no-exp'}`}
                       className="vads-u-margin-top--3"
                     >
-                      <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--2">
-                        {ITF_SECTION_TITLES[itf.benefitType] || itf.benefitType}
-                      </h4>
+                      {claimant?.intentToFile?.length > 1 && (
+                        <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+                          {ITF_SECTION_TITLES[itf.benefitType] ||
+                            itf.benefitType}
+                        </h4>
+                      )}
 
-                      <div className="vads-u-padding-left--3">
-                        <dl className="vads-u-margin--0">
-                          <ClaimantDetailRow
-                            label="Benefit"
-                            value={itf.benefit || '—'}
-                          />
-                          <ClaimantDetailRow
-                            label="ITF date"
-                            value={
-                              <>
-                                {showExpiryWarning(itf.expirationDate) && (
-                                  <va-icon
-                                    icon="warning"
-                                    size="3"
-                                    style={{ color: '#fdb81e' }}
-                                    className="vads-u-margin-right--1 vads-u-vertical-align--middle"
-                                  />
-                                )}
-                                {formatItfDate(itf.itfDate)}{' '}
-                                {itf.expirationDate && (
-                                  <span className="vads-u-color--gray-medium">
-                                    {formatExpiresText(itf.expirationDate)}
+                      <div className="vads-grid-row">
+                        <div className="vads-grid-col-11">
+                          <ul className="poa-request-details__list poa-request-details__list--info">
+                            <ClaimantDetailRow
+                              label="Benefit"
+                              value={itf.benefit || '—'}
+                            />
+                            <ClaimantDetailRow
+                              label="ITF date"
+                              value={
+                                <span className="vads-u-display--inline-flex vads-u-align-items--center">
+                                  {showExpiryWarning(itf.expirationDate) && (
+                                    <va-icon
+                                      icon="warning"
+                                      size="2"
+                                      style={{ color: '#fdb81e' }}
+                                      className="vads-u-margin-right--0p5"
+                                    />
+                                  )}
+                                  <span>
+                                    {formatItfDate(itf.itfDate)}
+                                    {itf.expirationDate && (
+                                      <span className="vads-u-color--gray-medium">
+                                        {'\u00A0'}
+                                        {formatExpiresText(itf.expirationDate)}
+                                      </span>
+                                    )}
                                   </span>
-                                )}
-                              </>
-                            }
-                          />
-                        </dl>
+                                </span>
+                              }
+                            />
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   ))}
-                </div>
+                </>
               ) : (
                 <>
                   <p className="vads-u-margin-top--0 vads-u-margin-bottom--3">
@@ -363,7 +415,7 @@ const ClaimantOverviewPage = () => {
                   </p>
 
                   <a
-                    className="vads-c-action-link--blue"
+                    className="vads-c-action-link--blue vads-u-margin-top--2"
                     href="/representative/representative-form-upload/submit-va-form-21-0966/introduction"
                     target="_blank"
                     rel="noreferrer"
@@ -387,7 +439,7 @@ ClaimantOverviewPage.loader = async ({ params }) => {
   try {
     const overviewRes = await api.getClaimantOverview(claimantId);
 
-    if (overviewRes.status === 401) throw overviewRes; // probably never hit now
+    if (overviewRes.status === 401) throw overviewRes;
     if (!overviewRes.ok) throw overviewRes;
 
     const overviewJson = await overviewRes.json();
@@ -396,7 +448,6 @@ ClaimantOverviewPage.loader = async ({ params }) => {
 
     return { authorized: true, claimant, claimantId };
   } catch (err) {
-    // ✅ Render "Claimant not found / You don’t represent this claimant" UX inside this page on 403
     if (err instanceof Response && err.status === 403) {
       return {
         authorized: false,
