@@ -5,7 +5,6 @@ export const FETCH_SEARCH_RESULTS_EMPTY = 'FETCH_SEARCH_RESULTS_EMPTY';
 
 import { apiRequest } from 'platform/utilities/api';
 import recordEvent from 'platform/monitoring/record-event';
-import * as Sentry from '@sentry/browser';
 import redactPii from 'platform/utilities/data/redactPii';
 
 export function fetchSearchResults(query, page, options, clearGAData) {
@@ -58,8 +57,6 @@ export function fetchSearchResults(query, page, options, clearGAData) {
           type: FETCH_SEARCH_RESULTS_FAILURE,
           errors: [error],
         });
-        // add sentry logging to help catch when search is down
-        Sentry.captureException(error);
       });
   };
 }

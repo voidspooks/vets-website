@@ -28,6 +28,53 @@ describe('search actions', () => {
   });
 
   describe('fetchSearchResults', () => {
+    it('should include page in queryString when page is provided', async () => {
+      const query = 'test query';
+      const page = 2;
+      const response = {
+        data: {
+          attributes: {
+            body: [],
+          },
+        },
+        meta: {
+          pagination: {
+            totalEntries: 0,
+            totalPages: 0,
+          },
+        },
+      };
+
+      apiRequestStub.resolves(response);
+
+      await fetchSearchResults(query, page, undefined, clearGADataStub)(
+        dispatch,
+      );
+
+      expect(
+        apiRequestStub.calledWith(
+          `/search?query=${encodeURIComponent(query)}&page=${page}`,
+        ),
+      ).to.be.true;
+    });
+
+    it('should dispatch empty action and skip api when query is empty', async () => {
+      const query = '';
+
+      await fetchSearchResults(query, null, undefined, clearGADataStub)(
+        dispatch,
+      );
+
+      expect(apiRequestStub.called).to.be.false;
+      expect(dispatch.firstCall.args[0]).to.deep.equal({
+        type: 'FETCH_SEARCH_RESULTS',
+        query,
+      });
+      expect(dispatch.secondCall.args[0]).to.deep.equal({
+        type: 'FETCH_SEARCH_RESULTS_EMPTY',
+      });
+    });
+
     it('should call redactPii with userInput when trackEvent is enabled', async () => {
       const query = 'test query';
       const userInput = 'john@example.com';
@@ -148,6 +195,22 @@ describe('search actions', () => {
       expect(recordEventStub.firstCall.args[0]['search-query']).to.equal(
         '[REDACTED]',
       );
+    });
+
+    it('should dispatch failure action when apiRequest rejects', async () => {
+      const query = 'test query';
+      const error = new Error('request failed');
+
+      apiRequestStub.rejects(error);
+
+      await fetchSearchResults(query, null, undefined, clearGADataStub)(
+        dispatch,
+      );
+
+      expect(dispatch.secondCall.args[0]).to.deep.equal({
+        type: 'FETCH_SEARCH_RESULTS_FAILURE',
+        errors: [error],
+      });
     });
   });
 });
