@@ -9,7 +9,6 @@ import {
 } from '@department-of-veterans-affairs/mhv/exports';
 import CernerFacilityAlert from '~/platform/mhv/components/CernerFacilityAlert/CernerFacilityAlert';
 import useAcceleratedData from '~/platform/mhv/hooks/useAcceleratedData';
-import { isAuthenticatedWithSSOe } from '~/platform/user/authentication/selectors';
 
 import PrescriptionsPrintOnly from './PrescriptionsPrintOnly';
 
@@ -27,7 +26,6 @@ import MedicationsListHeader from '../components/MedicationsList/MedicationsList
 import NoFilterMatches from '../components/MedicationsList/NoFilterMatches';
 import RefillPrescriptionsCard from '../components/MedicationsList/RefillPrescriptionsCard';
 
-import Alert from '../components/shared/Alert';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import BeforeYouDownloadDropdown from '../components/shared/BeforeYouDownloadDropdown';
 import DelayedRefillAlert from '../components/shared/DelayedRefillAlert';
@@ -73,8 +71,6 @@ const Prescriptions = () => {
   const selectedSortOption = useSelector(selectSortOption);
   const selectedFilterOption = useSelector(selectFilterOption);
   const userName = useSelector(selectUserFullName);
-  const isAlertVisible = useMemo(() => false, []);
-  const ssoe = useSelector(isAuthenticatedWithSSOe);
 
   const currentFilterOptions = getFilterOptions(
     isCernerPilot,
@@ -305,13 +301,6 @@ const Prescriptions = () => {
     return (
       <>
         <RefillPrescriptionsCard />
-        {/* TODO this component never renders. https://github.com/department-of-veterans-affairs/va.gov-team/issues/131332 */}
-        <Alert
-          isAlertVisible={isAlertVisible}
-          paginatedPrescriptionsList={paginatedPrescriptionsList}
-          selectedFilterOption={selectedFilterOption}
-          ssoe={ssoe}
-        />
         {hasExportError && (
           <FileExportErrorNotification
             pdfTxtGenerateStatus={{ format: errorFormat }}
@@ -402,7 +391,7 @@ const Prescriptions = () => {
       </div>
       <PrescriptionsPrintOnly
         list={printList.length > 0 ? printList : filteredList}
-        hasError={hasExportError || isAlertVisible || !!allergiesError}
+        hasError={hasExportError || !!allergiesError}
         isFullList={
           printList.length > 0 ? printList.length === exportList.length : true
         }
