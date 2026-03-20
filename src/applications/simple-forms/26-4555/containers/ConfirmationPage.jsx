@@ -11,12 +11,18 @@ export const ConfirmationPage = props => {
   const submitDate = submission.timestamp;
   const { confirmationNumber, referenceNumber, status } =
     submission.response || {};
+  const phoneNumber = (
+    <>
+      <va-telephone contact="8778273702" /> (
+      <va-telephone tty="true" contact={CONTACTS[711]} />)
+    </>
+  );
 
   let submissionAlertContent = (
     <p>
       After we review your application, we’ll contact you to validate your
       information. If you have any questions about your application, contact us
-      at 877-827-3702, select the Specially Adapted Housing grant option, and
+      at {phoneNumber}, select the Specially Adapted Housing grant option, and
       give them your confirmation number {referenceNumber}.
     </p>
   );
@@ -25,7 +31,7 @@ export const ConfirmationPage = props => {
     submissionAlertContent = (
       <p>
         We received your application, but there was a problem. For more
-        information, contact us at 877-827-3702, select the Specially Adapted
+        information, contact us at {phoneNumber}, select the Specially Adapted
         Housing grant option, and give them your confirmation number{' '}
         {referenceNumber}.
       </p>
@@ -35,7 +41,7 @@ export const ConfirmationPage = props => {
       <p>
         We received your application, but we already have an existing housing
         grant application from you on file. We’re still processing your existing
-        application. If you have any questions, contact us at 877-827-3702,
+        application. If you have any questions, contact us at {phoneNumber},
         select the Specially Adapted Housing grant option.
       </p>
     );
@@ -63,10 +69,9 @@ export const ConfirmationPage = props => {
         content={
           <>
             <p>
-              Call us at <va-telephone contact="8008773702" /> (
-              <va-telephone tty="true" contact={CONTACTS[711]} />) and select
-              the specially adapted housing grant option. We’re here Monday
-              through Friday, from 8:00 a.m. to 6:00 p.m. ET.
+              Call us at {phoneNumber} and select the specially adapted housing
+              grant option. We’re here Monday through Friday, from 8:00 a.m. to
+              6:00 p.m. ET.
             </p>
             <p>
               Or you can ask us a question online through Ask VA. Select the

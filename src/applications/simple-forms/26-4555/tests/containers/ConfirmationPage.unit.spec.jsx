@@ -53,6 +53,19 @@ describe('ConfirmationPage', () => {
     expect(confirmationViewProps.confirmationNumber).to.equal('1234567890');
   });
 
+  it('renders the submission alert title and includes the reference number', () => {
+    const headline = wrapper.find('h2[slot="headline"]');
+
+    expect(headline.text()).to.contain('Your form submission was succesful');
+    expect(wrapper.text()).to.include('9876543210');
+  });
+
+  it('renders a va-telephone component in the submission alert', () => {
+    const alert = wrapper.find('.confirmation-submission-alert-section');
+
+    expect(alert.find('va-telephone').exists()).to.be.true;
+  });
+
   it('should select form from state when state.form is defined', () => {
     const submitDate = new Date();
     const mockInitialState = {
