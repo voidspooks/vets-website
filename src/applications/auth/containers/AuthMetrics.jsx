@@ -4,8 +4,6 @@ import recordEvent from 'platform/monitoring/record-event';
 import { CSP_IDS, POLICY_TYPES } from 'platform/user/authentication/constants';
 import { SENTRY_TAGS } from 'platform/user/authentication/errors';
 import get from 'platform/utilities/data/get';
-import environment from 'platform/utilities/environment';
-import environments from 'site/constants/environments';
 import { parseAssuranceLevel } from '../helpers';
 
 export default class AuthMetrics {
@@ -19,9 +17,6 @@ export default class AuthMetrics {
     this.loaCurrent = get('loa.current', this.userProfile, null);
     this.authnContext = get('authnContext', this.userProfile, undefined);
     this.serviceName = get('signIn.serviceName', this.userProfile, null);
-    this.isProduction =
-      environment.getRawBuildtype() === environments.VAGOVPROD &&
-      !window.Cypress;
   }
 
   compareLoginPolicy = () => {
@@ -31,7 +26,7 @@ export default class AuthMetrics {
     const attemptedLoginPolicy =
       this.type === CSP_IDS.MHV ? CSP_IDS.MHV_VERBOSE : this.type;
 
-    if (this.serviceName !== attemptedLoginPolicy && this.isProduction) {
+    if (this.serviceName !== attemptedLoginPolicy) {
       recordEvent({
         event: `login-mismatch-${attemptedLoginPolicy}-${this.serviceName}`,
       });
@@ -41,13 +36,11 @@ export default class AuthMetrics {
   recordGAAuthEvents = () => {
     switch (this.type) {
       case POLICY_TYPES.SIGNUP:
-        if (this.isProduction) {
-          recordEvent({
-            event: `register-success-${this.serviceName}-${parseAssuranceLevel(
-              this.authnContext,
-            )}`,
-          });
-        }
+        recordEvent({
+          event: `register-success-${this.serviceName}-${parseAssuranceLevel(
+            this.authnContext,
+          )}`,
+        });
         break;
       case POLICY_TYPES.CUSTOM: /* type=custom is used for SSOe auto login */
       case POLICY_TYPES.MHV_VERIFIED: /* type=mhv_verified */
@@ -55,23 +48,19 @@ export default class AuthMetrics {
       case CSP_IDS.ID_ME:
       case CSP_IDS.LOGIN_GOV:
       case CSP_IDS.VAMOCK:
-        if (this.isProduction) {
-          recordEvent({
-            event: `login-success-${this.serviceName}-${parseAssuranceLevel(
-              this.authnContext,
-            )}`,
-          });
-        }
+        recordEvent({
+          event: `login-success-${this.serviceName}-${parseAssuranceLevel(
+            this.authnContext,
+          )}`,
+        });
         this.compareLoginPolicy();
         break;
       default:
-        if (this.isProduction) {
-          recordEvent({
-            event: `login-or-register-success-${
-              this.serviceName
-            }-${parseAssuranceLevel(this.authnContext)}`,
-          });
-        }
+        recordEvent({
+          event: `login-or-register-success-${
+            this.serviceName
+          }-${parseAssuranceLevel(this.authnContext)}`,
+        });
         Sentry.withScope(scope => {
           scope.setExtra(SENTRY_TAGS.REQUEST_ID, this.requestId);
           scope.setExtra(SENTRY_TAGS.ERROR_CODE, this.errorCode);
@@ -81,7 +70,7 @@ export default class AuthMetrics {
     }
 
     // Report out the current level of assurance for the user.
-    if (this.loaCurrent && this.isProduction) {
+    if (this.loaCurrent) {
       recordEvent({ event: `login-loa-current-${this.loaCurrent}` });
     }
   };

@@ -1024,22 +1024,27 @@ describe('<CallToActionWidget>', () => {
       it('should sign out correctly when signOut is called', () => {
         const oldLocation = window.location;
 
+        const recordEventSpy = sinon.spy(recordEvent, 'default');
         const IAMLogoutSpy = sinon.spy(authUtils, 'logout');
         const logoutUrlSiSSpy = sinon.spy(oauthUtils, 'logoutUrlSiS');
         const innerFunc = signOut(true);
         innerFunc();
+        expect(recordEventSpy.calledTwice).to.be.true;
         expect(IAMLogoutSpy.calledOnce).to.be.true;
 
         IAMLogoutSpy.reset();
+        recordEventSpy.reset();
 
         const otherInnerFunc = signOut(false);
         expect(otherInnerFunc).to.be.a('function');
         otherInnerFunc();
+        expect(recordEventSpy.calledOnce).to.be.true;
         expect(IAMLogoutSpy.calledOnce).to.be.false;
         expect(logoutUrlSiSSpy.calledOnce).to.be.true;
         const location = window.location.href || window.location;
         expect(location).to.include(logoutUrlSiSSpy.returnValues[0]);
 
+        recordEventSpy.restore();
         IAMLogoutSpy.restore();
         logoutUrlSiSSpy.restore();
         window.location = oldLocation;
