@@ -1,25 +1,25 @@
 import React from 'react';
 import { expect } from 'chai';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import sinon from 'sinon';
 
 import * as uiHelpers from 'platform/utilities/ui/webComponents';
 import PrivacyPolicy from '../../components/PrivacyPolicy';
 
 describe('22-10278 <PrivacyPolicy>', () => {
-  it('opens modal when privacy policy link is clicked', () => {
-    const { container, getByTestId } = render(<PrivacyPolicy />);
-    const vaLink = container.querySelector('va-link');
-    fireEvent.click(vaLink);
-    expect(getByTestId('privacy-act-notice')).to.exist;
+  it('renders privacy policy text', () => {
+    const { getByTestId } = render(<PrivacyPolicy />);
+    expect(getByTestId('privacy-policy-text')).to.exist;
   });
 
-  it('opens modal when Enter key is pressed on privacy policy link', () => {
-    const { container, getByTestId } = render(<PrivacyPolicy />);
+  it('renders a va-link that navigates to the privacy act statement page', () => {
+    const { container } = render(<PrivacyPolicy />);
     const vaLink = container.querySelector('va-link');
-    const enterKeyEvent = new KeyboardEvent('keydown', { key: 'Enter' });
-    vaLink.dispatchEvent(enterKeyEvent);
-    expect(getByTestId('privacy-act-notice')).to.exist;
+    expect(vaLink).to.exist;
+    expect(vaLink.getAttribute('href')).to.equal(
+      '/education/disclose-information-to-third-party/authorize-disclosure-form-22-10278/privacy-act-statement',
+    );
+    expect(vaLink.getAttribute('text')).to.equal('privacy policy');
   });
 
   it('sets certify checkbox label when shadow DOM label exists', async () => {
@@ -33,9 +33,8 @@ describe('22-10278 <PrivacyPolicy>', () => {
     }
     const qsStub = sinon.stub(uiHelpers, 'querySelectorWithShadowRoot');
     qsStub.onCall(0).resolves(null);
-    qsStub.onCall(1).resolves(null);
-    qsStub.onCall(2).resolves(fakeCheckbox);
-    qsStub.onCall(3).resolves(fakeLabel);
+    qsStub.onCall(1).resolves(fakeCheckbox);
+    qsStub.onCall(2).resolves(fakeLabel);
 
     render(<PrivacyPolicy />);
 
