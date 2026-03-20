@@ -452,10 +452,17 @@ describe('CernerFacilityAlert', () => {
 
       const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
       expect(infoAlert).to.exist;
-      // When infoAlertHeadline is supplied, the trigger should exactly match it
-      expect(infoAlert.getAttribute('trigger')).to.equal(
+      // SECURE_MESSAGING uses va-alert with h2 headline instead of va-alert-expandable trigger
+      const headline = infoAlert.querySelector('h2[slot="headline"]');
+      expect(headline).to.exist;
+      expect(headline.textContent).to.equal(
         CernerAlertContent.SECURE_MESSAGING.infoAlertHeadline,
       );
+      // SM renders va-link-action, not va-link
+      const linkAction = infoAlert.querySelector('va-link-action');
+      expect(linkAction).to.exist;
+      const plainLink = infoAlert.querySelector('va-link');
+      expect(plainLink).to.not.exist;
     });
 
     it('displays composed text with infoAlertText when provided (Medications)', () => {
@@ -470,6 +477,12 @@ describe('CernerFacilityAlert', () => {
       expect(infoText.textContent).to.include(
         CernerAlertContent.MEDICATIONS.infoAlertText,
       );
+      // Non-SM tools render va-link, not va-link-action
+      const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
+      const plainLink = infoAlert.querySelector('va-link');
+      expect(plainLink).to.exist;
+      const linkAction = infoAlert.querySelector('va-link-action');
+      expect(linkAction).to.not.exist;
     });
 
     it('displays composed text with infoAlertText when provided (Secure Messaging)', () => {
@@ -838,7 +851,10 @@ describe('CernerFacilityAlert', () => {
       });
 
       const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
-      expect(infoAlert.getAttribute('trigger')).to.equal(
+      // SECURE_MESSAGING uses va-alert with h2 headline
+      const headline = infoAlert.querySelector('h2[slot="headline"]');
+      expect(headline).to.exist;
+      expect(headline.textContent).to.equal(
         CernerAlertContent.SECURE_MESSAGING.infoAlertHeadline,
       );
     });

@@ -125,27 +125,60 @@ const CernerFacilityAlert = ({
     const infoAlertComposedText = `We've brought all your VA health care data together so you can manage your care in one place.${
       infoAlertText ? ` ${infoAlertText}` : ''
     }`;
+    const alertClass = `vads-u-margin-bottom--2p5 ${className} ${
+      apiError ? 'vads-u-margin-top--2' : ''
+    }`;
+    const cernerUrl = linkPath
+      ? getCernerURL(linkPath, true)
+      : getCernerURL('/', true);
+
+    const isSM = healthTool === 'SECURE_MESSAGING';
+
+    const cernerLink = isSM ? (
+      <va-link-action
+        data-testid="cerner-info-alert-link"
+        type="secondary"
+        href={cernerUrl}
+        text="Go to My VA Health"
+      />
+    ) : (
+      <va-link
+        data-testid="cerner-info-alert-link"
+        href={cernerUrl}
+        text="Go to My VA Health"
+      />
+    );
+
+    const infoAlertContent = (
+      <div data-testid="cerner-facility-info-text">
+        <p>{infoAlertComposedText}</p>
+        <p>Still want to use My VA Health for now?</p>
+        {cernerLink}
+      </div>
+    );
+
+    if (isSM) {
+      return (
+        <va-alert
+          class={alertClass}
+          data-testid="cerner-facilities-info-alert"
+          status="info"
+          visible
+        >
+          <h2 slot="headline">{infoAlertComposedHeadline}</h2>
+          {infoAlertContent}
+        </va-alert>
+      );
+    }
+
     return (
       <va-alert-expandable
-        // Some usages might need extra top margin if there's an API error message above
-        class={`vads-u-margin-bottom--2p5 ${className} ${
-          apiError ? 'vads-u-margin-top--2' : ''
-        }`}
+        class={alertClass}
         data-testid="cerner-facilities-info-alert"
         status="info"
         trigger={infoAlertComposedHeadline}
       >
-        <div data-testid="cerner-facility-info-text">
-          <p>{infoAlertComposedText}</p>
-          <p>Still want to use My VA Health for now?</p>
-          <va-link
-            data-testid="cerner-info-alert-link"
-            href={
-              linkPath ? getCernerURL(linkPath, true) : getCernerURL('/', true)
-            }
-            text="Go to My VA Health"
-          />
-        </div>
+        {infoAlertContent}
       </va-alert-expandable>
     );
   }
@@ -231,8 +264,8 @@ const CernerFacilityAlert = ({
 CernerFacilityAlert.propTypes = {
   apiError: PropTypes.bool,
   className: PropTypes.string,
-  forceHidePretransitionedAlert: PropTypes.bool,
   forceHideInfoAlert: PropTypes.bool,
+  forceHidePretransitionedAlert: PropTypes.bool,
   forceHideTransitionAlert: PropTypes.bool,
   healthTool: PropTypes.string,
   onLinkClick: PropTypes.func,
