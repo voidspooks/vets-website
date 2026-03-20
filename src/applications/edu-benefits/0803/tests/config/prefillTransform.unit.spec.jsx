@@ -15,7 +15,9 @@ describe('transform function', () => {
     expect(transformedData).to.deep.equal({
       applicantName: { first: 'John', middle: 'A', last: 'Doe' },
       ssn: '1234567890',
+      ssnLast4: '7890',
       vaFileNumber: '0987654321',
+      vaFileNumberLast4: '4321',
     });
   });
 });
