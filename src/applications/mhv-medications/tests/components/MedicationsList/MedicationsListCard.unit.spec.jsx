@@ -177,179 +177,238 @@ describe('Medication card component', () => {
       ],
     };
 
-    it('shows "Refills left" instead of "Refills remaining"', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        isRefillable: true,
-        dispStatus: 'Active',
-        refillRemaining: 3,
-      };
-      const { getByTestId } = setup(rx, managementImprovementsState);
-      expect(getByTestId('rx-refill-remaining')).to.have.text(
-        'Refills left: 3',
-      );
+    describe('active refillable prescription', () => {
+      it('shows "Refills left", hides rx number, status label, and in-progress alert', () => {
+        const rx = {
+          ...prescriptionsListItem,
+          isRefillable: true,
+          dispStatus: 'Active',
+          refillRemaining: 3,
+          prescriptionNumber: '12345',
+        };
+        const { getByTestId, queryByTestId } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('rx-refill-remaining')).to.have.text(
+          'Refills left: 3',
+        );
+        expect(queryByTestId('rx-number')).to.be.null;
+        expect(queryByTestId('rxStatus')).to.be.null;
+        expect(queryByTestId('fill-in-progress-alert')).to.be.null;
+      });
     });
 
-    it('hides prescription number', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        isRefillable: true,
-        dispStatus: 'Active',
-        prescriptionNumber: '12345',
-      };
-      const { queryByTestId } = setup(rx, managementImprovementsState);
-      expect(queryByTestId('rx-number')).to.be.null;
+    describe('fill in progress', () => {
+      it('shows alert, link, and "Fill in progress" for "Active: Refill in Process"', () => {
+        const rx = {
+          ...prescriptionsListItem,
+          dispStatus: 'Active: Refill in Process',
+          isRefillable: false,
+          rxRfRecords: [],
+        };
+        const { getByTestId, getByText } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('fill-in-progress-alert')).to.exist;
+        expect(getByText(/Fill in progress\./)).to.exist;
+        const link = getByText('Go to in-progress medications');
+        expect(link).to.have.attribute(
+          'href',
+          medicationsUrls.MEDICATIONS_IN_PROGRESS,
+        );
+      });
+
+      it('shows alert, link, and "Fill in progress" for "Active: Submitted"', () => {
+        const rx = {
+          ...prescriptionsListItem,
+          dispStatus: 'Active: Submitted',
+          isRefillable: false,
+          rxRfRecords: [],
+        };
+        const { getByTestId, getByText } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('fill-in-progress-alert')).to.exist;
+        expect(getByText(/Fill in progress\./)).to.exist;
+        const link = getByText('Go to in-progress medications');
+        expect(link).to.have.attribute(
+          'href',
+          medicationsUrls.MEDICATIONS_IN_PROGRESS,
+        );
+      });
+
+      it('shows "Refills left" when not refillable and hides ExtraDetails', () => {
+        const rx = {
+          ...prescriptionsListItem,
+          dispStatus: 'Active: Refill in Process',
+          isRefillable: false,
+          refillRemaining: 3,
+        };
+        const { getByTestId, container } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('rx-refill-remaining')).to.have.text(
+          'Refills left: 3',
+        );
+        expect(container.querySelector('.shipping-info')).to.be.null;
+      });
+
+      it('shows "Not filled yet" and "Refills left" for initial fill in progress', () => {
+        const rx = {
+          ...prescriptionsListItem,
+          dispStatus: 'Active: Refill in Process',
+          isRefillable: false,
+          rxRfRecords: [],
+          refillRemaining: 3,
+        };
+        const { getByTestId, getByText } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByText(/Fill in progress\./)).to.exist;
+        expect(getByTestId('active-not-filled-rx')).to.have.text(
+          'Not filled yet',
+        );
+        expect(getByTestId('rx-refill-remaining')).to.have.text(
+          'Refills left: 3',
+        );
+      });
+
+      it('shows "Refill in progress" with last filled date when previously dispensed', () => {
+        const rx = {
+          ...prescriptionsListItem,
+          dispStatus: 'Active: Refill in Process',
+          isRefillable: false,
+          sortedDispensedDate: '2026-01-05T05:00:00.000Z',
+          refillRemaining: 3,
+        };
+        const { getByTestId, getByText } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('fill-in-progress-alert')).to.exist;
+        expect(getByText(/Refill in progress\./)).to.exist;
+        expect(getByTestId('rx-last-filled-date')).to.exist;
+      });
     });
 
-    it('hides status label', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        isRefillable: true,
-        dispStatus: 'Active',
-      };
-      const { queryByTestId } = setup(rx, managementImprovementsState);
-      expect(queryByTestId('rxStatus')).to.be.null;
+    describe('recently shipped', () => {
+      it('shows shipped alert with tracking link, hides legacy shipped-on and ExtraDetails', () => {
+        const { getByTestId, queryByTestId, getByText, container } = setup(
+          shippedRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('shipped-alert')).to.exist;
+        const link = getByText('Get tracking info');
+        expect(link).to.have.attribute(
+          'href',
+          `https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=12345678901234`,
+        );
+        expect(queryByTestId('rx-card-details--shipped-on')).to.be.null;
+        expect(container.querySelector('.shipping-info')).to.be.null;
+        expect(getByText(/Refill has shipped/)).to.exist;
+      });
+
+      it('shows shipped alert with detail page link for unknown carrier', () => {
+        const rx = {
+          ...shippedRx,
+          trackingList: [
+            {
+              completeDateTime: new Date().toISOString(),
+              carrier: 'OTHER',
+              trackingNumber: null,
+            },
+          ],
+        };
+        const { getByTestId, getByText } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('shipped-alert')).to.exist;
+        const link = getByText('Get tracking info');
+        expect(link.getAttribute('href')).to.include(
+          `/prescription/${prescriptionsListItem.prescriptionId}`,
+        );
+      });
+
+      it('shows "Refills left" for recently shipped prescription', () => {
+        const rx = { ...shippedRx, refillRemaining: 3 };
+        const { getByTestId } = setup(rx, managementImprovementsState);
+        expect(getByTestId('rx-refill-remaining')).to.have.text(
+          'Refills left: 3',
+        );
+      });
+
+      it('does not show shipped alert when isTrackable is false', () => {
+        const rx = { ...shippedRx, isRefillable: true, isTrackable: false };
+        const { queryByTestId } = setup(rx, managementImprovementsState);
+        expect(queryByTestId('shipped-alert')).to.be.null;
+      });
+
+      it('shows "Fill has shipped" for initial fill with no rxRfRecords', () => {
+        const rx = { ...shippedRx, rxRfRecords: [] };
+        const { getByText } = setup(rx, managementImprovementsState);
+        expect(getByText(/Fill has shipped/)).to.exist;
+      });
     });
 
-    it('shows refill-in-progress alert for "Active: Refill in Process" status', () => {
-      const rx = {
+    describe('Non-VA medication card', () => {
+      const nonVaRx = {
         ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
+        prescriptionSource: 'NV',
+        dispStatus: 'Active: Non-VA',
+        orderedDate: '2024-06-16T20:00:00Z',
+      };
+
+      it('shows Non-VA label, message, and link without status, date, or rx number', () => {
+        const screen = setup(nonVaRx, managementImprovementsState);
+        expect(screen.getByTestId('non-va-medication-label')).to.have.text(
+          'Non-VA medication',
+        );
+        expect(screen.getByTestId('non-VA-prescription')).to.have.text(
+          NON_VA_MEDICATION_MESSAGE,
+        );
+        expect(screen.getByTestId('medications-history-details-link')).to.exist;
+        expect(screen.queryByTestId('rx-last-filled-info')).to.not.exist;
+        expect(screen.queryByTestId('rxStatus')).to.not.exist;
+        expect(screen.queryByTestId('rx-number')).to.not.exist;
+      });
+    });
+
+    describe('Discontinued prescription card', () => {
+      const discontinuedRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Discontinued',
         isRefillable: false,
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByTestId('fill-in-progress-alert')).to.exist;
-      const link = getByText('Go to in-progress medications');
-      expect(link).to.have.attribute(
-        'href',
-        medicationsUrls.MEDICATIONS_IN_PROGRESS,
-      );
-    });
-
-    it('shows refill-in-progress alert for "Active: Submitted" status', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Submitted',
-        isRefillable: false,
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByTestId('fill-in-progress-alert')).to.exist;
-      const link = getByText('Go to in-progress medications');
-      expect(link).to.have.attribute(
-        'href',
-        medicationsUrls.MEDICATIONS_IN_PROGRESS,
-      );
-    });
-
-    it('shows "Refills left" for refill-in-progress even when isRefillable is false', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
-        isRefillable: false,
-        refillRemaining: 3,
-      };
-      const { getByTestId } = setup(rx, managementImprovementsState);
-      expect(getByTestId('rx-refill-remaining')).to.have.text(
-        'Refills left: 3',
-      );
-    });
-
-    it('shows "Fill in progress" text for initial fill with "Active: Refill in Process"', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
-        isRefillable: false,
-        rxRfRecords: [],
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByTestId('fill-in-progress-alert')).to.exist;
-      expect(getByText(/Fill in progress\./)).to.exist;
-      const link = getByText('Go to in-progress medications');
-      expect(link).to.have.attribute(
-        'href',
-        medicationsUrls.MEDICATIONS_IN_PROGRESS,
-      );
-    });
-
-    it('shows "Fill in progress" text for initial fill with "Active: Submitted"', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Submitted',
-        isRefillable: false,
-        rxRfRecords: [],
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByTestId('fill-in-progress-alert')).to.exist;
-      expect(getByText(/Fill in progress\./)).to.exist;
-      const link = getByText('Go to in-progress medications');
-      expect(link).to.have.attribute(
-        'href',
-        medicationsUrls.MEDICATIONS_IN_PROGRESS,
-      );
-    });
-
-    it('shows "Not filled yet" for initial fill in progress', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
-        isRefillable: false,
-        rxRfRecords: [],
-        refillRemaining: 3,
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByText(/Fill in progress\./)).to.exist;
-      expect(getByTestId('active-not-filled-rx')).to.have.text(
-        'Not filled yet',
-      );
-    });
-
-    it('shows "Refills left" for initial fill in progress', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Submitted',
-        isRefillable: false,
-        rxRfRecords: [],
-        refillRemaining: 3,
-      };
-      const { getByTestId } = setup(rx, managementImprovementsState);
-      expect(getByTestId('rx-refill-remaining')).to.have.text(
-        'Refills left: 3',
-      );
-    });
-
-    it('shows "Refill in progress" (not "Fill") when previously dispensed', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
-        isRefillable: false,
+        refillRemaining: 0,
         sortedDispensedDate: '2026-01-05T05:00:00.000Z',
       };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByTestId('fill-in-progress-alert')).to.exist;
-      expect(getByText(/Refill in progress\./)).to.exist;
-    });
 
-    it('shows "Last filled on" date for refill in progress', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
-        isRefillable: false,
-        sortedDispensedDate: '2026-01-05T05:00:00.000Z',
-        refillRemaining: 3,
-      };
-      const { getByTestId, getByText } = setup(rx, managementImprovementsState);
-      expect(getByText(/Refill in progress\./)).to.exist;
-      expect(getByTestId('rx-last-filled-date')).to.exist;
-    });
+      it('shows last filled date, updated message, no refills, and ExtraDetails', () => {
+        const { getByTestId, queryByTestId, container } = setup(
+          discontinuedRx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('rxStatus')).to.exist;
+        expect(getByTestId('rxStatus').textContent).to.equal('Discontinued');
+        expect(getByTestId('rx-last-filled-date')).to.exist;
+        expect(getByTestId('discontinued').textContent).to.include(
+          'send a message to your care team',
+        );
+        expect(queryByTestId('rx-refill-remaining')).to.be.null;
+        expect(container.querySelector('.shipping-info')).to.exist;
+        expect(container.querySelector('va-card[background]')).to.exist;
+      });
 
-    it('hides ExtraDetails for refill-in-progress prescriptions', () => {
-      const rx = {
-        ...prescriptionsListItem,
-        dispStatus: 'Active: Refill in Process',
-        isRefillable: false,
-      };
-      const { container } = setup(rx, managementImprovementsState);
-      expect(container.querySelector('.shipping-info')).to.be.null;
+      it('hides prescription number', () => {
+        const rx = { ...discontinuedRx, prescriptionNumber: '12345' };
+        const { queryByTestId } = setup(rx, managementImprovementsState);
+        expect(queryByTestId('rx-number')).to.be.null;
+      });
     });
     describe('On Hold prescription card', () => {
       const onHoldRx = {
@@ -433,20 +492,7 @@ describe('Medication card component', () => {
       expect(queryByTestId('fill-in-progress-alert')).to.be.null;
     });
 
-    it('shows shipped alert with external tracking link for known carrier', () => {
-      const { getByTestId, getByText } = setup(
-        shippedRx,
-        managementImprovementsState,
-      );
-      expect(getByTestId('shipped-alert')).to.exist;
-      const link = getByText('Get tracking info');
-      expect(link).to.have.attribute(
-        'href',
-        `https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=12345678901234`,
-      );
-    });
-
-    it('shows shipped alert with tracking number fallback for unknown carrier', () => {
+    it('shows shipped alert with tracking number as href for unknown carrier', () => {
       const rx = {
         ...shippedRx,
         trackingList: [
@@ -461,42 +507,6 @@ describe('Medication card component', () => {
       expect(getByTestId('shipped-alert')).to.exist;
       const link = getByText('Get tracking info');
       expect(link).to.have.attribute('href', 'ABC123');
-    });
-
-    it('shows "Refills left" for recently shipped prescription', () => {
-      const rx = { ...shippedRx, refillRemaining: 3 };
-      const { getByTestId } = setup(rx, managementImprovementsState);
-      expect(getByTestId('rx-refill-remaining')).to.have.text(
-        'Refills left: 3',
-      );
-    });
-
-    it('hides old "Shipped on" block for recently shipped prescription', () => {
-      const { queryByTestId } = setup(shippedRx, managementImprovementsState);
-      expect(queryByTestId('rx-card-details--shipped-on')).to.be.null;
-    });
-
-    it('hides ExtraDetails for recently shipped prescription', () => {
-      const { container } = setup(shippedRx, managementImprovementsState);
-      expect(container.querySelector('.shipping-info')).to.be.null;
-    });
-
-    it('does not show shipped alert when isTrackable is false', () => {
-      const rx = { ...shippedRx, isRefillable: true, isTrackable: false };
-      const { queryByTestId } = setup(rx, managementImprovementsState);
-      expect(queryByTestId('shipped-alert')).to.be.null;
-    });
-
-    it('shows "Fill has shipped" for initial fill with no rxRfRecords', () => {
-      const rx = { ...shippedRx, rxRfRecords: [] };
-      const { getByText } = setup(rx, managementImprovementsState);
-      expect(getByText(/Fill has shipped/)).to.exist;
-    });
-
-    it('shows "Refill has shipped" when rxRfRecords has entries', () => {
-      const rx = shippedRx;
-      const { getByText } = setup(rx, managementImprovementsState);
-      expect(getByText(/Refill has shipped/)).to.exist;
     });
 
     it('shows no-refills-left alert, renew link, "Refills left: 0", and hides ExtraDetails for Active with 0 refills', () => {
@@ -657,50 +667,6 @@ describe('Medication card component', () => {
       expect(getByTestId('learn-to-renew-prescriptions-link')).to.exist;
       expect(queryByTestId('send-renewal-request-message-link')).to.be.null;
     });
-
-    describe('Non-VA medication card', () => {
-      const nonVaRx = {
-        ...prescriptionsListItem,
-        prescriptionSource: 'NV',
-        dispStatus: 'Active: Non-VA',
-        orderedDate: '2024-06-16T20:00:00Z',
-      };
-
-      it('renders "Non-VA medication" label', () => {
-        const screen = setup(nonVaRx, managementImprovementsState);
-        expect(screen.getByTestId('non-va-medication-label')).to.exist;
-        expect(screen.getByTestId('non-va-medication-label')).to.have.text(
-          'Non-VA medication',
-        );
-      });
-
-      it('renders "can’t manage" message', () => {
-        const screen = setup(nonVaRx, managementImprovementsState);
-        expect(screen.getByTestId('non-VA-prescription')).to.have.text(
-          NON_VA_MEDICATION_MESSAGE,
-        );
-      });
-
-      it('does not render documented date', () => {
-        const screen = setup(nonVaRx, managementImprovementsState);
-        expect(screen.queryByTestId('rx-last-filled-info')).to.not.exist;
-      });
-
-      it('does not render "Active: Non-VA" status text', () => {
-        const screen = setup(nonVaRx, managementImprovementsState);
-        expect(screen.queryByTestId('rxStatus')).to.not.exist;
-      });
-
-      it('does not render prescription number', () => {
-        const screen = setup(nonVaRx, managementImprovementsState);
-        expect(screen.queryByTestId('rx-number')).to.not.exist;
-      });
-
-      it('still renders medication name link', () => {
-        const screen = setup(nonVaRx, managementImprovementsState);
-        expect(screen.getByTestId('medications-history-details-link')).to.exist;
-      });
-    });
   });
 
   describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
@@ -728,6 +694,20 @@ describe('Medication card component', () => {
       expect(screen.queryByTestId('non-va-medication-label')).to.not.exist;
       expect(screen.getByTestId('rxStatus')).to.have.text('Active: Non-VA');
       expect(screen.getByTestId('rx-last-filled-info')).to.exist;
+    });
+
+    it('shows legacy discontinued message without grey background', () => {
+      const rx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Discontinued',
+        isRefillable: false,
+      };
+      const { getByTestId, container } = setup(rx);
+      expect(getByTestId('discontinued')).to.exist;
+      expect(getByTestId('discontinued').textContent).to.include(
+        'Contact your VA provider',
+      );
+      expect(container.querySelector('va-card[background]')).to.be.null;
     });
   });
 

@@ -255,11 +255,15 @@ const MedicationsListCard = ({ rx }) => {
               </span>
             </p>
           )}
-        {!isMedsImprovements &&
+        {(!isMedsImprovements || isDiscontinued) &&
           rxStatus !== 'Unknown' && (
             <p
               id={`status-${rx.prescriptionId}`}
-              className="vads-u-margin-top--1p5 vads-u-font-weight--bold"
+              className={`${
+                isMedsImprovements && isDiscontinued
+                  ? 'vads-u-margin-top--1 vads-u-margin-bottom--0p5'
+                  : 'vads-u-margin-top--1p5'
+              } vads-u-font-weight--bold`}
               data-testid="rxStatus"
               data-dd-privacy="mask"
             >
@@ -302,6 +306,11 @@ const MedicationsListCard = ({ rx }) => {
   return (
     <va-card
       background={displayGrayBackground || undefined}
+      style={
+        displayGrayBackground
+          ? { border: '1px solid var(--vads-color-gray-medium)' }
+          : undefined
+      }
       class={`no-print rx-card-container ${
         pendingMed || pendingRenewal ? 'pending-med-or-renewal' : ''
       }${

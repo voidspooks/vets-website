@@ -355,8 +355,9 @@ const ExtraDetails = ({
         return (
           <div>
             <p className="vads-u-margin-y--0" data-testid="discontinued">
-              You can’t refill this prescription. Contact your VA provider if
-              you need more of this medication.
+              {isMedsImprovements
+                ? `You can’t refill this prescription. If you need more, send a message to your care team.`
+                : `You can’t refill this prescription. Contact your VA provider if you need more of this medication.`}
             </p>
           </div>
         );
@@ -469,7 +470,11 @@ const ExtraDetails = ({
 
   return (
     <div
-      className="shipping-info"
+      className={`shipping-info${
+        isMedsImprovements && dispStatus === dispStatusObj.discontinued
+          ? ' vads-u-margin-top--0'
+          : ''
+      }`}
       id={`status-description-${rx.prescriptionId}`}
     >
       {content}
