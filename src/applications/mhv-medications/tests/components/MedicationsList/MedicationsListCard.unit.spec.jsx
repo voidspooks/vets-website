@@ -410,6 +410,16 @@ describe('Medication card component', () => {
         expect(queryByTestId('rx-number')).to.be.null;
       });
     });
+
+    it('hides ExtraDetails for refill-in-progress prescriptions', () => {
+      const rx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Active: Refill in Process',
+        isRefillable: false,
+      };
+      const { container } = setup(rx, managementImprovementsState);
+      expect(container.querySelector('.shipping-info')).to.be.null;
+    });
     describe('On Hold prescription card', () => {
       const onHoldRx = {
         ...prescriptionsListItem,

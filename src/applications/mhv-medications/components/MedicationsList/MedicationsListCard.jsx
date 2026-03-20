@@ -26,6 +26,7 @@ import {
   selectCernerPilotFlag,
   selectV2StatusMappingFlag,
   selectMedicationsManagementImprovementsFlag,
+  selectSecureMessagingMedicationsRenewalRequestFlag,
 } from '../../util/selectors';
 import { selectOracleHealthMigrations } from '../../selectors/selectUser';
 import {
@@ -46,6 +47,9 @@ const MedicationsListCard = ({ rx }) => {
     rx.prescriptionSource === RX_SOURCE.PENDING_DISPENSE;
   const isMedsImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
+  );
+  const isRenewalRequestFlag = useSelector(
+    selectSecureMessagingMedicationsRenewalRequestFlag,
   );
   const isFillInProgress =
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_REFILL_IN_PROCESS ||
@@ -99,6 +103,24 @@ const MedicationsListCard = ({ rx }) => {
   const isActiveNoRefills =
     rx.dispStatus === DISPENSE_STATUS.ACTIVE &&
     rx.refillRemaining === 0 &&
+    !isNonVaPrescription;
+  const expirationDate = rx.expirationDate ? new Date(rx.expirationDate) : null;
+  const isExpired = expirationDate && expirationDate <= new Date();
+  const isExpiredOver120Days =
+    expirationDate &&
+    expirationDate <= new Date(Date.now() - 120 * 24 * 60 * 60 * 1000);
+  const isNonRenewableExpired =
+    isRenewalRequestFlag &&
+    (rx.dispStatus === dispStatusObj.expired ||
+      rx.dispStatus === dispStatusObj.discontinued) &&
+    !rx.isRefillable &&
+    !rx.isRenewable &&
+    isExpiredOver120Days;
+  const isExpiredNoRenewalFlag =
+    !isRenewalRequestFlag &&
+    rx.dispStatus === dispStatusObj.expired &&
+    isExpired &&
+    !rx.isRenewable &&
     !isNonVaPrescription;
   const isExpiredRenewable =
     rx.dispStatus === DISPENSE_STATUS.EXPIRED &&
@@ -165,6 +187,59 @@ const MedicationsListCard = ({ rx }) => {
   const cardBodyContent = () => {
     if (isMedsImprovements && isNonVaPrescription) return renderNonVaCard();
     if (isMedsImprovements && isTransferred) return renderTransferredCard();
+    if (isMedsImprovements && isNonRenewableExpired)
+      return (
+        <>
+          <LastFilledInfo {...rx} />
+          <p
+            className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
+            data-testid="rxStatus"
+            data-dd-privacy="mask"
+          >
+            Expired
+          </p>
+          <p
+            className="vads-u-margin-top--0p5 vads-u-margin-bottom--0"
+            data-testid="expired-non-renewable"
+            data-dd-privacy="mask"
+          >
+            This prescription is too old to refill. If you need more,{' '}
+            <SendRxRenewalMessage
+              rx={rx}
+              isOracleHealth={isOracleHealth}
+              fallbackContent={
+                <a
+                  href={medicationsUrls.RENEW_PRESCRIPTIONS_URL}
+                  data-testid="learn-to-renew-prescriptions-link"
+                >
+                  request a renewal
+                </a>
+              }
+            />
+          </p>
+        </>
+      );
+    if (isMedsImprovements && isExpiredNoRenewalFlag)
+      return (
+        <>
+          <LastFilledInfo {...rx} />
+          <p
+            className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
+            data-testid="rxStatus"
+            data-dd-privacy="mask"
+          >
+            Expired
+          </p>
+          <p
+            className="vads-u-margin-top--0p5 vads-u-margin-bottom--0"
+            data-testid="expired-no-renewal-flag"
+            data-dd-privacy="mask"
+          >
+            This prescription is too old to refill. If you need more, request a
+            renewal.
+          </p>
+        </>
+      );
     if (pendingRenewal || pendingMed) return renderPendingCard();
 
     return (
@@ -301,7 +376,11 @@ const MedicationsListCard = ({ rx }) => {
   };
 
   const displayGrayBackground =
-    isMedsImprovements && (isDiscontinued || isTransferred);
+    isMedsImprovements &&
+    (isDiscontinued ||
+      isTransferred ||
+      isNonRenewableExpired ||
+      isExpiredNoRenewalFlag);
 
   return (
     <va-card
