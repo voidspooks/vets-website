@@ -153,44 +153,28 @@ const VaPrescription = prescription => {
       : 'Refill request status';
   };
 
-  const displayPharmacyContactInfo = () => {
-    if (isCernerPilot) {
-      return (
-        <>
-          <h3 className="vads-u-font-size--source-sans-normalized vads-u-font-family--sans">
-            Pharmacy contact information
-          </h3>
+  const displayPharmacyContactInfo = () => (
+    <>
+      <h3 className="vads-u-font-size--source-sans-normalized vads-u-font-family--sans">
+        Pharmacy phone number
+      </h3>
+      <div className="no-print" data-testid="pharmacy-phone">
+        {pharmacyPhone ? (
+          <>
+            <va-telephone contact={pharmacyPhone} data-testid="phone-number" />{' '}
+            (<va-telephone tty contact="711" />)
+          </>
+        ) : (
           <div data-testid="find-facility-link">
             Check your prescription label or contact your VA facility.{' '}
             <a href="https://www.va.gov/find-locations">
               Find your VA facility
             </a>
           </div>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <h3 className="vads-u-font-size--source-sans-normalized vads-u-font-family--sans">
-          Pharmacy phone number
-        </h3>
-        <div className="no-print" data-testid="pharmacy-phone">
-          {pharmacyPhone ? (
-            <>
-              <va-telephone
-                contact={pharmacyPhone}
-                data-testid="phone-number"
-              />{' '}
-              (<va-telephone tty contact="711" />)
-            </>
-          ) : (
-            validateIfAvailable('Pharmacy phone number')
-          )}
-        </div>
-      </>
-    );
-  };
+        )}
+      </div>
+    </>
+  );
 
   const content = () => {
     if (prescription) {

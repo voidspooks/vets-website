@@ -93,7 +93,12 @@ const determineStatus = (
       if (pendingMed) {
         return <p>{pdfDefaultPendingMedDefinition}</p>;
       }
-      return <StatusDropdown status={prescription?.dispStatus} />;
+      return (
+        <StatusDropdown
+          status={prescription?.dispStatus}
+          prescription={prescription}
+        />
+      );
 
     case medStatusDisplayTypes.PRINT: {
       if (pendingMed) return pdfDefaultPendingMedDefinition;

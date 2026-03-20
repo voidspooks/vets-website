@@ -8,6 +8,7 @@ import {
   dateFormat,
   rxSourceIsNonVA,
   isOracleHealthPrescription,
+  isUnfilledOhPrescription,
 } from '../../util/helpers';
 import {
   DATETIME_FORMATS,
@@ -18,6 +19,7 @@ import {
 } from '../../util/constants';
 import CallPharmacyPhone from './CallPharmacyPhone';
 import RefillButton from './RefillButton';
+import UnfilledOhMessage from './UnfilledOhMessage';
 import SendRxRenewalMessage from './SendRxRenewalMessage';
 import { OracleHealthRenewalInCardAlert } from './OracleHealthTransitionAlerts';
 import { pageType } from '../../util/dataDogConstants';
@@ -41,6 +43,7 @@ const ExtraDetails = ({
   const noRefillRemaining =
     refillRemaining === 0 && dispStatus === DISPENSE_STATUS.ACTIVE;
   const isOracleHealth = isOracleHealthPrescription(rx, cernerFacilityIds);
+  const isUnfilledOh = isUnfilledOhPrescription(rx, cernerFacilityIds);
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
   const isOracleHealthCutover = useSelector(
@@ -120,6 +123,9 @@ const ExtraDetails = ({
 
       case dispStatusObjV2.active:
         // Both map to "Active" in V2
+        if (isUnfilledOh) {
+          return <UnfilledOhMessage prescription={rx} showLinks page={page} />;
+        }
         if (noRefillRemaining) {
           if (isRenewalBlocked && rx.isRenewable) {
             return (
@@ -409,6 +415,9 @@ const ExtraDetails = ({
         );
 
       case dispStatusObj.active:
+        if (isUnfilledOh) {
+          return <UnfilledOhMessage prescription={rx} showLinks page={page} />;
+        }
         if (noRefillRemaining) {
           if (isRenewalBlocked && rx.isRenewable) {
             return (

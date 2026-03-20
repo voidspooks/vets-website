@@ -134,6 +134,9 @@ class MedicationsDetailsPage {
     displayedEndNumber,
     listLength,
   ) => {
+    // Set up intercept to wait for the list page API call
+    cy.intercept('GET', '/my_health/v1/prescriptions*').as('prescriptionsList');
+
     cy.get('[data-testid="rx-breadcrumb-link"]')
       .shadow()
       .find('a')
@@ -141,6 +144,18 @@ class MedicationsDetailsPage {
       .click({
         waitForAnimations: true,
       });
+
+    // Wait for navigation to complete
+    cy.url().should('include', '/my-health/medications');
+
+    // Wait for the API call to complete
+    cy.wait('@prescriptionsList', { timeout: 10000 });
+
+    // Wait for the list page to render
+    cy.get('[data-testid="page-total-info"]', { timeout: 10000 }).should(
+      'be.visible',
+    );
+
     cy.get('[data-testid="page-total-info"]').should($el => {
       const text = $el.text().trim();
       expect(text).to.include(

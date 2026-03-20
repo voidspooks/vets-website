@@ -258,4 +258,106 @@ describe('component that displays Status', () => {
       );
     });
   });
+  describe('Unfilled Oracle Health prescriptions', () => {
+    const renderWithPrescription = (prescription, flags = {}) => {
+      const initialState = {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]:
+            flags.cernerPilot || false,
+          [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]:
+            flags.v2StatusMapping || false,
+        },
+        drupalStaticData: {
+          vamcEhrData: {
+            data: {
+              cernerFacilities: [
+                { vhaId: '668', vamcFacilityName: 'Spokane VA Medical Center' },
+              ],
+            },
+          },
+        },
+      };
+
+      return renderWithStoreAndRouter(
+        <StatusDropdown status="Active" prescription={prescription} />,
+        { initialState, reducers: reducer },
+      );
+    };
+
+    it('shows UnfilledOhMessage for unfilled OH prescription', () => {
+      const prescription = {
+        prescriptionId: 99999999,
+        dispStatus: 'Active',
+        dispensedDate: null,
+        sourceEhr: 'OH',
+        rxRfRecords: [],
+        cmopDivisionPhone: '5551234567',
+      };
+
+      const screen = renderWithPrescription(prescription);
+      const message = screen.getByTestId('active-unfilled-oh');
+
+      expect(message).to.exist;
+      expect(message.textContent).to.include('refill this prescription');
+    });
+
+    it('shows "phone number listed below" text (no inline phone)', () => {
+      const prescription = {
+        dispStatus: 'Active',
+        dispensedDate: null,
+        sourceEhr: 'OH',
+        rxRfRecords: [],
+        cmopDivisionPhone: '5551234567',
+      };
+
+      const screen = renderWithPrescription(prescription);
+      const message = screen.getByTestId('active-unfilled-oh');
+
+      expect(message.textContent).to.include('phone number listed below');
+    });
+
+    it('shows standard definition for dispensed OH prescription', () => {
+      const prescription = {
+        dispStatus: 'Active',
+        dispensedDate: '2026-03-15T04:00:00.000Z',
+        sourceEhr: 'OH',
+        rxRfRecords: [],
+      };
+
+      const screen = renderWithPrescription(prescription);
+
+      expect(screen.queryByTestId('active-unfilled-oh')).to.not.exist;
+      expect(screen.getByText(/This is a current prescription/)).to.exist;
+    });
+
+    it('shows automated refill line message when no phone', () => {
+      const prescription = {
+        dispStatus: 'Active',
+        dispensedDate: null,
+        sourceEhr: 'OH',
+        rxRfRecords: [],
+        cmopDivisionPhone: null,
+      };
+
+      const screen = renderWithPrescription(prescription);
+      const message = screen.getByTestId('active-unfilled-oh');
+
+      expect(message.textContent).to.include('automated refill line');
+      expect(message.textContent).to.include('prescription label');
+    });
+
+    it('does not show facility finder link (showLinks=false)', () => {
+      const prescription = {
+        dispStatus: 'Active',
+        dispensedDate: null,
+        sourceEhr: 'OH',
+        rxRfRecords: [],
+        cmopDivisionPhone: null,
+      };
+
+      const screen = renderWithPrescription(prescription);
+
+      expect(screen.queryByText('Find your VA facility')).to.not.exist;
+    });
+  });
 });

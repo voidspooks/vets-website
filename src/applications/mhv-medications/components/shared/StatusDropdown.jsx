@@ -1,12 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { selectCernerFacilityIds } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/selectors';
+import { isUnfilledOhPrescription } from '../../util/helpers/isUnfilledOhPrescription';
 import {
   ACTIVE_NON_VA,
   dispStatusObj,
   dispStatusObjV2,
 } from '../../util/constants';
 import { dataDogActionNames } from '../../util/dataDogConstants';
+import UnfilledOhMessage from './UnfilledOhMessage';
 import {
   selectCernerPilotFlag,
   selectV2StatusMappingFlag,
@@ -14,14 +17,19 @@ import {
 } from '../../util/selectors';
 
 const StatusDropdown = props => {
-  const { status } = props;
+  const { status, prescription } = props;
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
   const isOracleHealthCutover = useSelector(
     selectMhvMedicationsOracleHealthCutoverFlag,
   );
+  const cernerFacilityIds = useSelector(selectCernerFacilityIds);
   const useV2Statuses = isCernerPilot && isV2StatusMapping;
   const statusObj = useV2Statuses ? dispStatusObjV2 : dispStatusObj;
+
+  // Check if this is an unfilled Oracle Health prescription
+  const isUnfilledOh =
+    prescription && isUnfilledOhPrescription(prescription, cernerFacilityIds);
 
   const displayStatus = statusTxt => {
     return (
@@ -36,6 +44,16 @@ const StatusDropdown = props => {
       switch (status) {
         case statusObj.active: {
           const dropdownContent = () => {
+            // Show unfilled OH message if applicable
+            if (isUnfilledOh) {
+              return (
+                <UnfilledOhMessage
+                  prescription={prescription}
+                  showLinks={false}
+                  showPhoneInline={false}
+                />
+              );
+            }
             return (
               <>
                 <p
@@ -614,6 +632,7 @@ const StatusDropdown = props => {
 };
 
 StatusDropdown.propTypes = {
+  prescription: PropTypes.object,
   status: PropTypes.string,
 };
 

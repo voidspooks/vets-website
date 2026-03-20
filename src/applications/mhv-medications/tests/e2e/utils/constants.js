@@ -80,7 +80,8 @@ export const Data = {
   SHIPPED_ON_EMPTY: 'Date not available',
   IMAGE_EMPTY: 'Image not available',
   MEDICATION_DESCRIPTION_EMPTY: 'No description available',
-  PHARMACY_PHONE_NUMBER_EMPTY: 'Pharmacy phone number not available',
+  PHARMACY_PHONE_NUMBER_EMPTY:
+    'Check your prescription label or contact your VA facility.',
   REASON_FOR_USE_EMPTY: 'Reason for use not available',
   INSTRUCTIONS_EMPTY: 'Instructions not available',
   PARTIAL_FILL_TEXT: 'This fill has a smaller quantity on purpose.',

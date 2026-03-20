@@ -75,6 +75,7 @@ describe('Medications List Card Extra Details', () => {
     initialState = {},
     isCernerPilot = false,
     isV2StatusMapping = false,
+    page,
   ) => {
     const featureToggleReducer = (state = {}) => state;
     const testReducers = {
@@ -102,10 +103,17 @@ describe('Medications List Card Extra Details', () => {
       },
     };
 
-    return renderWithStoreAndRouterV6(<ExtraDetails {...rx} />, {
-      initialState: state,
-      reducers: testReducers,
-    });
+    const pageToPass = rx.page !== undefined ? rx.page : page;
+    const rxWithoutPage = { ...rx };
+    delete rxWithoutPage.page;
+
+    return renderWithStoreAndRouterV6(
+      <ExtraDetails {...rxWithoutPage} page={pageToPass} />,
+      {
+        initialState: state,
+        reducers: testReducers,
+      },
+    );
   };
 
   const setupWithRenewalLink = (
@@ -765,6 +773,183 @@ describe('Medications List Card Extra Details', () => {
       const el = await screen.findByTestId('transferred');
       expect(el).to.contain.text('go to our My VA Health portal');
       expect(screen.queryByTestId('prescription-VA-health-link')).to.exist;
+    });
+  });
+
+  describe('unfilled Oracle Health prescriptions (V2)', () => {
+    it('displays unfilled OH message for Active prescription with no dispense history', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 5,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+      };
+      const screen = setup(unfilledOH, {}, true, true, pageType.LIST);
+      const message = await screen.findByTestId('active-unfilled-oh');
+      expect(message).to.exist;
+      expect(message).to.contain.text(
+        'refill this prescription online right now',
+      );
+      expect(message).to.contain.text('To refill now');
+      expect(screen.queryByTestId('refill-request-button')).to.not.exist;
+    });
+
+    it('displays unfilled OH message even with refills remaining', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 10,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+      };
+      const screen = setup(unfilledOH, {}, true, true, pageType.LIST);
+      expect(await screen.findByTestId('active-unfilled-oh')).to.exist;
+      expect(screen.queryByTestId('refill-request-button')).to.not.exist;
+    });
+
+    it('does not show unfilled OH message when prescription has been dispensed', async () => {
+      const filledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 2,
+        stationNumber: '668', // OH facility
+        dispensedDate: '2024-01-15',
+        rxRfRecords: [],
+        isRefillable: true,
+      };
+      const screen = setup(filledOH, {}, true, true, pageType.LIST);
+      expect(screen.queryByTestId('active-unfilled-oh')).to.not.exist;
+      expect(await screen.findByTestId('refill-request-button')).to.exist;
+    });
+
+    it('does not show unfilled OH message when rxRfRecords has dispense', async () => {
+      const filledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 2,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [{ dispensedDate: '2024-02-01' }],
+        isRefillable: true,
+      };
+      const screen = setup(filledOH, {}, true, true, pageType.LIST);
+      expect(screen.queryByTestId('active-unfilled-oh')).to.not.exist;
+      expect(await screen.findByTestId('refill-request-button')).to.exist;
+    });
+
+    it('does not show unfilled OH message for non-OH facility', async () => {
+      const nonOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 5,
+        stationNumber: '500', // Non-OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+        isRefillable: true,
+      };
+      const screen = setup(nonOH, {}, true, true, pageType.LIST);
+      expect(screen.queryByTestId('active-unfilled-oh')).to.not.exist;
+      expect(await screen.findByTestId('refill-request-button')).to.exist;
+    });
+
+    it('shows unfilled OH message', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObj.active,
+        refillRemaining: 5,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+        isRefillable: false,
+      };
+      const screen = setup(unfilledOH, {}, false, false, pageType.LIST);
+      expect(await screen.findByTestId('active-unfilled-oh')).to.exist;
+      expect(screen.queryByTestId('refill-request-button')).to.not.exist;
+    });
+    it('shows unfilled OH message on details page as well', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 5,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+        isRefillable: false,
+      };
+      const screen = setup(unfilledOH, {}, true, true, pageType.DETAILS);
+      expect(await screen.findByTestId('active-unfilled-oh')).to.exist;
+      expect(screen.queryByTestId('refill-request-button')).to.not.exist;
+    });
+
+    it('shows facility finder link when pharmacy phone is null', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 5,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+        cmopDivisionPhone: null,
+        pharmacyPhoneNumber: null,
+        dialCmopDivisionPhone: null,
+      };
+      const screen = setup(unfilledOH, {}, true, true, pageType.LIST);
+      const message = await screen.findByTestId('active-unfilled-oh');
+      expect(message).to.exist;
+      expect(message).to.contain.text('online right now');
+      expect(message).to.contain.text('To refill now');
+      expect(message).to.contain.text('automated refill line');
+      expect(message).to.contain.text('prescription label');
+      const link = screen.getByText('Find your VA facility');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.equal(
+        'https://www.va.gov/find-locations',
+      );
+    });
+
+    it('shows pharmacy phone when available', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObjV2.active,
+        refillRemaining: 5,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+        cmopDivisionPhone: '509-434-7000',
+        pharmacyPhoneNumber: '509-434-7000',
+      };
+      const screen = setup(unfilledOH, {}, true, true, pageType.LIST);
+      const message = await screen.findByTestId('active-unfilled-oh');
+      expect(message).to.exist;
+      expect(message).to.contain.text('call your VA pharmacy');
+      // CallPharmacyPhone component renders va-telephone
+      expect(screen.getByText('at', { exact: false })).to.exist;
+    });
+
+    it('shows facility finder link for V1 Active when phone is null', async () => {
+      const unfilledOH = {
+        ...prescription,
+        dispStatus: dispStatusObj.active,
+        refillRemaining: 5,
+        stationNumber: '668', // OH facility
+        dispensedDate: null,
+        rxRfRecords: [],
+        cmopDivisionPhone: null,
+        pharmacyPhoneNumber: null,
+      };
+      const screen = setup(unfilledOH, {}, false, false, pageType.LIST);
+      const message = await screen.findByTestId('active-unfilled-oh');
+      expect(message).to.exist;
+      expect(message).to.contain.text('automated refill line');
+      expect(message).to.contain.text('prescription label');
+      const link = screen.getByText('Find your VA facility');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.equal(
+        'https://www.va.gov/find-locations',
+      );
     });
   });
 });

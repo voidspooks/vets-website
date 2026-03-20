@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "id": "99999999",
+      "type": "prescription_details",
+      "attributes": {
+        "prescriptionId": 99999999,
+        "prescriptionNumber": "9999999",
+        "prescriptionName": "LISINOPRIL 10MG TAB",
+        "prescriptionImage": null,
+        "refillStatus": "active",
+        "refillSubmitDate": null,
+        "refillDate": "2026-04-01T04:00:00.000Z",
+        "refillRemaining": 5,
+        "facilityName": "SPOKANE VA MEDICAL CENTER",
+        "orderedDate": "2026-03-01T04:00:00.000Z",
+        "quantity": "90",
+        "expirationDate": "2027-03-01T04:00:00.000Z",
+        "dispensedDate": null,
+        "stationNumber": "668",
+        "isRefillable": false,
+        "isTrackable": false,
+        "cmopNdcNumber": null,
+        "inCernerTransition": false,
+        "notRefillableDisplayMessage": "You can't refill this prescription online right now. If you need a refill, call your VA pharmacy's automated refill line. The phone number is on your prescription label or in your medications details page.",
+        "sig": "TAKE ONE TABLET BY MOUTH ONCE DAILY",
+        "cmopDivisionPhone": null,
+        "userId": 12345678,
+        "providerFirstName": "JANE",
+        "providerLastName": "PROVIDER",
+        "remarks": null,
+        "divisionName": "SPOKANE",
+        "modifiedDate": "2026-03-01T10:00:00.000Z",
+        "institutionId": null,
+        "dialCmopDivisionPhone": "",
+        "dispStatus": "Active",
+        "ndc": "00378-0781-01",
+        "reason": null,
+        "prescriptionNumberIndex": "RX",
+        "prescriptionSource": "RX",
+        "sourceEhr": "OH",
+        "disclaimer": null,
+        "indicationForUse": "BLOOD PRESSURE",
+        "indicationForUseFlag": "1",
+        "category": "Rx Medication",
+        "trackingList": [],
+        "rxRfRecords": [],
+        "tracking": false,
+        "orderableItem": "LISINOPRIL TAB",
+        "sortedDispensedDate": null
+      },
+      "links": {
+        "self": "https://staging-api.va.gov/my_health/v1/prescriptions/99999999"
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "currentPage": 1,
+      "perPage": 20,
+      "totalPages": 1,
+      "totalEntries": 1
+    }
+  }
+}
