@@ -38,7 +38,9 @@ export default function App({ location, children }) {
       <RoutedSavableApp formConfig={formConfig} currentLocation={location}>
         {children}
       </RoutedSavableApp>
-      <NeedHelp />
+      <div className="row">
+        <NeedHelp />
+      </div>
     </div>
   );
 }

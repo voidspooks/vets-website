@@ -12,3 +12,19 @@
     white-space: normal;
   }
 }
+
+@media (max-width: $small-screen) {
+  .form-22-0803-container .schemaform-buttons,
+  .form-22-0803-container .form-progress-buttons {
+    display: flex;
+    flex-direction: column !important;
+
+    div {
+      width: 100%;
+    }
+
+    div:first-of-type {
+      order: 2;
+    }
+  }
+}
