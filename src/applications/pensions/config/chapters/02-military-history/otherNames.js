@@ -37,6 +37,7 @@ export default {
         itemAriaLabel: data =>
           data.previousFullName && formatFullName(data.previousFullName),
         viewField: OtherNameView,
+        reviewItemHeaderLevel: 4,
         reviewTitle: 'Previous names',
         keepInPageOnReview: true,
         customTitle: ' ',

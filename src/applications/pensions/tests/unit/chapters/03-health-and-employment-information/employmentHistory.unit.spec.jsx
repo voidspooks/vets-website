@@ -114,7 +114,7 @@ describe('pensions employment history', () => {
           <EmployerView formData={{ jobTitle: 'Contractor' }} />
         </FakeProvider>,
       );
-      const text = container.querySelector('h3');
+      const text = container.querySelector('h2');
       expect(text.innerHTML).to.equal('Contractor');
     });
     it('should render a list view with a jobType', () => {
@@ -123,7 +123,7 @@ describe('pensions employment history', () => {
           <EmployerView formData={{ jobType: 'Construction' }} />
         </FakeProvider>,
       );
-      const text = container.querySelector('h3');
+      const text = container.querySelector('h2');
       expect(text.innerHTML).to.equal('Construction');
     });
   });

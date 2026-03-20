@@ -50,6 +50,7 @@ export default {
         itemName: 'Medical Expense',
         itemAriaLabel: data => `${data.provider} unreimbursed expense`,
         viewField: MedicalExpenseView,
+        reviewItemHeaderLevel: 4,
         reviewTitle: 'Medical Expenses',
         keepInPageOnReview: true,
         customTitle: ' ',

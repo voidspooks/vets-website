@@ -74,6 +74,7 @@ export default {
           data.spouseFullName &&
           `${formatFullName(data.spouseFullName)} former marriage of spouse`,
         viewField: SpouseMarriageView,
+        reviewItemHeaderLevel: 4,
         reviewTitle: 'Spouse’s former marriages',
         keepInPageOnReview: true,
         customTitle: ' ',

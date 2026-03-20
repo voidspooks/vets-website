@@ -66,6 +66,7 @@ export default {
         itemName: 'Care Expense',
         itemAriaLabel: data => `${data.provider} care expense`,
         viewField: CareExpenseView,
+        reviewItemHeaderLevel: 4,
         reviewTitle: 'Care Expenses',
         keepInPageOnReview: true,
         customTitle: ' ',

@@ -38,6 +38,7 @@ export default {
         itemName: 'Dependent',
         itemAriaLabel: data => data.fullName && formatFullName(data.fullName),
         viewField: DependentNameView,
+        reviewItemHeaderLevel: 4,
         reviewTitle: 'Dependent children',
         keepInPageOnReview: true,
         customTitle: ' ',

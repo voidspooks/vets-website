@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 const ListItemView = ({ title }) => {
   return (
-    <h3 className="vads-u-font-size--h5 vads-u-margin-y--1 vads-u-margin-right--2">
+    <h2 className="vads-u-font-size--h5 vads-u-margin-y--1 vads-u-margin-right--2">
       {title}
-    </h3>
+    </h2>
   );
 };
 

@@ -111,7 +111,7 @@ describe('Unreimbursed care expenses pension page', () => {
           <CareExpenseView formData={{ provider: 'Doctor' }} />
         </FakeProvider>,
       );
-      const text = container.querySelector('h3');
+      const text = container.querySelector('h2');
       expect(text.innerHTML).to.equal('Doctor');
     });
   });

@@ -16,9 +16,9 @@ import { recipientTypeLabels, typeOfIncomeLabels } from '../labels';
 export default function IncomeSourceView({ formData }) {
   return (
     <section>
-      <h3 className="vads-u-font-size--h5 vads-u-margin-y--1">
+      <h2 className="vads-u-font-size--h5 vads-u-margin-y--1">
         {typeOfIncomeLabels[formData.typeOfIncome]}
-      </h3>
+      </h2>
       <p className="vads-u-margin-bottom--0">Who receives this income?</p>
       <p className="vads-u-margin-top--0">
         {recipientTypeLabels[formData.receiver]}

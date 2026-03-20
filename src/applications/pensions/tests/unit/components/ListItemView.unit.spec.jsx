@@ -9,18 +9,18 @@ describe('ListItemView Component', () => {
   it('renders without crashing', async () => {
     const { container } = render(<ListItemView title="Test title" />);
     await waitFor(() => {
-      expect($('h3', container)).to.exist;
+      expect($('h2', container)).to.exist;
     });
   });
 
   it('displays the correct title', () => {
     const title = 'Software Engineer';
     const { container } = render(<ListItemView title={title} />);
-    expect($('h3', container).textContent).to.eql(title);
+    expect($('h2', container).textContent).to.eql(title);
   });
 
   it('handles missing title gracefully', () => {
     const { container } = render(<ListItemView />);
-    expect($('h3', container).textContent).to.eql('');
+    expect($('h2', container).textContent).to.eql('');
   });
 });

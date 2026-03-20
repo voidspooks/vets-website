@@ -64,7 +64,7 @@ describe('pensions list of other service names', () => {
           />
         </FakeProvider>,
       );
-      const text = container.querySelector('h3');
+      const text = container.querySelector('h2');
       expect(text.innerHTML).to.equal('Jamie Andrew Doe');
     });
   });

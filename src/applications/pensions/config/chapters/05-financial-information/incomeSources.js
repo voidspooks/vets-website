@@ -45,6 +45,7 @@ export default {
         itemAriaLabel: data =>
           `${typeOfIncomeLabels[data.typeOfIncome]} income source`,
         viewField: IncomeSourceView,
+        reviewItemHeaderLevel: 4,
         reviewTitle: 'Income sources',
         keepInPageOnReview: true,
         customTitle: ' ',

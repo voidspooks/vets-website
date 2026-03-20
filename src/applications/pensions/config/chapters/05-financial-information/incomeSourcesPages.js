@@ -26,6 +26,7 @@ const options = {
   nounSingular: 'income source',
   nounPlural: 'income sources',
   required: false,
+  titleHeaderLevel: 'h2',
   isItemIncomplete: item =>
     !item?.typeOfIncome ||
     !item.receiver ||

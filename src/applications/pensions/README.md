@@ -1,32 +1,32 @@
-#### Form 21P-527EZ
-
-# Application for Veterans Pension
+# Form 21P-527EZ
+Application for Veterans Pension
 
 Form ID (if different from app name): `21P-527EZ`
 
-### Background
+## Background
 
 The Veterans Pension program provides monthly payments to wartime Veterans who meet certain age or disability requirements, and who have income and net worth within certain limits.
 
-### How the form works for the user
+## How the form works for the user
 
 The applicant is shown an introduction page that gives an overview of the process to apply for burial benefits. It includes 2 steps:
 
 - `Prepare`
 - `Apply`
 
-### Authentication
+## Authentication
 
-The applicant is encouraged to sign in to start the application.
-Note: The applicant may begin the application without signing in.
+The applicant is now required to be signed in and to be verified (LOA3) to start the application.
 
-### The Application
+**Note:** The applicant was previously allowed to begin the application without signing in, or verified.
+
+## The Application
 
 VA Form 21P-527EZ (Application for Veterans Pension) is intended for wartime Veterans who want to file a pension claim.
 
 This form, 21P-527EZ, should not be confused with VA Form 21P-527 (Income, Net Worth, and Employment Statement), which allows Veterans who have already filed a claim for pension benefits to add financial evidence to their existing claim. VA21-527 is paper-only.
 
-## Front End
+### Front End
 
 The original form system is used to build this application and follows a pretty standard implementation with just a few areas worth noting.
 
@@ -49,33 +49,18 @@ The original form system is used to build this application and follows a pretty 
 
 #### Chapters and Pages
 
-The details of the chapters and pages of the form can be found in the generated [structure.json](../structure.json) file. The `generate-form-docs` script outputs the title and page details of each chapter, including page 'titles', 'paths', and 'depends' values. This file serves as a general reference of the structure of the Application for Veterans Pension form.
+The details of the chapters and pages of the form can be found in the `config/form.js` file and `config/chapters` folder.
 
-##### How to generate structure.json
-
-1. Run the `generate-form-docs` script
-
-This will output the latest form documentation to the 'structure.json' file
-
-```sh
-yarn generate-form-docs -- pensions
-```
-
-#### Review and Submit
-
-```json
-{
-  "title": "Review and submit",
-  "path": "/review-and-submit"
-}
-```
-
-### Feature Toggles (front end)
+### Feature Toggles (front end only, see [full list](https://github.com/department-of-veterans-affairs/va.gov-team/blob/master/teams/benefits-portfolio/Lifestage-crew/Feature_Flags.md))
 
 Active toggle names:
 
 - `pension_form_enabled`: Enable the pension form
 - `pension_browser_monitoring_enabled`: Pension Datadog RUM monitoring
+- `pbb_forms_require_loa3`: Require LOA3 to access forms
+- `pension_rating_alert_logging_enabled`: Show disability rating alert - 100% disability pays more than pension
+- `pension_multiple_page_response`: Implement the Multiple Page Response (Array builder) pattern for dependent children
+- `pension_pdf_form_alignment`: Update martial status logic
 
 The form is built using `/config/form.js` which is imported and used inside `/PensionsApp.jsx` with the `<RoutedSavableApp />` component from the platform.
 
@@ -85,6 +70,10 @@ If the feature toggle is not enabled we display a deactivation page (`/component
 
 If the feature toggle is enabled then the form renders a `<SaveInProgressIntro />` component from the platform and an introduction to start the form.
 The toggle can be used in the event the form needs to be fully deactivated for any reason.
+
+### End-to-end tests
+
+Because the pensions form is large, we found that the e2e test would take a long time to run. Platform requested that these tests to in under 1 minute, but it wasn't mandated or made a prescribed guideline ([domo dashboard](https://dsva.slack.com/archives/C04868KS69L/p1757437996330239?thread_ts=1757431203.402409&cid=C04868KS69L)), but we saw how long the pension e2e test was taking, so we split up the test into separate chapters.
 
 ### Custom Styling
 
@@ -131,6 +120,15 @@ We create metadata for the claim, log the attempt to upload to Lighthouse, and i
 If it continues failing, the Sidekiq job will retry 14 times, or for approximately a day. When the retries are exhausted, we log the exhaustion and iterate StatsD `worker.lighthouse.pension_benefit_intake_job.exhausted`. This triggers the [Sidekiq Exhaustion for Pension Benefit Intake Job Monitor](https://github.com/department-of-veterans-affairs/va.gov-team-sensitive/blob/master/teams/benefits/playbooks/pensions/pensions-retry-exhausted.md).
 
 If the job succeeds, we send a confirmation email, log the success, and iterate StatsD `worker.lighthouse.pension_benefit_intake_job.success`, then cleanup the created PDFs.
+
+## API calls
+
+- `/v0/rated_disabilities` - Get Veteran's rating. Used to show an alert so a Veteran knows that a 100% disability rating pays more than a pension
+- `/v0/in_progress_forms/21P-527EZ` - in-progress form
+- `/v0/intent_to_file/pension` - get or create an ITF
+- `/v0/claim_attachments` - Upload documents
+- `/pensions/v0/claims` - Form submission
+- `/v0/maintenance_windows` - Used to trigger a refresh of the CSRF token (also called on initial page load by the form system)
 
 ## Useful commands
 
