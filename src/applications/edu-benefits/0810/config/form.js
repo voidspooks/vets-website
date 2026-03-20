@@ -18,6 +18,7 @@ import {
   selectVaBenefit,
   payeeNumber,
   remarks,
+  submissionInstructions,
 } from '../pages';
 
 /** @type {FormConfig} */
@@ -126,6 +127,18 @@ const formConfig = {
           title: 'Remarks',
           uiSchema: remarks.uiSchema,
           schema: remarks.schema,
+        },
+      },
+    },
+    submissionInstructionsChapter: {
+      title: 'Submission instructions',
+      hideOnReviewPage: true,
+      pages: {
+        submissionInstructions: {
+          path: 'submission-instructions',
+          title: 'Submission instructions',
+          uiSchema: submissionInstructions.uiSchema,
+          schema: submissionInstructions.schema,
         },
       },
     },
