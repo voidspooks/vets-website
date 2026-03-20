@@ -25,7 +25,7 @@ export const CLAIM_STATUS_RESPONSE_ERROR = 'ERROR';
 
 const CONFIRMATION_ENDPOINT = `${
   environment.API_URL
-}/meb_api/v0/send_confirmation_email`;
+}/meb_api/v0/forms_send_confirmation_email`;
 export const SEND_CONFIRMATION = 'SEND_CONFIRMATION';
 export const SEND_CONFIRMATION_SUCCESS = 'SEND_CONFIRMATION_SUCCESS';
 export const SEND_CONFIRMATION_FAILURE = 'SEND_CONFIRMATION_FAILURE';
@@ -199,12 +199,22 @@ export function fetchClaimStatus() {
   };
 }
 
+const toSnakeCase = obj => {
+  const result = {};
+  Object.keys(obj).forEach(key => {
+    const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+    result[snakeKey] = obj[key];
+  });
+  return result;
+};
+
 export function sendConfirmation(params) {
   return async dispatch => {
     dispatch({ type: SEND_CONFIRMATION });
+    const snakeCaseParams = toSnakeCase({ ...params, formType: '10297' });
     return apiRequest(CONFIRMATION_ENDPOINT, {
       method: 'POST',
-      body: JSON.stringify(params),
+      body: JSON.stringify(snakeCaseParams),
       headers: { 'Content-Type': 'application/json' },
     })
       .then(response =>
