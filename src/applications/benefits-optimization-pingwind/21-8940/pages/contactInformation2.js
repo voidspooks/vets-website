@@ -33,11 +33,14 @@ export default {
         }),
         'ui:webComponentField': TelephoneFieldNoInternalErrors,
       },
-      [veteranFields.email]: emailToSendNotificationsUI({
-        title: 'Email address',
-        hint:
-          'We’ll use this email address to confirm when we receive your form',
-      }),
+      [veteranFields.email]: {
+        ...emailToSendNotificationsUI({
+          title: 'Email address',
+          hint:
+            'We’ll use this email address to confirm when we receive your form',
+        }),
+        'ui:required': () => true,
+      },
       electronicCorrespondence: checkboxUI({
         title:
           'I agree to receive electronic correspondence from the VA about my claim.',
@@ -50,7 +53,7 @@ export default {
     properties: {
       [veteranFields.parentObject]: {
         type: 'object',
-        required: [veteranFields.homePhone],
+        required: [veteranFields.homePhone, veteranFields.email],
         properties: {
           [veteranFields.homePhone]: internationalPhoneSchema({
             required: true,
