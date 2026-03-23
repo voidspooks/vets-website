@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Toggler } from 'platform/utilities/feature-toggles';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import { ServerErrorAlert } from '../config/helpers';
 import { mockTestingFlagForAPI } from '../constants';
 import { mockInquiries } from '../utils/mockData';
@@ -9,6 +9,10 @@ import InboxLayoutNew from '../components/inbox/InboxLayoutNew';
 import { getAllInquiries } from '../utils/api';
 
 export default function Inbox() {
+  // TODO delete after new inbox goes live
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const isNewInbox = useToggleValue(TOGGLE_NAMES.askVaEnhancedInbox);
+
   const [hasError, setHasError] = useState(false);
   const [inquiries, setInquiries] = useState([]);
   const [inquiryTypes, setInquiryTypes] = useState([]);
@@ -68,17 +72,17 @@ export default function Inbox() {
 
   // TODO feature toggle uses redux state - remember to remove from unit tests as well
   return (
-    <Toggler toggleName={Toggler.TOGGLE_NAMES.askVaEnhancedInbox}>
-      <Toggler.Enabled>
+    <div id={isNewInbox ? 'inbox' : 'inbox-old'}>
+      <h2 className="vads-u-margin--0">Your questions</h2>
+      {isNewInbox ? (
         <InboxLayoutNew
           {...{ inquiries, inquiryTypes, categoryOptions, statusOptions }}
         />
-      </Toggler.Enabled>
-      <Toggler.Disabled>
+      ) : (
         <InboxLayoutOld
           {...{ inquiries, inquiryTypes, categoryOptions, statusOptions }}
         />
-      </Toggler.Disabled>
-    </Toggler>
+      )}
+    </div>
   );
 }

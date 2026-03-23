@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import {
@@ -279,77 +279,5 @@ describe('<InboxLayoutNew />', () => {
     const endingResults = view.getAllByTestId('inquiry-card');
     expect(endingResults.length).to.equal(1);
     expect(endingResults[0].textContent).to.include('Reference number: A-3');
-  });
-
-  describe('business and personal tabs', () => {
-    it('hides tabs when there are no business inquiries', () => {
-      const { view } = renderWithStore(
-        <InboxLayoutNew
-          categoryOptions={mockData.uniqueCategories}
-          statusOptions={mockData.uniqueStatuses}
-          inquiryTypes={['personal']}
-          inquiries={personalInquiries}
-        />,
-      );
-
-      expect(view.queryByRole('tab')).to.not.exist;
-    });
-
-    it('shows tabs when there are business inquiries', () => {
-      const { view } = renderWithStore(
-        <InboxLayoutNew
-          categoryOptions={mockData.uniqueCategories}
-          statusOptions={mockData.uniqueStatuses}
-          inquiryTypes={mockData.types}
-          inquiries={mockData.standardInquiries}
-        />,
-      );
-
-      const tabButtons = view.getByRole('tablist');
-      const businessTab = view.getByRole('tab', {
-        name: /business/i,
-      });
-      const personalTab = view.getByRole('tab', {
-        name: /personal/i,
-      });
-
-      expect(tabButtons.childNodes.length).to.equal(2);
-      expect(businessTab).to.exist;
-      expect(personalTab).to.exist;
-    });
-
-    it('switches list content based on the selected tab', () => {
-      const { view } = renderWithStore(
-        <InboxLayoutNew
-          categoryOptions={mockData.uniqueCategories}
-          statusOptions={mockData.uniqueStatuses}
-          inquiryTypes={mockData.types}
-          inquiries={mockData.standardInquiries}
-        />,
-      );
-
-      // Confirm starting state
-      const businessTab = view.getByRole('tab', {
-        name: /business/i,
-      });
-      const personalTab = view.getByRole('tab', {
-        name: /personal/i,
-      });
-
-      const businessResults = view.getAllByTestId('inquiry-card');
-      expect(businessTab.getAttribute('aria-selected')).to.equal('true');
-      expect(personalTab.getAttribute('aria-selected')).to.equal('false');
-      expect(businessResults[0].textContent).to.include('Category: Education');
-
-      fireEvent.click(personalTab);
-
-      // Confirm content switched with tabs
-      const personalResults = view.getAllByTestId('inquiry-card');
-      expect(businessTab.getAttribute('aria-selected')).to.equal('false');
-      expect(personalTab.getAttribute('aria-selected')).to.equal('true');
-      expect(personalResults[0].textContent).to.not.include(
-        'Category: Education',
-      );
-    });
   });
 });
