@@ -343,7 +343,7 @@ export const ContactInfoBase = ({
     });
 
     return alerts.length > 0 ? (
-      <div className="vads-u-margin-bottom--2">{alerts}</div>
+      <div className="vads-u-margin-y--3">{alerts}</div>
     ) : null;
   };
 
@@ -598,10 +598,7 @@ export const ContactInfoBase = ({
           )}
         {missingInfo.length > 0 &&
           submitted && (
-            <div
-              className="vads-u-margin-bottom--3 vads-u-margin-top--3"
-              role="alert"
-            >
+            <div className="vads-u-margin-y--3" role="alert">
               <va-alert status="error">
                 <h3 slot="headline">
                   This information contains {missingInfo.length} error
@@ -663,10 +660,18 @@ export const ContactInfoBase = ({
     </>
   );
 
+  const alertsBlock = (
+    <>
+      {renderValidationMessages()}
+      {renderContactAlerts()}
+    </>
+  );
+
   return (
     <div className="vads-u-margin-y--2">
       <Element name={`${contactInfoPageKey}ScrollElement`} />
       <form onSubmit={handlers.onSubmit}>
+        {!isMinimalHeader && alertsBlock}
         <MainHeader
           id={`${contactInfoPageKey}Header`}
           className={mainHeaderClass}
@@ -678,8 +683,7 @@ export const ContactInfoBase = ({
             You must be logged in to enable view and edit this page.
           </strong>
         )}
-        {renderValidationMessages()}
-        {renderContactAlerts()}
+        {isMinimalHeader && alertsBlock}
         <div className="vads-u-margin-top--3">
           <div
             className="va-profile-wrapper vads-l-grid-container vads-u-padding-x--0"
