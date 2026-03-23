@@ -62,18 +62,19 @@ import testData from '../tests/e2e/fixtures/data/user.json';
 
 const mockData = testData.data;
 
+const personalInfoConfig = {
+  name: { show: true },
+  ssn: { show: true },
+  dateOfBirth: { show: true },
+};
+const personalInfoDataAdapter = { ssnPath: 'idNumber.ssn' };
+
 const confirmPersonalInformationPages = profilePersonalInfoPage({
   key: 'confirmPersonalInformationPage',
   title: 'Confirm personal information',
   path: 'confirm-personal-information',
-  personalInfoConfig: {
-    name: { show: true },
-    ssn: { show: true },
-    dateOfBirth: { show: true },
-  },
-  dataAdapter: {
-    ssnPath: 'idNumber.ssn',
-  },
+  personalInfoConfig,
+  dataAdapter: personalInfoDataAdapter,
   hideOnReview: false,
   depends: formData =>
     isEligibleToSubmitStatement(formData) && isClaimantVeteran(formData),

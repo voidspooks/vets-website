@@ -3,6 +3,7 @@ export default function prefillTransformer(pages, formData, metadata, state) {
   const isUserVeteran = profile?.veteranStatus?.isVeteran === true;
   const userFullName = profile.userFullName || {};
   const dateOfBirth = profile.dob || '';
+  const vet360 = profile.vet360ContactInformation || {};
 
   return {
     pages,
@@ -24,8 +25,14 @@ export default function prefillTransformer(pages, formData, metadata, state) {
       dateOfBirth: isUserVeteran
         ? dateOfBirth || formData?.dateOfBirth
         : formData?.dateOfBirth,
-      idNumber: {
-        ssn: formData?.veteran?.ssn,
+      ...(formData?.veteran?.ssn && {
+        idNumber: { ssn: formData.veteran.ssn },
+      }),
+      veteran: {
+        mailingAddress: vet360.mailingAddress || {},
+        mobilePhone: vet360.mobilePhone || {},
+        homePhone: vet360.homePhone || {},
+        email: vet360.email || {},
       },
     },
     metadata,

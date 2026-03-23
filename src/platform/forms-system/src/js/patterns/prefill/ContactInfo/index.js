@@ -20,6 +20,7 @@ import {
 } from './EditContactInfo';
 import ContactInfo from './ContactInfo';
 import ContactInfoReview from './ContactInfoReview';
+import { createContactInfoConfirmationField } from './ContactInfoConfirmationField';
 
 /**
  * Add this page containing 4 edit pages to config/form
@@ -223,7 +224,10 @@ const profileContactInfoPages = ({
           contactInfoPageKey={contactInfoPageKey}
         />
       ),
-      uiSchema: contactInfoUiSchema,
+      uiSchema: {
+        'ui:confirmationField': createContactInfoConfirmationField({ keys }),
+        ...contactInfoUiSchema,
+      },
       schema: {
         type: 'object',
         properties: {
