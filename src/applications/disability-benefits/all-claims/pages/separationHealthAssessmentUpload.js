@@ -28,11 +28,12 @@ const parseShaResponse = (response, file) => ({
 });
 
 export const uiSchema = {
-  'ui:title': 'Upload your Separation Health Assessment Part A',
+  'ui:title': 'Upload your Separation Health Assessment',
   'ui:description': (
     <>
       <p>
-        Upload your Separation Health Assessment Part A to support your claim.
+        Upload your Separation Health Assessment (self-assessment, also called
+        “Part A”) to support your claim.
       </p>
       {additionalInfo}
     </>
@@ -58,6 +59,10 @@ export const uiSchema = {
       hint: SHA_HINT_TEXT,
       createPayload,
       parseResponse: parseShaResponse,
+    }),
+    'ui:confirmationField': ({ formData }) => ({
+      data: formData?.map(item => item.name || item.fileName),
+      label: 'Uploaded file(s)',
     }),
   },
 };

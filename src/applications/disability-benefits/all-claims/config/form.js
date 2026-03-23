@@ -620,14 +620,15 @@ const formConfig = {
           schema: { type: 'object', properties: {} },
         },
         separationHealthAssessment: {
-          title: 'Separation health assessment',
+          title:
+            'Separation Health Asessment that supports your disability claim',
           path: 'supporting-evidence/separation-health-assessment',
           depends: isBddShaWorkflowActive,
           uiSchema: separationHealthAssessment.uiSchema,
           schema: separationHealthAssessment.schema,
         },
         separationHealthAssessmentUpload: {
-          title: 'Separation health assessment upload',
+          title: 'Separation Health Assessment',
           path: 'supporting-evidence/separation-health-assessment-upload',
           depends: isUploadingBddSha,
           uiSchema: separationHealthAssessmentUpload.uiSchema,

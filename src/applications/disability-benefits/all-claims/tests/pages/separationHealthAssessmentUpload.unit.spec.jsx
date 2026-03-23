@@ -20,7 +20,7 @@ describe('separationHealthAssessmentUpload page', () => {
   describe('uiSchema', () => {
     it('has the expected page title', () => {
       expect(uiSchema['ui:title']).to.equal(
-        'Upload your Separation Health Assessment Part A',
+        'Upload your Separation Health Assessment',
       );
     });
 
