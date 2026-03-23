@@ -48,6 +48,12 @@ describe('utils', () => {
   });
 
   describe('onFormLoaded', () => {
+    const expectRedirect = ({ returnUrl, formData, expected }) => {
+      const router = { push: sinon.spy() };
+      onFormLoaded({ returnUrl, formData, router });
+      expect(router.push.calledWith(expected)).to.be.true;
+    };
+
     it('should redirect to modern 4142 choice if conditions are met', () => {
       const router = { push: sinon.spy() };
       const formData = {
@@ -68,58 +74,65 @@ describe('utils', () => {
       ).to.be.true;
     });
 
-    it('should redirect to evidence-request when legacy to enhancement transition needed', () => {
-      const router = { push: sinon.spy() };
-      const formData = {
-        disability526SupportingEvidenceEnhancement: true,
-      };
-      onFormLoaded({
-        returnUrl: '/supporting-evidence/evidence-types',
-        formData,
-        router,
+    it('should redirect to evidence-request when legacy upload to enhancement transition needed', () => {
+      expectRedirect({
+        returnUrl: '/supporting-evidence/private-medical-records-upload',
+        formData: { disability526SupportingEvidenceEnhancement: true },
+        expected: '/supporting-evidence/evidence-request',
       });
-      expect(router.push.calledWith('/supporting-evidence/evidence-request')).to
-        .be.true;
     });
 
     it('should redirect to evidence-types when enhancement to legacy transition needed', () => {
-      const router = { push: sinon.spy() };
-      const formData = {
-        disability526SupportingEvidenceEnhancement: false,
-      };
-      onFormLoaded({
+      expectRedirect({
         returnUrl: '/supporting-evidence/evidence-request',
-        formData,
-        router,
+        formData: { disability526SupportingEvidenceEnhancement: false },
+        expected: '/supporting-evidence/evidence-types',
       });
-      expect(router.push.calledWith('/supporting-evidence/evidence-types')).to
-        .be.true;
     });
   });
 
   describe('redirectLegacyToEnhancement', () => {
-    it('should return true when returnUrl matches and formData indicates enhancement flow', () => {
-      expect(
-        redirectLegacyToEnhancement({
-          returnUrl: '/supporting-evidence/evidence-types',
-          formData: { disability526SupportingEvidenceEnhancement: true },
-        }),
-      ).to.be.true;
+    const legacyUrls = [
+      '/supporting-evidence/evidence-types',
+      '/supporting-evidence/private-medical-records-upload',
+      '/supporting-evidence/additional-evidence',
+    ];
+
+    it('should return true when returnUrl matches legacy pages and formData indicates enhancement flow', () => {
+      legacyUrls.forEach(url => {
+        expect(
+          redirectLegacyToEnhancement({
+            returnUrl: url,
+            formData: { disability526SupportingEvidenceEnhancement: true },
+          }),
+        ).to.be.true;
+      });
     });
 
     it('should return false otherwise', () => {
-      expect(
-        redirectLegacyToEnhancement({
+      const cases = [
+        {
           returnUrl: '/supporting-evidence/evidence-request',
           formData: { disability526SupportingEvidenceEnhancement: true },
-        }),
-      ).to.be.false;
-      expect(
-        redirectLegacyToEnhancement({
+        },
+        {
           returnUrl: '/supporting-evidence/evidence-types',
           formData: { disability526SupportingEvidenceEnhancement: false },
-        }),
-      ).to.be.false;
+        },
+        {
+          returnUrl:
+            '/supporting-evidence/private-medical-records-upload?someParam=true',
+          formData: { disability526SupportingEvidenceEnhancement: true },
+        },
+        {
+          returnUrl: '/supporting-evidence/private-medical-records-upload',
+          formData: { disability526SupportingEvidenceEnhancement: false },
+        },
+      ];
+
+      cases.forEach(testCase => {
+        expect(redirectLegacyToEnhancement(testCase)).to.be.false;
+      });
     });
   });
 

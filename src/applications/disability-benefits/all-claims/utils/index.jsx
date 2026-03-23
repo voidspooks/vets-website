@@ -969,8 +969,6 @@ export const modern4142AuthURL =
 
 export const legacy4142AuthURL = '/supporting-evidence/private-medical-records';
 
-export const evidenceChoiceURL = '/supporting-evidence/evidence-types';
-
 export const minimum4142Setup = formData => {
   return (
     formData?.['view:hasEvidence'] === true &&
@@ -1018,16 +1016,22 @@ export const redirectWhenNoEvidence = props => {
 };
 
 /**
- * Determines if user should be redirected from legacy evidence page to enhancement page
+ * Determines if user should be redirected from legacy evidence pages to enhancement page
  * @param {Object} props - { returnUrl, formData }
  * @returns {boolean} true if redirect needed
  */
+const LEGACY_EVIDENCE_URLS = [
+  '/supporting-evidence/evidence-types',
+  '/supporting-evidence/private-medical-records-upload',
+  '/supporting-evidence/additional-evidence',
+];
+
 export const redirectLegacyToEnhancement = props => {
   const { returnUrl, formData } = props;
-  return (
-    returnUrl === '/supporting-evidence/evidence-types' &&
-    isEvidenceEnhancement(formData)
-  );
+
+  return isEvidenceEnhancement(formData)
+    ? LEGACY_EVIDENCE_URLS.includes(returnUrl)
+    : false;
 };
 
 /**
