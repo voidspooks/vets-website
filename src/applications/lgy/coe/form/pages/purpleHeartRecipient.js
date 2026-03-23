@@ -15,8 +15,8 @@ const emptyObjectSchema = {
   properties: {},
 };
 const PurpleHeartWhyAccordion = () => (
-  <VaAccordion uswds className="vads-u-margin-top--2">
-    <VaAccordionItem header="Why are we asking this question?" open>
+  <VaAccordion uswds openSingle className="vads-u-margin-top--2">
+    <VaAccordionItem header="Why are we asking this question?">
       <p className="vads-u-margin-top--0">
         The VA funding fee may not be collected from a member of the Armed
         Forces who is currently serving on active duty and has been awarded the
