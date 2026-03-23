@@ -8,23 +8,25 @@ export default function ProcessList() {
           You’ll need to apply and be found eligible for the VA education
           benefit under which you want your reimbursement processed.
         </p>
-        <p>
-          <a href="https://www.va.gov/education/apply-for-gi-bill-form-22-1990/introduction">
-            Apply for VA education benefits using Form 22-1990
-          </a>
-          , <strong>or</strong>{' '}
-        </p>
-        <p>
-          <a href="https://www.va.gov/family-and-caregiver-benefits/education-and-careers/apply-for-dea-fry-form-22-5490/introduction">
-            Apply for VA education benefits as a dependent using Form 22-5490
-          </a>
-          , <strong>or</strong>{' '}
-        </p>
-        <p>
-          <a href="https://www.va.gov/family-and-caregiver-benefits/education-and-careers/transferred-gi-bill-benefits/apply-form-22-1990e/introduction">
-            Apply to use transferred education benefits using Form 22-1990e
-          </a>
-        </p>
+        <ul>
+          <li>
+            <a href="https://www.va.gov/education/apply-for-gi-bill-form-22-1990/introduction">
+              Apply for VA education benefits using Form 22-1990
+            </a>
+            , <strong>or</strong>{' '}
+          </li>
+          <li>
+            <a href="https://www.va.gov/family-and-caregiver-benefits/education-and-careers/apply-for-dea-fry-form-22-5490/introduction">
+              Apply for VA education benefits as a dependent using Form 22-5490
+            </a>
+            , <strong>or</strong>{' '}
+          </li>
+          <li>
+            <a href="https://www.va.gov/family-and-caregiver-benefits/education-and-careers/transferred-gi-bill-benefits/apply-form-22-1990e/introduction">
+              Apply to use transferred education benefits using Form 22-1990e
+            </a>
+          </li>
+        </ul>
       </va-process-list-item>
       <va-process-list-item header="Gather your information">
         <h4>Here’s what you’ll need to fill out this form:</h4>
