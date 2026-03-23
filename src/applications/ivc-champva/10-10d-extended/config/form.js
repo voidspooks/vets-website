@@ -1,4 +1,3 @@
-import get from '@department-of-veterans-affairs/platform-forms-system/get';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import { externalServices } from 'platform/monitoring/DowntimeNotification';
 import { minimalHeaderFormConfigOptions } from 'platform/forms-system/src/js/patterns/minimal-header';
@@ -10,17 +9,7 @@ import SubmissionError from '../../shared/components/SubmissionError';
 import FormFooter from '../components/FormFooter';
 import content from '../locales/en/content.json';
 
-import {
-  certifierRoleSchema,
-  certifierNameSchema,
-  certifierAddressSchema,
-  signerContactInfoPage,
-  SignerContactInfoPage,
-  certifierRelationshipSchema,
-} from '../chapters/signerInformation';
-
 import transformForSubmit from './submitTransformer';
-import { applicantPages } from '../chapters/applicantInformation';
 import ohiIntroduction from '../chapters/medicareInformation/ohiIntroduction';
 import medicareIntroduction from '../chapters/medicareInformation/medicareIntroduction';
 import {
@@ -28,10 +17,10 @@ import {
   medicareStatusPage,
   medicareProofOfIneligibilityPage,
 } from '../chapters/medicareInformation';
+import { signerPages } from '../chapters/signer';
 import { sponsorPages } from '../chapters/sponsor';
+import { applicantPages } from '../chapters/applicantInformation';
 import { healthInsurancePages } from '../chapters/healthInsurance';
-
-// import mockData from '../tests/e2e/fixtures/data/representative.json';
 
 /** @type {FormConfig}  */
 const formConfig = {
@@ -45,7 +34,9 @@ const formConfig = {
         'I confirm that the identifying information in this form is accurate and has been represented correctly.',
       messageAriaDescribedby:
         'I confirm that the identifying information in this form is accurate and has been represented correctly.',
-      fullNamePath: _formData => 'certifierName',
+      fullNamePath: ({ certifierRole } = {}) =>
+        ({ other: 'certifierName', sponsor: 'sponsorName' }[certifierRole] ??
+        'applicants.0.applicantName'),
     },
   },
   trackingPrefix: '10-10d-extended-',
@@ -111,37 +102,7 @@ const formConfig = {
   chapters: {
     certifierInformation: {
       title: 'Your information',
-      pages: {
-        page1: {
-          // initialData: mockData.data,
-          path: 'who-is-applying',
-          title: 'Which of these best describes you?',
-          ...certifierRoleSchema,
-        },
-        page2: {
-          path: 'your-name',
-          title: 'Your name',
-          ...certifierNameSchema,
-        },
-        page3: {
-          path: 'your-mailing-address',
-          title: 'Your mailing address',
-          ...certifierAddressSchema,
-        },
-        page4: {
-          path: 'your-contact-information',
-          title: 'Your contact information',
-          CustomPage: SignerContactInfoPage,
-          CustomPageReview: null,
-          ...signerContactInfoPage,
-        },
-        page5: {
-          path: 'your-relationship-to-applicant',
-          title: 'Your relationship to applicant',
-          depends: formData => get('certifierRole', formData) === 'other',
-          ...certifierRelationshipSchema,
-        },
-      },
+      pages: signerPages,
     },
     sponsorInformation: {
       title: 'Veteran information',

@@ -3,7 +3,7 @@ import FileUploadDescription from '../../components/FormDescriptions/FileUploadD
 import { attachmentSchema, attachmentUI } from '../../definitions';
 import content from '../../locales/en/content.json';
 import { ATTACHMENT_IDS } from '../../utils/constants';
-import { arrayTitleWithNameUI } from '../../utils/titles';
+import { titleWithNameUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['applicants--birth-certificate-title'];
 const DESC_TEXT = content['applicants--birth-certificate-description'];
@@ -11,7 +11,10 @@ const INPUT_LABEL = content['applicants--birth-certificate-label'];
 
 export default {
   uiSchema: {
-    ...arrayTitleWithNameUI(TITLE_TEXT, DESC_TEXT),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
+      roleKey: 'view:certifierRole',
+      arrayBuilder: true,
+    }),
     ...descriptionUI(FileUploadDescription),
     applicantBirthCertOrSocialSecCard: attachmentUI({
       label: INPUT_LABEL,

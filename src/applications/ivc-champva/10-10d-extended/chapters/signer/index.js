@@ -15,16 +15,19 @@ export const signerPages = {
   certifierName: {
     path: 'your-name',
     title: 'Your name',
+    depends: roleIsOther,
     ...name,
   },
   certifierMailingAddress: {
     path: 'your-mailing-address',
     title: 'Your mailing address',
+    depends: roleIsOther,
     ...mailingAddress,
   },
   certifierContactInfo: {
     path: 'your-contact-information',
     title: 'Your contact information',
+    depends: roleIsOther,
     ...contactInformation,
   },
   certifierRelationship: {

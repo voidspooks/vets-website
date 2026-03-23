@@ -2,7 +2,7 @@ import {
   radioSchema,
   radioUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { arrayTitleWithNameUI } from '../../utils/titles';
+import { titleWithNameUI } from '../../utils/titles';
 import content from '../../locales/en/content.json';
 
 const TITLE_TEXT = content['applicants--dependent-status-title'];
@@ -20,7 +20,10 @@ const SCHEMA_ENUM = Object.keys(SCHEMA_LABELS);
 
 export default {
   uiSchema: {
-    ...arrayTitleWithNameUI(TITLE_TEXT),
+    ...titleWithNameUI(TITLE_TEXT, null, {
+      roleKey: 'view:certifierRole',
+      arrayBuilder: true,
+    }),
     applicantDependentStatus: {
       status: radioUI({
         title: INPUT_LABEL,

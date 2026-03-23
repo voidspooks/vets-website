@@ -17,7 +17,9 @@ export default {
   uiSchema: {
     ...PAGE_TITLE,
     sponsorPhone: phoneUI(),
-    sponsorEmail: emailUI(),
+    sponsorEmail: emailUI({
+      required: formData => formData.certifierRole === 'sponsor',
+    }),
   },
   schema: {
     type: 'object',

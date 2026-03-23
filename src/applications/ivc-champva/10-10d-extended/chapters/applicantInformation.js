@@ -1,14 +1,11 @@
-import React from 'react';
 import get from 'platform/utilities/data/get';
 import { arrayBuilderPages } from 'platform/forms-system/src/js/patterns/array-builder';
 import {
   addressUI,
   addressSchema,
   descriptionUI,
-  titleUI,
   ssnUI,
   ssnSchema,
-  withEditTitle,
   arrayBuilderItemSubsequentPageTitleUI,
   arrayBuilderYesNoSchema,
   arrayBuilderYesNoUI,
@@ -27,18 +24,11 @@ import { applicantWording } from '../../shared/utilities';
 import { ApplicantRelOriginPage } from './ApplicantRelOriginPage';
 import { ApplicantGenderPage } from './ApplicantGenderPage';
 import { validateApplicant, validateApplicantSsn } from '../utils/validations';
-import {
-  isOfCollegeAge,
-  page15aDepends,
-  requireBirthCertificate,
-} from '../utils/helpers';
+import { isOfCollegeAge, requireBirthCertificate } from '../utils/helpers';
 import { attachmentSchema, attachmentUI } from '../definitions';
 import { APPLICANTS_MAX } from '../utils/constants';
 
-import AddressSelectionPage, {
-  NOT_SHARED,
-} from '../components/FormPages/AddressSelectionPage';
-import CustomPrefillMessage from '../components/CustomPrefillAlert';
+import AddressSelectionPage from '../components/FormPages/AddressSelectionPage';
 import sectionOverview from './applicantInformation/sectionOverview';
 import personalInformation from './applicantInformation/personalInformation';
 import remarriageProof from './applicantInformation/remarriageProof';
@@ -49,19 +39,7 @@ import stepchildMarriageProof from './applicantInformation/stepchildMarriageProo
 import birthCertificate from './applicantInformation/birthCertificate';
 import ApplicantSummaryCard from '../components/FormDescriptions/ApplicantSummaryCard';
 import FileUploadDescription from '../components/FormDescriptions/FileUploadDescription';
-
-/**
- * Wraps array builder function withEditTitle and calls the result
- * after passing in a custom title string. Result will be the string
- * + a prefix of "edit" if we're on an array builder edit page.
- * @param {string} title Title string to display on page
- * @returns
- */
-function editTitleWrapper(title) {
-  // Array builder helper `withEditTitle` returns a function, which we
-  // always want to call, so just do that:
-  return withEditTitle(title, false)(title);
-}
+import { titleWithNameUI } from '../utils/titles';
 
 export const applicantOptions = {
   arrayPath: 'applicants',
@@ -78,12 +56,10 @@ export const applicantOptions = {
 
 const applicantIdentificationPage = {
   uiSchema: {
-    ...arrayBuilderItemSubsequentPageTitleUI(
-      ({ formData }) =>
-        `${applicantWording(formData)} identification information`,
-      '',
-      false,
-    ),
+    ...titleWithNameUI('%s identification information', null, {
+      roleKey: 'view:certifierRole',
+      arrayBuilder: true,
+    }),
     applicantSsn: {
       ...ssnUI(),
       // Required for SSN uniqueness validation - provides access to full
@@ -110,26 +86,10 @@ const applicantAddressSelectionPage = {
 
 const applicantMailingAddressPage = {
   uiSchema: {
-    ...titleUI(
-      ({ formData }) => {
-        const txt = `${applicantWording(formData)} mailing address`;
-        return editTitleWrapper(txt);
-      },
-      ({ formData, formContext }) => {
-        const txt =
-          'We’ll send any important information about this application to this address.';
-        // Prefill message conditionally displays based on `certifierRole`
-        return formContext.pagePerItemIndex === '0' ? (
-          <>
-            {txt}
-            <br />
-            <br />
-            {CustomPrefillMessage(formData, 'applicant')}
-          </>
-        ) : (
-          txt
-        );
-      },
+    ...titleWithNameUI(
+      '%s mailing address',
+      'We’ll send any important information about this application to this address.',
+      { roleKey: 'view:certifierRole', arrayBuilder: true },
     ),
     applicantAddress: addressUI({
       labels: {
@@ -149,31 +109,16 @@ const applicantMailingAddressPage = {
 
 const applicantContactInfoPage = {
   uiSchema: {
-    ...titleUI(
-      ({ formData }) =>
-        editTitleWrapper(`${applicantWording(formData)} contact information`),
-      ({ formData, formContext }) => {
-        const txt = `We’ll use this information to contact ${applicantWording(
-          formData,
-          false,
-          false,
-          true,
-        )} if we have any questions about this application.`;
-        // Prefill message conditionally displays based on `certifierRole`
-        return formContext.pagePerItemIndex === '0' ? (
-          <>
-            {txt}
-            <br />
-            <br />
-            {CustomPrefillMessage(formData, 'applicant')}
-          </>
-        ) : (
-          <>{txt}</>
-        );
-      },
+    ...titleWithNameUI(
+      '%s contact information',
+      'We’ll use this information to contact this applicant if we have any questions about this application.',
+      { roleKey: 'view:certifierRole', arrayBuilder: true },
     ),
     applicantPhone: phoneUI(),
-    applicantEmailAddress: emailUI(),
+    applicantEmailAddress: emailUI({
+      required: (formData, index) =>
+        index === 0 && formData.certifierRole === 'applicant',
+    }),
   },
   schema: {
     type: 'object',
@@ -239,15 +184,7 @@ const applicantAdoptionUploadPage = {
   uiSchema: {
     ...arrayBuilderItemSubsequentPageTitleUI(
       'Upload adoption documents',
-      ({ formData }) => (
-        <>
-          You’ll need to submit a document showing proof of{' '}
-          <span className="dd-privacy-hidden">
-            {applicantWording(formData, true, false)}
-          </span>{' '}
-          adoption (like court ordered adoption papers).
-        </>
-      ),
+      'You’ll need to submit a document showing proof of this applicant’s adoption (like court ordered adoption papers).',
     ),
     ...descriptionUI(FileUploadDescription),
     applicantAdoptionPapers: attachmentUI({
@@ -266,11 +203,10 @@ const applicantAdoptionUploadPage = {
 
 const applicantRemarriedPage = {
   uiSchema: {
-    ...arrayBuilderItemSubsequentPageTitleUI(
-      ({ formData }) => `${applicantWording(formData)} marriage status`,
-      '',
-      false,
-    ),
+    ...titleWithNameUI('%s marriage status', null, {
+      roleKey: 'view:certifierRole',
+      arrayBuilder: true,
+    }),
     applicantRemarried: {
       ...yesNoUI({
         title: 'Has this applicant remarried?',
@@ -335,14 +271,17 @@ export const applicantPages = arrayBuilderPages(
         const opts = { ...props, dataKey: 'applicantAddress' };
         return AddressSelectionPage(opts);
       },
-      depends: (formData, index) => page15aDepends(formData, index),
+      depends: formData => {
+        const hasCertifierAddress = get('street', formData.certifierAddress);
+        const hasSponsorAddress = get('street', formData.sponsorAddress);
+        return hasSponsorAddress || hasCertifierAddress;
+      },
     }),
     page15: pageBuilder.itemPage({
       path: 'applicant-mailing-address/:index',
       title: 'Mailing address',
       depends: (formData, index) =>
-        get('view:sharesAddressWith', formData.applicants?.[index]) ===
-        NOT_SHARED,
+        !get('view:sharesAddressWith', formData.applicants?.[index]),
       ...applicantMailingAddressPage,
     }),
     page16: pageBuilder.itemPage({

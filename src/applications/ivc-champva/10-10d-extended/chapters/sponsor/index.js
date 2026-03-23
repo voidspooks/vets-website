@@ -1,6 +1,4 @@
-import AddressSelectionPage, {
-  NOT_SHARED,
-} from '../../components/FormPages/AddressSelectionPage';
+import AddressSelectionPage from '../../components/FormPages/AddressSelectionPage';
 import AddressSelectionReviewPage from '../../components/FormReview/AddressSelectionReviewPage';
 import { blankSchema } from '../../definitions';
 import { whenAll } from '../../utils/helpers';
@@ -22,8 +20,7 @@ const isNotDeceased = formData => !isDeceased(formData);
 
 const hasCertifierStreet = formData =>
   Boolean(formData?.certifierAddress?.street);
-const noSharedAddress = formData =>
-  formData?.['view:sharesAddressWith'] === NOT_SHARED;
+const noSharedAddress = formData => !formData?.['view:sharesAddressWith'];
 
 // CustomPage declarations
 const SponsorAddressSelectionPage = props =>
@@ -60,7 +57,7 @@ export const sponsorPages = {
   sponsorAddress: {
     path: 'veteran-address',
     title: 'Veteran’s address',
-    depends: whenAll(isNotSponsor, isNotDeceased, hasCertifierStreet),
+    depends: whenAll(isNotDeceased, hasCertifierStreet),
     CustomPage: SponsorAddressSelectionPage,
     CustomPageReview: AddressSelectionReviewPage,
     uiSchema: {},

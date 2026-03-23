@@ -1,21 +1,21 @@
 {
   "data": {
     "certifierRole": "sponsor",
-    "certifierName": {
+    "sponsorName": {
       "first": "Certifier",
       "last": "Jones"
     },
-    "certifierAddress": {
+    "sponsorDob": "1958-01-01",
+    "sponsorSsn": "123123123",
+    "sponsorAddress": {
       "country": "USA",
       "street": "123 Certifier St",
       "city": "Certifier",
       "state": "MD",
       "postalCode": "12312"
     },
-    "certifierPhone": "1231231234",
-    "certifierEmail": "certifier@email.gov",
-    "sponsorDob": "1958-01-01",
-    "sponsorSsn": "123123123",
+    "sponsorPhone": "1231231234",
+    "sponsorEmail": "certifier@email.gov",
     "view:hasApplicants": true,
     "applicants": [
       {

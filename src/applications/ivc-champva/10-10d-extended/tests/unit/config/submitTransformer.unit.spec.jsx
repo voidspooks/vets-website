@@ -65,12 +65,13 @@ describe('10-10d-extended transform for submit', () => {
     expect(transformed.veteran.ssnOrTin).to.equal('');
   });
 
-  it('should set certifier info as primary contact', () => {
+  it('should set certifier info as primary contact when role equals "other"', () => {
     const certifierCert = {
       data: {
         certifierPhone: '1231231234',
         certifierEmail: 'test@example.com',
         certifierName: { first: 'Certifier', last: 'Jones' },
+        certifierRole: 'other',
       },
     };
     const transformed = JSON.parse(

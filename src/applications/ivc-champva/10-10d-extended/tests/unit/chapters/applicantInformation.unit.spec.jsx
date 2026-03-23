@@ -16,26 +16,6 @@ const minimalStore = mockStore({
 });
 
 /**
- * Renders the title method contained in an array builder page.
- * Assumes the array is titled `applicants`.
- * @param {Object} pages Pages object from the array builder
- * @param {String} pageName Stringified keyname of a particular page property we want to inspect
- * @returns Boolean indicating whether or not the render produced > 0 characters
- */
-function callInnerApplicantTitleFunc(pages, pageName) {
-  const { container } = render(
-    <Provider store={minimalStore}>
-      {pages[pageName].uiSchema.applicants.items['ui:title']({
-        formData: {},
-        formContext: {},
-      })}
-    </Provider>,
-  );
-
-  return container.querySelector('h3').innerHTML.length > 0;
-}
-
-/**
  * Calls the depends function for a given page in the array builder.
  * Assumes the array is titled `applicants`
  * @param {Object} pages Pages object from the array builder
@@ -60,32 +40,6 @@ function getDateYearsAgo(deltaYears) {
   // Update date to deltaYears ago (YYYY-MM-DD)
   return pastDate.toISOString().slice(0, 10);
 }
-
-describe('applicantPages title functions', () => {
-  it('should compute title text for each page title function in uiSchema', () => {
-    const funcTitles = Object.keys(applicantPages).filter(
-      page =>
-        page.includes('page') &&
-        typeof applicantPages[page].uiSchema.applicants.items['ui:title'] ===
-          'function',
-    );
-    funcTitles.forEach(
-      page =>
-        expect(callInnerApplicantTitleFunc(applicantPages, page)).to.be.true,
-    );
-  });
-
-  it('should compute title text for each top-level page title function', () => {
-    const funcTitles = Object.keys(applicantPages).filter(
-      page =>
-        page.includes('page') &&
-        typeof applicantPages[page].title === 'function',
-    );
-    funcTitles.forEach(
-      page => expect(applicantPages[page].title({}).length > 0).to.be.true,
-    );
-  });
-});
 
 // Basic test to make sure the depends functions don't throw errors/do return a bool.
 describe('applicantPages depends functions', () => {

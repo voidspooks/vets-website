@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
+  APPLICANT_SINGULAR,
   FIELD_NAME,
   formatAddress,
-  getInputLabel,
+  LABEL_TEXT,
   NOT_SHARED,
   OPTION_YES_LABEL,
   safeParse,
+  VETERAN_SINGULAR,
 } from '../FormPages/AddressSelectionPage';
 import content from '../../locales/en/content.json';
+import { replaceStrValues } from '../../utils/helpers';
 
 // declare static content
 const EDIT_BTN_TEXT = content['button--edit'];
@@ -35,11 +38,10 @@ export const getScopedData = (data, pagePerItemIndex) => {
 const AddressSelectionReviewPage = props => {
   const { data, editPage, pagePerItemIndex, title } = props;
 
-  const { itemIndex, isArrayMode } = useMemo(
+  const isArrayMode = useMemo(
     () => {
       const n = Number(pagePerItemIndex);
-      const valid = Number.isFinite(n) && n >= 0;
-      return { itemIndex: valid ? n : null, isArrayMode: valid };
+      return Number.isFinite(n) && n >= 0;
     },
     [pagePerItemIndex],
   );
@@ -50,8 +52,11 @@ const AddressSelectionReviewPage = props => {
   ]);
 
   const inputLabel = useMemo(
-    () => getInputLabel({ role: data.certifierRole, isArrayMode, itemIndex }),
-    [data.certifierRole, isArrayMode, itemIndex],
+    () => {
+      const party = isArrayMode ? APPLICANT_SINGULAR : VETERAN_SINGULAR;
+      return replaceStrValues(LABEL_TEXT, party);
+    },
+    [isArrayMode],
   );
 
   const valueText = useMemo(() => formatDataValue(localData?.[FIELD_NAME]), [

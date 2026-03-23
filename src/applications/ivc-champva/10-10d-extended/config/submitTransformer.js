@@ -239,6 +239,25 @@ const collectSupportingDocuments = data => {
   ];
 };
 
+const buildPrimaryContactInfo = (data = {}) => {
+  if (data.certifierRole === 'applicant') {
+    const a = data?.applicants?.[0] || {};
+    return {
+      name: a.applicantName,
+      email: a.applicantEmailAddress,
+      phone: a.applicantPhone,
+    };
+  }
+
+  const prefix = data.certifierRole === 'sponsor' ? 'sponsor' : 'certifier';
+
+  return {
+    name: data?.[`${prefix}Name`],
+    email: data?.[`${prefix}Email`],
+    phone: data?.[`${prefix}Phone`],
+  };
+};
+
 /**
  * Main transformer function that prepares form data for submission
  * @param {Object} formConfig - Form configuration
@@ -299,7 +318,7 @@ export default function transformForSubmit(formConfig, form) {
     phoneNumber: withConcatAddresses.sponsorPhone || '',
     email: withConcatAddresses.sponsorEmail || '',
     address: withConcatAddresses.sponsorAddress || {},
-    sponsorIsDeceased: withConcatAddresses.sponsorIsDeceased,
+    sponsorIsDeceased: withConcatAddresses.sponsorIsDeceased ?? false,
     dateOfDeath: formatDate(withConcatAddresses.sponsorDod) || '',
     dateOfMarriage: formatDate(marriageDate) || '',
     isActiveServiceDeath: withConcatAddresses.sponsorDeathConditions,
@@ -345,11 +364,9 @@ export default function transformForSubmit(formConfig, form) {
     withConcatAddresses.statementOfTruthSignature;
 
   // Add primary contact info for backend notifications
-  transformedData.primaryContactInfo = {
-    name: withConcatAddresses.certifierName,
-    email: withConcatAddresses.certifierEmail,
-    phone: withConcatAddresses.certifierPhone,
-  };
+  transformedData.primaryContactInfo = buildPrimaryContactInfo(
+    withConcatAddresses,
+  );
 
   // Return JSON string with form number
   return JSON.stringify({

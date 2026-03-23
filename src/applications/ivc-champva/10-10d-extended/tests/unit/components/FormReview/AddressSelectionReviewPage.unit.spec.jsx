@@ -52,20 +52,14 @@ describe('10-10d <AddressSelectionReviewPage>', () => {
     );
   });
 
-  it('should render `Do you` when role=applicant and pagePerItemIndex=0', () => {
-    const data = { certifierRole: 'applicant', applicants: [{}] };
-    const { dt } = subject({ data, index: 0 });
-    expect(dt().textContent).to.match(/^Do you/i);
-  });
-
-  it('should render `Does the applicant` when role=applicant and index>0', () => {
+  it('should render `Does the applicant` when in array mode', () => {
     const data = { certifierRole: 'applicant', applicants: [{}, {}] };
     const { dt } = subject({ data, index: 1 });
     expect(dt().textContent).to.match(/^Does the applicant/i);
   });
 
   it('should render `Does the Veteran` when not in array mode', () => {
-    const data = { certifierRole: 'veteran' };
+    const data = { certifierRole: 'sponsor' };
     const { dt } = subject({ data });
     expect(dt().textContent).to.match(/^Does the Veteran/i);
   });

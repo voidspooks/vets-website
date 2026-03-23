@@ -5,17 +5,20 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import MarriageDateDescription from '../../components/FormDescriptions/MarriageDateDescription';
 import { blankSchema } from '../../definitions';
-import { arrayTitleWithNameUI } from '../../utils/titles';
+import { titleWithNameUI } from '../../utils/titles';
 import { validateMarriageAfterDob } from '../../utils/validations';
 import content from '../../locales/en/content.json';
 
 const TITLE_TEXT = content['applicants--marriage-date-title'];
-const PAGE_DESC = content['applicants--marriage-date-description'];
+const DESC_TEXT = content['applicants--marriage-date-description'];
 const INPUT_LABEL = content['applicants--marriage-date-label'];
 
 export default {
   uiSchema: {
-    ...arrayTitleWithNameUI(TITLE_TEXT, PAGE_DESC),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
+      roleKey: 'view:certifierRole',
+      arrayBuilder: true,
+    }),
     dateOfMarriageToSponsor: currentOrPastDateUI(INPUT_LABEL),
     'view:addtlInfo': { ...descriptionUI(MarriageDateDescription) },
     'ui:validations': [validateMarriageAfterDob],

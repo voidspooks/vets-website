@@ -1,49 +1,32 @@
 import { cloneDeep } from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
-import { applicantWording } from '../../../shared/utilities';
-import { VaRadio, VaRadioOption } from '../../utils/imports';
+import React, { useCallback, useMemo, useState } from 'react';
 import content from '../../locales/en/content.json';
-import { makePossessive } from '../../utils/helpers';
+import { VaRadio, VaRadioOption } from '../../utils/imports';
+import { titleWithNameUI, titleWithRoleUI } from '../../utils/titles';
+import { replaceStrValues } from '../../utils/helpers';
 
 // declare reusable constants
 export const FIELD_NAME = 'view:sharesAddressWith';
 export const NOT_SHARED = 'na';
 
 // declare static content
-const APPLICANT_SINGULAR = content['noun--applicant'];
+export const APPLICANT_SINGULAR = content['noun--applicant'];
 const ERROR_MSG_REQUIRED = content['validation--required'];
-const LABEL_TEXT = content['address-selection--label-text'];
+export const LABEL_TEXT = content['address-selection--label-text'];
 export const OPTION_NO_LABEL = content['address-selection--no-option'];
 export const OPTION_YES_LABEL = content['address-selection--yes-option'];
-const PAGE_TITLE = content['address-selection--page-title'];
-const PAGE_DESCRIPTION = content['address-selection--page-description'];
-const PROMPT_THIRD = content['address-selection--prompt-third'];
-const PROMPT_SECOND = content['address-selection--prompt-second'];
+const TITLE_TEXT = content['address-selection--page-title'];
+const DESC_TEXT = content['address-selection--page-description'];
 const UPDATE_BTN_TEXT = content['button--update-page'];
 const UPDATE_BTN_ARIA_LABEL = content['address-selection--update-aria-label'];
-const VETERAN_SINGULAR = content['noun--veteran'];
+export const VETERAN_SINGULAR = content['noun--veteran'];
 
 // convert address objects to formatted strings
 export const formatAddress = ({ street, street2, city, state, country } = {}) =>
   [street, street2, [city, state].filter(Boolean).join(', '), country]
     .filter(Boolean)
     .join(', ');
-
-// build input label based on form data
-export const getInputLabel = ({
-  role,
-  isArrayMode = false,
-  itemIndex = null,
-}) => {
-  const party = isArrayMode ? APPLICANT_SINGULAR : VETERAN_SINGULAR;
-  const prompt =
-    role === 'applicant' && itemIndex === 0
-      ? PROMPT_SECOND
-      : `${PROMPT_THIRD} ${party}`;
-  return `${prompt} ${LABEL_TEXT}`;
-};
 
 // build unique radio options from form data
 const buildAddressOptions = ({
@@ -206,22 +189,22 @@ const AddressSelectionPage = props => {
 
   const pageTitle = useMemo(
     () => {
-      const party = isArrayMode
-        ? applicantWording(localData)
-        : makePossessive(VETERAN_SINGULAR);
-      return titleUI(
-        <>
-          <span data-dd-privacy="hidden">{party}</span> {PAGE_TITLE}
-        </>,
-        PAGE_DESCRIPTION,
-      )['ui:title'];
+      const titleFn = isArrayMode ? titleWithNameUI : titleWithRoleUI;
+      return titleFn(TITLE_TEXT, DESC_TEXT, {
+        arrayBuilder: isArrayMode,
+        roleKey: isArrayMode ? 'view:certifierRole' : 'certifierRole',
+        other: isArrayMode ? APPLICANT_SINGULAR : VETERAN_SINGULAR,
+      })['ui:title']({ formData: localData });
     },
     [isArrayMode, localData],
   );
 
   const inputLabel = useMemo(
-    () => getInputLabel({ role: data.certifierRole, isArrayMode, itemIndex }),
-    [data.certifierRole, isArrayMode, itemIndex],
+    () => {
+      const party = isArrayMode ? APPLICANT_SINGULAR : VETERAN_SINGULAR;
+      return replaceStrValues(LABEL_TEXT, party);
+    },
+    [isArrayMode],
   );
 
   return (

@@ -108,24 +108,27 @@ describe('1010d <AddressSelectionPage>', () => {
       expect(labels.includes('123 C St')).to.be.true;
     });
 
-    it('should render the correct label text based on the applicant array index and role', () => {
-      // case 1 - when the first array item and certifierRole === applicant
-      const r1 = renderPage({
-        data: { ...baseData, applicants: [{}] },
-        pagePerItemIndex: '0',
-      });
-      const label1 = r1.vaRadio().getAttribute('label') || '';
-      expect(label1.startsWith('Do you')).to.be.true;
-      r1.unmount();
-
-      // case 2 - when any other index in the array
-      const r2 = renderPage({
-        data: { ...baseData, certifierRole: 'sponsor', applicants: [{}, {}] },
+    it('should render `Does the applicant` when in array mode', () => {
+      const applicants = [{ applicantName: { first: 'Jane' } }, {}];
+      const { container } = renderPage({
+        data: { ...baseData, 'view:certifierRole': 'applicant', applicants },
+        fullData: {
+          ...baseData,
+          'view:certifierRole': 'applicant',
+          applicants,
+        },
         pagePerItemIndex: '1',
       });
-      const label2 = r2.vaRadio().getAttribute('label') || '';
-      expect(label2.startsWith('Does the applicant')).to.be.true;
-      r2.unmount();
+      const legend = container.querySelector('legend');
+      expect(legend.textContent).to.match(/Applicant’s address/i);
+    });
+
+    it('should render `Does the Veteran` when not in array mode', () => {
+      const { container } = renderPage({
+        data: { ...baseData, certifierRole: 'sponsor' },
+      });
+      const legend = container.querySelector('legend');
+      expect(legend.textContent).to.match(/Veteran’s address/i);
     });
   });
 
