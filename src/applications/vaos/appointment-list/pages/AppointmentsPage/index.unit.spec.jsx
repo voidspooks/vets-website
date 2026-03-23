@@ -388,4 +388,73 @@ describe('VAOS Page: AppointmentsPage', () => {
       expect(screen.queryByTestId('cc-referrals-banner')).to.not.exist;
     });
   });
+
+  describe('community care referrals V2', () => {
+    const v2UserState = {
+      profile: {
+        facilities: [{ facilityId: '911', isCerner: false }],
+      },
+    };
+
+    it('should display review referrals link and hide Pending tab when V2 user is in a pilot station', async () => {
+      const v2PilotState = {
+        featureToggles: {
+          ...initialState.featureToggles,
+          vaOnlineSchedulingCCDirectSchedulingV2: true,
+        },
+        user: v2UserState,
+      };
+
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: v2PilotState,
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      expect(screen.getByTestId('review-requests-and-referrals')).to.exist;
+      expect(screen.queryByTestId('cc-referrals-banner')).to.not.exist;
+      expect(screen.queryByRole('link', { name: /Pending \(\d\)/ })).to.not
+        .exist;
+    });
+
+    it('should display V1 disabled banner when V1 is on but V2 is off', async () => {
+      const v1OnlyState = {
+        featureToggles: {
+          ...initialState.featureToggles,
+          vaOnlineSchedulingCCDirectScheduling: true,
+          vaOnlineSchedulingCCDirectSchedulingV2: false,
+        },
+        user: userState,
+      };
+
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: v1OnlyState,
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      expect(screen.findByTestId('cc-referrals-banner')).to.exist;
+      expect(screen.queryByTestId('review-requests-and-referrals')).to.not
+        .exist;
+    });
+
+    it('should not display review referrals link when V2 flag is off', async () => {
+      const v2OffState = {
+        featureToggles: {
+          ...initialState.featureToggles,
+          vaOnlineSchedulingCCDirectSchedulingV2: false,
+        },
+        user: v2UserState,
+      };
+
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: v2OffState,
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      expect(screen.queryByTestId('review-requests-and-referrals')).to.not
+        .exist;
+    });
+  });
 });

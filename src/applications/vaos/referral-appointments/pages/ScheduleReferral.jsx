@@ -5,14 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
 import { GA_PREFIX } from 'applications/vaos/utils/constants';
-import ReferralLayout from './components/ReferralLayout';
-import { routeToNextReferralPage } from './flow';
-import { setFormCurrentPage, setInitReferralFlow } from './redux/actions';
-import { selectCurrentPage } from './redux/selectors';
-import { getReferralSlotKey } from './utils/referrals';
-import { titleCase } from '../utils/formatters';
-import FindCommunityCareOfficeLink from './components/FindCCFacilityLink';
-import { getIsInPilotReferralStation } from './utils/pilot';
+import ReferralLayout from '../components/ReferralLayout';
+import { routeToNextReferralPage } from '../flow';
+import { setFormCurrentPage, setInitReferralFlow } from '../redux/actions';
+import { selectCurrentPage } from '../redux/selectors';
+import { getReferralSlotKey } from '../utils/referrals';
+import { titleCase } from '../../utils/formatters';
+import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
+import { getIsInPilotReferralStation } from '../utils/pilot';
 
 export default function ScheduleReferral(props) {
   const { attributes: currentReferral } = props.currentReferral;

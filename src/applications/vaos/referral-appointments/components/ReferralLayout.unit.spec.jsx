@@ -1,5 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
+import { waitFor } from '@testing-library/react';
 import ReferralLayout from './ReferralLayout';
 import {
   renderWithStoreAndRouter,
@@ -98,7 +99,7 @@ describe('VAOS Component: ReferralLayout', () => {
     );
     expect(screen.getByText('New Appointment')).to.exist;
   });
-  it('should set the form current page to error when apiFailure is true', () => {
+  it('should set the form current page to error when apiFailure is true', async () => {
     const store = createTestStore(initialFullState);
     renderWithStoreAndRouter(
       <ReferralLayout
@@ -111,6 +112,8 @@ describe('VAOS Component: ReferralLayout', () => {
       },
     );
 
-    expect(store.getState().referral.currentPage).to.equal('error');
+    await waitFor(() => {
+      expect(store.getState().referral.currentPage).to.equal('error');
+    });
   });
 });

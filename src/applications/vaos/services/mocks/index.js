@@ -735,6 +735,15 @@ const responses = {
               is_cerner: false,
             },
             {
+              facility_id: '692',
+              is_cerner: true,
+            },
+            {
+              facility_id: '653',
+              is_cerner: true,
+            },
+            // v1 community care pilot stations
+            {
               facility_id: '984',
               is_cerner: false,
             },
@@ -742,13 +751,10 @@ const responses = {
               facility_id: '983',
               is_cerner: false,
             },
+            // v2 community care pilot station
             {
-              facility_id: '692',
-              is_cerner: true,
-            },
-            {
-              facility_id: '653',
-              is_cerner: true,
+              facility_id: '911',
+              is_cerner: false,
             },
           ],
         },

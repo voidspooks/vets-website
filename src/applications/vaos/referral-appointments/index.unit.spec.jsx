@@ -85,10 +85,12 @@ describe('ReferralAppointments', () => {
     });
 
     // Check the back link
-    expect(screen.getByTestId('back-link')).to.have.attribute(
-      'text',
-      'Back to appointments',
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId('back-link')).to.have.attribute(
+        'text',
+        'Back to appointments',
+      );
+    });
     expect(screen.getByTestId('referral-layout-heading')).to.have.text(
       'Something went wrong on our end',
     );

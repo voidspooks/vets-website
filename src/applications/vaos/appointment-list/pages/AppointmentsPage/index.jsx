@@ -22,7 +22,8 @@ import PageLayout from '../../components/PageLayout';
 import ScheduleNewAppointment from '../../components/ScheduleNewAppointment';
 import PastAppointmentsPage from '../PastAppointmentsPage';
 import UpcomingAppointmentsPage from '../UpcomingAppointmentsPage/UpcomingAppointmentsPage';
-import FindCommunityCareOfficeLink from '../../../referral-appointments/components/FindCCFacilityLink';
+import ReviewReferralsAndRequestsLink from '../../components/ReviewReferralsAndRequestsLink';
+import CCReferralsV1DisabledBanner from '../../components/CCReferralsV1DisabledBanner';
 
 function renderWarningNotification() {
   return (props, childContent) => {
@@ -44,7 +45,10 @@ export default function AppointmentsPage() {
   const dispatch = useDispatch();
   const [hasTypeChanged, setHasTypeChanged] = useState(false);
   let [pageTitle] = useState('VA appointments');
-  const { isInPilotUserStations } = useIsInPilotUserStations();
+  const {
+    isInPilotUserStations,
+    isInPilotUserStationsV2,
+  } = useIsInPilotUserStations();
 
   const pendingAppointments = useSelector(state =>
     selectPendingAppointments(state),
@@ -157,28 +161,14 @@ export default function AppointmentsPage() {
       referral id in the url sent to the veteran  */}
       {/* {isInCCPilot && <ReferralTaskCardWithReferral />} */}
 
-      {isInPilotUserStations && (
-        <div
-          className={classNames(
-            'vaos-hide-for-print',
-            'vads-u-margin-bottom--3',
-            'vads-u-margin-top--1',
-          )}
-        >
-          <va-alert-expandable
-            status="warning"
-            trigger="You can’t access community care referrals online"
-            data-testid="cc-referrals-banner"
-          >
-            <p>
-              Call your community care office for help scheduling an
-              appointment.
-            </p>
-            <FindCommunityCareOfficeLink />
-          </va-alert-expandable>
-        </div>
-      )}
-      <AppointmentListNavigation count={count} callback={setHasTypeChanged} />
+      {isInPilotUserStations &&
+        !isInPilotUserStationsV2 && <CCReferralsV1DisabledBanner />}
+      {isInPilotUserStationsV2 && <ReviewReferralsAndRequestsLink />}
+      <AppointmentListNavigation
+        count={count}
+        callback={setHasTypeChanged}
+        hidePendingTab={isInPilotUserStationsV2}
+      />
       <Switch>
         <Route exact path="/">
           <UpcomingAppointmentsPage hasTypeChanged={hasTypeChanged} />

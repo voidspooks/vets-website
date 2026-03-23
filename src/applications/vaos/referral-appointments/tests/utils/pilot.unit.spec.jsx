@@ -1,5 +1,8 @@
 import { expect } from 'chai';
-import { getIsInPilotUserStations } from '../../utils/pilot';
+import {
+  getIsInPilotUserStations,
+  getIsInPilotUserStationsV2,
+} from '../../utils/pilot';
 
 describe('VAOS CC pilot utils', () => {
   describe('getIsInPilotUserStations', () => {
@@ -36,6 +39,39 @@ describe('VAOS CC pilot utils', () => {
     it('Returns true when the user has a facility within the pilot extension', () => {
       expect(getIsInPilotUserStations(true, [{ facilityId: '648' }])).to.be
         .true;
+    });
+  });
+
+  describe('getIsInPilotUserStationsV2', () => {
+    it('Returns false when the feature is off', () => {
+      expect(getIsInPilotUserStationsV2(false)).to.be.false;
+    });
+    it('should return false if patientFacilities is empty', () => {
+      expect(getIsInPilotUserStationsV2(true, [])).to.be.false;
+    });
+    it('Returns false when the user has no facilities in the V2 pilot list', () => {
+      expect(
+        getIsInPilotUserStationsV2(true, [
+          { facilityId: '123' },
+          { facilityId: '984' },
+        ]),
+      ).to.be.false;
+    });
+    it('Returns true when the user has a facility within the V2 pilot list', () => {
+      expect(
+        getIsInPilotUserStationsV2(true, [
+          { facilityId: '123' },
+          { facilityId: '911' },
+        ]),
+      ).to.be.true;
+    });
+    it('Returns true when the user has a V2 pilot facility as well as some outside', () => {
+      expect(
+        getIsInPilotUserStationsV2(true, [
+          { facilityId: '911' },
+          { facilityId: '400' },
+        ]),
+      ).to.be.true;
     });
   });
 });

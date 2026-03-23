@@ -25,6 +25,11 @@ describe('Referral Appointments Flow', () => {
         expected: 'Appointment Referral',
       },
       {
+        currentPage: 'providerSelection',
+        categoryOfCare: 'Primary Care',
+        expected: 'Select a provider',
+      },
+      {
         currentPage: 'scheduleAppointment',
         categoryOfCare: 'Primary Care',
         expected: 'Back',

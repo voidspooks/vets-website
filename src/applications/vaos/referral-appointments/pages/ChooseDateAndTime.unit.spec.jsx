@@ -13,15 +13,15 @@ import { server } from 'platform/testing/unit/mocha-setup';
 import {
   renderWithStoreAndRouter,
   createTestStore,
-} from '../tests/mocks/setup';
+} from '../../tests/mocks/setup';
 import ChooseDateAndTime from './ChooseDateAndTime';
-import { createReferralById } from './utils/referrals';
-import { createDraftAppointmentInfo } from './utils/provider';
-import confirmedV2 from '../services/mocks/v2/confirmed.json';
-import * as fetchAppointmentsModule from '../services/appointment';
-import * as flow from './flow';
-import { FETCH_STATUS } from '../utils/constants';
-import { vaosApi } from '../redux/api/vaosApi';
+import { createReferralById } from '../utils/referrals';
+import { createDraftAppointmentInfo } from '../utils/provider';
+import confirmedV2 from '../../services/mocks/v2/confirmed.json';
+import * as fetchAppointmentsModule from '../../services/appointment';
+import * as flow from '../flow';
+import { FETCH_STATUS } from '../../utils/constants';
+import { vaosApi } from '../../redux/api/vaosApi';
 
 describe('VAOS ChooseDateAndTime component', () => {
   const sandbox = sinon.createSandbox();

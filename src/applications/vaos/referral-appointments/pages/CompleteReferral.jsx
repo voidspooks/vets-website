@@ -4,22 +4,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useHistory } from 'react-router-dom';
 import { formatISO, differenceInMilliseconds } from 'date-fns';
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
-import { titleCase } from '../utils/formatters';
-import ReferralLayout from './components/ReferralLayout';
-import ProviderAddress from './components/ProviderAddress';
-import AppointmentDate from '../components/AppointmentDate';
-import AppointmentTime from '../components/AppointmentTime';
-import { routeToNextReferralPage } from './flow';
-import { usePollAppointmentInfoQuery } from '../redux/api/vaosApi';
-import { setFormCurrentPage, startNewAppointmentFlow } from './redux/actions';
+import { titleCase } from '../../utils/formatters';
+import ReferralLayout from '../components/ReferralLayout';
+import ProviderAddress from '../components/ProviderAddress';
+import AppointmentDate from '../../components/AppointmentDate';
+import AppointmentTime from '../../components/AppointmentTime';
+import { routeToNextReferralPage } from '../flow';
+import { usePollAppointmentInfoQuery } from '../../redux/api/vaosApi';
+import { setFormCurrentPage, startNewAppointmentFlow } from '../redux/actions';
 // eslint-disable-next-line import/no-restricted-paths
-import getNewAppointmentFlow from '../new-appointment/newAppointmentFlow';
+import getNewAppointmentFlow from '../../new-appointment/newAppointmentFlow';
 import {
   getAppointmentCreateStatus,
   selectCurrentPage,
-} from './redux/selectors';
-import { FETCH_STATUS, GA_PREFIX } from '../utils/constants';
-import FindCommunityCareOfficeLink from './components/FindCCFacilityLink';
+} from '../redux/selectors';
+import { FETCH_STATUS, GA_PREFIX } from '../../utils/constants';
+import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
 
 function handleScheduleClick(dispatch) {
   return () => {

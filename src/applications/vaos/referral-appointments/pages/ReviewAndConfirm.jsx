@@ -6,25 +6,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   getAppointmentCreateStatus,
   getSelectedSlotStartTime,
-} from './redux/selectors';
-import { setFormCurrentPage, setSelectedSlotStartTime } from './redux/actions';
+} from '../redux/selectors';
+import { setFormCurrentPage, setSelectedSlotStartTime } from '../redux/actions';
 import {
   useGetDraftReferralAppointmentQuery,
   usePostReferralAppointmentMutation,
-} from '../redux/api/vaosApi';
+} from '../../redux/api/vaosApi';
 
-import ReferralLayout from './components/ReferralLayout';
+import ReferralLayout from '../components/ReferralLayout';
 import {
   routeToPreviousReferralPage,
   routeToCCPage,
   routeToNextReferralPage,
-} from './flow';
+} from '../flow';
 
-import { getReferralSlotKey } from './utils/referrals';
-import { getSlotByDate } from './utils/provider';
-import { stripDST } from '../utils/timezone';
-import FindCommunityCareOfficeLink from './components/FindCCFacilityLink';
-import { titleCase } from '../utils/formatters';
+import { getReferralSlotKey } from '../utils/referrals';
+import { getSlotByDate } from '../utils/provider';
+import { stripDST } from '../../utils/timezone';
+import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
+import { titleCase } from '../../utils/formatters';
 
 const ReviewAndConfirm = props => {
   const { attributes: currentReferral } = props.currentReferral;

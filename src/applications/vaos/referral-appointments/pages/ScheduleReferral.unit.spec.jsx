@@ -6,8 +6,8 @@ import ScheduleReferral from './ScheduleReferral';
 import {
   createTestStore,
   renderWithStoreAndRouter,
-} from '../tests/mocks/setup';
-import { createReferralById, getReferralSlotKey } from './utils/referrals';
+} from '../../tests/mocks/setup';
+import { createReferralById, getReferralSlotKey } from '../utils/referrals';
 
 describe('VAOS Component: ScheduleReferral', () => {
   afterEach(() => {

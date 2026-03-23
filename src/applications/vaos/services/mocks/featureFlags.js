@@ -6,6 +6,7 @@ module.exports = [
   { name: 'vaOnlineSchedulingRequests', value: true },
   { name: 'vaOnlineSchedulingBookingExclusion', value: false },
   { name: 'vaOnlineSchedulingCCDirectScheduling', value: true },
+  { name: 'vaOnlineSchedulingCCDirectSchedulingV2', value: true },
   { name: 'vaOnlineSchedulingCCDirectSchedulingChiropractic', value: true },
   { name: 'vaOnlineSchedulingCommunityCareCancellations', value: true },
   { name: 'vaOnlineSchedulingRemovePodiatry', value: false },

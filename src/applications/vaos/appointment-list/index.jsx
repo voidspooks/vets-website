@@ -3,6 +3,7 @@ import React from 'react';
 import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import useManualScrollRestoration from '../hooks/useManualScrollRestoration';
 import { useIsInPilotUserStations } from '../referral-appointments/hooks/useIsInPilotUserStations';
+import ReferralsAndRequests from '../referral-appointments/pages/ReferralsAndRequests';
 import UpcomingAppointmentsDetailsPage from './pages/UpcomingAppointmentsDetailsPage';
 import EpsAppointmentDetailsPage from './pages/EpsAppointmentDetailsPage/EpsAppointmentDetailsPage';
 import AppointmentsPage from './pages/AppointmentsPage/index';
@@ -11,7 +12,10 @@ import RequestedAppointmentDetailsPage from './pages/RequestedAppointmentDetails
 function AppointmentListSection() {
   useManualScrollRestoration();
 
-  const { isInPilotUserStations } = useIsInPilotUserStations();
+  const {
+    isInPilotUserStations,
+    isInPilotUserStationsV2,
+  } = useIsInPilotUserStations();
   const location = useLocation();
 
   // Parse the query parameters
@@ -25,7 +29,15 @@ function AppointmentListSection() {
           path="/pending/:id"
           component={RequestedAppointmentDetailsPage}
         />
-        <Redirect from="/referrals-requests" to="/pending" />
+        {isInPilotUserStationsV2 && (
+          <Redirect from="/pending" to="/referrals-requests" />
+        )}
+        {!isInPilotUserStationsV2 && (
+          <Redirect from="/referrals-requests" to="/pending" />
+        )}
+        {isInPilotUserStationsV2 && (
+          <Route path="/referrals-requests" component={ReferralsAndRequests} />
+        )}
         <Route
           exact
           path={['/', '/pending', '/past']}
@@ -36,7 +48,7 @@ function AppointmentListSection() {
           path="/past/:id"
           component={UpcomingAppointmentsDetailsPage}
         />
-        {isInPilotUserStations &&
+        {(isInPilotUserStations || isInPilotUserStationsV2) &&
           eps && <Route path="/:id" component={EpsAppointmentDetailsPage} />}
         <Route exact path="/:id" component={UpcomingAppointmentsDetailsPage} />
         <Route component={PageNotFound} />

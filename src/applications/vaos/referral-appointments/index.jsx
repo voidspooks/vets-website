@@ -6,19 +6,23 @@ import {
   Redirect,
   useLocation,
 } from 'react-router-dom';
-import ScheduleReferral from './ScheduleReferral';
-import ReviewAndConfirm from './ReviewAndConfirm';
-import ChooseDateAndTime from './ChooseDateAndTime';
+import ScheduleReferral from './pages/ScheduleReferral';
+import ReviewAndConfirm from './pages/ReviewAndConfirm';
+import ChooseDateAndTime from './pages/ChooseDateAndTime';
 import useManualScrollRestoration from '../hooks/useManualScrollRestoration';
 import { useIsInPilotUserStations } from './hooks/useIsInPilotUserStations';
-import CompleteReferral from './CompleteReferral';
+import CompleteReferral from './pages/CompleteReferral';
 import ReferralLayout from './components/ReferralLayout';
 import { useGetReferralByIdQuery } from '../redux/api/vaosApi';
+import ProviderSelection from './pages/ProviderSelection';
 
 export default function ReferralAppointments() {
   useManualScrollRestoration();
   const basePath = useRouteMatch();
-  const { isInPilotUserStations } = useIsInPilotUserStations();
+  const {
+    isInPilotUserStations,
+    isInPilotUserStationsV2,
+  } = useIsInPilotUserStations();
   const location = useLocation();
   const { search } = location;
   const params = new URLSearchParams(search);
@@ -37,7 +41,7 @@ export default function ReferralAppointments() {
     return <Redirect to="/referrals-requests" />;
   }
 
-  if (!isInPilotUserStations) {
+  if (!isInPilotUserStations && !isInPilotUserStationsV2) {
     return <Redirect from={basePath.url} to="/" />;
   }
 
@@ -56,23 +60,23 @@ export default function ReferralAppointments() {
       />
     );
   }
-
   return (
-    <>
-      <Switch>
-        <Route path={`${basePath.url}/complete/:appointmentId`} search={id}>
-          <CompleteReferral currentReferral={referral} />
-        </Route>
-        <Route path={`${basePath.url}/review/`} search={id}>
-          <ReviewAndConfirm currentReferral={referral} />
-        </Route>
-        <Route path={`${basePath.url}/date-time/`} search={id}>
-          <ChooseDateAndTime currentReferral={referral} />
-        </Route>
-        <Route path={`${basePath.url}`} search={id}>
-          <ScheduleReferral currentReferral={referral} />
-        </Route>
-      </Switch>
-    </>
+    <Switch>
+      <Route path={`${basePath.url}/complete/:appointmentId`} search={id}>
+        <CompleteReferral currentReferral={referral} />
+      </Route>
+      <Route path={`${basePath.url}/review/`} search={id}>
+        <ReviewAndConfirm currentReferral={referral} />
+      </Route>
+      <Route path={`${basePath.url}/date-time/`} search={id}>
+        <ChooseDateAndTime currentReferral={referral} />
+      </Route>
+      <Route path={`${basePath.url}/provider-selection`} search={id}>
+        <ProviderSelection />
+      </Route>
+      <Route path={`${basePath.url}`} search={id}>
+        <ScheduleReferral currentReferral={referral} />
+      </Route>
+    </Switch>
   );
 }

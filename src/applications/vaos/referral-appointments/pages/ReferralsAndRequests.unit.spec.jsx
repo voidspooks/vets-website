@@ -9,12 +9,12 @@ import { expect } from 'chai';
 import { waitFor } from '@testing-library/dom';
 import MockDate from 'mockdate';
 import ReferralsAndRequests from './ReferralsAndRequests';
-import reducers from '../redux/reducer';
-import { getTestDate, renderWithStoreAndRouter } from '../tests/mocks/setup';
-import { APPOINTMENT_STATUS } from '../utils/constants';
-import MockAppointmentResponse from '../tests/fixtures/MockAppointmentResponse';
-import MockFacilityResponse from '../tests/fixtures/MockFacilityResponse';
-import MockReferralListResponse from '../tests/fixtures/MockReferralListResponse';
+import reducers from '../../redux/reducer';
+import { getTestDate, renderWithStoreAndRouter } from '../../tests/mocks/setup';
+import { APPOINTMENT_STATUS } from '../../utils/constants';
+import MockAppointmentResponse from '../../tests/fixtures/MockAppointmentResponse';
+import MockFacilityResponse from '../../tests/fixtures/MockFacilityResponse';
+import MockReferralListResponse from '../../tests/fixtures/MockReferralListResponse';
 
 const initialStateVAOSService = {
   featureToggles: {

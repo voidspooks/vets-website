@@ -14,16 +14,16 @@ import ReviewAndConfirm from './ReviewAndConfirm';
 import {
   createTestStore,
   renderWithStoreAndRouter,
-} from '../tests/mocks/setup';
-import { createReferralById, getReferralSlotKey } from './utils/referrals';
-import { FETCH_STATUS } from '../utils/constants';
-import { createDraftAppointmentInfo } from './utils/provider';
-import * as flow from './flow';
-import { vaosApi } from '../redux/api/vaosApi';
+} from '../../tests/mocks/setup';
+import { createReferralById, getReferralSlotKey } from '../utils/referrals';
+import { FETCH_STATUS } from '../../utils/constants';
+import { createDraftAppointmentInfo } from '../utils/provider';
+import * as flow from '../flow';
+import { vaosApi } from '../../redux/api/vaosApi';
 import {
   generateSlotsForDay,
   transformSlotsForCommunityCare,
-} from '../services/mocks/utils/slots';
+} from '../../services/mocks/utils/slots';
 
 describe('VAOS Component: ReviewAndConfirm', () => {
   const slotDate = '2024-09-09T16:00:00.000Z';

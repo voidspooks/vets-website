@@ -68,6 +68,9 @@ export const selectFeatureBookingExclusion = state =>
 export const selectFeatureCCDirectScheduling = state =>
   toggleValues(state).vaOnlineSchedulingCCDirectScheduling;
 
+export const selectFeatureCCDirectSchedulingV2 = state =>
+  toggleValues(state).vaOnlineSchedulingCCDirectSchedulingV2;
+
 export const selectFeatureCCDirectSchedulingChiropractic = state =>
   toggleValues(state).vaOnlineSchedulingCCDirectSchedulingChiropractic;
 

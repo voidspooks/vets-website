@@ -1,18 +1,18 @@
 import React, { useEffect } from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import InfoAlert from '../components/InfoAlert';
-import { setFormCurrentPage } from './redux/actions';
-import ReferralLayout from './components/ReferralLayout';
-import ReferralList from './components/ReferralList';
+import InfoAlert from '../../components/InfoAlert';
+import { setFormCurrentPage } from '../redux/actions';
+import ReferralLayout from '../components/ReferralLayout';
+import ReferralList from '../components/ReferralList';
 import {
   getRequestedAppointmentListInfo,
   selectFeatureCCDirectSchedulingChiropractic,
-} from '../redux/selectors';
-import RequestList from './components/RequestsList';
-import { useGetPatientReferralsQuery, vaosApi } from '../redux/api/vaosApi';
-import { FETCH_STATUS } from '../utils/constants';
-import { filterReferrals } from './utils/referrals';
+} from '../../redux/selectors';
+import RequestList from '../components/RequestsList';
+import { useGetPatientReferralsQuery, vaosApi } from '../../redux/api/vaosApi';
+import { FETCH_STATUS } from '../../utils/constants';
+import { filterReferrals } from '../utils/referrals';
 
 export default function ReferralsAndRequests() {
   const dispatch = useDispatch();

@@ -31,14 +31,20 @@ export function getPageFlow(referralId, appointmentId) {
     scheduleReferral: {
       url: `/schedule-referral?id=${referralId}`,
       label: 'Appointment Referral',
-      next: 'scheduleAppointment',
+      next: 'providerSelection',
       previous: 'referralsAndRequests',
+    },
+    providerSelection: {
+      url: `/schedule-referral/provider-selection?id=${referralId}`,
+      label: 'Select a provider',
+      next: 'scheduleAppointment',
+      previous: 'scheduleReferral',
     },
     scheduleAppointment: {
       url: `/schedule-referral/date-time?id=${referralId}`,
       label: 'Schedule an appointment with your provider',
       next: 'reviewAndConfirm',
-      previous: 'scheduleReferral',
+      previous: 'providerSelection',
     },
     reviewAndConfirm: {
       url: `/schedule-referral/review?id=${referralId}`,
@@ -52,6 +58,7 @@ export function getPageFlow(referralId, appointmentId) {
       next: 'details',
       previous: 'appointments',
     },
+    // TODO: This may not be EPS appointment
     details: {
       url: `/${appointmentId}?eps=true`,
       label: '',

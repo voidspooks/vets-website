@@ -4,15 +4,15 @@ import sinon from 'sinon';
 import { fireEvent, waitFor } from '@testing-library/react';
 import * as utils from 'applications/vaos/services/utils';
 import CompleteReferral from './CompleteReferral';
-import * as actionsModule from './redux/actions';
+import * as actionsModule from '../redux/actions';
 import {
   createTestStore,
   renderWithStoreAndRouter,
-} from '../tests/mocks/setup';
-import { FETCH_STATUS } from '../utils/constants';
-import { createMockEpsAppointment } from './utils/appointment';
-import { createReferralById } from './utils/referrals';
-import * as epsAppointmentUtils from './utils/appointment';
+} from '../../tests/mocks/setup';
+import { FETCH_STATUS } from '../../utils/constants';
+import { createMockEpsAppointment } from '../utils/appointment';
+import { createReferralById } from '../utils/referrals';
+import * as epsAppointmentUtils from '../utils/appointment';
 
 describe('CompleteReferral', () => {
   let requestStub;
