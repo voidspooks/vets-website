@@ -102,11 +102,27 @@ describe('CreateFolderInline component', () => {
     expect(getByTestId('create-folder-inline')).to.exist;
 
     // Click cancel button
-    const cancelBtn = document.querySelector('va-button[text="Cancel"]');
-    fireEvent.click(cancelBtn);
+    fireEvent.click(getByTestId('cancel-folder-button'));
 
     await waitFor(() => {
       expect(queryByTestId('create-folder-inline')).to.be.null;
+    });
+  });
+
+  it('returns focus to "Create a new folder" button after Cancel is clicked', async () => {
+    const { getByTestId } = setup();
+
+    // Expand the form
+    fireEvent.click(getByTestId('create-new-folder'));
+    expect(getByTestId('create-folder-inline')).to.exist;
+
+    // Click cancel button
+    fireEvent.click(getByTestId('cancel-folder-button'));
+
+    // Verify focus returns to the "Create a new folder" button (WCAG SC 2.4.3)
+    await waitFor(() => {
+      const createNewFolderBtn = getByTestId('create-new-folder');
+      expect(document.activeElement).to.equal(createNewFolderBtn);
     });
   });
 
@@ -114,8 +130,7 @@ describe('CreateFolderInline component', () => {
     const { getByTestId } = setup();
 
     fireEvent.click(getByTestId('create-new-folder'));
-    const cancelBtn = document.querySelector('va-button[text="Cancel"]');
-    fireEvent.click(cancelBtn);
+    fireEvent.click(getByTestId('cancel-folder-button'));
 
     await waitFor(() => {
       expect(
@@ -350,8 +365,8 @@ describe('CreateFolderInline component', () => {
     fireEvent.click(getByTestId('create-new-folder'));
 
     await waitFor(() => {
-      const createBtn = document.querySelector('va-button[text="Create"]');
-      const cancelBtn = document.querySelector('va-button[text="Cancel"]');
+      const createBtn = getByTestId('create-folder-button');
+      const cancelBtn = getByTestId('cancel-folder-button');
       expect(createBtn).to.exist;
       expect(cancelBtn).to.exist;
       expect(cancelBtn).to.have.attribute('secondary', 'true');

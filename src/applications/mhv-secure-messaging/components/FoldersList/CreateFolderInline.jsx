@@ -7,20 +7,33 @@ import recordEvent from 'platform/monitoring/record-event';
 import { Alerts } from '../../util/constants';
 import SmAlert from '../shared/SmAlert';
 
-const CreateFolderInline = ({ folders, onConfirm, onFolderCreated }) => {
+const CreateFolderInline = ({
+  folders,
+  onConfirm,
+  onFolderCreated,
+  onSkipFocus,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [folderName, setFolderName] = useState('');
   const [nameWarning, setNameWarning] = useState('');
   const [showCreateSuccess, setShowCreateSuccess] = useState(false);
   const folderNameInput = useRef();
   const createFolderButtonRef = useRef();
+  const shouldFocusButtonRef = useRef(false);
 
   useEffect(
     () => {
-      if (isExpanded && folderNameInput.current) {
-        focusElement(
-          folderNameInput.current.shadowRoot?.querySelector('input'),
-        );
+      if (isExpanded) {
+        if (folderNameInput.current) {
+          focusElement(
+            folderNameInput.current.shadowRoot?.querySelector('input'),
+          );
+        }
+      } else if (shouldFocusButtonRef.current) {
+        shouldFocusButtonRef.current = false;
+        if (createFolderButtonRef.current) {
+          focusElement(createFolderButtonRef.current);
+        }
       }
     },
     [isExpanded],
@@ -40,6 +53,7 @@ const CreateFolderInline = ({ folders, onConfirm, onFolderCreated }) => {
   const handleCancel = useCallback(() => {
     setFolderName('');
     setNameWarning('');
+    shouldFocusButtonRef.current = true;
     setIsExpanded(false);
     datadogRum.addAction('Create New Folder Inline Cancelled');
   }, []);
@@ -58,11 +72,12 @@ const CreateFolderInline = ({ folders, onConfirm, onFolderCreated }) => {
           const createdFolderName = folderName;
           setFolderName('');
           setNameWarning('');
-          setIsExpanded(false);
           setShowCreateSuccess(true);
           if (onFolderCreated) onFolderCreated(createdFolderName);
-          // Allow render cycle to complete before focusing the button
-          setTimeout(() => focusElement(createFolderButtonRef.current), 100);
+          // Tell the parent to skip its h1 focus on the next folders update
+          if (onSkipFocus) onSkipFocus();
+          shouldFocusButtonRef.current = true;
+          setIsExpanded(false);
         } catch (error) {
           // If creation fails, keep form open - error alert will be shown by action
         }
@@ -70,7 +85,7 @@ const CreateFolderInline = ({ folders, onConfirm, onFolderCreated }) => {
         setNameWarning(Alerts.Folder.CREATE_FOLDER_ERROR_CHAR_TYPE);
       }
     },
-    [folders, folderName, onConfirm, onFolderCreated],
+    [folders, folderName, onConfirm, onFolderCreated, onSkipFocus],
   );
 
   const handleExpand = () => {
@@ -163,10 +178,12 @@ CreateFolderInline.propTypes = {
   folders: PropTypes.array.isRequired,
   onConfirm: PropTypes.func.isRequired,
   onFolderCreated: PropTypes.func,
+  onSkipFocus: PropTypes.func,
 };
 
 CreateFolderInline.defaultProps = {
   onFolderCreated: null,
+  onSkipFocus: null,
 };
 
 export default CreateFolderInline;

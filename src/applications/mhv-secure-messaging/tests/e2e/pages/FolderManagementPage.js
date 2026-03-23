@@ -73,8 +73,10 @@ class FolderManagementPage {
   };
 
   verifyCreateFolderSuccessMessageHasFocus = () => {
-    cy.findByTestId(Locators.BUTTONS.CREATE_NEW_FOLDER_DATA_TEST_ID).should(
-      'have.focus',
+    cy.focused().should(
+      'have.attr',
+      'data-testid',
+      Locators.BUTTONS.CREATE_NEW_FOLDER_DATA_TEST_ID,
     );
   };
 

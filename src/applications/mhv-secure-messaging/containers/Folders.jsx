@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
@@ -23,6 +23,7 @@ const Folders = () => {
   const location = useLocation();
   const folders = useSelector(state => state.sm.folders.folderList);
   const [newlyCreatedFolderName, setNewlyCreatedFolderName] = useState(null);
+  const skipH1FocusRef = useRef(false);
 
   const { noAssociations, allTriageGroupsBlocked } = useSelector(
     state => state.sm.recipients,
@@ -55,9 +56,13 @@ const Folders = () => {
 
       // Always focus on H1 per MHV accessibility decision records.
       // Alert content is announced via role="status" without stealing focus.
-      if (folders !== undefined) {
+      // One-shot skip: after a successful folder create, CreateFolderInline
+      // sets the flag so this effect skips H1 focus once, then clears it
+      // so subsequent updates (e.g., delete/refetch) restore normal behavior.
+      if (folders !== undefined && !skipH1FocusRef.current) {
         focusElement(document.querySelector('h1'));
       }
+      skipH1FocusRef.current = false;
       updatePageTitle(pageTitleTag);
     },
     [folders, location.pathname],
@@ -127,6 +132,9 @@ const Folders = () => {
           folders={folders}
           onConfirm={confirmFolderCreate}
           onFolderCreated={handleFolderCreated}
+          onSkipFocus={() => {
+            skipH1FocusRef.current = true;
+          }}
         />
       </>
     );

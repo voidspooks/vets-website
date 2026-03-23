@@ -30,6 +30,26 @@ describe('manage custom folders', () => {
     cy.axeCheck(AXE_CONTEXT);
   });
 
+  it('returns focus to "Create a new folder" button after Cancel is clicked', () => {
+    // Use keyboard to expand the create folder form (WCAG SC 2.1.1)
+    cy.tabToElement('[data-testid="create-new-folder"]');
+    cy.realPress('Enter');
+
+    // Verify the inline form is visible
+    cy.findByTestId('create-folder-inline').should('be.visible');
+
+    // Use keyboard to activate Cancel button (WCAG SC 2.1.1)
+    cy.tabToElement('[data-testid="cancel-folder-button"]');
+    cy.realPress('Enter');
+
+    // Verify form is collapsed and focus returns to trigger button (WCAG SC 2.4.3)
+    cy.findByTestId('create-folder-inline').should('not.exist');
+    cy.focused().should('have.attr', 'data-testid', 'create-new-folder');
+
+    cy.injectAxe();
+    cy.axeCheck(AXE_CONTEXT);
+  });
+
   it(`verify folder deleted`, () => {
     PatientMessageCustomFolderPage.createCustomFolder(updatedFolders);
 
