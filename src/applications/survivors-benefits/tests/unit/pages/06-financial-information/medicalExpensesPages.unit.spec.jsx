@@ -14,6 +14,57 @@ import { medicalExpenseRecipientLabels } from '../../../../utils/labels';
 
 const arrayPath = 'medicalExpenses';
 
+const pageNames = [
+  'medicalExpensesIntro',
+  'medicalExpensesSummary',
+  'medicalRecipientPage',
+  'medicalPurposeDatePage',
+  'medicalFrequencyCostPage',
+];
+
+describe('Medical Expenses Pages — depends', () => {
+  pageNames.forEach(pageName => {
+    describe(pageName, () => {
+      let depends;
+
+      beforeEach(() => {
+        depends = medicalExpensesPages[pageName].depends;
+      });
+
+      it('returns false when survivorsBenefitsForm2025VersionEnabled is false', () => {
+        expect(depends({ survivorsBenefitsForm2025VersionEnabled: false })).to
+          .be.false;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is not NO_INCOME', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            moreThanFourIncomeSources: 'HAS_INCOME',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is not set', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+          }),
+        ).to.be.true;
+      });
+
+      it('returns false when toggle is true and moreThanFourIncomeSources is NO_INCOME', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.false;
+      });
+    });
+  });
+});
+
 describe('Medical Expenses Pages', () => {
   it('renders the medical expenses page intro', async () => {
     const { medicalExpensesIntro } = medicalExpensesPages;

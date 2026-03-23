@@ -114,6 +114,17 @@ export const careRecipientLabels = {
   OTHER: 'Other',
 };
 
+export const DEFAULT_INCOME_SOURCES =
+  'Do you or your dependents have more than 4 sources of income?';
+export const VERSION_2025_INCOME_SOURCES =
+  'How many income sources does your family have?';
+
+export const incomeSourceLabels = {
+  NO_INCOME: 'No income',
+  ONE_TO_FOUR_SOURCES: '1-4 sources of income',
+  MORE_THAN_FIVE_SOURCES: '5+ sources of income',
+};
+
 // Get military states to filter them out
 // Marriage-specific state list: filter out military state codes so the
 // marriage pages always render the US states/territories dropdown instead

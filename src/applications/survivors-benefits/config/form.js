@@ -488,8 +488,19 @@ const formConfig = {
         incomeAndAssets: {
           title: 'Income and assets',
           path: 'financial-information/income-and-assets',
-          depends: formData => formData?.claims?.survivorsPension === true,
+          depends: formData =>
+            formData?.claims?.survivorsPension === true &&
+            !formData?.survivorsBenefitsForm2025VersionEnabled,
           uiSchema: incomeAndAssets.uiSchema,
+          schema: incomeAndAssets.schema,
+        },
+        incomeAndAssets2025: {
+          title: 'Income and assets',
+          path: 'financial-information/income-and-assets-2025',
+          depends: formData =>
+            formData?.claims?.survivorsPension === true &&
+            formData?.survivorsBenefitsForm2025VersionEnabled,
+          uiSchema: incomeAndAssets.uiSchema2025,
           schema: incomeAndAssets.schema,
         },
         submitSupportingDocs: {
@@ -554,9 +565,20 @@ const formConfig = {
         incomeSources: {
           title: 'Income sources',
           path: 'financial-information/income-sources',
-          depends: formData => formData?.claims?.survivorsPension === true,
+          depends: formData =>
+            formData?.claims?.survivorsPension === true &&
+            !formData?.survivorsBenefitsForm2025VersionEnabled,
           uiSchema: incomeSources.uiSchema,
           schema: incomeSources.schema,
+        },
+        incomeSources2025: {
+          title: 'Income sources',
+          path: 'financial-information/income-sources-2025',
+          depends: formData =>
+            formData?.claims?.survivorsPension === true &&
+            formData?.survivorsBenefitsForm2025VersionEnabled,
+          uiSchema: incomeSources.uiSchema2025,
+          schema: incomeSources.schema2025,
         },
         ...grossMonthlyIncomePages,
         ...careExpensesPages,
