@@ -1,7 +1,6 @@
 import React from 'react';
 import { VaBreadcrumbs } from '@department-of-veterans-affairs/web-components/react-bindings';
 import manifest from '../manifest.json';
-import { TITLE } from '../constants';
 
 const Breadcrumbs = () => {
   const crumbs = [
@@ -10,17 +9,17 @@ const Breadcrumbs = () => {
       label: 'Home',
     },
     {
-      href: '#',
+      href: '/forms',
       label: 'VA Forms',
     },
     {
-      href: '#',
+      href: '/forms/22-0989',
       label:
-        'Education benefit entitlement restoration request (VA Form 22-0989)',
+        'Education benefit entitlement restoration for school closure (VA Form 22-0989)',
     },
     {
       href: manifest.rootUrl,
-      label: TITLE,
+      label: 'Request entitlement restoration online',
     },
   ];
   return (

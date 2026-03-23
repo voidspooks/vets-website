@@ -48,6 +48,7 @@ export default {
       }),
       'ui:errorMessages': {
         required: 'You must enter a date',
+        pattern: 'Enter a valid date',
       },
     },
   },

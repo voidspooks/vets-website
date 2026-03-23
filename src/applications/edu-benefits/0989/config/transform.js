@@ -11,6 +11,8 @@ export default function transform(formConfig, form) {
 
   delete data.statementOfTruthCertified;
   delete data.AGREED;
+  delete data.vaFileNumberLast4;
+  delete data.ssnLast4;
 
   // since we're using the prefill/ContactInfo pattern for managing
   // the users address, phones, and email all the relevant data is

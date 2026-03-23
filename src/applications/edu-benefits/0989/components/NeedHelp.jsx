@@ -6,26 +6,10 @@ export default function NeedHelp() {
       <va-need-help>
         <div slot="content">
           <p>
-            <strong>If you have trouble using this online form,</strong> call us
-            at <va-telephone contact="8006982411" /> (
-            <va-telephone contact="711" tty />
-            ). We’re here 24/7.
-          </p>
-          <p>
-            <strong>
-              If you need help gathering your information or filling out your
-              form,
-            </strong>{' '}
-            contact a local Veterans Service Organization (VSO).
-          </p>
-          <p>
-            <a
-              href="https://www.va.gov/get-help-from-accredited-representative/find-rep/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Find a local Veterans Service Organization
-            </a>
+            If you need help completing this form, call us at 1-888-GI-BILL-1 (
+            <va-telephone contact="8884424551" international />
+            ). If you have hearing loss, call <va-telephone contact="711" tty />
+            .
           </p>
         </div>
       </va-need-help>
