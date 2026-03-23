@@ -16,3 +16,27 @@ ul.no-bullets
     list-style-type: none;
     padding-left: 0;
 }
+
+/* Reduce shift on tablets and smaller */
+@media (max-width: 768px) {
+    main {
+        width: 80vw;
+        transform: translateX(-2%);
+        margin-left: 15px !important;
+    }
+
+    .form-renderer-item {
+        .vads-grid-row {
+            flex-direction: column !important;
+        }
+
+        .vads-grid-col-5,
+        .vads-grid-col-7,
+        .vads-u-padding-x--2p5 {
+            width: 100% !important;
+            flex: none !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+}

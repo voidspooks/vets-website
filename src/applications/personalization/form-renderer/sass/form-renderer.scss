@@ -1,0 +1,15 @@
+.renderer {
+    margin: 0 auto;
+    padding: 0;
+    width: 42.5rem;
+    transform: translateX(min(-14%));
+    word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .renderer {
+        width: 95vw;
+        transform: translateX(0);
+        margin: 0 auto;
+    }
+}

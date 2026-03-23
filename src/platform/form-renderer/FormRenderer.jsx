@@ -18,7 +18,7 @@ function createLabel(obj) {
 function createField(obj) {
   const { label } = obj;
   return (
-    <li id={`li-${obj.key}`} key={obj.key}>
+    <li id={`li-${obj.key}`} key={obj.key} className="form-renderer-item">
       <div key={obj.key} className="vads-grid-row vads-u-margin-x--0">
         <div className="vads-grid-col-5 vads-u-padding-x--0">{label}</div>
         <div className="vads-grid-col-7 vads-u-padding-x--2p5 vads-u-font-weight--bold">
@@ -34,7 +34,7 @@ function createField(obj) {
 function createChecklist(obj) {
   const label = obj.label.endsWith('?') ? obj.label : `${obj.label}:`;
   return (
-    <li id={`li-${obj.key}`} key={obj.key}>
+    <li id={`li-${obj.key}`} key={obj.key} className="form-renderer-item">
       <div key={obj.key} className="vads-grid-row">
         <div className="vads-grid-col-5">{label}</div>
         <div className="vads-grid-col-6 vads-u-font-weight--bold vads-u-margin-left--2">

@@ -40,10 +40,12 @@ export default function App({ params }) {
         >
           <Toggler.Enabled>
             {response && !isError ? (
-              <FormRenderer
-                config={response.template}
-                data={response.submission}
-              />
+              <div className="renderer">
+                <FormRenderer
+                  config={response.template}
+                  data={response.submission}
+                />
+              </div>
             ) : (
               <div>Could not load submission.</div>
             )}
