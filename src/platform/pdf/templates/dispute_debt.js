@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { formatDateLong } from 'platform/utilities/date';
-import i18nDebtApp from 'applications/dispute-debt/i18n';
+import i18nDebtApp from 'applications/financial-management/dispute-debt/i18n';
 import {
   createAccessibleDoc,
   createHeading,

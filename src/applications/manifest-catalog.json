@@ -220,12 +220,6 @@
       "rootUrl": "/discover-your-benefits"
     },
     {
-      "directoryPath": "src/applications/dispute-debt",
-      "appName": "Dispute your VA debt",
-      "entryName": "dispute-debt",
-      "rootUrl": "/manage-va-debt/dispute-debt"
-    },
-    {
       "directoryPath": "src/applications/ds-playground",
       "appName": "DS Playground",
       "entryName": "ds-playground",
@@ -368,6 +362,12 @@
       "appName": "Facility Locator",
       "entryName": "facilities",
       "rootUrl": "/find-locations"
+    },
+    {
+      "directoryPath": "src/applications/financial-management/dispute-debt",
+      "appName": "Dispute your VA debt",
+      "entryName": "dispute-debt",
+      "rootUrl": "/manage-va-debt/dispute-debt"
     },
     {
       "directoryPath": "src/applications/financial-management/financial-status-report",

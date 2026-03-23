@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import i18nDebtApp from 'applications/dispute-debt/i18n';
 import {
   ConfirmationView,
   ChapterSectionCollection,
 } from 'platform/forms-system/src/js/components/ConfirmationView';
 import { Trans } from 'react-i18next';
+import i18nDebtApp from '../i18n';
 import { setDocumentTitle } from '../utils';
 
 import NeedHelp from '../components/NeedHelp';

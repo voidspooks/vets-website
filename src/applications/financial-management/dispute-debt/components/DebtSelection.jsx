@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { setData } from 'platform/forms-system/src/js/actions';
 import { VaCheckboxGroup } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
-import i18nDebtApp from 'applications/dispute-debt/i18n';
+import i18nDebtApp from '../i18n';
 import { setFocus } from '../utils';
 
 import AlertCard from './AlertCard';
