@@ -15,12 +15,23 @@ import { createShouldShowMinimal } from '../header/helpers';
 export const footerElemementId = 'footerNav';
 
 export const setupMinimalFooter = () => {
+  const footerMinimal = document.querySelector('#footer-minimal');
   let excludePaths;
-  const footer = document.getElementById(footerElemementId);
-  const enabled = footer?.dataset?.minimalFooter === 'true';
+  let enabled = false;
 
-  if (footer?.dataset?.minimalExcludePaths) {
-    excludePaths = JSON.parse(footer.dataset.minimalExcludePaths);
+  if (footerMinimal) {
+    // New approach: read from #footer-minimal element
+    enabled = true;
+    if (footerMinimal.dataset?.excludePaths) {
+      excludePaths = JSON.parse(footerMinimal.dataset.excludePaths);
+    }
+  } else {
+    // Fallback: read from #footerNav data attributes (old content-build)
+    const footer = document.getElementById(footerElemementId);
+    enabled = footer?.dataset?.minimalFooter === 'true';
+    if (footer?.dataset?.minimalExcludePaths) {
+      excludePaths = JSON.parse(footer.dataset.minimalExcludePaths);
+    }
   }
 
   return createShouldShowMinimal({
