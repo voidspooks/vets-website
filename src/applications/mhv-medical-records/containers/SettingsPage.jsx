@@ -187,7 +187,7 @@ const SettingsPage = () => {
         onSecondaryButtonClick={handleSecondaryButtonClick}
         primaryButtonText={primaryButtonText}
         secondaryButtonText={secondaryButtonText}
-        visible
+        visible={showSharingModal}
       >
         {isSharing ? (
           <>
@@ -242,7 +242,7 @@ const SettingsPage = () => {
           your sharing settings here at any time.
         </p>
 
-        {showSharingModal && sharingModalContent()}
+        {sharingModalContent()}
         {sharingCardContent()}
       </section>
       <section>

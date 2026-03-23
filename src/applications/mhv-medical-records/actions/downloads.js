@@ -16,6 +16,15 @@ const BACKOFF_FACTOR = 1.05; // 5% increase
 const MAX_DURATION = 60000; // 1 minute total
 const MIN_DELAY = 1000; // 1s floor for status polling
 const MAX_DELAY = 30000; // 30s ceiling for status polling
+const CACHE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
+
+/**
+ * Checks whether a CCD V2 format status value indicates readiness.
+ * @param {string} value - Status string from the status endpoint (e.g., 'READY', 'NOT_READY')
+ * @returns {boolean} True if the value is 'READY' (case-insensitive)
+ */
+const isReady = value =>
+  typeof value === 'string' && value.toUpperCase() === 'READY';
 
 // Shared media type map for CCD downloads
 const MEDIA_TYPE_MAP = {
@@ -151,8 +160,11 @@ export const genAndDownloadCCD = (
  *
  * @param {string} jobId   - Job ID returned by the generate call
  * @param {string} requestedFormat - The file extension the user requested (xml, html, pdf)
- * @param {number} retryAfter - Initial retry interval in seconds
- * @returns {Promise<string>} The poll ID (taskId or jobId) to use for download
+ * @param {number} retryAfterSeconds - Initial retry interval in seconds
+ * @returns {Promise<{taskId: string, xml: string, html: string, pdf: string, authoredOn: string|null}>}
+ *   The status attributes including the taskId to use for download,
+ *   the readiness state of each format, and the authoredOn timestamp
+ *   from the READY response (used for cache expiration).
  */
 const pollCCDV2Status = async (jobId, requestedFormat, retryAfterSeconds) => {
   const startTime = Date.now();
@@ -163,9 +175,6 @@ const pollCCDV2Status = async (jobId, requestedFormat, retryAfterSeconds) => {
   // Start polling with the UUID jobId. Once the backend assigns a taskId
   // we switch to polling with that instead.
   let pollId = jobId;
-
-  const isReady = value =>
-    typeof value === 'string' && value.toUpperCase() === 'READY';
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -190,7 +199,13 @@ const pollCCDV2Status = async (jobId, requestedFormat, retryAfterSeconds) => {
 
     // The requested format must be READY before we can download
     if (isReady(attrs?.[requestedFormat])) {
-      return pollId;
+      return {
+        taskId: pollId,
+        xml: attrs?.xml || null,
+        html: attrs?.html || null,
+        pdf: attrs?.pdf || null,
+        authoredOn: attrs?.authoredOn || null,
+      };
     }
 
     // Update delay from the response if available
@@ -207,11 +222,23 @@ const pollCCDV2Status = async (jobId, requestedFormat, retryAfterSeconds) => {
  * Downloads CCD from Oracle Health (V2 endpoint)
  *
  * Flow: generate -> poll status until READY -> download
+ *
+ * If a previous download already completed for a different format, the cached
+ * ccdV2Status (taskId + format readiness) is reused so we skip generate + poll
+ * and go straight to download.  The cache is only valid for 10 minutes after
+ * the authoredOn timestamp; once expired a fresh generate + poll cycle runs.
+ *
+ * @param {string} firstName - User's first name for the filename
+ * @param {string} lastName  - User's last name for the filename
+ * @param {string} fileType  - Desired format: 'xml', 'html', or 'pdf'
+ * @param {Object|null} cachedStatus - Previously stored ccdV2Status from Redux
+ *   Shape: { taskId: string, xml: string, html: string, pdf: string, authoredOn: string }
  */
 export const genAndDownloadCCDV2 = (
   firstName,
   lastName,
   fileType = 'xml',
+  cachedStatus = null,
 ) => async dispatch => {
   // Clear any previous error alerts before attempting new download
   dispatch(clearAlerts());
@@ -222,34 +249,63 @@ export const genAndDownloadCCDV2 = (
     const extension = fileType.toLowerCase();
     const mediaType = validateAndGetMediaType(extension);
 
-    // Step 1: Generate the CCD – returns a jobId and retryAfterSeconds
-    const generateResponse = await generateCCDV2();
-    const generateAttrs = generateResponse?.data?.attributes;
-    const { jobId, retryAfterSeconds, authoredOn, message } = generateAttrs;
+    let downloadId;
+    let authoredOnDate;
 
-    if (!jobId) {
-      dispatch({
-        type: Actions.Downloads.CCD_GENERATION_ERROR,
-        response: authoredOn || new Date().toISOString(),
-      });
-      throw new Error(
-        `CCD generation error: ${message || 'No job ID returned.'}`,
+    // Determine whether the cached status is still fresh (< 10 min old)
+    const cacheIsFresh =
+      cachedStatus?.authoredOn &&
+      Date.now() - new Date(cachedStatus.authoredOn).getTime() <
+        CACHE_MAX_AGE_MS;
+
+    // Check if a previous generation already produced a READY status for this format
+    if (
+      cacheIsFresh &&
+      cachedStatus?.taskId &&
+      isReady(cachedStatus[extension])
+    ) {
+      downloadId = cachedStatus.taskId;
+      authoredOnDate = cachedStatus.authoredOn;
+    } else {
+      // Step 1: Generate the CCD – returns a jobId and retryAfterSeconds
+      const generateResponse = await generateCCDV2();
+      const generateAttrs = generateResponse?.data?.attributes;
+      const { jobId, retryAfterSeconds, authoredOn, message } = generateAttrs;
+
+      if (!jobId) {
+        dispatch({
+          type: Actions.Downloads.CCD_GENERATION_ERROR,
+          response: authoredOn || new Date().toISOString(),
+        });
+        throw new Error(
+          `CCD generation error: ${message || 'No job ID returned.'}`,
+        );
+      }
+
+      // Step 2: Poll statusCCDV2 until the requested format is READY
+      const statusResult = await pollCCDV2Status(
+        jobId,
+        extension,
+        retryAfterSeconds || 10,
       );
-    }
 
-    // Step 2: Poll statusCCDV2 until the requested format is READY
-    const downloadId = await pollCCDV2Status(
-      jobId,
-      extension,
-      retryAfterSeconds || 10,
-    );
+      downloadId = statusResult.taskId;
+      authoredOnDate = statusResult.authoredOn;
+
+      // Cache the V2 status so subsequent format downloads skip generate + poll
+      dispatch({
+        type: Actions.Downloads.SET_CCD_V2_STATUS,
+        response: statusResult,
+      });
+    }
 
     // Step 3: Download the document in the requested format
     const response = await downloadCCDV2Api(downloadId, extension);
 
+    const fileDate = authoredOnDate ? new Date(authoredOnDate) : new Date();
     const fileName = `VA-Continuity-of-care-document-OH-${
       firstName ? `${firstName}-` : ''
-    }${lastName}-${format(new Date(), 'M-d-yyyy_hhmmssaaa')}.${extension}`;
+    }${lastName}-${format(fileDate, 'M-d-yyyy_hhmmssaaa')}.${extension}`;
 
     const blob = await createBlobWithType(response, mediaType);
     triggerFileDownload(blob, fileName);
@@ -260,6 +316,7 @@ export const genAndDownloadCCDV2 = (
     });
   } catch (error) {
     dispatch({ type: Actions.Downloads.CANCEL_CCD });
+    dispatch({ type: Actions.Downloads.CLEAR_CCD_V2_STATUS });
     dispatch(addAlert(Constants.ALERT_TYPE_CCD_ERROR, error));
     sendDatadogError(error, 'actions_downloads_downloadCCDV2');
   }

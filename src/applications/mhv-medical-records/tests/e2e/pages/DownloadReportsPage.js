@@ -141,6 +141,7 @@ class DownloadReportsPage {
     format,
     contentType,
     body,
+    authoredOn = new Date().toISOString(),
     generateFixture = './applications/mhv-medical-records/tests/e2e/fixtures/ccd-generate-response-v2.json',
     statusNotReadyFixture = './applications/mhv-medical-records/tests/e2e/fixtures/ccd-status-not-ready-v2.json',
     statusReadyFixture = './applications/mhv-medical-records/tests/e2e/fixtures/ccd-status-ready-v2.json',
@@ -167,12 +168,24 @@ class DownloadReportsPage {
 
       // Step 2b: Second status poll uses the taskId from the NOT_READY response → READY.
       cy.fixture(statusReadyFixture).then(readyBody => {
-        // const taskId = readyBody.data.attributes.taskId;
+        // Override authoredOn so the client-side cache freshness check
+        // (Date.now() − authoredOn < 10 min) passes. Callers can supply
+        // a fixed mock date for determinism; defaults to now.
+        const patchedBody = {
+          ...readyBody,
+          data: {
+            ...readyBody.data,
+            attributes: {
+              ...readyBody.data.attributes,
+              authoredOn,
+            },
+          },
+        };
 
         cy.intercept(
           'GET',
           `/my_health/v2/medical_records/ccd/status/12345`,
-          readyBody,
+          patchedBody,
         ).as('statusCcdV2Ready');
 
         // Step 3: Download endpoint uses the taskId (final pollId returned to caller)
@@ -189,12 +202,13 @@ class DownloadReportsPage {
     });
   };
 
-  clickCcdDownloadXmlButtonV2 = pathToFixture => {
+  clickCcdDownloadXmlButtonV2 = (pathToFixture, { authoredOn } = {}) => {
     cy.fixture(pathToFixture, 'utf8').then(xmlBody => {
       this.interceptCcdV2Flow({
         format: 'xml',
         contentType: 'application/xml',
         body: xmlBody,
+        ...(authoredOn && { authoredOn }),
       });
 
       // Use shadow DOM to access the link inside the web component
@@ -212,12 +226,13 @@ class DownloadReportsPage {
     });
   };
 
-  clickCcdDownloadHtmlButtonV2 = pathToFixture => {
+  clickCcdDownloadHtmlButtonV2 = (pathToFixture, { authoredOn } = {}) => {
     cy.fixture(pathToFixture, 'utf8').then(htmlBody => {
       this.interceptCcdV2Flow({
         format: 'html',
         contentType: 'text/html',
         body: htmlBody,
+        ...(authoredOn && { authoredOn }),
       });
 
       // Use shadow DOM to access the link inside the web component
@@ -235,13 +250,14 @@ class DownloadReportsPage {
     });
   };
 
-  clickCcdDownloadPdfButtonV2 = () => {
+  clickCcdDownloadPdfButtonV2 = ({ authoredOn } = {}) => {
     const pdfMock = '%PDF-1.4\n%mock pdf content\n%%EOF';
 
     this.interceptCcdV2Flow({
       format: 'pdf',
       contentType: 'application/pdf',
       body: pdfMock,
+      ...(authoredOn && { authoredOn }),
     });
 
     // Use shadow DOM to access the link inside the web component

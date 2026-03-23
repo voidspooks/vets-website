@@ -539,7 +539,9 @@ describe('Medical Records Download Page - CCD Download Success Alerts', () => {
       const pathToFixture =
         './applications/mhv-medical-records/tests/e2e/fixtures/ccd-download-response.xml';
 
-      DownloadReportsPage.clickCcdDownloadXmlButtonV2(pathToFixture);
+      DownloadReportsPage.clickCcdDownloadXmlButtonV2(pathToFixture, {
+        authoredOn: mockDateISO,
+      });
 
       cy.get('[data-testid="alert-download-started"]')
         .should('exist')
@@ -859,7 +861,9 @@ describe('Medical Records Download Page - CCD Download Functionality', () => {
     it('can download XML CCD file via V2 endpoint', () => {
       const pathToXmlFixture =
         './applications/mhv-medical-records/tests/e2e/fixtures/ccd-download-response-v2.xml';
-      DownloadReportsPage.clickCcdDownloadXmlButtonV2(pathToXmlFixture);
+      DownloadReportsPage.clickCcdDownloadXmlButtonV2(pathToXmlFixture, {
+        authoredOn: mockDateISO,
+      });
 
       cy.injectAxeThenAxeCheck();
     });
@@ -867,13 +871,17 @@ describe('Medical Records Download Page - CCD Download Functionality', () => {
     it('can download HTML CCD file via V2 endpoint', () => {
       const pathToHtmlFixture =
         './applications/mhv-medical-records/tests/e2e/fixtures/ccd-download-response-v2.html';
-      DownloadReportsPage.clickCcdDownloadHtmlButtonV2(pathToHtmlFixture);
+      DownloadReportsPage.clickCcdDownloadHtmlButtonV2(pathToHtmlFixture, {
+        authoredOn: mockDateISO,
+      });
 
       cy.injectAxeThenAxeCheck();
     });
 
     it('can download PDF CCD file via V2 endpoint', () => {
-      DownloadReportsPage.clickCcdDownloadPdfButtonV2();
+      DownloadReportsPage.clickCcdDownloadPdfButtonV2({
+        authoredOn: mockDateISO,
+      });
 
       cy.injectAxeThenAxeCheck();
     });

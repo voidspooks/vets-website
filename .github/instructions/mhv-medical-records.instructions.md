@@ -307,6 +307,8 @@ Used in CCD download sections to distinguish records before vs after VistA-to-OH
   - Formats: HTML, XML, PDF
   - **CRITICAL**: Both V1 and V2 CCD generation share a single `generatingCCD` boolean in Redux state. When either download is in progress, a single loading spinner replaces **both** the VistA and OH download sections in `VistaAndOHContent`. This keeps the UX simple — only one CCD download can be active at a time.
   - V2 polling checks only the requested format for READY status, not all formats
+  - **V2 Status Caching**: After the first successful V2 poll, the status result (including `taskId`, per-format readiness, and `authoredOn` from the READY status response) is cached in `state.mr.downloads.ccdV2Status` via `SET_CCD_V2_STATUS`. Cache expiration is based on the `authoredOn` timestamp — the date the backend created the CCD report. Subsequent downloads for a different format reuse the cached `taskId` and skip generate + poll, going straight to download, **only** if `authoredOn` is less than 10 minutes old (`CACHE_MAX_AGE_MS`). If the cache is missing, expired, or lacks `authoredOn`, a fresh generate + poll cycle runs. The cache is cleared on V2 error only (`CLEAR_CCD_V2_STATUS` dispatched from the `genAndDownloadCCDV2` catch block) or explicitly via `CLEAR_CCD_V2_STATUS`. `CANCEL_CCD` resets `generatingCCD` but does **not** clear `ccdV2Status`, so a V1 CCD failure will not wipe the unrelated V2 cache. **NOTE**: Mock API handlers and E2E test intercepts must return a dynamic/fresh `authoredOn` (e.g., `new Date().toISOString()`) to prevent the cache from always appearing stale during local development.
+  - **`genAndDownloadCCDV2` signature**: `(firstName, lastName, fileType, cachedStatus)` — the 4th parameter is the cached `ccdV2Status` from Redux (passed by `DownloadReportPage`)
 - **Self-Entered Information (SEI)**: Download user-entered health data
 
 ### Image Studies (Radiology)
@@ -501,6 +503,7 @@ Used in CCD download sections to distinguish records before vs after VistA-to-OH
   - Wait for `@statusCcdV2NotReady` then `@statusCcdV2Ready` to account for the polling cycle.
   - IDs are derived from fixture data — the generate fixture's `jobId` routes the first status poll, and the not-ready fixture's `taskId` routes the second poll and the download.
   - **Fixed mock dates**: Always use a fixed `mockDateISO` constant (e.g., `new Date(2026, 2, 17).toISOString()`) in test intercepts instead of `new Date()` to ensure deterministic, reproducible tests.
+  - **`authoredOn` in E2E intercepts**: `interceptCcdV2Flow()` accepts an optional `authoredOn` parameter (defaults to `new Date().toISOString()`) that overrides the fixture's `authoredOn` in the READY status response. This ensures the client-side cache freshness check (`Date.now() − authoredOn < 10 min`) passes. Test specs should pass their `mockDateISO` constant for determinism: `DownloadReportsPage.clickCcdDownloadXmlButtonV2(fixture, { authoredOn: mockDateISO })`. The `clickCcdDownload*V2` helpers all accept an optional `{ authoredOn }` options object that is forwarded to `interceptCcdV2Flow`.
 
 ## API Functions (`api/MrApi.js`)
 
@@ -667,6 +670,7 @@ state.mr = {
     generatingCCD: Boolean, // CCD generation in progress (VistA or Oracle Health)
     ccdDownloadSuccess: Boolean,
     error: Boolean,
+    ccdV2Status: Object, // Cached V2 poll result: { taskId, xml, html, pdf, authoredOn } or null
     dateFilter: Object,
     recordFilter: Object,
     fileTypeFilter: String,
@@ -761,6 +765,7 @@ export const convertAllergy = allergy => {
 - ❌ **Never** skip Datadog error tracking in catch blocks in Redux action creators
 - ❌ **Never** use Unicode escape sequences (e.g., `\u2019`) to represent curly apostrophes or other special characters. Always write straight apostrophes (`'`) in source code and test assertions — ESLint will auto-fix them to curly apostrophes at lint time, but unit tests run against the raw source, so assertions must match straight apostrophes.
 - ❌ **Never** register mock API routes without the file extension when the client-side API appends one. The `mocker-api` / Express router treats `download` and `download.xml` as different paths. If `MrApi.js` requests `ccd/download.xml`, the mock must be `'GET .../ccd/download.xml'`, **not** `'GET .../ccd/download'`.
+- ❌ **Never** hardcode `authoredOn` dates in mock API handlers or E2E test fixtures for the CCD V2 flow that don't align with the test's mock date. Stale `authoredOn` values will cause the client-side cache to always appear expired, breaking the cache-skip optimization. The mock API handler (`statusCCDV2`) returns a dynamic `new Date().toISOString()` for local dev. For E2E fixtures, keep `authoredOn` in `ccd-status-ready-v2.json` in sync with the `mockDate` constant defined in the test spec (e.g., `2026-03-17`).
 
 ### Performance Considerations
 - ✅ Use lazy loading for page containers

@@ -17,6 +17,12 @@ describe('Medical Records View Labs and Tests', () => {
     cy.intercept('GET', '/my_health/v1/medical_records/radiology*', {
       statusCode: 404,
     });
+    // Return 200 for imaging status so fetchImageRequestStatus() doesn't
+    // re-throw an unhandled error that triggers the dev error overlay.
+    cy.intercept('GET', '/my_health/v1/medical_records/imaging/status', {
+      statusCode: 200,
+      body: [],
+    });
     cy.intercept('GET', '/my_health/v1/medical_records/imaging*', {
       statusCode: 404,
     });

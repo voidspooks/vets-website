@@ -53,6 +53,7 @@ const DownloadReportPage = ({ runningUnitTest }) => {
         ccdDownloadSuccess,
         error: ccdError,
         bbDownloadSuccess: successfulBBDownload,
+        ccdV2Status,
       },
       blueButton: { failedDomains: failedBBDomains },
       refresh: { status: refreshStatus },
@@ -242,6 +243,7 @@ const DownloadReportPage = ({ runningUnitTest }) => {
           userProfile?.userFullName?.first || '',
           userProfile?.userFullName?.last || '',
           fileType,
+          ccdV2Status,
         ),
       );
       postRecordDatadogAction(statsdFrontEndActions.DOWNLOAD_CCD);
@@ -251,6 +253,7 @@ const DownloadReportPage = ({ runningUnitTest }) => {
       dispatch,
       userProfile?.userFullName?.first,
       userProfile?.userFullName?.last,
+      ccdV2Status,
     ],
   );
 

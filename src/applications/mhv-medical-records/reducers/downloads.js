@@ -21,6 +21,14 @@ const initialState = {
    * @type {Boolean}
    */
   ccdDownloadSuccess: false,
+  /**
+   * Cached CCD V2 status from polling, keyed by format.
+   * When present, allows subsequent downloads to skip generate + poll.
+   * Shape: { taskId: string, xml: string, html: string, pdf: string, authoredOn: string }
+   * The cache is only valid for 10 minutes after the authoredOn timestamp.
+   * @type {Object|null}
+   */
+  ccdV2Status: null,
   dateFilter: {},
 };
 
@@ -59,6 +67,18 @@ export const downloadsReducer = (state = initialState, action) => {
         ...state,
         ccdDownloadSuccess: false,
         error: false,
+      };
+    }
+    case Actions.Downloads.SET_CCD_V2_STATUS: {
+      return {
+        ...state,
+        ccdV2Status: action.response,
+      };
+    }
+    case Actions.Downloads.CLEAR_CCD_V2_STATUS: {
+      return {
+        ...state,
+        ccdV2Status: null,
       };
     }
     case Actions.Downloads.SET_DATE_FILTER: {

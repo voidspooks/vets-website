@@ -126,8 +126,12 @@ const statusCCDV2 = (req, res) => {
   if (id === 'b0733653-30b4-411f-a997-7453039e510c') {
     return res.json(ccdV2StatusNotReady);
   }
-  // Once we have a taskId (12043), return the ready response
-  return res.json(ccdV2StatusReady);
+  // Once we have a taskId (12043), return the ready response with a dynamic
+  // authoredOn so the client-side cache (which uses authoredOn for expiration)
+  // always sees a fresh timestamp during local development.
+  const readyResponse = JSON.parse(JSON.stringify(ccdV2StatusReady));
+  readyResponse.data.attributes.authoredOn = new Date().toISOString();
+  return res.json(readyResponse);
 };
 
 const downloadCCDV2Pdf = (req, res) => {

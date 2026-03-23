@@ -153,8 +153,9 @@ describe('Download Actions', () => {
 
       // genAndDownloadCCDV2 makes 3 sequential API calls:
       // 1. generateCCDV2 -> returns jobId
-      // 2. statusCCDV2 -> returns status with format READY
+      // 2. statusCCDV2 -> returns status with format READY (includes authoredOn)
       // 3. downloadCCDV2 -> returns blob response
+      const statusAuthoredOn = '2026-03-17T10:18:36.400-05:00';
       const generateRequest = {
         shouldResolve: true,
         response: {
@@ -175,6 +176,7 @@ describe('Download Actions', () => {
               xml: 'READY',
               html: 'READY',
               pdf: 'READY',
+              authoredOn: statusAuthoredOn,
             },
           },
         },
@@ -197,6 +199,19 @@ describe('Download Actions', () => {
         Actions.Downloads.GENERATE_CCD,
       );
 
+      // Should cache V2 status after polling
+      const setCacheCall = dispatch
+        .getCalls()
+        .find(
+          call => call.args[0].type === Actions.Downloads.SET_CCD_V2_STATUS,
+        );
+      expect(setCacheCall).to.not.be.undefined;
+      // Cached status must include authoredOn from the READY status response
+      expect(setCacheCall.args[0].response.authoredOn).to.equal(
+        statusAuthoredOn,
+      );
+      expect(setCacheCall.args[0].response).to.have.property('taskId');
+
       expect(
         dispatch
           .getCalls()
@@ -204,6 +219,187 @@ describe('Download Actions', () => {
       ).to.be.true;
 
       expect(HTMLAnchorElement.prototype.click.called).to.be.true;
+    });
+
+    it('skips generate and poll when cached status is available', async () => {
+      const dispatch = sinon.spy();
+
+      const mockBlob = new Blob(['mock html data'], {
+        type: 'text/html',
+      });
+
+      // Only 1 API call needed: downloadCCDV2 (generate + poll are skipped)
+      const downloadRequest = {
+        shouldResolve: true,
+        response: {
+          blob: sinon.stub().resolves(mockBlob),
+        },
+      };
+      mockMultipleApiRequests([downloadRequest]);
+
+      const cachedStatus = {
+        taskId: 'cached-task-id',
+        xml: 'READY',
+        html: 'READY',
+        pdf: 'READY',
+        authoredOn: new Date().toISOString(),
+      };
+
+      await genAndDownloadCCDV2('Jane', 'Smith', 'html', cachedStatus)(
+        dispatch,
+      );
+
+      // Should NOT dispatch SET_CCD_V2_STATUS (cache was reused, no new poll)
+      expect(
+        dispatch
+          .getCalls()
+          .some(
+            call => call.args[0].type === Actions.Downloads.SET_CCD_V2_STATUS,
+          ),
+      ).to.be.false;
+
+      expect(
+        dispatch
+          .getCalls()
+          .some(call => call.args[0].type === Actions.Downloads.DOWNLOAD_CCD),
+      ).to.be.true;
+
+      expect(HTMLAnchorElement.prototype.click.called).to.be.true;
+    });
+
+    it('ignores expired cached status and generates fresh CCD', async () => {
+      const dispatch = sinon.spy();
+
+      const mockBlob = new Blob(['mock xml data'], {
+        type: 'application/xml',
+      });
+
+      // Cached status with authoredOn > 10 minutes ago → should be ignored
+      const expiredStatus = {
+        taskId: 'stale-task-id',
+        xml: 'READY',
+        html: 'READY',
+        pdf: 'READY',
+        authoredOn: new Date(Date.now() - 11 * 60 * 1000).toISOString(),
+      };
+
+      // Full generate + poll + download cycle expected
+      const generateRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              jobId: 'new-job-id',
+              retryAfterSeconds: 0.001,
+            },
+          },
+        },
+      };
+      const statusRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              taskId: 'new-task-id',
+              xml: 'READY',
+              html: 'READY',
+              pdf: 'READY',
+              authoredOn: new Date().toISOString(),
+            },
+          },
+        },
+      };
+      const downloadRequest = {
+        shouldResolve: true,
+        response: {
+          blob: sinon.stub().resolves(mockBlob),
+        },
+      };
+      mockMultipleApiRequests([
+        generateRequest,
+        statusRequest,
+        downloadRequest,
+      ]);
+
+      await genAndDownloadCCDV2('John', 'Doe', 'xml', expiredStatus)(dispatch);
+
+      // Should dispatch SET_CCD_V2_STATUS because cache was expired → new poll ran
+      expect(
+        dispatch
+          .getCalls()
+          .some(
+            call => call.args[0].type === Actions.Downloads.SET_CCD_V2_STATUS,
+          ),
+      ).to.be.true;
+
+      expect(
+        dispatch
+          .getCalls()
+          .some(call => call.args[0].type === Actions.Downloads.DOWNLOAD_CCD),
+      ).to.be.true;
+    });
+
+    it('ignores cached status when authoredOn is missing', async () => {
+      const dispatch = sinon.spy();
+
+      const mockBlob = new Blob(['mock data'], {
+        type: 'application/xml',
+      });
+
+      // Cached status with no authoredOn field → should be ignored
+      const noAuthoredOnStatus = {
+        taskId: 'old-task-id',
+        xml: 'READY',
+        html: 'READY',
+        pdf: 'READY',
+      };
+
+      const generateRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              jobId: 'fresh-job-id',
+              retryAfterSeconds: 0.001,
+            },
+          },
+        },
+      };
+      const statusRequest = {
+        shouldResolve: true,
+        response: {
+          data: {
+            attributes: {
+              taskId: 'fresh-task-id',
+              xml: 'READY',
+            },
+          },
+        },
+      };
+      const downloadRequest = {
+        shouldResolve: true,
+        response: {
+          blob: sinon.stub().resolves(mockBlob),
+        },
+      };
+      mockMultipleApiRequests([
+        generateRequest,
+        statusRequest,
+        downloadRequest,
+      ]);
+
+      await genAndDownloadCCDV2('Jane', 'Smith', 'xml', noAuthoredOnStatus)(
+        dispatch,
+      );
+
+      // Cache miss → new poll ran → SET_CCD_V2_STATUS dispatched
+      expect(
+        dispatch
+          .getCalls()
+          .some(
+            call => call.args[0].type === Actions.Downloads.SET_CCD_V2_STATUS,
+          ),
+      ).to.be.true;
     });
 
     it('includes "OH" in filename', async () => {
