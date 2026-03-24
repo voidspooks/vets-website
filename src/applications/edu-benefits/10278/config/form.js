@@ -241,6 +241,7 @@ const formConfig = {
           title: 'Security setup',
           uiSchema: securitySetup.uiSchema,
           schema: securitySetup.schema,
+          updateFormData: securitySetup.updateFormData,
           onNavForward: ({ formData, goPath }) => {
             const question = formData?.securityQuestion?.question;
             if (question === 'pin') {
