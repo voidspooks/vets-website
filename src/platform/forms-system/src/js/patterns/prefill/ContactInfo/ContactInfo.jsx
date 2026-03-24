@@ -553,7 +553,11 @@ export const ContactInfoBase = ({
         Not provided
       </p>
     ) : (
-      <div className="dd-privacy-hidden" data-dd-action-name="email">
+      <div
+        className="dd-privacy-hidden"
+        data-dd-action-name="email"
+        style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}
+      >
         {renderEmail(dataWrap[keys.email])}
       </div>
     );
