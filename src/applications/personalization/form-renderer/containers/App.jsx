@@ -102,7 +102,7 @@ export default function App({ params }) {
               {isGeneralError && generalErrorAlert()}
               {isUnauthorized && unauthorizedAlert()}
               {response && (
-                <div className="renderer">
+                <div className="vads-u-margin-top--5 renderer">
                   <FormRenderer
                     config={response.template}
                     data={response.submission}
