@@ -141,6 +141,7 @@ const MessageThreadHeader = props => {
           <SmMigratingFacilitiesAlerts
             className="vads-u-margin-y--4"
             migratingFacilities={migratingFacilities}
+            stationNumber={message?.triageGroup?.stationNumber}
           />
         )}
         {useCanReplyField ? (
