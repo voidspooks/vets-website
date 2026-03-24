@@ -41,7 +41,7 @@ export default function VARequestLayout({ data: appointment }) {
   const preferredModality = appointment?.preferredModality;
   const { patientComments } = appointment || {};
 
-  let heading = 'We have received your request';
+  let heading = 'Appointment request';
   if (isPendingAppointment && !showConfirmMsg)
     heading = 'Request for appointment';
   else if (APPOINTMENT_STATUS.cancelled === status)

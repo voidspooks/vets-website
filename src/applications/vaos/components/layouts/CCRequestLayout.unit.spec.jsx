@@ -231,7 +231,7 @@ describe('VAOS Component: CCRequestLayout', () => {
       expect(
         screen.getByRole('heading', {
           level: 1,
-          name: /We have received your request/i,
+          name: /Appointment request/i,
         }),
       );
 

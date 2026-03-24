@@ -41,7 +41,7 @@ export default function CCRequestLayout({ data: appointment }) {
 
   const { patientComments } = appointment;
 
-  let heading = 'We have received your request';
+  let heading = 'Appointment request';
   if (isPendingAppointment && !showConfirmMsg)
     heading = 'Request for community care appointment';
   else if (APPOINTMENT_STATUS.cancelled === status)
