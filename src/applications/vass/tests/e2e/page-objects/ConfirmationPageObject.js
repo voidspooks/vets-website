@@ -83,6 +83,13 @@ export class ConfirmationPageObject extends PageObject {
     // Assert the URL is correct
     this.assertUrl(URLS.CONFIRMATION);
 
+    // Page heading
+    this.assertHeading({
+      name: 'Your appointment details',
+      level: 1,
+      exist: true,
+    });
+
     // Page structure without confirmation message
     this.assertElement('confirmation-page');
     this.assertElement('confirmation-message', { exist: false });
