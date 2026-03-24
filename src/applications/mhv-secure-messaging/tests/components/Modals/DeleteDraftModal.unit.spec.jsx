@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { datadogRum } from '@datadog/browser-rum';
@@ -32,8 +32,8 @@ describe('Delete Draft Modal component', () => {
     expect(modal).to.have.attribute('status', 'warning');
     expect(screen.getByText(Prompts.Draft.DELETE_DRAFT_CONFIRM_CONTENT)).to
       .exist;
-    expect(screen.getByTestId('confirm-delete-draft')).to.exist;
-    expect(screen.getByTestId('cancel-delete-draft')).to.exist;
+    expect(modal).to.have.attribute('primary-button-text', 'Delete draft');
+    expect(modal).to.have.attribute('secondary-button-text', 'Cancel');
   });
 
   it('should render with draftSequence suffix in ids and testids', () => {
@@ -65,7 +65,8 @@ describe('Delete Draft Modal component', () => {
     const screen = render(
       <DeleteDraftModal visible onClose={() => {}} onDelete={onDeleteSpy} />,
     );
-    fireEvent.click(screen.getByTestId('confirm-delete-draft'));
+    const modal = screen.getByTestId('delete-draft-modal');
+    modal.__events.primaryButtonClick();
 
     expect(onDeleteSpy.calledOnce).to.be.true;
   });
@@ -75,7 +76,8 @@ describe('Delete Draft Modal component', () => {
     const screen = render(
       <DeleteDraftModal visible onClose={onCloseSpy} onDelete={() => {}} />,
     );
-    fireEvent.click(screen.getByTestId('cancel-delete-draft'));
+    const modal = screen.getByTestId('delete-draft-modal');
+    modal.__events.secondaryButtonClick();
 
     expect(onCloseSpy.calledOnce).to.be.true;
   });
