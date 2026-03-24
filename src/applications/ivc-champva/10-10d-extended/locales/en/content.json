@@ -161,6 +161,7 @@
   "signer--relationship-option--parent": "I’m an applicant’s parent",
   "signer--relationship-option--thirdParty": "I’m a third-party representative who isn’t a family member",
   "signer--relationship-option--other": "My relationship is not listed",
+  "sponsor--chapter-overview-title": "%s personal information",
   "sponsor--contact-info-title": "%s contact information",
   "sponsor--contact-info-description": "We’ll use this phone number to contact the Veteran if we have any questions about their information.",
   "sponsor--death-info-title": "Details about the Veteran’s death",
