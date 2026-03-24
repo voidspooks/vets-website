@@ -156,6 +156,7 @@ import ConfirmationAncillaryFormsWizard from '../components/confirmationFields/C
 import { EvidenceRequestPage } from '../components/EvidenceRequestPage';
 import { MedicalRecordsPage } from '../components/MedicalRecordsPage';
 import { AdditionalEvidenceIntroPage } from '../components/AdditionalEvidenceIntroPage';
+import { SeparationHealthAssessment } from '../components/SeparationHealthAssessment';
 
 /** @type {FormConfig} */
 const formConfig = {
@@ -624,6 +625,8 @@ const formConfig = {
             'Separation Health Asessment that supports your disability claim',
           path: 'supporting-evidence/separation-health-assessment',
           depends: isBddShaWorkflowActive,
+          CustomPage: SeparationHealthAssessment,
+          CustomPageReview: null,
           uiSchema: separationHealthAssessment.uiSchema,
           schema: separationHealthAssessment.schema,
         },
