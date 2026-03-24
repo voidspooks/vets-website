@@ -200,14 +200,7 @@ const FormRenderer = ({ config, data }) => {
   const rendered = render(config, data);
   return (
     <div className="digital-forms-renderer vads-grid-container vads-u-padding--0">
-      <div className="vads-grid-col-12">
-        {/* <h1 className="vads-u-margin-bottom--1 vads-u-margin-top--0">
-          Add or remove a dependent on VA benefits{" "}
-          <span className="form-name">(VA Form 21-686c)</span>
-        </h1>
-        <div>OMB Version Aug 2024, Release 1.3.4</div> */}
-        {rendered}
-      </div>
+      <div className="vads-grid-col-12">{rendered}</div>
     </div>
   );
 };
