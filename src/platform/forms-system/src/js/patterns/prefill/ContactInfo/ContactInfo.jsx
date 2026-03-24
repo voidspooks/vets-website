@@ -429,7 +429,9 @@ export const ContactInfoBase = ({
       <ContactInfoCard
         key={FIELD_NAMES.MAILING_ADDRESS}
         error={
-          submitted && missingRequiredAddress ? 'You must add your address' : ''
+          submitted && missingRequiredAddress
+            ? 'You must add your mailing address'
+            : ''
         }
         contactPath={contactPath}
         required={requiredKeys.includes(FIELD_NAMES.MAILING_ADDRESS)}
