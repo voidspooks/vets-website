@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { datadogRum } from '@datadog/browser-rum';
@@ -15,6 +15,7 @@ describe('Delete Draft Modal component', () => {
   });
 
   afterEach(() => {
+    cleanup();
     sandbox.restore();
   });
 
@@ -134,5 +135,15 @@ describe('Delete Draft Modal component', () => {
     const modal = screen.getByTestId('delete-draft-modal');
 
     expect(modal).to.have.attribute('visible', 'false');
+  });
+
+  it('should render modal as a direct child of document.body via portal', () => {
+    const screen = render(
+      <DeleteDraftModal visible onClose={() => {}} onDelete={() => {}} />,
+    );
+    const modal = screen.getByTestId('delete-draft-modal');
+
+    expect(modal).to.exist;
+    expect(modal.parentElement).to.equal(document.body);
   });
 });

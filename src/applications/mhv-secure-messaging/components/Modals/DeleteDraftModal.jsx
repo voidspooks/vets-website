@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { datadogRum } from '@datadog/browser-rum';
 import { VaModal } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
@@ -21,7 +22,7 @@ const DeleteDraftModal = props => {
     props.onClose();
   };
 
-  return (
+  return ReactDOM.createPortal(
     <VaModal
       id={`delete-draft-modal${draftSequence ? `-${draftSequence}` : ''}`}
       data-testid={`delete-draft-modal${
@@ -49,7 +50,8 @@ const DeleteDraftModal = props => {
       <p style={{ whiteSpace: 'pre-line' }}>
         {Prompts.Draft.DELETE_DRAFT_CONFIRM_CONTENT}
       </p>
-    </VaModal>
+    </VaModal>,
+    document.body,
   );
 };
 
