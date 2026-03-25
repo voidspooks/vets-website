@@ -53,7 +53,11 @@ export const DocumentTypeSelect = () => {
   }
 
   return (
-    <VaSelect required label="Document type" name="attachmentType">
+    <VaSelect
+      required
+      label="What type of document is this?"
+      name="attachmentType"
+    >
       {requiredDocumentTypes.map(type => (
         <option key={type} value={type}>
           {type}
@@ -64,13 +68,14 @@ export const DocumentTypeSelect = () => {
 };
 
 export const getUiSchema = () => ({
-  ...titleUI('Upload your documents', ({ formData }) => {
+  ...titleUI('Upload documents', ({ formData }) => {
     const hasOneTimeRestoration = containsOneTimeRestoration(formData);
+    const hasHomeLoanProperty = !!formData?.relevantPriorLoans?.length;
     return (
       <>
         <DocumentsNeeded
           formData={formData}
-          hasOneTimeRestoration={hasOneTimeRestoration}
+          hasHomeLoanProperty={hasHomeLoanProperty}
         />
         <UploadInformation
           formData={formData}
@@ -80,11 +85,11 @@ export const getUiSchema = () => ({
     );
   }),
   files2: fileInputMultipleUI({
-    title: 'Upload your documents',
-    required: true,
+    title: 'Select a file to upload',
+    required: false,
     accept: FILE_TYPES.map(type => `.${type}`).join(','),
     hint:
-      'You can upload a .jpg, .pdf, or a .png file. Be sure that your file size is 99MB or less for a PDF and 50MB or less for a .jpg or .png',
+      'You can upload a .jpg, .pdf, or a .png file. Be sure that your file size is 99MB or less for a .pdf and 50MB or less for a .jpg or .png',
     disallowEncryptedPdfs: true,
     fileSizesByFileType: {
       pdf: {

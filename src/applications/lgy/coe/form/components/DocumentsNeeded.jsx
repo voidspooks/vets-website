@@ -3,26 +3,29 @@ import PropTypes from 'prop-types';
 import { serviceStatuses } from '../constants';
 
 const DocumentsNeeded = props => {
-  const { hasOneTimeRestoration, formData } = props;
+  const { hasHomeLoanProperty, formData } = props;
 
   const requiredDocumentMessages = {
     [serviceStatuses.VETERAN]: (
       <>
-        {hasOneTimeRestoration ? (
+        {hasHomeLoanProperty ? (
           <>
-            <p>you’ll need to upload these documents:</p>
+            <p>
+              You may upload any of the recommended listed documents to support
+              your COE application:
+            </p>
             <ul>
               <li>
                 A copy of your discharge or separation papers (DD214) showing
                 character of service
               </li>
-              <li>Evidence of a VA loan was paid in full (if applicable)</li>
+              <li>Evidence a VA loan was paid in full, if applicable</li>
             </ul>
           </>
         ) : (
           <p>
-            you’ll need to upload a copy of your discharge or separation papers
-            (DD214) showing character of service.
+            You may upload a copy of your discharge or separation papers (DD214)
+            showing character of service
           </p>
         )}
       </>
@@ -30,42 +33,51 @@ const DocumentsNeeded = props => {
     [serviceStatuses.ADSM]: (
       <>
         {formData?.militaryHistory?.purpleHeartRecipient ||
-        hasOneTimeRestoration ? (
+        hasHomeLoanProperty ? (
           <>
-            <p>you’ll need to upload these documents:</p>
+            <p>
+              You may upload any of the recommended listed documents to support
+              your COE application:
+            </p>
             <ul>
               <li>Statement of Service</li>
               {formData?.militaryHistory?.purpleHeartRecipient && (
                 <li>A copy of your Purple Heart certificate</li>
               )}
-              {hasOneTimeRestoration && (
-                <li>Evidence of a VA loan was paid in full (if applicable)</li>
+              {hasHomeLoanProperty && (
+                <li>Evidence a VA loan was paid in full, if applicable</li>
               )}
             </ul>
           </>
         ) : (
-          <p>you’ll need to upload a Statement of Service.</p>
+          <p>You may upload a Statement of Service</p>
         )}
       </>
     ),
     [serviceStatuses.NADNA]: (
       <>
-        <p>you’ll need to upload these documents:</p>
+        <p>
+          You may upload any of the recommended listed documents to support your
+          COE application:
+        </p>
         <ul>
           <li>Statement of Service</li>
           <li>
-            Creditable number of years served <strong>or</strong> Retirement
-            Points Statement or equivalent
+            Creditable number of years served or Retirement Points Statement or
+            equivalent
           </li>
-          {hasOneTimeRestoration && (
-            <li>Evidence of a VA loan was paid in full (if applicable)</li>
+          {hasHomeLoanProperty && (
+            <li>Evidence a VA loan was paid in full, if applicable</li>
           )}
         </ul>
       </>
     ),
     [serviceStatuses.DNANA]: (
       <>
-        <p>you’ll need to upload these documents:</p>
+        <p>
+          You may upload any of the recommended listed documents to support your
+          COE application:
+        </p>
         <ul>
           <li>
             Separation and Report of Service (NGB Form 22) for each period of
@@ -73,26 +85,29 @@ const DocumentsNeeded = props => {
           </li>
           <li>Retirement Points Accounting (NGB Form 23)</li>
           <li>
-            Proof of character of service such as a DD214 <strong>or</strong>{' '}
-            Department of Defense Discharge Certificate
+            Proof of character of service such as a DD214 with accompanying
+            DD214-1, or Department of Defense Discharge Certificate
           </li>
-          {hasOneTimeRestoration && (
-            <li>Evidence of a VA loan was paid in full (if applicable)</li>
+          {hasHomeLoanProperty && (
+            <li>Evidence a VA loan was paid in full, if applicable</li>
           )}
         </ul>
       </>
     ),
     [serviceStatuses.DRNA]: (
       <>
-        <p>you’ll need to upload these documents:</p>
+        <p>
+          You may upload any of the recommended listed documents to support your
+          COE application:
+        </p>
         <ul>
           <li>Retirement Point Accounting</li>
           <li>
-            Proof of honorable service for at least six years such as a DD214 or
-            Department of Defense Discharge Certificate
+            Proof of character of service such as a DD214 with accompanying
+            DD214-1, or Department of Defense Discharge Certificate
           </li>
-          {hasOneTimeRestoration && (
-            <li>Evidence of a VA loan was paid in full (if applicable)</li>
+          {hasHomeLoanProperty && (
+            <li>Evidence a VA loan was paid in full, if applicable</li>
           )}
         </ul>
       </>
@@ -104,7 +119,7 @@ const DocumentsNeeded = props => {
 
 DocumentsNeeded.propTypes = {
   formData: PropTypes.object,
-  hasOneTimeRestoration: PropTypes.bool,
+  hasHomeLoanProperty: PropTypes.bool,
 };
 
 export default DocumentsNeeded;

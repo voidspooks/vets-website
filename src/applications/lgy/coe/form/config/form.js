@@ -269,7 +269,7 @@ const formConfig = {
       pages: {
         upload2: {
           path: 'upload-your-documents',
-          title: 'Upload your documents',
+          title: 'Upload documents',
           depends: formData => {
             return formData[`view:${TOGGLE_KEY}`];
           },
