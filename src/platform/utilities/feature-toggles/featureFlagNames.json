@@ -419,5 +419,6 @@
   "form10203ClaimantService": "form_10203_claimant_service",
   "meb5490Under18Flow": "meb_5490_under_18_flow",
   "discoverYourBenefitsResultsPageUpdate": "discover_your_benefits_results_page_update",
-  "form218940DateValidation": "form_218940_date_validation"
+  "form218940DateValidation": "form_218940_date_validation",
+  "form218940PrefillEnabled": "form_218940_prefill_enabled"
 }
