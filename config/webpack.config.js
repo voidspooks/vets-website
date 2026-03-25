@@ -25,6 +25,8 @@ const scaffoldRegistry = require('../src/applications/registry.scaffold.json');
 
 const { VAGOVSTAGING, VAGOVPROD, LOCALHOST } = ENVIRONMENTS;
 
+const getMainRepoRoot = require('./get-main-repo-root');
+
 const {
   getAppManifests,
   getWebpackEntryPoints,
@@ -115,7 +117,11 @@ function getEntryPoints(entry) {
  * @return {Object} - Map of scaffold asset filenames to file contents.
  */
 async function getScaffoldAssets() {
-  const LOCAL_CONTENT_BUILD_ROOT = '../content-build';
+  const LOCAL_CONTENT_BUILD_ROOT = path.join(
+    getMainRepoRoot(),
+    '..',
+    'content-build',
+  );
 
   const REMOTE_CONTENT_BUILD_ROOT =
     'https://raw.githubusercontent.com/department-of-veterans-affairs/content-build/main';
