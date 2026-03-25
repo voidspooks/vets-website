@@ -105,6 +105,7 @@ import {
   secondaryFinalIncident,
   separationHealthAssessment,
   separationHealthAssessmentUpload,
+  separationHealthAssessmentUploadV1,
   separationLocation,
   separationPay,
   serviceTreatmentRecords,
@@ -633,9 +634,20 @@ const formConfig = {
         separationHealthAssessmentUpload: {
           title: 'Separation Health Assessment',
           path: 'supporting-evidence/separation-health-assessment-upload',
-          depends: isUploadingBddSha,
+          depends: formData =>
+            formData.disability526SupportingEvidenceFileInputV3 &&
+            isUploadingBddSha(formData),
           uiSchema: separationHealthAssessmentUpload.uiSchema,
           schema: separationHealthAssessmentUpload.schema,
+        },
+        separationHealthAssessmentUploadV1: {
+          title: 'Separation Health Assessment',
+          path: 'supporting-evidence/separation-health-assessment-upload-v1',
+          depends: formData =>
+            !formData.disability526SupportingEvidenceFileInputV3 &&
+            isUploadingBddSha(formData),
+          uiSchema: separationHealthAssessmentUploadV1.uiSchema,
+          schema: separationHealthAssessmentUploadV1.schema,
         },
         serviceTreatmentRecords: {
           title: 'Service treatment records',

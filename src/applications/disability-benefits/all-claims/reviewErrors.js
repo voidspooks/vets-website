@@ -184,6 +184,7 @@ export default {
     'Exposure start date for other toxic exposures',
   'toxicExposure.specifyOtherExposures.endDate':
     'Exposure end date for other toxic exposures',
+  separationHealthAssessmentUploads: 'Upload your Separation Health Assessment',
   _override: error => {
     if (typeof error !== 'string') {
       return null;
