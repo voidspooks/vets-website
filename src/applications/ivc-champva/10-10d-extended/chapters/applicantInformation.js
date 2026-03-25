@@ -18,7 +18,6 @@ import {
   yesNoSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { blankSchema } from 'platform/forms-system/src/js/utilities/data/profile';
-import ApplicantRelationshipPage from '../../shared/components/applicantLists/ApplicantRelationshipPage';
 import { applicantWording } from '../../shared/utilities';
 
 import { ApplicantRelOriginPage } from './ApplicantRelOriginPage';
@@ -37,6 +36,7 @@ import schoolEnrollmentProof from './applicantInformation/schoolEnrollmentProof'
 import marriageDate from './applicantInformation/marriageDate';
 import stepchildMarriageProof from './applicantInformation/stepchildMarriageProof';
 import birthCertificate from './applicantInformation/birthCertificate';
+import relationshipToVeteran from './applicantInformation/relationshipToVeteran';
 import ApplicantSummaryCard from '../components/FormDescriptions/ApplicantSummaryCard';
 import FileUploadDescription from '../components/FormDescriptions/FileUploadDescription';
 import { titleWithNameUI } from '../utils/titles';
@@ -145,22 +145,6 @@ const applicantGenderPage = {
         },
       },
     },
-  },
-};
-
-const applicantRelationshipPage = {
-  uiSchema: {},
-  schema: {
-    type: 'object',
-    properties: {
-      applicantRelationshipToSponsor: {
-        type: 'object',
-        properties: {
-          relationshipToVeteran: { type: 'string' },
-        },
-      },
-    },
-    required: ['applicantRelationshipToSponsor'],
   },
 };
 
@@ -297,16 +281,8 @@ export const applicantPages = arrayBuilderPages(
     }),
     page18: pageBuilder.itemPage({
       path: 'applicant-relationship-to-veteran/:index',
-      title: 'Applicant relationship to the Veteran',
-      ...applicantRelationshipPage,
-      CustomPage: props =>
-        ApplicantRelationshipPage({
-          ...props,
-          customWording: {
-            customHint:
-              'Depending on your response, you may need to submit proof of marriage or dependent status.',
-          },
-        }),
+      title: 'Relationship to the Veteran',
+      ...relationshipToVeteran,
     }),
     page18c: pageBuilder.itemPage({
       path: 'applicant-dependent-status/:index',
