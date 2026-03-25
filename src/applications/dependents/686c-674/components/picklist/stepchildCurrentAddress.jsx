@@ -93,6 +93,7 @@ const stepchildCurrentAddress = {
       setUiSchema(result.uiSchema);
 
       // Transform local data to formData structure
+      const street2 = (result.data.street2 || '').trim();
       handlers.onChange({
         ...itemData,
         address: {
@@ -101,7 +102,7 @@ const stepchildCurrentAddress = {
           city: (result.data.city || '').trim(),
           state: (result.data.state || '').trim(),
           street: (result.data.street || '').trim(),
-          street2: (result.data.street2 || '').trim(),
+          ...(street2 && { street2 }),
           postalCode: (result.data.postalCode || '').trim(),
         },
       });
