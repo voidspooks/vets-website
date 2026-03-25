@@ -3,9 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ClaimantDetailRow = ({ label, value }) => (
-  <li>
-    <p>{label}</p>
-    <p>{value ?? '—'}</p>
+  <li className="claimant-detail-row">
+    <p className="claimant-detail-row__label">{label}</p>
+    <div className="claimant-detail-row__value">{value ?? '—'}</div>
   </li>
 );
 

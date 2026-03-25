@@ -50,11 +50,21 @@ const formatAddress = address => {
   const statePart = state ? String(state).toUpperCase() : '';
   const zipPart = zip || postalCode || '';
 
-  const full = [streetPart, cityPart, statePart, zipPart]
-    .filter(Boolean)
-    .join(', ');
+  if (!streetPart && !cityPart && !statePart && !zipPart) return '—';
 
-  return full || '—';
+  return (
+    <>
+      {streetPart && <div>{streetPart}</div>}
+      {(cityPart || statePart || zipPart) && (
+        <div>
+          {cityPart}
+          {cityPart && ','}
+          {statePart && ` ${statePart}`}
+          {zipPart && ` ${zipPart}`}
+        </div>
+      )}
+    </>
+  );
 };
 
 const ITF_SECTION_TITLES = {
@@ -168,7 +178,7 @@ const ClaimantOverviewPage = () => {
 
   if (unauthorized && notRepresented) {
     return (
-      <section>
+      <section className="vads-u-width--full claimant-overview">
         <VaBreadcrumbs
           breadcrumbList={claimantOverviewBC}
           label="claimant overview breadcrumb"
@@ -245,7 +255,7 @@ const ClaimantOverviewPage = () => {
         {unauthorized &&
           !notRepresented && (
             <>
-              <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--3">
+              <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--4">
                 Claimant overview
               </h2>
               <div className="vads-u-margin-y--2">
@@ -264,12 +274,12 @@ const ClaimantOverviewPage = () => {
 
         {!unauthorized && (
           <>
-            <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--3">
+            <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--4">
               Claimant overview
             </h2>
 
             <section className="vads-u-margin-top--0">
-              <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1 claimant-overview__section-heading">
+              <h3 className="vads-u-margin-top--0 claimant-overview__section-heading">
                 Claimant information
               </h3>
 
@@ -322,8 +332,8 @@ const ClaimantOverviewPage = () => {
               </div>
             </section>
 
-            <section className="vads-u-margin-top--2">
-              <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+            <section className="vads-u-margin-top--4">
+              <h3 className="vads-u-margin-top--0 claimant-overview__section-heading">
                 Representative information
               </h3>
 
@@ -338,7 +348,7 @@ const ClaimantOverviewPage = () => {
                 </div>
               </div>
 
-              <div className="vads-u-margin-top--2">
+              <div className="vads-u-margin-top--4">
                 <va-additional-info trigger="The portal doesn’t check for limited representation">
                   <p className="vads-u-margin-y--0 vads-u-font-size--base vads-u-line-height--4">
                     Limited representation means that the representation is only
@@ -349,7 +359,7 @@ const ClaimantOverviewPage = () => {
               </div>
             </section>
 
-            <section className="vads-u-margin-top--3">
+            <section className="vads-u-margin-top--4">
               <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
                 Intent to file status
               </h3>
@@ -360,7 +370,7 @@ const ClaimantOverviewPage = () => {
                     <div
                       key={`${itf.benefitType}-${itf.itfDate ||
                         'no-date'}-${itf.expirationDate || 'no-exp'}`}
-                      className="vads-u-margin-top--3"
+                      style={{ marginTop: '20px' }}
                     >
                       {claimant?.intentToFile?.length > 1 && (
                         <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
