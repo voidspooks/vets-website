@@ -133,15 +133,18 @@ describe('cave/workflow', () => {
       expect(error).to.be.instanceOf(Error);
     });
 
-    it('throws when document status is not "completed"', async () => {
-      apiRequestStub.resolves({ scanStatus: 'failed' });
+    it('surfaces document processing failure details from status', async () => {
+      apiRequestStub.resolves({
+        scanStatus: 'failed',
+        error: { errorMessage: 'Unable to classify document' },
+      });
       let error;
       try {
         await processDocument({ id: 'doc-1' }, FAST);
       } catch (e) {
         error = e;
       }
-      expect(error.message).to.include('did not complete successfully');
+      expect(error.message).to.equal('Unable to classify document');
     });
 
     it('returns normalized sections on success', async () => {
