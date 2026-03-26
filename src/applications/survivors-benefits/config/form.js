@@ -135,7 +135,7 @@ const formConfig = {
   footerContent: FormFooter,
   getHelp: GetFormHelp,
   errorText: ErrorText,
-  showReviewErrors: !environment.isProduction() && !environment.isStaging(),
+  showReviewErrors: !environment.isProduction(),
   chapters: {
     // TODO: Update chapter numbers
     // Chapter 0 - Required Documents
