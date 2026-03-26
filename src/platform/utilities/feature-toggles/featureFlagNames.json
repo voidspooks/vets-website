@@ -21,6 +21,7 @@
   "disability526NewBddShaEnforcementWorkflowEnabled": "disability_526_new_bdd_sha_enforcement_workflow_enabled",
   "benefitsDocumentsUseLighthouse": "benefits_documents_use_lighthouse",
   "benefitsNonDisabilityCh31V2": "benefits_non_disability_ch31_v2",
+  "bioAquiaUspsAddressValidation": "bio_aquia_usps_address_validation",
   "bioHeartMMSSubmit": "bio_heart_mms_submit",
   "burialConfirmationPage": "burial_confirmation_page",
   "burialFormEnabled": "burial_form_enabled",

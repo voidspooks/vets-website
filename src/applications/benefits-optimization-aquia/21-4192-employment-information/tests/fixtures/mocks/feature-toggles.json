@@ -5,6 +5,10 @@
       {
         "name": "form_4192_enabled",
         "value": true
+      },
+      {
+        "name": "bio_aquia_usps_address_validation",
+        "value": true
       }
     ]
   }
