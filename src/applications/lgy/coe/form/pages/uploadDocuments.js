@@ -120,7 +120,7 @@ export const getUiSchema = () => ({
     },
     handleAdditionalInput: e => {
       const { value } = e.detail;
-      if (value === '') return null;
+      if (value === '') return {};
       return { attachmentType: e.detail.value };
     },
     reviewField: UploadDocumentsReview,
