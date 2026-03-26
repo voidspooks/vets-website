@@ -9,7 +9,6 @@ import {
 import { formatIsoDate, sanitize } from '../cave/transformers/helpers';
 import {
   PAY_GRADE_OPTIONS,
-  SEPARATION_TYPE_OPTIONS,
   CHARACTER_OF_SERVICE_OPTIONS,
   SEPARATION_CODES,
 } from '../cave/constants';
@@ -52,7 +51,7 @@ const REQUIRED_MESSAGES = {
   payGrade: 'Select a pay grade',
   dateInducted: 'Provide the date inducted',
   causeOfSeparation: 'Enter a cause of separation',
-  separationType: 'Select a separation type',
+  separationType: 'Enter a separation type',
   separationCode: 'Select a separation code',
   characterOfService: 'Select a character of service',
   decendentDateOfDisposition: 'Provide a disposition date',
@@ -419,13 +418,12 @@ const Dd214Item = ({
           error={errors.causeOfSeparation}
           onInput={onField}
         />
-        <SelectField
+        <TextField
           field="separationType"
           label="Separation type"
           value={draftValues.separationType}
           error={errors.separationType}
-          options={SEPARATION_TYPE_OPTIONS}
-          onChange={onField}
+          onInput={onField}
         />
         <ComboField
           field="separationCode"

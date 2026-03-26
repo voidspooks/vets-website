@@ -1,10 +1,7 @@
 import {
   CHARACTER_OF_SERVICE_OPTIONS,
   CHARACTER_OF_SERVICE_ABBREV_MAP,
-  SEPARATION_TYPE_OPTIONS,
-  SEPARATION_TYPE_ABBREV_MAP,
   PAY_GRADE_OPTIONS,
-  PAY_GRADE_ABBREV_MAP,
   SEPARATION_CODES,
   NAME_SUFFIXES,
 } from '../constants';
@@ -29,35 +26,6 @@ export const normalizeSuffix = v => {
     .toLowerCase()
     .replace(/\./g, '');
   return NAME_SUFFIX_LOOKUP.get(key) ?? null;
-};
-
-// ---------------------------------------------------------------------------
-// Branch of service
-// ---------------------------------------------------------------------------
-
-// Flat map from the single expected IDP title-case value to the 534 form value.
-// Lookup is case-insensitive to handle minor casing variations from the IDP.
-const BRANCH_MAP = {
-  Army: 'army',
-  Navy: 'navy',
-  'Air Force': 'airForce',
-  'Coast Guard': 'coastGuard',
-  'Marine Corps': 'marineCorps',
-  'Space Force': 'spaceForce',
-  USPHS: 'usphs',
-  NOAA: 'noaa',
-};
-
-const BRANCH_MAP_LOWER = Object.fromEntries(
-  Object.entries(BRANCH_MAP).map(([k, v]) => [k.toLowerCase(), v]),
-);
-
-// Maps an IDP branch-of-service string to the 534 form value, or null if
-// the value is not a recognized branch name.
-export const normalizeBranchOfService = v => {
-  if (v == null) return null;
-  if (typeof v === 'string' && v.trim() === '') return '';
-  return BRANCH_MAP_LOWER[v.trim().toLowerCase()] ?? null;
 };
 
 // ---------------------------------------------------------------------------
@@ -151,20 +119,22 @@ const buildCaseInsensitiveMap = (abbrevMap, fullFormOptions) => {
   return map;
 };
 
+// Trim and enforce maxLength. Returns '' for blank, null if too long or wrong type.
+export const normalizeFreeText = (v, max) => {
+  if (v == null) return null;
+  if (typeof v !== 'string') return null;
+  const trimmed = v.trim();
+  if (!trimmed) return '';
+  if (max != null && trimmed.length > max) return null;
+  return trimmed;
+};
+
 const CHARACTER_OF_SERVICE_MAP = buildCaseInsensitiveMap(
   CHARACTER_OF_SERVICE_ABBREV_MAP,
   CHARACTER_OF_SERVICE_OPTIONS,
 );
 
-const SEPARATION_TYPE_MAP = buildCaseInsensitiveMap(
-  SEPARATION_TYPE_ABBREV_MAP,
-  SEPARATION_TYPE_OPTIONS,
-);
-
-const PAY_GRADE_MAP = buildCaseInsensitiveMap(
-  PAY_GRADE_ABBREV_MAP,
-  PAY_GRADE_OPTIONS,
-);
+const PAY_GRADE_MAP = buildCaseInsensitiveMap({}, PAY_GRADE_OPTIONS);
 
 const SEPARATION_CODES_SET = new Set(SEPARATION_CODES);
 
@@ -173,13 +143,6 @@ export const normalizeCharacterOfService = v => {
   const trimmed = typeof v === 'string' ? v.trim() : '';
   if (!trimmed) return '';
   return CHARACTER_OF_SERVICE_MAP[trimmed.toLowerCase()] ?? null;
-};
-
-export const normalizeSeparationType = v => {
-  if (v == null) return null;
-  const trimmed = typeof v === 'string' ? v.trim() : '';
-  if (!trimmed) return '';
-  return SEPARATION_TYPE_MAP[trimmed.toLowerCase()] ?? null;
 };
 
 export const normalizePayGrade = v => {
@@ -197,16 +160,6 @@ export const normalizeSeparationCode = v => {
   return SEPARATION_CODES_SET.has(trimmed) ? trimmed : null;
 };
 
-// Trim and enforce maxLength. Returns '' for blank, null if too long or wrong type.
-export const normalizeFreeText = (v, max) => {
-  if (v == null) return null;
-  if (typeof v !== 'string') return null;
-  const trimmed = v.trim();
-  if (!trimmed) return '';
-  if (max != null && trimmed.length > max) return null;
-  return trimmed;
-};
-
 // ---------------------------------------------------------------------------
 // Entry normalizers
 // ---------------------------------------------------------------------------
@@ -215,7 +168,7 @@ const normalizeDd214Entry = entry => ({
   veteranName: parseFullName(entry.VETERAN_NAME),
   veteranSsn: normalizeSsn(entry.VETERAN_SSN),
   veteranDob: normalizeArtifactDate(entry.VETERAN_DOB),
-  branchOfService: normalizeBranchOfService(entry.BRANCH_OF_SERVICE),
+  branchOfService: normalizeFreeText(entry.BRANCH_OF_SERVICE, 100),
   gradeRateRank: normalizeFreeText(entry.GRADE_RATE_RANK, 100),
   payGrade: normalizePayGrade(entry.PAY_GRADE),
   dateInducted: normalizeArtifactDate(entry.DATE_INDUCTED),
@@ -227,7 +180,7 @@ const normalizeDd214Entry = entry => ({
   ),
   causeOfSeparation: normalizeFreeText(entry.CAUSE_OF_SEPARATION, 1000),
   characterOfService: normalizeCharacterOfService(entry.CHARACTER_OF_SERVICE),
-  separationType: normalizeSeparationType(entry.SEPARATION_TYPE),
+  separationType: normalizeFreeText(entry.SEPARATION_TYPE, 1000),
   separationCode: normalizeSeparationCode(entry.SEPARATION_CODE),
 });
 

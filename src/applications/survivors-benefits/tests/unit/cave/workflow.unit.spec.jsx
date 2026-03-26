@@ -183,7 +183,7 @@ describe('cave/workflow', () => {
         last: 'Smith',
         suffix: undefined,
       });
-      expect(entry.branchOfService).to.equal('army');
+      expect(entry.branchOfService).to.equal('Army');
       expect(entry.veteranDob).to.equal('1950-03-15');
     });
   });
