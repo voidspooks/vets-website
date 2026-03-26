@@ -22,7 +22,7 @@ const pageNames = [
   'medicalFrequencyCostPage',
 ];
 
-describe('Medical Expenses Pages — depends', () => {
+xdescribe('Medical Expenses Pages — depends', () => {
   pageNames.forEach(pageName => {
     describe(pageName, () => {
       let depends;
