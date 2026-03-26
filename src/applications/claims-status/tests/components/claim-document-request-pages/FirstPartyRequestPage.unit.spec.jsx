@@ -851,9 +851,8 @@ describe('<FirstPartyRequestPage>', () => {
         friendlyName: 'Test item',
         hideClaimLetterSection: true,
       });
-      const { queryByTestId } = renderWithReduxAndRouter(
+      const { queryByTestId } = renderWithRouter(
         <FirstPartyRequestPage {...defaultProps} item={item} />,
-        { initialState },
       );
       expect(queryByTestId('learn-about-request-section')).to.not.exist;
     });
@@ -864,9 +863,8 @@ describe('<FirstPartyRequestPage>', () => {
         friendlyName: 'Test item',
         hideClaimLetterSection: false,
       });
-      const { queryByTestId } = renderWithReduxAndRouter(
+      const { queryByTestId } = renderWithRouter(
         <FirstPartyRequestPage {...defaultProps} item={item} />,
-        { initialState },
       );
       expect(queryByTestId('learn-about-request-section')).to.exist;
     });
@@ -876,9 +874,8 @@ describe('<FirstPartyRequestPage>', () => {
         description: 'Some description',
         friendlyName: 'Test item',
       });
-      const { queryByTestId } = renderWithReduxAndRouter(
+      const { queryByTestId } = renderWithRouter(
         <FirstPartyRequestPage {...defaultProps} item={item} />,
-        { initialState },
       );
       expect(queryByTestId('learn-about-request-section')).to.exist;
     });
