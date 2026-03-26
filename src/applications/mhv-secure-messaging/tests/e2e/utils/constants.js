@@ -57,6 +57,8 @@ export const Paths = {
     PRESCRIPTIONS: '/my_health/v1/prescriptions/',
     PRESCRIPTIONS_V2: '/my_health/v2/prescriptions/',
     OH_SYNC_STATUS: '/my_health/v1/messaging/messages/oh_sync_status',
+    TOOLTIPS: '/my_health/v1/tooltips',
+    TOOLTIPS_BY_ID: '/my_health/v1/tooltips/*',
   },
 };
 

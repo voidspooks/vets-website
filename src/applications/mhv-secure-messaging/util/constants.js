@@ -550,6 +550,16 @@ export const RecipientStatus = {
 export const OhMigrationPhasesBlockingReplies = ['p3', 'p4', 'p5'];
 
 /**
+ * OH (Oracle Health) post-migration phases for IPE (In-Production Education) alerts.
+ * IPE alerts are shown only after migration is complete.
+ * - p6: T+2 to T+6
+ * - p7: T+7 to T+29
+ * - p8: T+30 to T+44
+ * - p9: T+45+
+ */
+export const IpePostMigrationPhases = ['p6', 'p7', 'p8', 'p9'];
+
+/**
  * Config map for Contact List migration alert content.
  * Each variant defines:
  * - phases: which migration phases trigger this alert
