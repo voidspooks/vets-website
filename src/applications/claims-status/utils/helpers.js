@@ -1353,17 +1353,11 @@ export function setPageFocus(lastPage, loading) {
   }
 }
 
-export const getUploadErrorMessage = (
-  error,
-  claimId,
-  showDocumentUploadStatus = false,
-) => {
+export const getUploadErrorMessage = (error, claimId) => {
   if (error?.errors?.[0]?.detail === 'DOC_UPLOAD_DUPLICATE') {
     const filesPath = `/track-claims/your-claims/${claimId}/files`;
     const isOnFilesPage = window.location.pathname === filesPath;
-    const anchorLink = showDocumentUploadStatus
-      ? ANCHOR_LINKS.filesReceived
-      : ANCHOR_LINKS.documentsFiled;
+    const anchorLink = ANCHOR_LINKS.filesReceived;
     const linkHref = isOnFilesPage
       ? `#${anchorLink}`
       : `${filesPath}#${anchorLink}`;

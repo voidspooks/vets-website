@@ -232,72 +232,40 @@ describe('Claim cards', () => {
   });
 
   describe('Upload error alerts', () => {
-    context('when cst_show_document_upload_status toggle is enabled', () => {
-      beforeEach(() => {
-        mockFeatureToggles({ showDocumentUploadStatus: true });
-        mockAppealsEndpoint();
-        mockStemEndpoint();
+    it('should display upload error alert for failed submissions within last 30 days', () => {
+      setupClaimCardsTest([
+        createBenefitsClaimListItem({
+          evidenceSubmissions: [
+            createEvidenceSubmission({
+              uploadStatus: 'FAILED',
+              acknowledgementDate: '2050-01-01T00:00:00.000Z',
+            }),
+          ],
+        }),
+      ]);
 
-        cy.login();
-      });
+      cy.get('va-alert').findByText(
+        'We need you to resubmit files for this claim.',
+      );
 
-      it('should display upload error alert for failed submissions within last 30 days', () => {
-        setupClaimCardsTest([
-          createBenefitsClaimListItem({
-            evidenceSubmissions: [
-              createEvidenceSubmission({
-                uploadStatus: 'FAILED',
-                acknowledgementDate: '2050-01-01T00:00:00.000Z',
-              }),
-            ],
-          }),
-        ]);
-
-        cy.get('va-alert').findByText(
-          'We need you to resubmit files for this claim.',
-        );
-
-        cy.axeCheck();
-      });
-
-      it('should not display upload error alert for failed submissions older than 30 days', () => {
-        setupClaimCardsTest([
-          createBenefitsClaimListItem({
-            evidenceSubmissions: [
-              createEvidenceSubmission({
-                acknowledgementDate: '2020-01-01T12:00:00.000Z',
-                failedDate: '2019-12-01T12:00:00.000Z',
-              }),
-            ],
-          }),
-        ]);
-
-        cy.get('va-alert[status="error"]').should('not.exist');
-
-        cy.axeCheck();
-      });
+      cy.axeCheck();
     });
 
-    context('when cst_show_document_upload_status toggle is disabled', () => {
-      beforeEach(() => {
-        mockFeatureToggles({ showDocumentUploadStatus: false });
-        mockAppealsEndpoint();
-        mockStemEndpoint();
+    it('should not display upload error alert for failed submissions older than 30 days', () => {
+      setupClaimCardsTest([
+        createBenefitsClaimListItem({
+          evidenceSubmissions: [
+            createEvidenceSubmission({
+              acknowledgementDate: '2020-01-01T12:00:00.000Z',
+              failedDate: '2019-12-01T12:00:00.000Z',
+            }),
+          ],
+        }),
+      ]);
 
-        cy.login();
-      });
+      cy.get('va-alert[status="error"]').should('not.exist');
 
-      it('should not display upload error alert even with failed submissions', () => {
-        setupClaimCardsTest([
-          createBenefitsClaimListItem({
-            evidenceSubmissions: [createEvidenceSubmission()],
-          }),
-        ]);
-
-        cy.get('va-alert[status="error"]').should('not.exist');
-
-        cy.axeCheck();
-      });
+      cy.axeCheck();
     });
   });
 });

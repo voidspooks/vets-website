@@ -15,7 +15,7 @@ describe('STEM claim cards', () => {
   };
 
   beforeEach(() => {
-    mockFeatureToggles({ showDocumentUploadStatus: true });
+    mockFeatureToggles();
     mockClaimsEndpoint();
     mockAppealsEndpoint();
 

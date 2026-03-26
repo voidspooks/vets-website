@@ -97,96 +97,65 @@ describe('Claim status', () => {
         cy.axeCheck();
       });
 
-      describe('Feature flag: cstShowDocumentUploadStatus', () => {
-        context('when disabled', () => {
-          beforeEach(() => {
-            mockFeatureToggles({ showDocumentUploadStatus: false });
+      describe('Upload error alerts', () => {
+        it('should show upload error alert and hide nothing needed message when failed submissions exist', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim({
+              evidenceSubmissions: [
+                createEvidenceSubmission({
+                  uploadStatus: 'FAILED',
+                  acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                }),
+              ],
+              trackedItems: [],
+            }),
           });
 
-          it('should hide upload error alert and show nothing needed message even when failed submissions exist', () => {
-            setupClaimTest({
-              claim: createBenefitsClaim({
-                evidenceSubmissions: [
-                  createEvidenceSubmission({
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                  }),
-                ],
-                trackedItems: [],
-              }),
-            });
+          cy.get('va-alert[status="error"]')
+            .contains('We need you to submit files by mail or in person')
+            .should('be.visible');
+          cy.findByText('nothing we need from you', { exact: false }).should(
+            'not.exist',
+          );
 
-            cy.get('va-alert[status="error"]').should('not.exist');
-            cy.findByText('nothing we need from you', { exact: false });
-
-            cy.axeCheck();
-          });
+          cy.axeCheck();
         });
 
-        context('when enabled', () => {
-          beforeEach(() => {
-            mockFeatureToggles({ showDocumentUploadStatus: true });
+        it('should display failed files as most recent first', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim({
+              evidenceSubmissions: [
+                createEvidenceSubmission({
+                  id: 1,
+                  uploadStatus: 'FAILED',
+                  acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  fileName: 'older-file.pdf',
+                  failedDate: '2025-01-10T12:00:00.000Z',
+                }),
+                createEvidenceSubmission({
+                  id: 2,
+                  uploadStatus: 'FAILED',
+                  acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  fileName: 'newer-file.pdf',
+                  failedDate: '2025-01-15T12:00:00.000Z',
+                }),
+              ],
+              trackedItems: [],
+            }),
           });
 
-          it('should show upload error alert and hide nothing needed message when failed submissions exist', () => {
-            setupClaimTest({
-              claim: createBenefitsClaim({
-                evidenceSubmissions: [
-                  createEvidenceSubmission({
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                  }),
-                ],
-                trackedItems: [],
-              }),
-            });
-
-            cy.get('va-alert[status="error"]')
-              .contains('We need you to submit files by mail or in person')
-              .should('be.visible');
-            cy.findByText('nothing we need from you', { exact: false }).should(
-              'not.exist',
-            );
-
-            cy.axeCheck();
+          cy.get('va-alert[status="error"]').within(() => {
+            cy.findAllByRole('listitem').as('listItems');
+            cy.get('@listItems').should('have.length', 2);
+            cy.get('@listItems')
+              .eq(0)
+              .findByText('newer-file.pdf');
+            cy.get('@listItems')
+              .eq(1)
+              .findByText('older-file.pdf');
           });
 
-          it('should display failed files as most recent first', () => {
-            setupClaimTest({
-              claim: createBenefitsClaim({
-                evidenceSubmissions: [
-                  createEvidenceSubmission({
-                    id: 1,
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                    fileName: 'older-file.pdf',
-                    failedDate: '2025-01-10T12:00:00.000Z',
-                  }),
-                  createEvidenceSubmission({
-                    id: 2,
-                    uploadStatus: 'FAILED',
-                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
-                    fileName: 'newer-file.pdf',
-                    failedDate: '2025-01-15T12:00:00.000Z',
-                  }),
-                ],
-                trackedItems: [],
-              }),
-            });
-
-            cy.get('va-alert[status="error"]').within(() => {
-              cy.findAllByRole('listitem').as('listItems');
-              cy.get('@listItems').should('have.length', 2);
-              cy.get('@listItems')
-                .eq(0)
-                .findByText('newer-file.pdf');
-              cy.get('@listItems')
-                .eq(1)
-                .findByText('older-file.pdf');
-            });
-
-            cy.axeCheck();
-          });
+          cy.axeCheck();
         });
       });
     });

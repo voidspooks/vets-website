@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { Toggler } from 'platform/utilities/feature-toggles';
 import { getFailedSubmissionsWithinLast30Days } from '../../utils/helpers';
 import * as TrackedItem from '../../utils/trackedItemContent';
 import FilesNeeded from '../claim-files-tab/FilesNeeded';
@@ -39,20 +38,13 @@ function WhatYouNeedToDo({ claim }) {
         What you need to do
       </h3>
 
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.cstShowDocumentUploadStatus}>
-        <Toggler.Enabled>
-          <UploadType2ErrorAlert
-            failedSubmissions={failedSubmissionsWithinLast30Days}
-            isStatusPage
-          />
-          {filesNeeded.length === 0 &&
-            failedSubmissionsWithinLast30Days.length === 0 &&
-            nothingNeededMessage}
-        </Toggler.Enabled>
-        <Toggler.Disabled>
-          {filesNeeded.length === 0 && nothingNeededMessage}
-        </Toggler.Disabled>
-      </Toggler>
+      <UploadType2ErrorAlert
+        failedSubmissions={failedSubmissionsWithinLast30Days}
+        isStatusPage
+      />
+      {filesNeeded.length === 0 &&
+        failedSubmissionsWithinLast30Days.length === 0 &&
+        nothingNeededMessage}
       {filesNeeded.map(item => (
         <FilesNeeded
           key={item.id}

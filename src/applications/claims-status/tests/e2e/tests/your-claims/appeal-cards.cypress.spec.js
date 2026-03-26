@@ -303,7 +303,7 @@ describe('Appeal cards', () => {
 
   describe('Upload error alerts', () => {
     beforeEach(() => {
-      mockFeatureToggles({ showDocumentUploadStatus: true });
+      mockFeatureToggles();
       mockClaimsEndpoint();
       mockStemEndpoint();
 

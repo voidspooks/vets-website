@@ -51,7 +51,6 @@ class AdditionalEvidencePage extends React.Component {
       claimId,
       null,
       files,
-      this.props.showDocumentUploadStatus,
       this.props.timezoneMitigationEnabled,
     );
   }
@@ -157,8 +156,6 @@ function mapStateToProps(state) {
     message: claimsState.notifications.additionalEvidenceMessage,
     filesNeeded: TrackedItem.getFilesNeeded(trackedItems),
     filesOptional: TrackedItem.getFilesOptional(trackedItems),
-    showDocumentUploadStatus:
-      state.featureToggles?.cst_show_document_upload_status || false,
     timezoneMitigationEnabled:
       state.featureToggles?.cst_timezone_discrepancy_mitigation || false,
     cstMultiClaimProviderEnabled: cstMultiClaimProvider(state),
@@ -189,7 +186,6 @@ AdditionalEvidencePage.propTypes = {
   params: PropTypes.object,
   progress: PropTypes.number,
   resetUploads: PropTypes.func,
-  showDocumentUploadStatus: PropTypes.bool,
   submitFiles: PropTypes.func,
   timezoneMitigationEnabled: PropTypes.bool,
   uploadComplete: PropTypes.bool,

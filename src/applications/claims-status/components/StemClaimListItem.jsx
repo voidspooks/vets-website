@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import recordEvent from 'platform/monitoring/record-event';
-import { Toggler } from '~/platform/utilities/feature-toggles';
 import {
   buildDateFormatter,
   getFailedSubmissionsWithinLast30Days,
@@ -56,14 +55,10 @@ export default function StemClaimListItem({ claim }) {
         <p>Status: Denied</p>
         <p>Last updated on: {formattedDeniedAtDate}</p>
       </div>
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.cstShowDocumentUploadStatus}>
-        <Toggler.Enabled>
-          <UploadType2ErrorAlertSlim
-            claimId={claim.id}
-            failedSubmissions={failedSubmissionsWithinLast30Days}
-          />
-        </Toggler.Enabled>
-      </Toggler>
+      <UploadType2ErrorAlertSlim
+        claimId={claim.id}
+        failedSubmissions={failedSubmissionsWithinLast30Days}
+      />
       <ClaimCard.Link
         ariaLabel={ariaLabel}
         href={href}

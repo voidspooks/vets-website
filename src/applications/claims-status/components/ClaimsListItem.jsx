@@ -1,9 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Toggler,
-  useFeatureToggle,
-} from '~/platform/utilities/feature-toggles';
+import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
 import {
   getClaimPhaseTypeHeaderText,
   buildDateFormatter,
@@ -113,14 +110,10 @@ export default function ClaimsListItem({ claim }) {
         {humanStatus && <p>{humanStatus}</p>}
         <p>{getLastUpdated(claim)}</p>
       </div>
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.cstShowDocumentUploadStatus}>
-        <Toggler.Enabled>
-          <UploadType2ErrorAlertSlim
-            claimId={claim.id}
-            failedSubmissions={failedSubmissionsWithinLast30Days}
-          />
-        </Toggler.Enabled>
-      </Toggler>
+      <UploadType2ErrorAlertSlim
+        claimId={claim.id}
+        failedSubmissions={failedSubmissionsWithinLast30Days}
+      />
       {showAlert && (
         <va-alert status="info" slim>
           <span className="vads-u-font-weight--bold">

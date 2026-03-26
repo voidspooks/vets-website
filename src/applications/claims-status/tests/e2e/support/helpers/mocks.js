@@ -28,21 +28,10 @@ const DEFAULT_FEATURES = [
  * Stubs feature toggles for E2E tests.
  *
  * @param {Object} options - Configuration options
- * @param {boolean} options.showDocumentUploadStatus - Toggle for document upload status feature
  * @param {boolean} options.cstClaimsListFilter - Toggle for claims list filter feature
  */
-export const mockFeatureToggles = ({
-  showDocumentUploadStatus,
-  cstClaimsListFilter,
-} = {}) => {
+export const mockFeatureToggles = ({ cstClaimsListFilter } = {}) => {
   const features = [...DEFAULT_FEATURES];
-
-  if (showDocumentUploadStatus !== undefined) {
-    features.push({
-      name: 'cst_show_document_upload_status',
-      value: showDocumentUploadStatus,
-    });
-  }
 
   if (cstClaimsListFilter !== undefined) {
     features.push({
