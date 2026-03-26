@@ -110,8 +110,14 @@ describe('evidenceChoiceAdditionalDocumentsPageV1', () => {
       expect(uiSchema['ui:title']).to.exist;
     });
 
-    it('should have ui:description', () => {
-      expect(uiSchema['ui:description']).to.exist;
+    it('should have ui:description as a function', () => {
+      expect(uiSchema['ui:description']).to.be.a('function');
+    });
+
+    it('should render ui:description content correctly', () => {
+      const DescriptionComponent = uiSchema['ui:description'];
+      const { container } = render(<DescriptionComponent />);
+      expect(container.querySelector('.vads-u-margin-bottom--2')).to.exist;
     });
 
     it('should have additionalDocuments field', () => {
