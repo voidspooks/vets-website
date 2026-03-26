@@ -18,9 +18,9 @@ import AddToCalendarButton from '../AddToCalendarButton';
 import FacilityDirectionsLink from '../FacilityDirectionsLink';
 import FacilityPhone from '../FacilityPhone';
 import Address from '../Address';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
-  captureMissingModalityLogs,
   recordAppointmentDetailsNullStates,
 } from '../../utils/events';
 

@@ -10,9 +10,9 @@ import Section from '../Section';
 import ListBestTimeToCall from '../../appointment-list/components/ListBestTimeToCall';
 import PageLayout from '../../appointment-list/components/PageLayout';
 import { APPOINTMENT_STATUS } from '../../utils/constants';
+import { captureMissingModalityLogs } from '../../utils/error';
 import {
   NULL_STATE_FIELD,
-  captureMissingModalityLogs,
   recordAppointmentDetailsNullStates,
 } from '../../utils/events';
 
