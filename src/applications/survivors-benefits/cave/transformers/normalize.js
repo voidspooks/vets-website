@@ -212,49 +212,47 @@ export const normalizeFreeText = (v, max) => {
 // ---------------------------------------------------------------------------
 
 const normalizeDd214Entry = entry => ({
-  ...entry,
-  VETERAN_NAME: parseFullName(entry.VETERAN_NAME),
-  VETERAN_SSN: normalizeSsn(entry.VETERAN_SSN),
-  VETERAN_DOB: normalizeArtifactDate(entry.VETERAN_DOB),
-  BRANCH_OF_SERVICE: normalizeBranchOfService(entry.BRANCH_OF_SERVICE),
-  GRADE_RATE_RANK: normalizeFreeText(entry.GRADE_RATE_RANK, 100),
-  PAY_GRADE: normalizePayGrade(entry.PAY_GRADE),
-  DATE_INDUCTED: normalizeArtifactDate(entry.DATE_INDUCTED),
-  DATE_ENTERED_ACTIVE_SERVICE: normalizeArtifactDate(
+  veteranName: parseFullName(entry.VETERAN_NAME),
+  veteranSsn: normalizeSsn(entry.VETERAN_SSN),
+  veteranDob: normalizeArtifactDate(entry.VETERAN_DOB),
+  branchOfService: normalizeBranchOfService(entry.BRANCH_OF_SERVICE),
+  gradeRateRank: normalizeFreeText(entry.GRADE_RATE_RANK, 100),
+  payGrade: normalizePayGrade(entry.PAY_GRADE),
+  dateInducted: normalizeArtifactDate(entry.DATE_INDUCTED),
+  dateEnteredActiveService: normalizeArtifactDate(
     entry.DATE_ENTERED_ACTIVE_SERVICE,
   ),
-  DATE_SEPARATED_FROM_SERVICE: normalizeArtifactDate(
+  dateSeparatedFromService: normalizeArtifactDate(
     entry.DATE_SEPARATED_FROM_SERVICE,
   ),
-  CAUSE_OF_SEPARATION: normalizeFreeText(entry.CAUSE_OF_SEPARATION, 1000),
-  CHARACTER_OF_SERVICE: normalizeCharacterOfService(entry.CHARACTER_OF_SERVICE),
-  SEPARATION_TYPE: normalizeSeparationType(entry.SEPARATION_TYPE),
-  SEPARATION_CODE: normalizeSeparationCode(entry.SEPARATION_CODE),
+  causeOfSeparation: normalizeFreeText(entry.CAUSE_OF_SEPARATION, 1000),
+  characterOfService: normalizeCharacterOfService(entry.CHARACTER_OF_SERVICE),
+  separationType: normalizeSeparationType(entry.SEPARATION_TYPE),
+  separationCode: normalizeSeparationCode(entry.SEPARATION_CODE),
 });
 
 const normalizeDeathCertificateEntry = entry => ({
-  ...entry,
-  DECENDENT_FULL_NAME: parseFullName(entry.DECENDENT_FULL_NAME),
-  DECENDENT_SSN: normalizeSsn(entry.DECENDENT_SSN),
-  DECENDENT_DATE_OF_DEATH: normalizeArtifactDate(entry.DECENDENT_DATE_OF_DEATH),
-  DECENDENT_DATE_OF_DISPOSITION: normalizeArtifactDate(
+  decendentFullName: parseFullName(entry.DECENDENT_FULL_NAME),
+  decendentSsn: normalizeSsn(entry.DECENDENT_SSN),
+  decendentDateOfDeath: normalizeArtifactDate(entry.DECENDENT_DATE_OF_DEATH),
+  decendentDateOfDisposition: normalizeArtifactDate(
     entry.DECENDENT_DATE_OF_DISPOSITION,
   ),
-  CAUSE_OF_DEATH: normalizeFreeText(entry.CAUSE_OF_DEATH, 1000),
-  UNDERLYING_CAUSE_OF_DEATH_B: normalizeFreeText(
+  causeOfDeath: normalizeFreeText(entry.CAUSE_OF_DEATH, 1000),
+  underlyingCauseOfDeathB: normalizeFreeText(
     entry.UNDERLYING_CAUSE_OF_DEATH_B,
     1000,
   ),
-  UNDERLYING_CAUSE_OF_DEATH_C: normalizeFreeText(
+  underlyingCauseOfDeathC: normalizeFreeText(
     entry.UNDERLYING_CAUSE_OF_DEATH_C,
     1000,
   ),
-  UNDERLYING_CAUSE_OF_DEATH_D: normalizeFreeText(
+  underlyingCauseOfDeathD: normalizeFreeText(
     entry.UNDERLYING_CAUSE_OF_DEATH_D,
     1000,
   ),
-  MANNER_OF_DEATH: normalizeFreeText(entry.MANNER_OF_DEATH, 1000),
-  DECENDENT_MARITAL_STATUS: normalizeFreeText(
+  mannerOfDeath: normalizeFreeText(entry.MANNER_OF_DEATH, 1000),
+  decendentMaritalStatus: normalizeFreeText(
     entry.DECENDENT_MARITAL_STATUS,
     1000,
   ),

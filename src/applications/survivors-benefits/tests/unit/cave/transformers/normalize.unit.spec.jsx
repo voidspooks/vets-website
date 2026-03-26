@@ -279,19 +279,19 @@ describe('cave/transformers/normalize', () => {
       const { dd214 } = normalizeSections({ dd214: [raw] });
       expect(dd214).to.have.length(1);
       const entry = dd214[0];
-      expect(entry.VETERAN_NAME).to.deep.equal({
+      expect(entry.veteranName).to.deep.equal({
         first: 'John',
         middle: 'Q',
         last: 'Smith',
         suffix: undefined,
       });
-      expect(entry.VETERAN_SSN).to.equal('123456789');
-      expect(entry.VETERAN_DOB).to.equal('1950-03-15');
-      expect(entry.BRANCH_OF_SERVICE).to.equal('army');
-      expect(entry.PAY_GRADE).to.equal('E-4');
-      expect(entry.DATE_ENTERED_ACTIVE_SERVICE).to.equal('1970-02-15');
-      expect(entry.DATE_SEPARATED_FROM_SERVICE).to.equal('1974-02-14');
-      expect(entry.SEPARATION_CODE).to.equal('MBK');
+      expect(entry.veteranSsn).to.equal('123456789');
+      expect(entry.veteranDob).to.equal('1950-03-15');
+      expect(entry.branchOfService).to.equal('army');
+      expect(entry.payGrade).to.equal('E-4');
+      expect(entry.dateEnteredActiveService).to.equal('1970-02-15');
+      expect(entry.dateSeparatedFromService).to.equal('1974-02-14');
+      expect(entry.separationCode).to.equal('MBK');
     });
 
     it('normalizes a death certificate entry end-to-end', () => {
@@ -307,40 +307,40 @@ describe('cave/transformers/normalize', () => {
       });
       expect(deathCertificates).to.have.length(1);
       const entry = deathCertificates[0];
-      expect(entry.DECENDENT_FULL_NAME).to.deep.equal({
+      expect(entry.decendentFullName).to.deep.equal({
         first: 'Pat',
         middle: 'A',
         last: 'Veteran',
         suffix: undefined,
       });
-      expect(entry.DECENDENT_SSN).to.equal('987654321');
-      expect(entry.DECENDENT_DATE_OF_DEATH).to.equal('2020-03-01');
-      expect(entry.DECENDENT_DATE_OF_DISPOSITION).to.equal('2020-03-10');
-      expect(entry.CAUSE_OF_DEATH).to.equal('Natural causes');
+      expect(entry.decendentSsn).to.equal('987654321');
+      expect(entry.decendentDateOfDeath).to.equal('2020-03-01');
+      expect(entry.decendentDateOfDisposition).to.equal('2020-03-10');
+      expect(entry.causeOfDeath).to.equal('Natural causes');
     });
 
     it('sets null for unrecognized branch of service', () => {
       const raw = { BRANCH_OF_SERVICE: 'Starfleet' };
       const { dd214 } = normalizeSections({ dd214: [raw] });
-      expect(dd214[0].BRANCH_OF_SERVICE).to.be.null;
+      expect(dd214[0].branchOfService).to.be.null;
     });
 
     it('sets null for an invalid SSN', () => {
       const raw = { VETERAN_SSN: '12345' };
       const { dd214 } = normalizeSections({ dd214: [raw] });
-      expect(dd214[0].VETERAN_SSN).to.be.null;
+      expect(dd214[0].veteranSsn).to.be.null;
     });
 
     it('sets null for an unparseable date', () => {
       const raw = { VETERAN_DOB: 'not-a-date' };
       const { dd214 } = normalizeSections({ dd214: [raw] });
-      expect(dd214[0].VETERAN_DOB).to.be.null;
+      expect(dd214[0].veteranDob).to.be.null;
     });
 
     it('sets null for a name that is null', () => {
       const raw = { VETERAN_NAME: null };
       const { dd214 } = normalizeSections({ dd214: [raw] });
-      expect(dd214[0].VETERAN_NAME).to.be.null;
+      expect(dd214[0].veteranName).to.be.null;
     });
 
     it('handles multiple entries in both arrays', () => {
