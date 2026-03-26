@@ -159,6 +159,28 @@ describe('VASS Error Paths', () => {
           saveScreenshot('vass_error_verify_serviceUnavailable503');
         });
       });
+
+      describe('when the API returns a non-standard error response', () => {
+        beforeEach(() => {
+          mockRequestOtpApi({
+            response: { status: 500, error: 'Internal Server Error' },
+            responseCode: 500,
+          });
+          cy.visit(`${rootUrl}?uuid=${uuid}`);
+        });
+
+        it('should display a wrapper error alert', () => {
+          VerifyPageObject.assertVerifyPage();
+
+          VerifyPageObject.fillAndSubmitForm();
+
+          cy.wait('@vass:post:request-otp');
+
+          VerifyPageObject.assertWrapperErrorAlert({ exist: true });
+          cy.injectAxeThenAxeCheck();
+          saveScreenshot('vass_error_verify_nonStandardServerError');
+        });
+      });
     });
 
     describe('UI Errors', () => {
