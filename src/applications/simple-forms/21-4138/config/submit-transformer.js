@@ -18,6 +18,9 @@ const transformForSubmit = (formConfig, form) => {
   if (!transformedData.dateOfBirth && form.data?.dateOfBirth) {
     transformedData.dateOfBirth = form.data.dateOfBirth;
   }
+  if (!transformedData.idNumber && form.data?.idNumber?.ssn) {
+    transformedData.idNumber = form.data.idNumber;
+  }
 
   return JSON.stringify(transformedData);
 };

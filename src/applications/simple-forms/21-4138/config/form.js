@@ -363,7 +363,8 @@ const formConfig = {
         identificationInformationPage: {
           depends: formData =>
             isEligibleToSubmitStatement(formData) &&
-            !isNonVeteranClaimant(formData),
+            !isNonVeteranClaimant(formData) &&
+            !(isClaimantVeteran(formData) && formData?.idNumber?.ssn),
           path: 'identification-information',
           title: 'Identification information',
           uiSchema: identificationInformationPage.uiSchema,
