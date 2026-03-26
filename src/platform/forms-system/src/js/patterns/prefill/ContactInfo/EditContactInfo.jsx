@@ -52,11 +52,12 @@ export const BuildPageBase = ({
 
   useEffect(
     () => {
-      if (headerRef?.current) {
+      // h1 in minimal header focused by minimalHeaderScrollAndFocus() instead
+      if (!isMinimalHeader && headerRef?.current) {
         focusElement(headerRef?.current);
       }
     },
-    [headerRef],
+    [headerRef, isMinimalHeader],
   );
 
   useEffect(
