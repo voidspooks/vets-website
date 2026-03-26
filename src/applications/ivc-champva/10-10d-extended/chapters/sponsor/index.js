@@ -1,4 +1,6 @@
-import AddressSelectionPage from '../../components/FormPages/AddressSelectionPage';
+import AddressSelectionPage, {
+  NOT_SHARED,
+} from '../../components/FormPages/AddressSelectionPage';
 import AddressSelectionReviewPage from '../../components/FormReview/AddressSelectionReviewPage';
 import { blankSchema } from '../../definitions';
 import { whenAll } from '../../utils/helpers';
@@ -20,7 +22,12 @@ const isNotDeceased = formData => !isDeceased(formData);
 
 const hasCertifierStreet = formData =>
   Boolean(formData?.certifierAddress?.street);
-const noSharedAddress = formData => !formData?.['view:sharesAddressWith'];
+// Entry page is needed when the user picked NOT_SHARED ("no, enter my own") OR
+// has never made a selection. It must NOT show when a real shared address was chosen.
+const noSharedAddress = formData => {
+  const val = formData?.['view:sharesAddressWith'];
+  return !val || val === NOT_SHARED;
+};
 
 // CustomPage declarations
 const SponsorAddressSelectionPage = props =>

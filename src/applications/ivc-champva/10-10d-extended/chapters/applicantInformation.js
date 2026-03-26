@@ -24,7 +24,9 @@ import { isOfCollegeAge, requireBirthCertificate } from '../utils/helpers';
 import { attachmentSchema, attachmentUI } from '../definitions';
 import { APPLICANTS_MAX } from '../utils/constants';
 
-import AddressSelectionPage from '../components/FormPages/AddressSelectionPage';
+import AddressSelectionPage, {
+  NOT_SHARED,
+} from '../components/FormPages/AddressSelectionPage';
 import sectionOverview from './applicantInformation/sectionOverview';
 import personalInformation from './applicantInformation/personalInformation';
 import remarriageProof from './applicantInformation/remarriageProof';
@@ -229,8 +231,10 @@ export const applicantPages = arrayBuilderPages(
     page15: pageBuilder.itemPage({
       path: 'applicant-mailing-address/:index',
       title: 'Mailing address',
-      depends: (formData, index) =>
-        !get('view:sharesAddressWith', formData.applicants?.[index]),
+      depends: (formData, index) => {
+        const val = get('view:sharesAddressWith', formData.applicants?.[index]);
+        return !val || val === NOT_SHARED;
+      },
       ...applicantMailingAddressPage,
     }),
     page16: pageBuilder.itemPage({
