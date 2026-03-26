@@ -56,7 +56,7 @@ describe('CaseProgressDescription', () => {
       <CaseProgressDescription step={1} />,
     );
     getByText(
-      /The section below contains information on steps you can take while waiting to hear back from us/i,
+      /While we review your application, you can prepare for next steps by using the additional resources on this page to learn more about the VR&E program/i,
     );
   });
 
@@ -83,7 +83,7 @@ describe('CaseProgressDescription', () => {
       <CaseProgressDescription step={4} status="PENDING" />,
     );
 
-    getByText(/Check your email to schedule your meeting with your counselor/i);
+    getByText(/We processed your application for VR&E benefits/i);
   });
 
   it('renders the step 4 scheduled message when appointment details are available', () => {
@@ -101,7 +101,7 @@ describe('CaseProgressDescription', () => {
     );
 
     const scheduledMessage = getByText(
-      /Your Initial Evaluation Appointment has been scheduled/i,
+      /If you need to reschedule, use the rescheduling link we sent you in the confirmation email and text/i,
     );
 
     expect(scheduledMessage).to.exist;
@@ -116,7 +116,7 @@ describe('CaseProgressDescription', () => {
       },
       {
         step: 7,
-        text: /Your Chapter 31 benefits have been initiated/i,
+        text: /We initiated your VR&E/i,
       },
     ];
 

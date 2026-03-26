@@ -26,13 +26,11 @@ const CaseProgressDescription = ({
     case 1: {
       return (
         <>
+          <p>We received your application for VR&E benefits.</p>
           <p>
-            We’ve received your application for VR&E benefits, and it’s being
-            reviewed.
-          </p>
-          <p>
-            The section below contains information on steps you can take while
-            waiting to hear back from us.
+            While we review your application, you can prepare for next steps by
+            using the additional resources on this page to learn more about the
+            VR&E program.
           </p>
           {hubCards}
         </>
@@ -75,19 +73,40 @@ const CaseProgressDescription = ({
     case 4: {
       const appointmentDetails = attributes?.orientationAppointmentDetails;
 
+      const prepareForYourMeeting = (
+        <>
+          <h3>Prepare for your meeting</h3>
+          <p>
+            Check out our career resources and tools to help you achieve your
+            employment goals. You can assess your career interests and learn
+            about career paths. These career resources will help you prepare for
+            your initial evaluation counselor meeting.
+          </p>
+          <VaLink
+            href="/career-planning"
+            text="Explore career planning tools and resources"
+            onClick={handleCareerPlanningClick}
+          />
+        </>
+      );
+
       if (!appointmentDetails?.appointmentDateTime) {
         return (
           <>
             <p>
-              We’ve processed your application for Chapter 31 benefits. Check
-              your email to schedule your meeting with your counselor. After
-              scheduling, you’ll get a confirmation email and an appointment
-              notification letter.
+              We processed your application for VR&E benefits. Keep reading to
+              learn what you need to do next.
+            </p>
+            <h3>Schedule your meeting</h3>
+            <p>
+              Follow the instructions in the email we sent you to schedule your
+              initial evaluation counselor meeting.
             </p>
             <p>
-              Use the career planning tools and resources link below to prepare
-              for your initial evaluation counselor meeting.
+              After you schedule this meeting, we’ll send you a confirmation
+              email and a notification letter in the mail.
             </p>
+            {prepareForYourMeeting}
           </>
         );
       }
@@ -95,11 +114,11 @@ const CaseProgressDescription = ({
       return (
         <>
           <p>
-            Your initial evaluation appointment has been scheduled. If you need
-            to reschedule, use your appointment confirmation rescheduling link
-            sent to you via email and text. If you need further assistance,
-            contact your counselor.
+            If you need to reschedule, use the rescheduling link we sent you in
+            the confirmation email and text. If you need more help, contact your
+            counselor.
           </p>
+          {prepareForYourMeeting}
         </>
       );
     }
@@ -138,7 +157,7 @@ const CaseProgressDescription = ({
     case 7: {
       return (
         <>
-          <p>Your Chapter 31 benefits have been initiated.</p>
+          <p>We initiated your VR&E (Chapter 31) benefits.</p>
           {hubCards}
         </>
       );

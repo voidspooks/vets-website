@@ -54,7 +54,7 @@ const getCardsForStep = (step, stateList = []) => {
     case 3:
       return allCards;
     case 4:
-      return [careerPlanningCard];
+      return [];
 
     case 5:
       return [];
@@ -98,11 +98,7 @@ const HubCardList = ({ step, stateList = [] }) => {
                 onClick={event => handleRouteChange(event, card.href)}
               />
             ) : (
-              <VaLink
-                href={card.href}
-                text={card.title}
-                className=" vads-u-font-weight--bold"
-              />
+              <VaLink href={card.href} text={card.title} />
             )}
             {Array.isArray(card.body) ? (
               card.body.map((text, i) => (

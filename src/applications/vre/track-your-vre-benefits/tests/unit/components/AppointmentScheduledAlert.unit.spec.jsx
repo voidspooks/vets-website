@@ -62,7 +62,7 @@ describe('AppointmentScheduledAlert', () => {
     ).to.exist;
     expect(
       getByText(
-        /The Microsoft Teams meeting link will be included in the appointment confirmation email sent to you\./,
+        /This is an online meeting. You can join at the scheduled time using the Microsoft Teams link in the confirmation email we sent you\./,
       ),
     ).to.exist;
 

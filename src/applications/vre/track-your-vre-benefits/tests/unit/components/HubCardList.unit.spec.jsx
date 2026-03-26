@@ -43,11 +43,10 @@ describe('HubCardList', () => {
     expect(links[2].getAttribute('href')).to.equal('/career-planning');
   });
 
-  it('renders only Career Planning for step 4', () => {
+  it('renders nothing for step 4', () => {
     const { container } = renderWithProviders(<HubCardList step={4} />);
     const links = container.querySelectorAll('va-link');
-    expect(links.length).to.equal(1);
-    expect(links[0].getAttribute('href')).to.equal('/career-planning');
+    expect(links.length).to.equal(0);
   });
 
   it('renders all cards for step 3 when the current step is active', () => {
@@ -121,24 +120,6 @@ describe('HubCardList', () => {
 
     expect(links.length).to.equal(1);
     expect(links[0].getAttribute('href')).to.equal('/career-planning');
-  });
-
-  it('pushes the career-planning route when the internal link is clicked', () => {
-    const { container, getByTestId } = render(
-      <Provider store={makeStore()}>
-        <MemoryRouter initialEntries={['/']}>
-          <HubCardList step={4} />
-          <LocationDisplay />
-        </MemoryRouter>
-      </Provider>,
-    );
-    const link = container.querySelector('va-link[href="/career-planning"]');
-
-    userEvent.click(link);
-
-    expect(getByTestId('location-display').textContent).to.equal(
-      '/career-planning',
-    );
   });
 
   it('does not push router history for a non-router VA.gov link', () => {
