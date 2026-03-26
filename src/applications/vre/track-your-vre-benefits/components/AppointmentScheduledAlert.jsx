@@ -62,7 +62,7 @@ const AppointmentScheduledAlert = ({
     <div className="vads-u-margin-y--3">
       <va-alert close-btn-aria-label="Close notification" status="info" visible>
         <h2 id="appointment-scheduled" slot="headline">
-          Appointment scheduled
+          Meeting scheduled
         </h2>
         {appointmentPlace ? (
           <>

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { VaLink } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import AppointmentScheduledAlert from './AppointmentScheduledAlert';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import HubCardList from './HubCardList';
 import SelectPreferenceView from './SelectPreferenceView';
 
@@ -10,11 +10,17 @@ const CaseProgressDescription = ({
   showHubCards = false,
   attributes = {},
 }) => {
+  const navigate = useNavigate();
   const hubCards = showHubCards ? (
     <div className="vads-u-clear--both">
       <HubCardList step={step} />
     </div>
   ) : null;
+
+  const handleCareerPlanningClick = event => {
+    event.preventDefault();
+    navigate('/career-planning');
+  };
 
   switch (step) {
     case 1: {
@@ -47,49 +53,20 @@ const CaseProgressDescription = ({
       return (
         <>
           <p>
-            VR&E is processing your Chapter 31 application. Your next step is to
-            complete the orientation video online or during your initial
-            evaluation counselor meeting.
+            We’re processing your VR&E application. We’re also assigning a
+            counselor to you.
           </p>
           <p>
-            After you make your selection we’ll send you a scheduling link via
-            email or text. In the meantime, we’re assigning a counselor to your
-            case.
+            Before we schedule your initial evaluation counselor meeting, we
+            need to know how you’d like to complete the orientation video. You
+            can review this video during your counselor meeting or online on
+            your own time.
+          </p>
+          <p>
+            Next, we’ll send you a link to schedule your counselor meeting to
+            your email or by text message.
           </p>
           <SelectPreferenceView />
-          <va-card background class="vads-u-margin-top--2">
-            <h3 className="va-nav-linkslist-heading vads-u-margin-top--0 vads-u-margin-bottom--0">
-              Reading material
-            </h3>
-            <ul className="va-nav-linkslist-list vads-u-margin-bottom--2">
-              <li>
-                <VaLink
-                  active
-                  href="https://www.va.gov/careers-employment/vocational-rehabilitation"
-                  text="Learn about the VR&E program"
-                  className=" vads-u-font-weight--bold"
-                />
-
-                <p className="va-nav-linkslist-description">
-                  Read about how Veteran Readiness and Employment (Chapter 31)
-                  can help you address education or training needs.
-                </p>
-              </li>
-              <li>
-                <VaLink
-                  active
-                  className="vads-u-font-weight--bold"
-                  href="https://www.va.gov/careers-employment/vocational-rehabilitation/programs"
-                  text="Explore VR&E support-and-services tracks"
-                />
-
-                <p className="va-nav-linkslist-description">
-                  We offer 5 support-and-services tracks to help you get
-                  education, training, career planning, and live independently.
-                </p>
-              </li>
-            </ul>
-          </va-card>
           {hubCards}
         </>
       );
@@ -123,10 +100,6 @@ const CaseProgressDescription = ({
             sent to you via email and text. If you need further assistance,
             contact your counselor.
           </p>
-          <AppointmentScheduledAlert
-            appointmentDateTime={appointmentDetails.appointmentDateTime}
-            appointmentPlace={appointmentDetails.appointmentPlace}
-          />
         </>
       );
     }
@@ -136,10 +109,16 @@ const CaseProgressDescription = ({
         <>
           <p>
             Your counselor is completing your entitlement determination review.
-            While you wait, you can look at the career planning tools and
-            resources. The link is in the section below.
+            While you wait, you can continue reviewing our career planning tools
+            and resources.
           </p>
-          {hubCards}
+          <div className="vads-u-margin-top--1">
+            <VaLink
+              href="/career-planning"
+              text="Explore career planning tools and resources"
+              onClick={handleCareerPlanningClick}
+            />
+          </div>
         </>
       );
     }

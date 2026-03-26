@@ -260,9 +260,9 @@ describe('CH31 My Case Management Hub - Step 3 (Orientation)', () => {
     cy.get('va-segmented-progress-bar').should('exist');
     cy.contains(/orientation/i).should('be.visible');
     // Actual component text from CaseProgressDescription case 3
-    cy.contains(
-      /complete the orientation video online or during your initial evaluation counselor meeting/i,
-    ).should('be.visible');
+    cy.contains(/need to know how.*complete the orientation video/i).should(
+      'be.visible',
+    );
   });
 
   it('shows radio options for orientation preference', () => {
