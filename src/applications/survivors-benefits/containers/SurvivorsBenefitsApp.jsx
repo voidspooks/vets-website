@@ -4,6 +4,7 @@ import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import IntentToFile from 'platform/shared/itf/IntentToFile';
 import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import formConfig from '../config/form';
+import { useCaveProcessingManager } from '../cave';
 
 export default function SurvivorsBenefitsApp({ location, children }) {
   const TOGGLE_KEY = 'survivorsBenefitsForm2025VersionEnabled';
@@ -22,6 +23,7 @@ export default function SurvivorsBenefitsApp({ location, children }) {
       formKey: 'view:idpEnabled',
     },
   ]);
+  useCaveProcessingManager();
 
   return (
     <RoutedSavableApp formConfig={formConfig} currentLocation={location}>
