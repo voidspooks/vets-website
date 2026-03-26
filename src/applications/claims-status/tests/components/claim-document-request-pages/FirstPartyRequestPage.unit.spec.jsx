@@ -843,4 +843,44 @@ describe('<FirstPartyRequestPage>', () => {
       });
     });
   });
+
+  describe('hideClaimLetterSection', () => {
+    it('should hide the "Learn about this request" section when hideClaimLetterSection is true', () => {
+      const item = createTrackedItem({
+        description: 'Some description',
+        friendlyName: 'Test item',
+        hideClaimLetterSection: true,
+      });
+      const { queryByTestId } = renderWithReduxAndRouter(
+        <FirstPartyRequestPage {...defaultProps} item={item} />,
+        { initialState },
+      );
+      expect(queryByTestId('learn-about-request-section')).to.not.exist;
+    });
+
+    it('should show the "Learn about this request" section when hideClaimLetterSection is false', () => {
+      const item = createTrackedItem({
+        description: 'Some description',
+        friendlyName: 'Test item',
+        hideClaimLetterSection: false,
+      });
+      const { queryByTestId } = renderWithReduxAndRouter(
+        <FirstPartyRequestPage {...defaultProps} item={item} />,
+        { initialState },
+      );
+      expect(queryByTestId('learn-about-request-section')).to.exist;
+    });
+
+    it('should show the "Learn about this request" section when hideClaimLetterSection is absent', () => {
+      const item = createTrackedItem({
+        description: 'Some description',
+        friendlyName: 'Test item',
+      });
+      const { queryByTestId } = renderWithReduxAndRouter(
+        <FirstPartyRequestPage {...defaultProps} item={item} />,
+        { initialState },
+      );
+      expect(queryByTestId('learn-about-request-section')).to.exist;
+    });
+  });
 });
