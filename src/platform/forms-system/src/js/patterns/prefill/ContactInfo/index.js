@@ -47,6 +47,7 @@ import { createContactInfoConfirmationField } from './ContactInfoConfirmationFie
  * @param {string} [options.mobilePhoneKey] - mobile phone key value set in ContactInfoKeys
  * @param {Object} [options.phoneSchema] - Phone schema object with country code, area code, phone number & extension values
  * @param {boolean} [options.prefillPatternEnabled] - enable prefill pattern for contact info
+ * @param {boolean} [options.showProfileAlert=true] - show blue info alert on edit pages ("changes will also be reflected on your profile")
  * @param {string} [options.wrapperKey] - wrapper key value set in ContactInfoKeys
  * @returns {Object} - form config pages for a chapter
  */
@@ -80,6 +81,7 @@ const profileContactInfoPages = ({
   contactSectionHeadingLevel = null,
   editContactInfoHeadingLevel = null,
   prefillPatternEnabled = true,
+  showProfileAlert = true,
 } = {}) => {
   const config = {};
   const wrapperProperties = {};
@@ -99,6 +101,7 @@ const profileContactInfoPages = ({
           contactPath,
           editContactInfoHeadingLevel,
           prefillPatternEnabled,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -126,6 +129,7 @@ const profileContactInfoPages = ({
           content,
           contactPath,
           editContactInfoHeadingLevel,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -153,6 +157,7 @@ const profileContactInfoPages = ({
           content,
           contactPath,
           editContactInfoHeadingLevel,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,
@@ -178,6 +183,7 @@ const profileContactInfoPages = ({
           content,
           contactPath,
           editContactInfoHeadingLevel,
+          showProfileAlert,
           requiredKeys: contactInfoRequiredKeys,
           contactInfoPageKey,
           disableMockContactInfo,

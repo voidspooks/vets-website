@@ -28,6 +28,7 @@ export const BuildPageBase = ({
   editContactInfoHeadingLevel,
   router,
   prefillPatternEnabled,
+  showProfileAlert = true,
   ...rest
 }) => {
   const dispatch = useDispatch();
@@ -116,13 +117,14 @@ export const BuildPageBase = ({
           <Header ref={headerRef} className={headerClass}>
             {title}
           </Header>
-          {field !== 'MAILING_ADDRESS' && (
-            <va-alert class="vads-u-margin-y--3" status="info" visible slim>
-              <p className="vads-u-margin--0">
-                Any changes you make will also be reflected on your profile.
-              </p>
-            </va-alert>
-          )}
+          {field !== 'MAILING_ADDRESS' &&
+            showProfileAlert && (
+              <va-alert class="vads-u-margin-y--3" status="info" visible slim>
+                <p className="vads-u-margin--0">
+                  Any changes you make will also be reflected on your profile.
+                </p>
+              </va-alert>
+            )}
           <ProfileInformationFieldController
             forceEditView
             fieldName={FIELD_NAMES[field]}
@@ -149,6 +151,7 @@ BuildPageBase.propTypes = {
   goToPath: PropTypes.func,
   id: PropTypes.string,
   prefillPatternEnabled: PropTypes.bool,
+  showProfileAlert: PropTypes.bool,
   title: PropTypes.string,
 };
 
