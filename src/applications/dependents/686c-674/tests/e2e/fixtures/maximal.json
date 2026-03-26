@@ -394,5 +394,6 @@
   ],
   "statementOfTruthCertified": true,
   "vaDependentsDuplicateModals": true,
-  "vaDependentsV3": true
+  "vaDependentsV3": true,
+  "netWorthLimit": 163699
 }

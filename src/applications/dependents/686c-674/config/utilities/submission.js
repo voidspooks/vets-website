@@ -137,6 +137,7 @@ export function buildSubmissionData(payload) {
     'statementOfTruthCertified',
     'metadata',
     PICKLIST_REMOVAL_FLAG,
+    'netWorthLimit', // Passing networth limit for FDF PDF generation
   ];
 
   essentialFields.forEach(field => {
