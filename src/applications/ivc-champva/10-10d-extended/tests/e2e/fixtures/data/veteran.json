@@ -38,7 +38,9 @@
         "applicantRelationshipToSponsor": {
           "relationshipToVeteran": "child"
         },
-        "applicantRelationshipOrigin": "step",
+        "applicantRelationshipOrigin": {
+          "relationshipToVeteran": "step"
+        },
         "applicantBirthCertOrSocialSecCard": [
           {
             "attachmentId": "Birth certificate",

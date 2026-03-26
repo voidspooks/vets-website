@@ -13,14 +13,12 @@ import {
   phoneSchema,
   emailUI,
   emailSchema,
-  radioSchema,
   yesNoUI,
   yesNoSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { blankSchema } from 'platform/forms-system/src/js/utilities/data/profile';
 import { applicantWording } from '../../shared/utilities';
 
-import { ApplicantRelOriginPage } from './ApplicantRelOriginPage';
 import { ApplicantGenderPage } from './ApplicantGenderPage';
 import { validateApplicant, validateApplicantSsn } from '../utils/validations';
 import { isOfCollegeAge, requireBirthCertificate } from '../utils/helpers';
@@ -37,6 +35,7 @@ import marriageDate from './applicantInformation/marriageDate';
 import stepchildMarriageProof from './applicantInformation/stepchildMarriageProof';
 import birthCertificate from './applicantInformation/birthCertificate';
 import relationshipToVeteran from './applicantInformation/relationshipToVeteran';
+import relationshipOrigin from './applicantInformation/relationshipOrigin';
 import ApplicantSummaryCard from '../components/FormDescriptions/ApplicantSummaryCard';
 import FileUploadDescription from '../components/FormDescriptions/FileUploadDescription';
 import { titleWithNameUI } from '../utils/titles';
@@ -145,22 +144,6 @@ const applicantGenderPage = {
         },
       },
     },
-  },
-};
-
-const applicantRelationshipOriginPage = {
-  uiSchema: {},
-  schema: {
-    type: 'object',
-    properties: {
-      applicantRelationshipOrigin: {
-        type: 'object',
-        properties: {
-          relationshipToVeteran: radioSchema(['blood', 'adoption', 'step']),
-        },
-      },
-    },
-    required: ['applicantRelationshipOrigin'],
   },
 };
 
@@ -286,14 +269,13 @@ export const applicantPages = arrayBuilderPages(
     }),
     page18c: pageBuilder.itemPage({
       path: 'applicant-dependent-status/:index',
-      title: 'Applicant dependent status',
+      title: 'Dependent status',
       depends: (formData, index) =>
         get(
           'applicantRelationshipToSponsor.relationshipToVeteran',
           formData?.applicants?.[index],
         ) === 'child',
-      ...applicantRelationshipOriginPage,
-      CustomPage: ApplicantRelOriginPage,
+      ...relationshipOrigin,
     }),
     page18a: pageBuilder.itemPage({
       path: 'applicant-birth-certificate/:index',

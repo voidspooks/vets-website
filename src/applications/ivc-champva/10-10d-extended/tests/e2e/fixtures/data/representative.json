@@ -41,7 +41,9 @@
         "applicantRelationshipToSponsor": {
           "relationshipToVeteran": "child"
         },
-        "applicantRelationshipOrigin": "blood",
+        "applicantRelationshipOrigin": {
+          "relationshipToVeteran": "blood"
+        },
         "applicantDependentStatus": {
           "status": "over18HelplessChild"
         }
