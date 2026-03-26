@@ -19,7 +19,6 @@ import {
 import { blankSchema } from 'platform/forms-system/src/js/utilities/data/profile';
 import { applicantWording } from '../../shared/utilities';
 
-import { ApplicantGenderPage } from './ApplicantGenderPage';
 import { validateApplicant, validateApplicantSsn } from '../utils/validations';
 import { isOfCollegeAge, requireBirthCertificate } from '../utils/helpers';
 import { attachmentSchema, attachmentUI } from '../definitions';
@@ -33,6 +32,7 @@ import dependentStatus from './applicantInformation/dependentStatus';
 import schoolEnrollmentProof from './applicantInformation/schoolEnrollmentProof';
 import marriageDate from './applicantInformation/marriageDate';
 import stepchildMarriageProof from './applicantInformation/stepchildMarriageProof';
+import birthSex from './applicantInformation/birthSex';
 import birthCertificate from './applicantInformation/birthCertificate';
 import relationshipToVeteran from './applicantInformation/relationshipToVeteran';
 import relationshipOrigin from './applicantInformation/relationshipOrigin';
@@ -126,24 +126,6 @@ const applicantContactInfoPage = {
       applicantEmailAddress: emailSchema,
     },
     required: ['applicantPhone'],
-  },
-};
-
-const applicantGenderPage = {
-  uiSchema: {
-    applicantGender: {},
-  },
-  schema: {
-    type: 'object',
-    properties: {
-      applicantGender: {
-        type: 'object',
-        properties: {
-          gender: { type: 'string' },
-          _unused: { type: 'string' },
-        },
-      },
-    },
   },
 };
 
@@ -258,9 +240,8 @@ export const applicantPages = arrayBuilderPages(
     }),
     page17: pageBuilder.itemPage({
       path: 'applicant-birth-sex/:index',
-      title: 'Applicant sex listed at birth',
-      ...applicantGenderPage,
-      CustomPage: ApplicantGenderPage,
+      title: 'Birth sex',
+      ...birthSex,
     }),
     page18: pageBuilder.itemPage({
       path: 'applicant-relationship-to-veteran/:index',
