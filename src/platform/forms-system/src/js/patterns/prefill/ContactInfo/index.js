@@ -88,15 +88,27 @@ const profileContactInfoPages = ({
   const keys = { wrapper: wrapperKey };
   const requiredList = contactInfoRequiredKeys;
 
+  const getFieldTitle = (formData, fieldKey, editText, addText) => {
+    const fieldData = formData?.[wrapperKey]?.[fieldKey];
+    if (!fieldData || typeof fieldData !== 'object') return addText;
+    const hasData = Object.values(fieldData).some(v => v);
+    return hasData ? editText : addText;
+  };
+
   if (included.includes(addressKey)) {
     keys.address = addressKey;
     wrapperProperties[addressKey] = addressSchema || profileAddressSchema;
     config[`${contactInfoPageKey}EditMailingAddress`] = {
-      title: content.editMailingAddress,
       path: `${contactPath}/edit-mailing-address`,
       CustomPage: props =>
         EditAddress({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            addressKey,
+            content.editMailingAddress,
+            content.addMailingAddress,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
@@ -121,11 +133,16 @@ const profileContactInfoPages = ({
     wrapperProperties[homePhoneKey] =
       phoneSchema || standardPhoneSchema(requiredList.includes(keys.homePhone));
     config[`${contactInfoPageKey}EditHomePhone`] = {
-      title: content.editHomePhone,
       path: `${contactPath}/edit-home-phone`,
       CustomPage: props =>
         EditHomePhone({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            homePhoneKey,
+            content.editHomePhone,
+            content.addHomePhone,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
@@ -149,11 +166,16 @@ const profileContactInfoPages = ({
       phoneSchema ||
       standardPhoneSchema(requiredList.includes(keys.mobilePhone));
     config[`${contactInfoPageKey}EditMobilePhone`] = {
-      title: content.editMobilePhone,
       path: `${contactPath}/edit-mobile-phone`,
       CustomPage: props =>
         EditMobilePhone({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            mobilePhoneKey,
+            content.editMobilePhone,
+            content.addMobilePhone,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
@@ -175,11 +197,16 @@ const profileContactInfoPages = ({
     keys.email = emailKey;
     wrapperProperties[emailKey] = emailSchema || standardEmailObjectSchema;
     config[`${contactInfoPageKey}EditEmailAddress`] = {
-      title: content.editEmail,
       path: `${contactPath}/edit-email-address`,
       CustomPage: props =>
         EditEmail({
           ...props,
+          title: getFieldTitle(
+            props.data,
+            emailKey,
+            content.editEmail,
+            content.addEmail,
+          ),
           content,
           contactPath,
           editContactInfoHeadingLevel,
