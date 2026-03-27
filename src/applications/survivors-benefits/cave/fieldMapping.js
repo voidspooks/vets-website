@@ -1,5 +1,6 @@
 import { formatFullName } from '../utils/helpers';
 import { formatIsoDate, maskSsn, sanitize } from './transformers/helpers';
+import { normalizeSsn } from './transformers/normalize';
 import { servicesOptions } from '../utils/labels';
 
 const normalizeName = str =>
@@ -32,7 +33,7 @@ export const VETERAN_INFO_FIELDS = [
         artifactKey: 'dd214',
         docTypeLabel: 'DD-214',
         getArtifactValue: entry =>
-          entry.veteranName?.first || entry.veteranName?.last
+          entry.veteranName?.first && entry.veteranName?.last
             ? entry.veteranName
             : null,
         formatArtifactValue: val => formatFullName(val || {}),
@@ -45,7 +46,7 @@ export const VETERAN_INFO_FIELDS = [
         artifactKey: 'deathCertificates',
         docTypeLabel: 'death certificate',
         getArtifactValue: entry =>
-          entry.decendentFullName?.first || entry.decendentFullName?.last
+          entry.decendentFullName?.first && entry.decendentFullName?.last
             ? entry.decendentFullName
             : null,
         formatArtifactValue: val => formatFullName(val || {}),
@@ -75,7 +76,7 @@ export const VETERAN_INFO_FIELDS = [
       {
         artifactKey: 'dd214',
         docTypeLabel: 'DD-214',
-        getArtifactValue: entry => entry.veteranSsn || null,
+        getArtifactValue: entry => normalizeSsn(entry.veteranSsn) || null,
         formatArtifactValue: val =>
           maskSsn((val || '').replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')),
         setArtifactValue: (entry, canonicalValue) => ({
@@ -86,7 +87,7 @@ export const VETERAN_INFO_FIELDS = [
       {
         artifactKey: 'deathCertificates',
         docTypeLabel: 'death certificate',
-        getArtifactValue: entry => entry.decendentSsn || null,
+        getArtifactValue: entry => normalizeSsn(entry.decendentSsn) || null,
         formatArtifactValue: val =>
           maskSsn((val || '').replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')),
         setArtifactValue: (entry, canonicalValue) => ({

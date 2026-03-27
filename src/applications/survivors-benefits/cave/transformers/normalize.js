@@ -37,7 +37,7 @@ const normalizeDigits = v => (v || '').replace(/\D/g, '');
 // Normalizes SSN to a bare 9-digit string (matching the 534 form's storage
 // format). Returns null for values that don't produce exactly 9 digits, ''
 // for blank fields (field was present but left empty in the document).
-const normalizeSsn = v => {
+export const normalizeSsn = v => {
   if (v == null) return null;
   if (typeof v === 'string' && v.trim() === '') return '';
   const digits = normalizeDigits(v);

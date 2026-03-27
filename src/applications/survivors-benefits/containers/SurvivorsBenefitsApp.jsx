@@ -4,6 +4,7 @@ import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import IntentToFile from 'platform/shared/itf/IntentToFile';
 import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import formConfig from '../config/form';
+import { useAutoResolveArtifacts } from '../cave/utils/useAutoResolveArtifacts';
 import { useCaveProcessingManager } from '../cave';
 
 export default function SurvivorsBenefitsApp({ location, children }) {
@@ -23,6 +24,7 @@ export default function SurvivorsBenefitsApp({ location, children }) {
       formKey: 'view:idpEnabled',
     },
   ]);
+  useAutoResolveArtifacts();
   useCaveProcessingManager();
 
   return (

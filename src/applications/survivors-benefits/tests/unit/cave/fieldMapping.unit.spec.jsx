@@ -73,18 +73,27 @@ describe('cave/fieldMapping', () => {
       describe('dd214 artifact', () => {
         const artifact = field.artifacts.find(a => a.artifactKey === 'dd214');
 
-        it('getArtifactValue returns veteranName when first is present', () => {
-          const name = { first: 'John', last: '' };
+        it('getArtifactValue returns veteranName when both first and last are present', () => {
+          const name = { first: 'John', last: 'Smith' };
           expect(
             artifact.getArtifactValue({ veteranName: name }),
           ).to.deep.equal(name);
         });
 
-        it('getArtifactValue returns veteranName when last is present', () => {
-          const name = { first: '', last: 'Smith' };
+        it('getArtifactValue returns null when only first is present', () => {
           expect(
-            artifact.getArtifactValue({ veteranName: name }),
-          ).to.deep.equal(name);
+            artifact.getArtifactValue({
+              veteranName: { first: 'John', last: '' },
+            }),
+          ).to.be.null;
+        });
+
+        it('getArtifactValue returns null when only last is present', () => {
+          expect(
+            artifact.getArtifactValue({
+              veteranName: { first: '', last: 'Smith' },
+            }),
+          ).to.be.null;
         });
 
         it('getArtifactValue returns null when neither first nor last', () => {
@@ -118,11 +127,19 @@ describe('cave/fieldMapping', () => {
           a => a.artifactKey === 'deathCertificates',
         );
 
-        it('getArtifactValue returns decendentFullName when first is present', () => {
-          const name = { first: 'Pat', last: '' };
+        it('getArtifactValue returns decendentFullName when both first and last are present', () => {
+          const name = { first: 'Pat', last: 'Smith' };
           expect(
             artifact.getArtifactValue({ decendentFullName: name }),
           ).to.deep.equal(name);
+        });
+
+        it('getArtifactValue returns null when only first is present', () => {
+          expect(
+            artifact.getArtifactValue({
+              decendentFullName: { first: 'Pat', last: '' },
+            }),
+          ).to.be.null;
         });
 
         it('getArtifactValue returns null when no name parts', () => {
