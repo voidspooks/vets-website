@@ -20,12 +20,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
       - name: Dependency Review
-        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           base-ref: main
           head-ref: ${{ github.sha }}
@@ -53,7 +53,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -169,7 +169,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -215,7 +215,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -392,7 +392,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -484,7 +484,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -539,7 +539,7 @@ jobs:
       APPLICATION_LIST: ${{ needs.testing-reports-prep.outputs.app_list }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -593,7 +593,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -626,7 +626,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -683,7 +683,7 @@ jobs:
       app_list: ${{ env.APPLICATION_LIST }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -731,7 +731,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS Credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -742,7 +742,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@183a1442edf41672e66566b7fc560e297a290896 # v2.1.1
         with:
           mask-password: false
 
@@ -792,7 +792,7 @@ jobs:
 
       - name: Checkout vets-website
         if: needs.tests-prep.outputs.cypress-tests != '[]'
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         if: needs.tests-prep.outputs.cypress-tests != '[]'
@@ -955,7 +955,7 @@ jobs:
 
     steps:
       - name: Checkout vets-website
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -1061,7 +1061,7 @@ jobs:
       APPLICATION_LIST: ${{ needs.testing-reports-prep.outputs.app_list }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -1158,7 +1158,7 @@ jobs:
       cypress_specs: ${{ steps.testing-folders.outputs.cypress_specs }}
       unit_test_specs: ${{ steps.testing-folders.outputs.unit_test_specs }}
     steps:
-      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           node-version: 22
       - name: Install dependencies
@@ -1185,7 +1185,7 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.forms-system_regression_check_get_file_paths.outputs.unit_test_specs) }}
     steps:
-      - uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Install dependencies
         uses: ./.github/workflows/install
       - name: Run unit tests
@@ -1216,7 +1216,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Configure AWS credentials
         uses: ./.github/workflows/configure-aws-credentials
@@ -1318,7 +1318,7 @@ jobs:
               echo "IS_MASTER_BUILD=false" >> $GITHUB_ENV
           fi
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       # ----------------
       # | Notify Slack |
@@ -1430,7 +1430,7 @@ jobs:
               echo "IS_MASTER_BUILD=false" >> $GITHUB_ENV
           fi
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       # ------------------------
       # | Upload BigQuery Data |
@@ -1520,7 +1520,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
         uses: ./.github/workflows/install
@@ -1634,7 +1634,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack about Cypress test failures
         if: ${{ github.ref == 'refs/heads/main' && needs.cypress-tests.result == 'failure' }}
@@ -1743,7 +1743,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack about Cypress test failures
         if: ${{ github.ref == 'refs/heads/main' && needs.cypress-tests.result == 'failure' }}
@@ -1857,7 +1857,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -1988,7 +1988,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Download build artifact
         uses: ./.github/workflows/download-artifact
@@ -2086,7 +2086,7 @@ jobs:
       IS_ISOLATED_APP_BUILD: ${{ needs.build.outputs.entry_names != '' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -2139,7 +2139,7 @@ jobs:
   #   if: always() && startsWith(needs.determine-cd-eligibility.outputs.deploy_to_prod, 'yes') && github.ref == 'refs/heads/main' && needs.set-deploy-environments.result == 'success'
   #   steps:
   #     - name: Checkout
-  #       uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+  #       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
   #       with:
   #         fetch-depth: 0
   #
@@ -2207,7 +2207,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           filter: blob:none
