@@ -23,27 +23,36 @@ const MAX_WORKERS = 12;
 function getExports() {
   const exports = [];
   for (const file of files) {
-    const source = fs.readFileSync(file, 'utf8');
-    const ast = parser.parse(source, {
-      sourceType: 'module',
-      plugins: ['jsx', 'optionalChaining', 'nullishCoalescingOperator'],
-    });
+    let source;
+    try {
+      source = fs.readFileSync(file, 'utf8');
+    } catch {
+      // if a file is deleted in a PR there will be an ENOENT error
+      // this is ok - any errors the deleted file might cause will be caught in the CI build step
+    }
 
-    traverse(ast, {
-      ExportNamedDeclaration({ node }) {
-        const { declaration, specifiers } = node;
-        if (declaration?.declarations) {
-          declaration.declarations.forEach(d => exports.push(d.id.name));
-        } else if (declaration?.id) {
-          exports.push(declaration.id.name);
-        }
-        specifiers?.forEach(s => exports.push(s.exported.name));
-      },
-      ExportDefaultDeclaration({ node }) {
-        const { declaration } = node;
-        exports.push(declaration.id ? declaration.id.name : 'default');
-      },
-    });
+    if (source) {
+      const ast = parser.parse(source, {
+        sourceType: 'module',
+        plugins: ['jsx', 'optionalChaining', 'nullishCoalescingOperator'],
+      });
+
+      traverse(ast, {
+        ExportNamedDeclaration({ node }) {
+          const { declaration, specifiers } = node;
+          if (declaration?.declarations) {
+            declaration.declarations.forEach(d => exports.push(d.id.name));
+          } else if (declaration?.id) {
+            exports.push(declaration.id.name);
+          }
+          specifiers?.forEach(s => exports.push(s.exported.name));
+        },
+        ExportDefaultDeclaration({ node }) {
+          const { declaration } = node;
+          exports.push(declaration.id ? declaration.id.name : 'default');
+        },
+      });
+    }
   }
   return exports;
 }
@@ -89,7 +98,7 @@ function getFilesUsingExports() {
           importingFiles.add(hit);
         }
       });
-    } catch (e) {
+    } catch {
       // no match found
     }
   }
@@ -196,10 +205,10 @@ function getFoldersForTests() {
   const hasCypressTests = foldersWithCypressTests.size > 0;
   const hasUnitTests = foldersWithUnitTests.size > 0;
   const cypressSpecs = JSON.stringify(
-    cypressBuckets.map((spec, i) => ({ index: i, spec })),
+    cypressBuckets.map((spec, i) => ({ name: i, spec })),
   );
   const unitTestSpecs = JSON.stringify(
-    unitBuckets.map((spec, i) => ({ index: i, spec })),
+    unitBuckets.map((spec, i) => ({ name: i, spec })),
   );
 
   fs.appendFileSync(
