@@ -1091,6 +1091,44 @@ export const normalizeReturnUrlForResume = returnUrl => {
   return returnUrl;
 };
 
+const isRedirectingFromInvalidBddShaWorkflow = ({
+  returnUrl: returnPath,
+  formData,
+  router,
+}) => {
+  /**
+   * This is a simulation of a future system that would generically handle
+   * `returnUrl` invalidity, where invalidity is defined as referring to a page
+   * with a `depends` test that fails. If it would not result in a circular
+   * import, we'd reuse the form page configs as the source of truth rather than
+   * duplicate a subset of them here.
+   */
+  const pageConfigs = [
+    {
+      path: '/supporting-evidence/separation-health-assessment',
+      depends: isBddShaWorkflowActive,
+    },
+    {
+      path: '/supporting-evidence/separation-health-assessment-upload',
+      depends: fd =>
+        fd.disability526SupportingEvidenceFileInputV3 && isUploadingBddSha(fd),
+    },
+    {
+      path: '/supporting-evidence/separation-health-assessment-upload-v1',
+      depends: fd =>
+        !fd.disability526SupportingEvidenceFileInputV3 && isUploadingBddSha(fd),
+    },
+  ];
+
+  const isInvalid = pageConfigs.some(
+    ({ path, depends }) => path === returnPath && !depends(formData),
+  );
+
+  const redirectPath = '/supporting-evidence/orientation';
+  if (isInvalid) router.push(redirectPath);
+  return isInvalid;
+};
+
 export const onFormLoaded = props => {
   const { returnUrl, formData, router } = props;
   const shouldRedirectToModern4142Choice = baseDoNew4142Logic(formData);
@@ -1099,6 +1137,8 @@ export const onFormLoaded = props => {
   const shouldRedirectLegacyToEnhancement = redirectLegacyToEnhancement(props);
   const shouldRedirectEnhancementToLegacy = redirectEnhancementToLegacy(props);
   const redirectUrl = legacy4142AuthURL;
+
+  if (isRedirectingFromInvalidBddShaWorkflow(props)) return;
 
   if (shouldRedirectToModern4142Choice === true) {
     // if we should redirect to the modern 4142 choice page, we set the shared variable
