@@ -37,7 +37,6 @@ const formConfig = {
   introduction: IntroductionPage,
   confirmation: ConfirmationPage,
   transformForSubmit,
-  prefillTransformer,
   preSubmitInfo: {
     statementOfTruth: {
       body:
@@ -62,6 +61,7 @@ const formConfig = {
   },
   version: 0,
   prefillEnabled: true,
+  prefillTransformer,
   savedFormMessages: {
     notFound:
       'Please start over to apply for Employment Questionnaire (VA Form 21-4140).',
