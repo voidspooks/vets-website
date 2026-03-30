@@ -150,7 +150,7 @@ describe('Claim files', () => {
       cy.axeCheck();
     });
 
-    it('displays "On File" badge for NO_LONGER_REQUIRED status with closedDate', () => {
+    it('displays "On file" badge for NO_LONGER_REQUIRED status with closedDate', () => {
       setupClaimTest({
         claim: createBenefitsClaim({
           trackedItems: [
@@ -164,7 +164,7 @@ describe('Claim files', () => {
       });
 
       withinFilesReceivedCard(() => {
-        cy.findByText('On File');
+        cy.get('va-tag-status[text="On file"]');
         cy.findByText('File name unknown');
       });
       cy.axeCheck();
@@ -181,7 +181,7 @@ describe('Claim files', () => {
       });
 
       withinFilesReceivedCard(() => {
-        cy.findByText('Reviewed by VA');
+        cy.get('va-tag-status[text="Reviewed by VA"]');
       });
       cy.axeCheck();
     });
@@ -197,7 +197,7 @@ describe('Claim files', () => {
       });
 
       withinFilesReceivedCard(() => {
-        cy.findByText('Pending review');
+        cy.get('va-tag-status[text="Pending review"]');
       });
       cy.axeCheck();
     });
@@ -212,12 +212,12 @@ describe('Claim files', () => {
 
       withinFilesReceivedCard(() => {
         cy.findByText('File name unknown');
-        cy.findByText('Reviewed by VA');
+        cy.get('va-tag-status[text="Reviewed by VA"]');
       });
       cy.axeCheck();
     });
 
-    it('displays supporting documents with "On File" badge', () => {
+    it('displays supporting documents with "On file" badge', () => {
       setupClaimTest({
         claim: createBenefitsClaim({
           trackedItems: [],
@@ -233,7 +233,7 @@ describe('Claim files', () => {
       });
 
       withinFilesReceivedCard(() => {
-        cy.findByText('On File');
+        cy.get('va-tag-status[text="On file"]');
         cy.findByText('additional-evidence.pdf');
         cy.findByText('You submitted this file as additional evidence.');
       });
