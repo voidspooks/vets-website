@@ -323,6 +323,7 @@
   "showUpdatedFryDeaApp": "show_updated_fry_dea_app",
   "showUpdatedToeApp": "show_updated_toe_app",
   "signInModalV2": "sign_in_modal_v2",
+  "signInDisableUserInteraction": "sign_in_disable_user_interaction",
   "portalNoticeInterstitialEnabled": "portal_notice_interstitial_enabled",
   "stemAutomatedDecision": "stem_automated_decision",
   "stemSCOEmail": "stem_sco_email",
