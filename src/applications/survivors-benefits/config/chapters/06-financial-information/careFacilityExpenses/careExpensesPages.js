@@ -287,6 +287,7 @@ const datePage = {
           return careExpense?.noCareEndDate === true;
         },
       },
+      'End date must be after the start date',
     ),
     noCareEndDate: checkboxUI('No end date'),
   },
@@ -310,7 +311,7 @@ const costPage = {
       labels: careFrequencyLabels,
     }),
     paymentAmount: currencyUI({
-      title: 'How much is each payment?',
+      title: 'How much is the payment?',
       max: 999999999,
     }),
     ratePerHour: {

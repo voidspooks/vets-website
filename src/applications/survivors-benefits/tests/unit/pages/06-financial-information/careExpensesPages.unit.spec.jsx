@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { render } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import {
   DefinitionTester,
   getFormDOM,
@@ -156,7 +156,7 @@ describe('Care Expenses Pages', () => {
     });
 
     const vaPaymentAmount = $(
-      'va-text-input[label*="How much is each payment?"]',
+      'va-text-input[label*="How much is the payment?"]',
       formDOM,
     );
     expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
@@ -201,7 +201,7 @@ describe('Care Expenses Pages', () => {
     });
 
     const vaPaymentAmount = $(
-      'va-text-input[label*="How much is each payment?"]',
+      'va-text-input[label*="How much is the payment?"]',
       formDOM,
     );
     expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
@@ -254,6 +254,36 @@ describe('Care Expenses Pages', () => {
     // After checking, end date should be hidden
     endDate = $$('va-memorable-date[label*="Care end date"]', formDOM);
     expect(endDate[0]).to.not.exist;
+  });
+
+  it('should check error message when end date is before start date', async () => {
+    const { careDatesPage } = careExpensesPages;
+    const formData = {
+      careDateRange: { from: '2021-01-31', to: '2020-01-01' },
+      noCareEndDate: false,
+    };
+    const testData = { [arrayPath]: [formData] };
+    const { container } = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={careDatesPage.schema}
+        uiSchema={careDatesPage.uiSchema}
+        pagePerItemIndex={0}
+        data={testData}
+      />,
+    );
+
+    fireEvent.submit($('form', container));
+
+    await waitFor(() => {
+      const endDateField = $(
+        'va-memorable-date[label*="Care end date"]',
+        container,
+      );
+      expect(endDateField.getAttribute('error')).to.equal(
+        'End date must be after the start date',
+      );
+    });
   });
 
   it('should check if isItemIncomplete', () => {

@@ -172,6 +172,26 @@ describe('Medical Expenses Pages', () => {
       'Expense 1: No provider name',
     );
   });
+  it('renders the medical expenses frequency and cost page', () => {
+    const { medicalFrequencyCostPage } = medicalExpensesPages;
+    const formData = {};
+    const form = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={medicalFrequencyCostPage.schema}
+        uiSchema={medicalFrequencyCostPage.uiSchema}
+        pagePerItemIndex={0}
+        data={{ [arrayPath]: [formData] }}
+      />,
+    );
+    const formDOM = getFormDOM(form);
+    const vaPaymentAmount = $(
+      'va-text-input[label*="How much is the payment?"]',
+      formDOM,
+    );
+    expect(vaPaymentAmount.getAttribute('required')).to.equal('true');
+  });
+
   it('should show the correct cardDescription output', () => {
     const { text } = options;
     const itemWithData = {

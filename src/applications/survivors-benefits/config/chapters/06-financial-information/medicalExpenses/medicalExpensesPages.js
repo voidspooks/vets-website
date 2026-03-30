@@ -243,7 +243,7 @@ const frequencyCostPage = {
       labels: frequencyLabels,
     }),
     paymentAmount: currencyUI({
-      title: 'How much is each payment?',
+      title: 'How much is the payment?',
       max: 999999999.0,
     }),
   },
