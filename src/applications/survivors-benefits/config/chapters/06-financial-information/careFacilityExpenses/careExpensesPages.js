@@ -39,6 +39,11 @@ function introDescription() {
         providers, nursing homes, or other care facilities that insurance won’t
         cover.
       </p>
+      <p>
+        <span className="vads-u-font-weight--bold">Note: </span>
+        We use your expenses to lower the income we count toward your claim. If
+        you have no income to report, you do not need to list any expenses.
+      </p>
 
       <va-additional-info trigger="Additional documents we may ask for">
         <p>
