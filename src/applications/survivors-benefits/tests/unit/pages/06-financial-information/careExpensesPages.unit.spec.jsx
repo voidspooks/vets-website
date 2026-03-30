@@ -17,6 +17,69 @@ import {
 
 const arrayPath = 'careExpenses';
 
+const pageNames = [
+  'careExpensesIntro',
+  'careExpensesSummary',
+  'careTypePage',
+  'careRecipientPage',
+  'careDatesPage',
+  'careCostPage',
+];
+
+describe('Care Expenses Pages — depends', () => {
+  pageNames.forEach(pageName => {
+    describe(pageName, () => {
+      let depends;
+
+      beforeEach(() => {
+        depends = careExpensesPages[pageName].depends;
+      });
+
+      it('returns true when survivorsBenefitsForm2025VersionEnabled is false', () => {
+        expect(depends({ survivorsBenefitsForm2025VersionEnabled: false })).to
+          .be.true;
+      });
+
+      it('returns true when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is not in skip list', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'ONE_TO_FOUR_SOURCES',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is not set', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+          }),
+        ).to.be.true;
+      });
+
+      it('returns true when toggle is true and moreThanFourIncomeSources is NO_INCOME but survivorsPension is not true', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.true;
+      });
+
+      it('returns false when toggle is true, survivorsPension is true, and moreThanFourIncomeSources is NO_INCOME', () => {
+        expect(
+          depends({
+            survivorsBenefitsForm2025VersionEnabled: true,
+            claims: { survivorsPension: true },
+            moreThanFourIncomeSources: 'NO_INCOME',
+          }),
+        ).to.be.false;
+      });
+    });
+  });
+});
+
 describe('Care Expenses Pages', () => {
   describe('typeOfCarePage with feature toggle', () => {
     it('renders default care type options when toggle is disabled', () => {

@@ -19,7 +19,10 @@ import {
 } from '../../../../utils/labels';
 import { transformDate } from '../../05-claim-information/helpers';
 import { customTextSchema } from '../../../definitions';
-import { formatCurrency } from '../../../../utils/helpers';
+import {
+  formatCurrency,
+  shouldSkipExpensePages,
+} from '../../../../utils/helpers';
 
 function introDescription() {
   return (
@@ -261,30 +264,35 @@ export const medicalExpensesPages = arrayBuilderPages(options, pageBuilder => ({
   medicalExpensesIntro: pageBuilder.introPage({
     title: 'Medical and other expenses',
     path: 'financial-information/medical-expenses',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: introPage.uiSchema,
     schema: introPage.schema,
   }),
   medicalExpensesSummary: pageBuilder.summaryPage({
     title: 'Medical and other expenses',
     path: 'financial-information/medical-expenses/add',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: summaryPage.uiSchema,
     schema: summaryPage.schema,
   }),
   medicalRecipientPage: pageBuilder.itemPage({
     title: 'Medical recipient and provider name',
     path: 'financial-information/medical-expenses/:index/recipient-provider',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: recipientPage.uiSchema,
     schema: recipientPage.schema,
   }),
   medicalPurposeDatePage: pageBuilder.itemPage({
     title: 'Expense purpose and date',
     path: 'financial-information/medical-expenses/:index/purpose-date',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: purposeDatePage.uiSchema,
     schema: purposeDatePage.schema,
   }),
   medicalFrequencyCostPage: pageBuilder.itemPage({
     title: 'Frequency and cost of expense',
     path: 'financial-information/medical-expenses/:index/frequency-cost',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: frequencyCostPage.uiSchema,
     schema: frequencyCostPage.schema,
   }),

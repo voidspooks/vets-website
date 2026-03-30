@@ -25,7 +25,10 @@ import {
   careFrequencyLabels,
 } from '../../../../utils/labels';
 import { transformDate } from '../../05-claim-information/helpers';
-import { formatCurrency } from '../../../../utils/helpers';
+import {
+  formatCurrency,
+  shouldSkipExpensePages,
+} from '../../../../utils/helpers';
 
 function introDescription() {
   return (
@@ -362,36 +365,42 @@ export const careExpensesPages = arrayBuilderPages(options, pageBuilder => ({
   careExpensesIntro: pageBuilder.introPage({
     title: 'Care expenses',
     path: 'financial-information/care-expenses',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: introPage.uiSchema,
     schema: introPage.schema,
   }),
   careExpensesSummary: pageBuilder.summaryPage({
     title: 'Care expenses',
     path: 'financial-information/care-expenses/add',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: summaryPage.uiSchema,
     schema: summaryPage.schema,
   }),
   careTypePage: pageBuilder.itemPage({
     title: 'Type of care',
     path: 'financial-information/care-expenses/:index/type-of-care',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: typeOfCarePage.uiSchema,
     schema: typeOfCarePage.schema,
   }),
   careRecipientPage: pageBuilder.itemPage({
     title: 'Care recipient and provider name',
     path: 'financial-information/care-expenses/:index/recipient-provider',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: recipientPage.uiSchema,
     schema: recipientPage.schema,
   }),
   careDatesPage: pageBuilder.itemPage({
     title: 'Dates of care',
     path: 'financial-information/care-expenses/:index/dates',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: datePage.uiSchema,
     schema: datePage.schema,
   }),
   careCostPage: pageBuilder.itemPage({
     title: 'Cost of care',
     path: 'financial-information/care-expenses/:index/cost',
+    depends: formData => !shouldSkipExpensePages(formData),
     uiSchema: costPage.uiSchema,
     schema: costPage.schema,
   }),
