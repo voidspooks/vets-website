@@ -94,10 +94,12 @@ const formConfig = {
           personalInfoConfig: {
             name: { show: true, required: true },
             ssn: { show: true, required: true },
+            vaFileNumber: { show: true, required: false },
             dateOfBirth: { show: true, required: false },
           },
           dataAdapter: {
-            ssnPath: 'ssn',
+            ssnPath: 'ssnLast4',
+            vaFileNumberPath: 'vaFileNumberLast4',
           },
         }),
         payeeNumber: {
