@@ -16,19 +16,17 @@ import {
   yesNoUI,
   yesNoSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { blankSchema } from 'platform/forms-system/src/js/utilities/data/profile';
 import { applicantWording } from '../../shared/utilities';
 
 import { validateApplicant, validateApplicantSsn } from '../utils/validations';
 import { isOfCollegeAge, requireBirthCertificate } from '../utils/helpers';
 import { attachmentSchema, attachmentUI } from '../definitions';
 import { APPLICANTS_MAX } from '../utils/constants';
+import { NOT_SHARED } from '../components/FormFields/AddressSelectionField';
 
-import AddressSelectionPage, {
-  NOT_SHARED,
-} from '../components/FormPages/AddressSelectionPage';
 import sectionOverview from './applicantInformation/sectionOverview';
 import personalInformation from './applicantInformation/personalInformation';
+import addressSelection from './applicantInformation/addressSelection';
 import remarriageProof from './applicantInformation/remarriageProof';
 import dependentStatus from './applicantInformation/dependentStatus';
 import schoolEnrollmentProof from './applicantInformation/schoolEnrollmentProof';
@@ -78,11 +76,6 @@ const applicantIdentificationPage = {
     },
     required: ['applicantSsn'],
   },
-};
-
-const applicantAddressSelectionPage = {
-  uiSchema: {},
-  schema: blankSchema,
 };
 
 const applicantMailingAddressPage = {
@@ -217,16 +210,12 @@ export const applicantPages = arrayBuilderPages(
     page15a: pageBuilder.itemPage({
       path: 'applicant-address/:index',
       title: 'Address selection',
-      ...applicantAddressSelectionPage,
-      CustomPage: props => {
-        const opts = { ...props, dataKey: 'applicantAddress' };
-        return AddressSelectionPage(opts);
-      },
       depends: formData => {
         const hasCertifierAddress = get('street', formData.certifierAddress);
         const hasSponsorAddress = get('street', formData.sponsorAddress);
         return hasSponsorAddress || hasCertifierAddress;
       },
+      ...addressSelection,
     }),
     page15: pageBuilder.itemPage({
       path: 'applicant-mailing-address/:index',
