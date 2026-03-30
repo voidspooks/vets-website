@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { renderWithRouter } from '../../utils';
+import { renderWithReduxAndRouter } from '../../utils';
 import WhatYouNeedToDo from '../../../components/claim-status-tab/WhatYouNeedToDo';
 
 const nothingNeededText =
@@ -37,7 +37,7 @@ describe('<WhatYouNeedToDo>', () => {
       ],
     });
 
-    const { container, queryByText } = renderWithRouter(
+    const { container, queryByText } = renderWithReduxAndRouter(
       <WhatYouNeedToDo claim={claim} />,
     );
 
@@ -55,7 +55,7 @@ describe('<WhatYouNeedToDo>', () => {
       ],
     });
 
-    const { container, queryByText } = renderWithRouter(
+    const { container, queryByText } = renderWithReduxAndRouter(
       <WhatYouNeedToDo claim={claim} />,
     );
 
@@ -87,7 +87,7 @@ describe('<WhatYouNeedToDo>', () => {
           queryByText,
           getByTestId,
           getByText,
-        } = renderWithRouter(<WhatYouNeedToDo claim={claim} />);
+        } = renderWithReduxAndRouter(<WhatYouNeedToDo claim={claim} />);
 
         expect(queryByText(nothingNeededText)).not.to.exist;
         expect(container.querySelector('va-alert')).to.exist;
@@ -134,7 +134,7 @@ describe('<WhatYouNeedToDo>', () => {
           }),
         ],
       });
-      const { container, getByText, queryByText } = renderWithRouter(
+      const { container, getByText, queryByText } = renderWithReduxAndRouter(
         <WhatYouNeedToDo claim={claim} />,
       );
 
@@ -170,7 +170,7 @@ describe('<WhatYouNeedToDo>', () => {
           }),
         ],
       });
-      const { container, getByText } = renderWithRouter(
+      const { container, getByText } = renderWithReduxAndRouter(
         <WhatYouNeedToDo claim={claim} />,
       );
       expect(container.querySelector('va-alert[status="error"]')).not.to.exist;
@@ -184,7 +184,7 @@ describe('<WhatYouNeedToDo>', () => {
           createEvidenceSubmission({ acknowledgementDate: fiveDaysAgo }),
         ],
       });
-      const { container, getByText } = renderWithRouter(
+      const { container, getByText } = renderWithReduxAndRouter(
         <WhatYouNeedToDo claim={claim} />,
       );
 

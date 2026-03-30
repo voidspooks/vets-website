@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
+import { Toggler } from '~/platform/utilities/feature-toggles';
 import { getFailedSubmissionsWithinLast30Days } from '../../utils/helpers';
 import * as TrackedItem from '../../utils/trackedItemContent';
 import FilesNeeded from '../claim-files-tab/FilesNeeded';
@@ -7,6 +8,7 @@ import UploadType2ErrorAlert from '../UploadType2ErrorAlert';
 
 function WhatYouNeedToDo({ claim }) {
   const {
+    documentsNeeded,
     evidenceWaiverSubmitted5103,
     trackedItems,
     evidenceSubmissions,
@@ -23,6 +25,7 @@ function WhatYouNeedToDo({ claim }) {
     () => getFailedSubmissionsWithinLast30Days(evidenceSubmissions),
     [evidenceSubmissions],
   );
+  const hasOpenRequests = filesNeeded.length > 0;
   const nothingNeededMessage = (
     <div className="no-documents">
       <p>
@@ -42,18 +45,74 @@ function WhatYouNeedToDo({ claim }) {
         failedSubmissions={failedSubmissionsWithinLast30Days}
         isStatusPage
       />
-      {filesNeeded.length === 0 &&
-        failedSubmissionsWithinLast30Days.length === 0 &&
-        nothingNeededMessage}
-      {filesNeeded.map(item => (
-        <FilesNeeded
-          key={item.id}
-          claimId={claim.id}
-          item={item}
-          evidenceWaiverSubmitted5103={evidenceWaiverSubmitted5103}
-          previousPage="status"
-        />
-      ))}
+      <Toggler
+        toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
+      >
+        <Toggler.Enabled>
+          {!hasOpenRequests && (
+            <>
+              {failedSubmissionsWithinLast30Days.length === 0 &&
+                nothingNeededMessage}
+              {documentsNeeded && (
+                <va-additional-info trigger="Why we still say &quot;Action may be needed&quot; after you’ve responded">
+                  <div>
+                    <p>
+                      This message may stay for one of these reasons, or both:
+                    </p>
+                    <p>
+                      <strong>
+                        We’re still reviewing your response to an information
+                        request.
+                      </strong>{' '}
+                      The message will go away when we’re done.
+                    </p>
+                    <p>
+                      <strong>
+                        You resubmitted files by mail or in person.
+                      </strong>{' '}
+                      Because we can’t track offline submissions, this message
+                      stays for 30 days after the last failed submission.
+                    </p>
+                  </div>
+                </va-additional-info>
+              )}
+            </>
+          )}
+
+          {hasOpenRequests && (
+            <>
+              <p>
+                We identified this information as needed to support your claim.
+                We accept responses after the request date, but it may delay
+                your claim.
+              </p>
+              {filesNeeded.map(item => (
+                <FilesNeeded
+                  key={item.id}
+                  claimId={claim.id}
+                  item={item}
+                  evidenceWaiverSubmitted5103={evidenceWaiverSubmitted5103}
+                  previousPage="status"
+                />
+              ))}
+            </>
+          )}
+        </Toggler.Enabled>
+        <Toggler.Disabled>
+          {filesNeeded.length === 0 &&
+            failedSubmissionsWithinLast30Days.length === 0 &&
+            nothingNeededMessage}
+          {filesNeeded.map(item => (
+            <FilesNeeded
+              key={item.id}
+              claimId={claim.id}
+              item={item}
+              evidenceWaiverSubmitted5103={evidenceWaiverSubmitted5103}
+              previousPage="status"
+            />
+          ))}
+        </Toggler.Disabled>
+      </Toggler>
     </>
   );
 }

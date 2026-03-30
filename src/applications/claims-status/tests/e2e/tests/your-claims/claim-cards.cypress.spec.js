@@ -214,58 +214,110 @@ describe('Claim cards', () => {
     });
   });
 
-  describe('Document alerts', () => {
-    it('should display documents needed alert', () => {
-      setupClaimCardsTest([
-        createBenefitsClaimListItem({
-          documentsNeeded: true,
-          decisionLetterSent: false,
-          status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
-          phaseType: 'GATHERING_OF_EVIDENCE',
-        }),
-      ]);
+  describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
+    context('when enabled', () => {
+      beforeEach(() => {
+        mockFeatureToggles({
+          cstAlertImprovementsEvidenceRequests: true,
+        });
+      });
 
-      cy.findByText('We requested more information from you:');
+      it('should display action tag when documents are needed', () => {
+        setupClaimCardsTest([
+          createBenefitsClaimListItem({
+            documentsNeeded: true,
+            decisionLetterSent: false,
+            status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
+            phaseType: 'GATHERING_OF_EVIDENCE',
+          }),
+        ]);
 
-      cy.axeCheck();
+        cy.get('va-tag-status[text="Action may be needed"]');
+        cy.get('va-alert[status="info"]').should('not.exist');
+
+        cy.axeCheck();
+      });
+
+      it('should display action tag when failed submissions exist', () => {
+        setupClaimCardsTest([
+          createBenefitsClaimListItem({
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2050-01-01T00:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
+
+        cy.get('va-tag-status[text="Action may be needed"]');
+        cy.get('va-alert[status="error"]').should('not.exist');
+
+        cy.axeCheck();
+      });
+
+      it('should not display action tag when no action is needed', () => {
+        setupClaimCardsTest([createBenefitsClaimListItem({})]);
+
+        cy.get('va-tag-status').should('not.exist');
+
+        cy.axeCheck();
+      });
     });
-  });
 
-  describe('Upload error alerts', () => {
-    it('should display upload error alert for failed submissions within last 30 days', () => {
-      setupClaimCardsTest([
-        createBenefitsClaimListItem({
-          evidenceSubmissions: [
-            createEvidenceSubmission({
-              uploadStatus: 'FAILED',
-              acknowledgementDate: '2050-01-01T00:00:00.000Z',
-            }),
-          ],
-        }),
-      ]);
+    context('when disabled', () => {
+      it('should display documents needed alert', () => {
+        setupClaimCardsTest([
+          createBenefitsClaimListItem({
+            documentsNeeded: true,
+            decisionLetterSent: false,
+            status: 'EVIDENCE_GATHERING_REVIEW_DECISION',
+            phaseType: 'GATHERING_OF_EVIDENCE',
+          }),
+        ]);
 
-      cy.get('va-alert').findByText(
-        'We need you to resubmit files for this claim.',
-      );
+        cy.findByText('We requested more information from you:');
+        cy.get('va-tag-status').should('not.exist');
 
-      cy.axeCheck();
-    });
+        cy.axeCheck();
+      });
 
-    it('should not display upload error alert for failed submissions older than 30 days', () => {
-      setupClaimCardsTest([
-        createBenefitsClaimListItem({
-          evidenceSubmissions: [
-            createEvidenceSubmission({
-              acknowledgementDate: '2020-01-01T12:00:00.000Z',
-              failedDate: '2019-12-01T12:00:00.000Z',
-            }),
-          ],
-        }),
-      ]);
+      it('should display upload error alert for failed submissions within last 30 days', () => {
+        setupClaimCardsTest([
+          createBenefitsClaimListItem({
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                uploadStatus: 'FAILED',
+                acknowledgementDate: '2050-01-01T00:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
 
-      cy.get('va-alert[status="error"]').should('not.exist');
+        cy.get('va-alert').findByText(
+          'We need you to resubmit files for this claim.',
+        );
+        cy.get('va-tag-status').should('not.exist');
 
-      cy.axeCheck();
+        cy.axeCheck();
+      });
+
+      it('should not display upload error alert for failed submissions older than 30 days', () => {
+        setupClaimCardsTest([
+          createBenefitsClaimListItem({
+            evidenceSubmissions: [
+              createEvidenceSubmission({
+                acknowledgementDate: '2020-01-01T12:00:00.000Z',
+                failedDate: '2019-12-01T12:00:00.000Z',
+              }),
+            ],
+          }),
+        ]);
+
+        cy.get('va-alert[status="error"]').should('not.exist');
+
+        cy.axeCheck();
+      });
     });
   });
 });

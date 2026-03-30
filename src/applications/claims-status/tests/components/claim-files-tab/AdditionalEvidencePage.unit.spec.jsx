@@ -1,12 +1,11 @@
 import React from 'react';
 import sinon from 'sinon';
-import ReactTestUtils from 'react-dom/test-utils';
 import { expect } from 'chai';
 
 import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
 
 import { AdditionalEvidencePage } from '../../../components/claim-files-tab/AdditionalEvidencePage';
-import { renderWithRouter, rerenderWithRouter } from '../../utils';
+import { renderWithReduxAndRouter, rerenderWithRouter } from '../../utils';
 
 const getRouter = () => ({ push: sinon.spy() });
 
@@ -56,7 +55,7 @@ describe('<AdditionalEvidencePage>', () => {
     };
 
     it('should render loading div', () => {
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage {...fileFormProps} claim={claim} loading />,
       );
       expect($('va-loading-indicator', container)).to.exist;
@@ -69,7 +68,7 @@ describe('<AdditionalEvidencePage>', () => {
         body: 'test',
         type: 'error',
       };
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -84,7 +83,7 @@ describe('<AdditionalEvidencePage>', () => {
     });
 
     it('should render upload error alert when rerendered', () => {
-      const { container, rerender } = renderWithRouter(
+      const { container, rerender } = renderWithReduxAndRouter(
         <AdditionalEvidencePage {...fileFormProps} claim={claim} />,
       );
       expect($('.claims-alert', container)).not.to.exist;
@@ -116,7 +115,7 @@ describe('<AdditionalEvidencePage>', () => {
       };
       const clearAdditionalEvidenceNotification = sinon.spy();
 
-      const { container, unmount } = renderWithRouter(
+      const { container, unmount } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -143,7 +142,7 @@ describe('<AdditionalEvidencePage>', () => {
       };
       const clearAdditionalEvidenceNotification = sinon.spy();
 
-      const { container, unmount } = renderWithRouter(
+      const { container, unmount } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -170,7 +169,7 @@ describe('<AdditionalEvidencePage>', () => {
       document.body.appendChild(mainDiv);
 
       try {
-        ReactTestUtils.renderIntoDocument(
+        renderWithReduxAndRouter(
           <AdditionalEvidencePage
             {...fileFormProps}
             claim={claim}
@@ -189,7 +188,7 @@ describe('<AdditionalEvidencePage>', () => {
       const getClaim = sinon.spy();
       const resetUploads = sinon.spy();
       const navigate = sinon.spy();
-      const { rerender } = renderWithRouter(
+      const { rerender } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -234,7 +233,7 @@ describe('<AdditionalEvidencePage>', () => {
         },
       ];
 
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -249,7 +248,7 @@ describe('<AdditionalEvidencePage>', () => {
     });
 
     it('doesnt show va-alerts when no files are needed', () => {
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -262,7 +261,7 @@ describe('<AdditionalEvidencePage>', () => {
     });
 
     it('should render default title when additionalEvidenceTitle prop is not provided', () => {
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage {...fileFormProps} claim={claim} />,
       );
 
@@ -273,7 +272,7 @@ describe('<AdditionalEvidencePage>', () => {
 
     it('should render custom title when additionalEvidenceTitle prop is provided', () => {
       const customTitle = 'Upload additional evidence';
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -347,7 +346,7 @@ describe('<AdditionalEvidencePage>', () => {
         },
       ];
 
-      const { container, getByText, getByTestId } = renderWithRouter(
+      const { container, getByText, getByTestId } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -380,7 +379,7 @@ describe('<AdditionalEvidencePage>', () => {
     };
 
     it('doesnt show va-alert for standard 5103 notice', () => {
-      const { queryByText, queryByTestId } = renderWithRouter(
+      const { queryByText, queryByTestId } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -409,7 +408,7 @@ describe('<AdditionalEvidencePage>', () => {
     const resetUploads = sinon.spy();
 
     it('should render loading div', () => {
-      const { container } = renderWithRouter(
+      const { container } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}
@@ -427,7 +426,7 @@ describe('<AdditionalEvidencePage>', () => {
     });
 
     it('should render closed message', () => {
-      const { container, getByText } = renderWithRouter(
+      const { container, getByText } = renderWithReduxAndRouter(
         <AdditionalEvidencePage
           {...fileFormProps}
           claim={claim}

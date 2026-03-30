@@ -3,6 +3,7 @@ import { setupClaimTest } from '../../support/helpers/setup';
 import { verifyTitleBreadcrumbsHeading } from '../../support/helpers/assertions';
 import {
   createBenefitsClaim,
+  createEvidenceSubmission,
   createTrackedItem,
   createSupportingDocument,
 } from '../../support/fixtures/benefitsClaims';
@@ -318,6 +319,185 @@ describe('Claim files', () => {
         );
 
         cy.axeCheck();
+      });
+    });
+
+    describe('Feature flag: cstAlertImprovementsEvidenceRequests', () => {
+      context('when enabled', () => {
+        beforeEach(() => {
+          mockFeatureToggles({
+            cstAlertImprovementsEvidenceRequests: true,
+          });
+        });
+
+        it('should display updated intro text', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim(),
+            path: FILES_PATH,
+          });
+
+          cy.findByText(
+            "Add evidence or review files you've already uploaded for this claim.",
+          );
+          cy.axeCheck();
+        });
+
+        context('when claim has open evidence requests', () => {
+          beforeEach(() => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [
+                  createTrackedItem({ id: 1, status: 'NEEDED_FROM_YOU' }),
+                  createTrackedItem({ id: 2, status: 'NEEDED_FROM_YOU' }),
+                  createTrackedItem({
+                    id: 3,
+                    status: 'NEEDED_FROM_OTHERS',
+                  }),
+                ],
+              }),
+              path: FILES_PATH,
+            });
+          });
+
+          it('should display the review requests warning alert', () => {
+            cy.get('va-alert[status="warning"]').within(() => {
+              cy.findByRole('heading', {
+                name: 'Review your requests',
+                level: 3,
+              });
+              cy.findByText(
+                "You may have evidence requests you haven't responded to yet. Review them before uploading additional evidence here.",
+              );
+              cy.get('va-link-action[text="Review requests"]').should(
+                'be.visible',
+              );
+            });
+
+            cy.axeCheck();
+          });
+
+          it('should not display FilesNeeded cards', () => {
+            cy.findByText('Request for evidence').should('not.exist');
+
+            cy.axeCheck();
+          });
+
+          it('should still display the upload form', () => {
+            cy.findByRole('heading', {
+              name: 'Upload additional evidence',
+              level: 3,
+            });
+
+            cy.axeCheck();
+          });
+
+          it('should navigate to the status tab when clicking Review requests', () => {
+            cy.get('va-link-action[text="Review requests"]')
+              .shadow()
+              .find('a')
+              .click();
+
+            cy.url().should('contain', '/status');
+            cy.axeCheck();
+          });
+        });
+
+        context('when claim has open requests and failed submissions', () => {
+          it('should display both the error alert and the review requests alert', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [
+                  createTrackedItem({ id: 1, status: 'NEEDED_FROM_YOU' }),
+                ],
+                evidenceSubmissions: [
+                  createEvidenceSubmission({
+                    uploadStatus: 'FAILED',
+                    failedDate: new Date().toISOString(),
+                    acknowledgementDate: '2050-01-01T00:00:00.000Z',
+                  }),
+                ],
+              }),
+              path: FILES_PATH,
+            });
+
+            cy.get('va-alert[status="error"]').should('be.visible');
+            cy.get('va-alert[status="warning"]').should('be.visible');
+            cy.findByText('Review your requests');
+
+            cy.axeCheck();
+          });
+        });
+
+        context('when claim has no open evidence requests', () => {
+          it('should not display the review requests alert with empty tracked items', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({ trackedItems: [] }),
+              path: FILES_PATH,
+            });
+
+            cy.findByText('Review your requests').should('not.exist');
+            cy.findByRole('heading', {
+              name: 'Upload additional evidence',
+              level: 3,
+            });
+
+            cy.axeCheck();
+          });
+
+          it('should not display the alert when only NEEDED_FROM_OTHERS items exist', () => {
+            setupClaimTest({
+              claim: createBenefitsClaim({
+                trackedItems: [
+                  createTrackedItem({
+                    id: 1,
+                    status: 'NEEDED_FROM_OTHERS',
+                  }),
+                ],
+              }),
+              path: FILES_PATH,
+            });
+
+            cy.findByText('Review your requests').should('not.exist');
+
+            cy.axeCheck();
+          });
+        });
+      });
+
+      context('when disabled', () => {
+        beforeEach(() => {
+          mockFeatureToggles({
+            cstAlertImprovementsEvidenceRequests: false,
+          });
+        });
+
+        it('should display original intro text', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim(),
+            path: FILES_PATH,
+          });
+
+          cy.findByText(
+            'If you need to add evidence, you can do that here. You can also review the files associated with this claim.',
+          );
+          cy.axeCheck();
+        });
+
+        it('should display FilesNeeded cards instead of the review requests alert', () => {
+          setupClaimTest({
+            claim: createBenefitsClaim({
+              trackedItems: [
+                createTrackedItem({ id: 1, status: 'NEEDED_FROM_YOU' }),
+              ],
+            }),
+            path: FILES_PATH,
+          });
+
+          cy.findByText('Provide medical records');
+          cy.findByText('Review your requests').should('not.exist');
+
+          cy.axeCheck();
+        });
       });
     });
   });

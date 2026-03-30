@@ -5,7 +5,7 @@ import set from 'platform/utilities/data/set'; // it doesn't look like this is e
 
 import AppealListItem from '../../../components/appeals-v2/AppealListItem';
 import { STATUS_TYPES, EVENT_TYPES } from '../../../utils/appeals-v2-helpers';
-import { renderWithRouter } from '../../utils';
+import { renderWithReduxAndRouter } from '../../utils';
 
 const createFailedSubmission = (acknowledgementDate, failedDate) => ({
   acknowledgementDate,
@@ -214,7 +214,7 @@ describe('<AppealListItem>', () => {
               ],
             },
           };
-          const { container } = renderWithRouter(
+          const { container } = renderWithReduxAndRouter(
             <AppealListItem appeal={appeal} />,
           );
           const alert = container.querySelector('va-alert[status="error"]');
@@ -240,7 +240,7 @@ describe('<AppealListItem>', () => {
               ],
             },
           };
-          const { container } = renderWithRouter(
+          const { container } = renderWithReduxAndRouter(
             <AppealListItem appeal={appeal} />,
           );
           const alert = container.querySelector('va-alert[status="error"]');

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { Toggler } from '~/platform/utilities/feature-toggles';
 import ClaimCard from '../ClaimCard';
 import UploadType2ErrorAlertSlim from '../UploadType2ErrorAlertSlim';
 import {
@@ -114,10 +115,21 @@ export default function AppealListItem({ appeal, name }) {
           </span>
         </p>
         <p>Last updated: {updatedOn}</p>
-        <UploadType2ErrorAlertSlim
-          claimId={appeal.id}
-          failedSubmissions={failedSubmissionsWithinLast30Days}
-        />
+        <Toggler
+          toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
+        >
+          <Toggler.Enabled>
+            {failedSubmissionsWithinLast30Days.length > 0 && (
+              <va-tag-status status="warning" text="Action may be needed" />
+            )}
+          </Toggler.Enabled>
+          <Toggler.Disabled>
+            <UploadType2ErrorAlertSlim
+              claimId={appeal.id}
+              failedSubmissions={failedSubmissionsWithinLast30Days}
+            />
+          </Toggler.Disabled>
+        </Toggler>
       </div>
       <ClaimCard.Link ariaLabel={ariaLabel} href={href} />
     </ClaimCard>
