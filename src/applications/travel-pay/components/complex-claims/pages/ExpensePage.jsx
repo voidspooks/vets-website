@@ -14,6 +14,7 @@ import {
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/api';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import useSetPageTitle from '../../../hooks/useSetPageTitle';
 import useSetFocus from '../../../hooks/useSetFocus';
 import DocumentUpload from './DocumentUpload';
@@ -62,7 +63,10 @@ import ExpenseAirTravelFields from './ExpenseAirTravelFields';
 import ExpenseLodgingFields from './ExpenseLodgingFields';
 import ExpenseCommonCarrierFields from './ExpenseCommonCarrierFields';
 import CancelExpenseModal from './CancelExpenseModal';
-import { formatAmount } from '../../../util/complex-claims-helper';
+import {
+  formatAmount,
+  getAcceptedFileTypes,
+} from '../../../util/complex-claims-helper';
 
 export const toBase64 = file =>
   new Promise((resolve, reject) => {
@@ -83,6 +87,20 @@ const ExpensePage = () => {
   const { apptId, claimId, expenseId } = useParams();
 
   const isEditMode = !!expenseId;
+
+  // Feature toggles
+  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
+  const heicConversionEnabled = useToggleValue(
+    TOGGLE_NAMES.travelPayEnableHeicConversion,
+  );
+
+  const acceptedFileTypes = getAcceptedFileTypes(heicConversionEnabled);
+  const documentUploadHint = `You can upload a ${acceptedFileTypes
+    .join(', ')
+    .replace(
+      /, ([^,]*)$/,
+      ', or $1',
+    )} file. Your file should be no larger than 5MB.`;
 
   // Redux hooks
   const dispatch = useDispatch();
@@ -888,6 +906,7 @@ const ExpensePage = () => {
             handleDocumentChange={handleDocumentChange}
             error={extraFieldErrors.receipt}
             onVaFileInputError={handleFileInputError}
+            hint={documentUploadHint}
           />
           {isMeal && (
             <ExpenseMealFields
