@@ -67,6 +67,7 @@ describe('VAOS Component: CCRequestLayout', () => {
           isCerner: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'proposed',
@@ -213,6 +214,7 @@ describe('VAOS Component: CCRequestLayout', () => {
           isUpcomingAppointment: false,
           apiData: {
             serviceType: 'primaryCare',
+            typeOfCare: 'Primary care',
           },
         },
         status: 'proposed',

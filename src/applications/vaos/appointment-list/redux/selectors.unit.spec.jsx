@@ -106,70 +106,16 @@ describe('appointment-list / redux / selectors', () => {
     version: 2,
   };
 
-  it('should return COMPENSATION & PENSION as type of care', () => {
-    const appointment = {
-      vaos: {
-        apiData: {
-          serviceType: 'audiology',
-          serviceCategory: [
-            {
-              coding: [
-                {
-                  system:
-                    'http://www.va.gov/Terminology/VistADefinedTerms/409_1',
-                  code: 'COMPENSATION & PENSION',
-                  display: 'COMPENSATION & PENSION',
-                },
-              ],
-              text: 'COMPENSATION & PENSION',
-            },
-          ],
-        },
-      },
-    };
-    const typeOfCareName = selectTypeOfCareName(appointment);
-    expect(typeOfCareName).to.equal('Claim exam');
-  });
-  it('should return Audiology and speech as type of care', () => {
-    const appointment = {
-      vaos: {
-        apiData: {
-          serviceType: 'audiology',
-          serviceCategory: [
-            {
-              coding: [
-                {
-                  system:
-                    'http://www.va.gov/Terminology/VistADefinedTerms/409_1',
-                  code: 'REGULAR',
-                  display: 'REGULAR',
-                },
-              ],
-              text: 'REGULAR',
-            },
-          ],
-        },
-      },
-    };
-    const typeOfCareName = selectTypeOfCareName(appointment);
-    expect(typeOfCareName).to.equal('Audiology and speech');
-  });
-  it('should return Clinical Pharmacist TH Video Home when name is undefined', () => {
+  it('should return empty string when typeOfCare is undefined', () => {
     const typeOfCareName = selectTypeOfCareName(OhAppointment);
-    expect(typeOfCareName).to.equal('Clinical Pharmacist TH Video Home');
-  });
-  it('should return undefined when cerner is false and no serviceType is not defined -- later replaced by VA Appointment', () => {
-    const appointment = cloneDeep(OhAppointment);
-    appointment.vaos.isCerner = false;
-    const typeOfCareName = selectTypeOfCareName(appointment);
-    expect(typeOfCareName).to.equal(undefined);
+    expect(typeOfCareName).to.equal('');
   });
 
-  it('should return undefined when no description -- later replaced by VA Appointment', () => {
+  it('should return empty string when typeOfCare is not defined', () => {
     const appointment = cloneDeep(OhAppointment);
-    appointment.vaos.apiData.description = undefined;
+    delete appointment.vaos.apiData.typeOfCare;
     const typeOfCareName = selectTypeOfCareName(appointment);
-    expect(typeOfCareName).to.equal(undefined);
+    expect(typeOfCareName).to.equal('');
   });
 
   describe('selectCanUseVaccineFlow', () => {
