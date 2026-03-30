@@ -15,8 +15,8 @@ const testConfig = createTestConfig(
       introduction: ({ afterHook }) => {
         cy.injectAxeThenAxeCheck();
         afterHook(() => {
-          // Click the start link to begin the form
-          cy.get('[data-testid="start-nursing-home-info-link"]').click();
+          // Click the start link rendered by SaveInProgressIntro
+          cy.get('a.vads-c-action-link--green').click();
         });
       },
       'nursing-home-address-validation': ({ afterHook }) => {
@@ -113,4 +113,15 @@ const testConfig = createTestConfig(
 
 describe('21-0779 Nursing Home Information E2E Tests', () => {
   testForm(testConfig);
+});
+
+describe('21-0779 unauthenticated access', () => {
+  it('does not show start link when user is not logged in', () => {
+    cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+    cy.visit(manifest.rootUrl);
+
+    // Unauthenticated users should not see the start action link
+    cy.get('a.vads-c-action-link--green').should('not.exist');
+  });
 });

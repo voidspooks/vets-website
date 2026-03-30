@@ -114,9 +114,8 @@ const testConfig = createTestConfig(
     pageHooks: {
       introduction: ({ afterHook }) => {
         afterHook(() => {
-          cy.get('[data-testid="start-burial-allowance-link"]').click({
-            force: true,
-          });
+          // Click the start link rendered by SaveInProgressIntro
+          cy.get('a.vads-c-action-link--green').click();
         });
       },
       'organization-mailing-address-validation': ({ afterHook }) => {

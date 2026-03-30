@@ -406,6 +406,7 @@
   "vreEligibilityStatusUpdates": "vre_eligibility_status_updates",
   "authExpEmailVerificationEnabled": "auth_exp_email_verification_enabled",
   "disability526SidenavEnabled": "sidenav_526ez_enabled",
+  "aquiaBioAuthRequired": "aquia_bio_auth_required",
   "form0779Enabled": "form_0779_enabled",
   "form530aEnabled": "form_530a_enabled",
   "form4192Enabled": "form_4192_enabled",

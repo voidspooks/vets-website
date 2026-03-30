@@ -7,6 +7,10 @@
         "value": true
       },
       {
+        "name": "aquia_bio_auth_required",
+        "value": true
+      },
+      {
         "name": "bio_aquia_usps_address_validation",
         "value": true
       }

@@ -17,11 +17,8 @@ const testConfig = createTestConfig(
       introduction: ({ afterHook }) => {
         cy.injectAxeThenAxeCheck();
         afterHook(() => {
-          // Click the start link to begin the form
-          cy.get('va-link-action[data-testid="start-employment-info-link"]')
-            .shadow()
-            .find('a')
-            .click();
+          // Click the start link rendered by SaveInProgressIntro
+          cy.get('a.vads-c-action-link--green').click();
         });
       },
       'employer-address-validation': ({ afterHook }) => {
@@ -117,3 +114,14 @@ const testConfig = createTestConfig(
 );
 
 testForm(testConfig);
+
+describe('21-4192 unauthenticated access', () => {
+  it('does not show start link when user is not logged in', () => {
+    cy.intercept('GET', '/v0/feature_toggles*', featureToggles);
+
+    cy.visit(manifest.rootUrl);
+
+    // Unauthenticated users should not see the start action link
+    cy.get('a.vads-c-action-link--green').should('not.exist');
+  });
+});
