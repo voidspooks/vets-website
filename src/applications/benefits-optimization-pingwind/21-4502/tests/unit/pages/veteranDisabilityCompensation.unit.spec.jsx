@@ -29,6 +29,7 @@ describe('21-4502 veteranDisabilityCompensation page', () => {
   });
 
   it('uses the custom required messages', () => {
+    expect(appUiSchema['ui:validations']).to.have.length(1);
     expect(
       appUiSchema[applicationInfoFields.appliedDisabilityCompensation][
         'ui:errorMessages'
@@ -39,12 +40,18 @@ describe('21-4502 veteranDisabilityCompensation page', () => {
         'ui:errorMessages'
       ].required,
     ).to.equal(V.ERROR_IF_YES);
+    expect(
+      appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace][
+        'ui:required'
+      ],
+    ).to.not.exist;
   });
 
   it('uses the custom date hint and messages', () => {
     const dateUi = appUiSchema[applicationInfoFields.dateApplied];
 
     expect(dateUi['ui:options'].hint).to.equal(V.HINT_DATE_APPLIED);
+    expect(dateUi['ui:options'].hideIf).to.be.a('function');
     expect(dateUi['ui:errorMessages'].required).to.equal(
       V.ERROR_DATE_APPLIED_REQUIRED,
     );

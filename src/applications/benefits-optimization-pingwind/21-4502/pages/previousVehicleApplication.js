@@ -70,6 +70,8 @@ export default {
         }),
         'ui:options': {
           hint: P.HINT_DATE,
+          hideIf: formData =>
+            formData?.applicationInfo?.previouslyAppliedConveyance !== true,
         },
         'ui:webComponentField': VaDateField,
         'ui:errorMessages': {
@@ -80,6 +82,10 @@ export default {
       },
       [applicationInfoFields.previouslyAppliedPlace]: {
         'ui:title': P.TITLE_PREVIOUSLY_APPLIED_PLACE,
+        'ui:options': {
+          hideIf: formData =>
+            formData?.applicationInfo?.previouslyAppliedConveyance !== true,
+        },
         'ui:required': formData =>
           formData?.applicationInfo?.previouslyAppliedConveyance === true,
         'ui:errorMessages': {

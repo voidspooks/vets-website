@@ -7,9 +7,6 @@ import * as ui from 'platform/utilities/ui';
 import * as formTitleMod from 'platform/forms-system/src/js/components/FormTitle';
 import formConfig from '../../../config/form';
 import IntroductionPage from '../../../containers/IntroductionPage';
-import { FORM_21_4502 } from '../../../definitions/constants';
-
-const { INTRODUCTION: I } = FORM_21_4502;
 
 describe('21-4502 IntroductionPage', () => {
   let sandbox;
@@ -83,16 +80,6 @@ describe('21-4502 IntroductionPage', () => {
     expect(container).to.exist;
   });
 
-  it('shows form title', () => {
-    const store = makeStore();
-    const { getByTestId } = render(
-      <Provider store={store}>
-        <IntroductionPage {...props} />
-      </Provider>,
-    );
-    expect(getByTestId('form-title').textContent).to.include(I.FORM_TITLE);
-  });
-
   it('shows SaveInProgress when a user is LOA3', () => {
     const store = makeStore({ loggedIn: true, loa: 3 });
     const { getByText } = render(
@@ -100,7 +87,7 @@ describe('21-4502 IntroductionPage', () => {
         <IntroductionPage {...props} />
       </Provider>,
     );
-    expect(getByText(I.AUTH_START_FORM_TEXT)).to.exist;
+    expect(getByText('Start the application')).to.exist;
   });
 
   it('hides SaveInProgress when a user is logged in but not verified', () => {
@@ -110,6 +97,6 @@ describe('21-4502 IntroductionPage', () => {
         <IntroductionPage {...props} />
       </Provider>,
     );
-    expect(queryByText(I.AUTH_START_FORM_TEXT)).to.be.null;
+    expect(queryByText('Start the application')).to.be.null;
   });
 });

@@ -14,6 +14,23 @@ import { applicationInfoFields, FORM_21_4502 } from '../definitions/constants';
 
 const { VETERAN_DISABILITY_COMPENSATION: V } = FORM_21_4502;
 
+const validateDisabilityCompensationFields = (errors, formData) => {
+  if (formData?.appliedDisabilityCompensation !== true) {
+    return;
+  }
+
+  if (!formData?.appliedDisabilityCompensationPlace?.trim()) {
+    errors.appliedDisabilityCompensationPlace.addError(V.ERROR_IF_YES);
+  }
+
+  const { day, month, year } = parseISODate(formData?.dateApplied);
+  const hasAnyDatePart = [day, month, year].some(Boolean);
+
+  if (!formData?.dateApplied || !hasAnyDatePart) {
+    errors.dateApplied.addError(V.ERROR_DATE_APPLIED_REQUIRED);
+  }
+};
+
 const validateDateApplied = (errors, value, formData) => {
   if (formData?.applicationInfo?.appliedDisabilityCompensation !== true) {
     return;
@@ -48,6 +65,7 @@ export default {
     'ui:options': { preserveHiddenData: true },
     ...titleUI(V.TITLE),
     [applicationInfoFields.parentObject]: {
+      'ui:validations': [validateDisabilityCompensationFields],
       // 12A: Applied for disability compensation
       [applicationInfoFields.appliedDisabilityCompensation]: yesNoUI({
         title: V.QUESTION_APPLIED,
@@ -60,8 +78,6 @@ export default {
 
       [applicationInfoFields.appliedDisabilityCompensationPlace]: {
         'ui:title': V.TITLE_IF_YES,
-        'ui:required': formData =>
-          formData?.applicationInfo?.appliedDisabilityCompensation === true,
         'ui:options': {
           classNames: 'applied-disability-compensation-place-field',
           hideIf: formData =>
@@ -86,6 +102,8 @@ export default {
         }),
         'ui:options': {
           hint: V.HINT_DATE_APPLIED,
+          hideIf: formData =>
+            formData?.applicationInfo?.appliedDisabilityCompensation !== true,
         },
         'ui:webComponentField': VaDateField,
         'ui:errorMessages': {

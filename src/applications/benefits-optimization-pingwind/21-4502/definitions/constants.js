@@ -101,29 +101,63 @@ export const BRANCH_OF_SERVICE = {
 
 export const FORM_21_4502 = {
   INTRODUCTION: {
-    FORM_TITLE:
-      'Application For Automobile or Other Conveyance and Adaptive Equipment (VA Form 21-4502, Under 38 U.S.C. 3901-3904)',
+    FORM_TITLE: 'Apply for automobile and adaptive equipment online',
+    FORM_SUBTITLE:
+      'Application For Automobile or Other Conveyance and Adaptive Equipment (Under 38 U.S.C. 3901-3904) (VA Form 21-4502)',
     INTRO:
-      'Use this form if you are a Veteran or service member with specific service-connected disabilities to apply for automobile or other transportation and adaptive equipment allowance under federal law. This benefit helps eligible Veterans and service members purchase a vehicle and obtain approved adaptive equipment needed to operate the vehicle safely.',
-    STEP_ELIGIBILITY_TITLE: 'Check Your Eligibility',
-    STEP_ELIGIBILITY_BODY:
-      "Find out if you're eligible for automobile and adaptive equipment benefits. You may qualify if you have a permanent service-connected disability including loss or permanent loss of use of one or both hands or feet, permanent impairment of vision, severe burn injuries, or ALS.",
+      "Use VA Form 21-4502 if you're a Veteran or service member with certain service-connected disabilities and want to apply for benefits to help pay for a vehicle that meets your needs. This benefit can help you purchase a vehicle or other conveyance and approved adaptive equipment so you can drive or get in and out of the vehicle safely.",
+    STEP_ELIGIBILITY_TITLE: 'Check your eligibility',
+    STEP_ELIGIBILITY_INTRO:
+      'If you’re a Veteran or service member with a service-connected disability resulting from an injury or disease incurred or aggravated during active military service, you may be eligible for this benefit.',
+    STEP_ELIGIBILITY_CONDITION_INTRO:
+      'At least one of these conditions must be true:',
     STEP_ELIGIBILITY_BULLETS: [
-      'You must receive VA approval before purchasing a vehicle or adaptive equipment.',
+      'Loss or permanent loss of use of one or both hands, or',
+      'Loss or permanent loss of use of one or both feet, or',
+      'Severe burn injury causing scar formation that limits motion of one or more extremities or the trunk and prevents effective operation of an automobile, or',
+      'Amyotrophic lateral sclerosis (ALS), or',
+      'Permanent impairment of vision in both eyes that significantly limits your vision',
+    ],
+    STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_TITLE: 'Additional requirements',
+    STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_INTRO:
+      'If you meet the eligibility criteria, all of these must be true:',
+    STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_BULLETS: [
+      'You must receive VA approval before purchasing a vehicle or adaptive equipment, and',
       'You must answer all questions fully and accurately.',
-      'You can save your progress and return to this form later.',
-      'Veterans and service members may apply for automobile and adaptive equipment benefits under 38 U.S.C. 3901-3904.',
+    ],
+    STEP_ELIGIBILITY_ADDITIONAL_REQUIREMENTS_FOOTER:
+      'Veterans and service members may apply for automobile or adaptive equipment benefits under 38 U.S.C. 3901-3904.',
+    STEP_ELIGIBILITY_VISION_TRIGGER: 'How we define vision impairment',
+    STEP_ELIGIBILITY_VISION_INTRO:
+      'Your vision meets this requirement if one of these is true, even when you use corrective glasses or lenses:',
+    STEP_ELIGIBILITY_VISION_BODY: [
+      'Central visual acuity of 20/200 or less in the better eye, or',
+      'Central visual acuity of more than 20/200 if a visual field defect limits the widest diameter of visual field to 20 degrees or less in the better eye',
     ],
     STEP_GATHER_TITLE: 'Gather your information',
-    STEP_GATHER_BASIC_LABEL: 'Basic Information:',
-    STEP_GATHER_BASIC_BODY:
-      'We’ll need you to confirm your name, birthday, and Social Security or service number, as well as the best way for us to reach you via mail, email, or phone.',
-    STEP_GATHER_APPLICATION_LABEL: 'Application Information:',
-    STEP_GATHER_APPLICATION_BODY:
-      'You’ll need to share your branch of service, place of entry into active duty and date, place and date of release from active duty (if applicable), type of vehicle you are applying for and any previous history of automobile grants from VA (if applicable).',
+    STEP_GATHER_INTRO: "Here's what you'll need to apply:",
+    STEP_GATHER_BULLETS: [
+      {
+        label: 'Your personal information',
+        body:
+          'This includes your name, date of birth, Social Security number or Military service number, and contact information.',
+      },
+      {
+        label: 'Your service information',
+        body:
+          'This includes your branch of service, place and date you entered active duty, and place and date left active duty (if applicable).',
+      },
+      {
+        label: 'Application information',
+        body:
+          'This includes type of vehicle you’re applying for and any previous VA automobile grants you may have received (if applicable).',
+      },
+    ],
     STEP_START_TITLE: 'Start your application',
     STEP_START_BODY:
       'We’ll take you through each step of the process. It should take about 15 minutes.',
+    STEP_START_FOLLOWUP:
+      'You can save your progress and return to this form later.',
     AUTH_START_FORM_TEXT: 'Start the application',
     SAVE_IN_PROGRESS_TEXT:
       'Please complete the 21-4502 form to apply for automobile or adaptive equipment compensation.',
@@ -139,7 +173,7 @@ export const FORM_21_4502 = {
       Y: 'Yes, (if yes, give date and place)',
     },
     ERROR_PREVIOUSLY_APPLIED:
-      'Please select if you have previously applied for a vehicle',
+      'Select either “Yes” or “No” to tell us if you have previously applied for VA disability benefits',
     TITLE_PREVIOUSLY_APPLIED_DATE: 'Previous vehicle application date',
     TITLE_PREVIOUSLY_APPLIED_PLACE: 'Previous vehicle application place',
     HINT_DATE: 'For example: January 19, 2022',
