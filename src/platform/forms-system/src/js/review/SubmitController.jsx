@@ -123,6 +123,7 @@ class SubmitController extends Component {
         allErrors,
         pageList,
         formConfig.reviewErrors,
+        form.data,
       );
       this.props.setFormErrors({
         rawErrors: allErrors,
