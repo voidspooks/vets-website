@@ -255,6 +255,8 @@ export const ContactInfoBase = ({
           clearTimeout(clearTimer);
         };
       }
+      focusElement(`#${contactInfoPageKey}Header`);
+
       return undefined;
     },
     [contactInfoPageKey, editState, onReviewPage],
