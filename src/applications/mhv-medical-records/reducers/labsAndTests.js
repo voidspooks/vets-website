@@ -439,6 +439,47 @@ export const convertLabsAndTestsRecord = record => {
     : { ...record, type: labTypes.OTHER };
 };
 
+/**
+ * Extract the unit portion from a value string like "99 mg/dL" → "mg/dL".
+ * Returns an empty string when no unit can be parsed.
+ */
+export const extractUnit = valueText => {
+  if (!valueText || typeof valueText !== 'string') return '';
+  const parts = valueText.trim().split(/\s+/);
+  // A value string has the form "<number> <unit…>", so everything after the
+  // first whitespace-delimited token is the unit.
+  return parts.length > 1 ? parts.slice(1).join(' ') : '';
+};
+
+/**
+ * Build a display name from observation test codes, mirroring v1's
+ * extractOrderedTests approach. Falls back through testCodeDisplay and
+ * the raw display attribute.
+ */
+export const extractUnifiedTestName = attributes => {
+  if (
+    Array.isArray(attributes?.observations) &&
+    attributes.observations.length > 0
+  ) {
+    const names = attributes.observations
+      .map(obs => obs.testCode)
+      .filter(Boolean)
+      .join(', ');
+    if (names) return names;
+  }
+
+  // When observations are present (array or otherwise), the record is a
+  // chem/hem type -- prefer testCodeDisplay ("Chemistry and hematology")
+  // over the raw code in display ("CH").
+  // When observations are absent (e.g. radiology), prefer the specific
+  // display name ("CT HEAD W/O CONTRAST") over the generic testCodeDisplay
+  // ("Radiology").
+  if (attributes?.observations != null) {
+    return attributes?.testCodeDisplay || attributes?.display || null;
+  }
+  return attributes?.display || attributes?.testCodeDisplay || null;
+};
+
 export const convertUnifiedLabsAndTestRecord = record => {
   // Always show timezone abbreviation for clarity (per UX feedback).
   // If facilityTimezone is available, display in facility timezone.
@@ -451,12 +492,24 @@ export const convertUnifiedLabsAndTestRecord = record => {
       facilityTimezone || undefined,
     ) || EMPTY_FIELD;
 
+  // Append the unit from value.text to referenceRange for each observation
+  // so that reference ranges display with units (e.g. "70 - 110 mg/dL").
+  const observations = Array.isArray(record.attributes.observations)
+    ? record.attributes.observations.map(obs => {
+        const unit = extractUnit(obs.value?.text);
+        if (unit && obs.referenceRange && !obs.referenceRange.includes(unit)) {
+          return { ...obs, referenceRange: `${obs.referenceRange} ${unit}` };
+        }
+        return obs;
+      })
+    : record.attributes.observations;
+
   return {
     id: record.id,
     date,
-    name: record.attributes.display,
+    name: extractUnifiedTestName(record.attributes),
     location: record.attributes.location,
-    observations: record.attributes.observations,
+    observations,
     orderedBy: record.attributes.orderedBy,
     sampleTested: record.attributes.sampleTested,
     bodySite: record.attributes.bodySite,

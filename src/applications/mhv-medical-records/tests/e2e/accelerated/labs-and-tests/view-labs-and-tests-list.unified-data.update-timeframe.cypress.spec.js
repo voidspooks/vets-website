@@ -54,7 +54,7 @@ describe('Medical Records View Lab and Tests', () => {
 
     // go to a specific lab
     LabsAndTests.selectLabAndTest({
-      labName: 'CH - FULL SAMPLE',
+      labName: 'GLUCOSE, UREA NITROGEN',
     });
 
     cy.get('[data-testid="mr-breadcrumbs"]')
