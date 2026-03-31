@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { cloneDeep } from 'lodash';
-import { selectTypeOfCareName, selectCanUseVaccineFlow } from './selectors';
+import {
+  selectTypeOfCareName,
+  selectCanUseVaccineFlow,
+  selectIsEligibleForTravelClaim,
+} from './selectors';
 import { TYPE_OF_CARE_IDS } from '../../utils/constants';
 
 describe('appointment-list / redux / selectors', () => {
@@ -116,6 +120,92 @@ describe('appointment-list / redux / selectors', () => {
     delete appointment.vaos.apiData.typeOfCare;
     const typeOfCareName = selectTypeOfCareName(appointment);
     expect(typeOfCareName).to.equal('');
+  });
+
+  describe('selectIsEligibleForTravelClaim', () => {
+    const travelPayClaim = { id: 'claim-1', claimStatus: 'IN_PROGRESS' };
+
+    const baseAppointment = {
+      vaos: {
+        isPastAppointment: true,
+        isInPersonVisit: false,
+        isVideoAtVA: false,
+        isCommunityCare: false,
+        apiData: { travelPayClaim },
+      },
+    };
+
+    const ccState = { featureToggles: { travelPayEnableCommunityCare: true } };
+
+    it('should return the travel claim for a past in-person VA appointment', () => {
+      const appointment = {
+        ...baseAppointment,
+        vaos: { ...baseAppointment.vaos, isInPersonVisit: true },
+      };
+      expect(selectIsEligibleForTravelClaim({}, appointment)).to.equal(
+        travelPayClaim,
+      );
+    });
+
+    it('should return the travel claim for a past clinic video appointment', () => {
+      const appointment = {
+        ...baseAppointment,
+        vaos: { ...baseAppointment.vaos, isVideoAtVA: true },
+      };
+      expect(selectIsEligibleForTravelClaim({}, appointment)).to.equal(
+        travelPayClaim,
+      );
+    });
+
+    it('should return the travel claim for a past community care appointment when flag is on', () => {
+      const appointment = {
+        ...baseAppointment,
+        vaos: { ...baseAppointment.vaos, isCommunityCare: true },
+      };
+      expect(selectIsEligibleForTravelClaim(ccState, appointment)).to.equal(
+        travelPayClaim,
+      );
+    });
+
+    it('should return falsy for a past community care appointment when flag is off', () => {
+      const appointment = {
+        ...baseAppointment,
+        vaos: { ...baseAppointment.vaos, isCommunityCare: true },
+      };
+      expect(selectIsEligibleForTravelClaim({}, appointment)).to.not.be.ok;
+    });
+
+    it('should return false for a future community care appointment', () => {
+      const appointment = {
+        ...baseAppointment,
+        vaos: {
+          ...baseAppointment.vaos,
+          isPastAppointment: false,
+          isCommunityCare: true,
+        },
+      };
+      expect(selectIsEligibleForTravelClaim(ccState, appointment)).to.be.false;
+    });
+
+    it('should return null for a past community care appointment with no travel claim', () => {
+      const appointment = {
+        ...baseAppointment,
+        vaos: {
+          ...baseAppointment.vaos,
+          isCommunityCare: true,
+          apiData: { travelPayClaim: null },
+        },
+      };
+      expect(selectIsEligibleForTravelClaim(ccState, appointment)).to.be.null;
+    });
+
+    it('should return false for a past appointment that is none of the eligible types', () => {
+      expect(selectIsEligibleForTravelClaim({}, baseAppointment)).to.be.false;
+    });
+
+    it('should return falsy when appointment is undefined', () => {
+      expect(selectIsEligibleForTravelClaim({}, undefined)).to.not.be.ok;
+    });
   });
 
   describe('selectCanUseVaccineFlow', () => {

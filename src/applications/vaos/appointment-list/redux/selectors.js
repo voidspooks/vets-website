@@ -4,6 +4,7 @@ import { selectIsCernerOnlyPatient } from 'platform/user/cerner-dsot/selectors';
 import { createSelector } from 'reselect';
 import {
   selectFeatureRequests,
+  selectFeatureTravelPayEnableCommunityCare,
   selectFeatureUseVpg,
 } from '../../redux/selectors';
 import {
@@ -580,10 +581,13 @@ export function selectAppointmentTravelClaim(appointment) {
   return appointment?.vaos?.apiData?.travelPayClaim;
 }
 
-export function selectIsEligibleForTravelClaim(appointment) {
+export function selectIsEligibleForTravelClaim(state, appointment) {
   return (
     selectIsPast(appointment) &&
-    (isInPersonVisit(appointment) || isClinicVideoAppointment(appointment)) &&
+    (isInPersonVisit(appointment) ||
+      isClinicVideoAppointment(appointment) ||
+      (selectIsCommunityCare(appointment) &&
+        selectFeatureTravelPayEnableCommunityCare(state))) &&
     selectAppointmentTravelClaim(appointment)
   );
 }
