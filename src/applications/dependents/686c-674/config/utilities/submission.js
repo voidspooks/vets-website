@@ -137,7 +137,6 @@ export function buildSubmissionData(payload) {
     'statementOfTruthCertified',
     'metadata',
     PICKLIST_REMOVAL_FLAG,
-    'netWorthLimit', // Passing networth limit for FDF PDF generation
   ];
 
   essentialFields.forEach(field => {
@@ -150,6 +149,9 @@ export function buildSubmissionData(payload) {
   if (sourceData.vaDependentsNetWorthAndPension !== undefined) {
     cleanData.vaDependentsNetWorthAndPension =
       sourceData.vaDependentsNetWorthAndPension;
+    // Passing networth limit for FDF PDF generation; only include when feature
+    // flag is enabled
+    cleanData.netWorthLimit = sourceData.netWorthLimit;
   }
 
   // householdIncome is only valid to submit when:
