@@ -359,7 +359,7 @@ const formConfig = {
         },
         reasonForSeparation: {
           path: 'household/reason-for-separation',
-          title: 'Reason for separation',
+          title: 'Reason for living apart',
           depends: formData =>
             formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
             formData.livedContinuouslyWithVeteran === false,

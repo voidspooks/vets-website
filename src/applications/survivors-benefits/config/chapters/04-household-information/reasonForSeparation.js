@@ -7,13 +7,10 @@ import { separationReasonOptions } from '../../../utils/labels';
 
 /** @type {PageSchema} */
 export default {
-  title: 'Reason for separation',
-  path: 'household/reason-for-separation',
-  depends: formData => formData.livedContinuouslyWithVeteran === false,
   uiSchema: {
-    ...titleUI('Reason for separation'),
+    ...titleUI('Reason for living apart'),
     separationDueToAssignedReasons: radioUI({
-      title: 'What was the reason for separation?',
+      title: 'What was the reason you lived separately?',
       labels: separationReasonOptions,
     }),
   },
