@@ -8,41 +8,31 @@ import {
   VaLoadingIndicator,
   VaLink,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import { useTranslation, Trans } from 'react-i18next';
 import {
   currency,
-  calcDueDate,
   formatDate,
-  verifyCurrentBalance,
   showVHAPaymentHistory,
 } from '../../combined/utils/helpers';
 import { getCopayDetailStatement } from '../../combined/actions/copays';
 
-const CurrentContent = ({ id, date }) => (
+const ZeroBalanceContent = ({ updatedDate }) => (
   <p className="vads-u-margin--0">
-    Your balance was updated on {formatDate(date)}. Pay your balance now or
-    request help by{' '}
-    <strong data-testid={`due-date-${id}`}>{calcDueDate(date, 30)}</strong>.
+    <Trans
+      i18nKey="mcp.copay-balances.zero-balance-card.no-payment-needed"
+      values={{ amount: currency(0.0), date: formatDate(updatedDate) }}
+    />
   </p>
 );
 
-CurrentContent.propTypes = {
-  date: PropTypes.string,
+ZeroBalanceContent.propTypes = {
   id: PropTypes.string,
+  updatedDate: PropTypes.string,
 };
 
-const PastDueContent = ({ id, date }) => (
-  <p className="vads-u-margin--0">
-    Pay your balance now or request help by{' '}
-    <strong data-testid={`due-date-${id}`}>{formatDate(date)}</strong>.
-  </p>
-);
+const ZeroBalanceCopayCard = ({ id, facility, city, updatedDate }) => {
+  const { t } = useTranslation();
 
-PastDueContent.propTypes = {
-  date: PropTypes.string,
-  id: PropTypes.string,
-};
-
-const BalanceCard = ({ id, amount, facility, city, date }) => {
   const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
     useSelector(state => state),
   );
@@ -51,9 +41,7 @@ const BalanceCard = ({ id, amount, facility, city, date }) => {
   const dispatch = useDispatch();
 
   const { useToggleLoadingValue } = useFeatureToggle();
-  // boolean value to represent if toggles are still loading or not
   const togglesLoading = useToggleLoadingValue();
-  const isCurrentBalance = verifyCurrentBalance(date);
 
   // give features a chance to fully load before we conditionally render
   if (togglesLoading) {
@@ -70,27 +58,31 @@ const BalanceCard = ({ id, amount, facility, city, date }) => {
         data-testid={`facility-city-${id}`}
         className="vads-u-margin-top--0 vads-u-margin-bottom--1p5"
       >
-        {facility} - {city}
+        {t('mcp.copay-balances.zero-balance-card.facility-city', {
+          facility,
+          city,
+        })}
       </h3>
       <p
         className="vads-u-margin-top--0 vads-u-margin-bottom--1p5 vads-u-font-size--h4 vads-u-font-family--serif"
         data-testid={`amount-${id}`}
       >
-        <span className="vads-u-font-weight--normal">Current balance: </span>
-        <strong>{currency(amount)}</strong>
+        <span className="vads-u-font-weight--normal">
+          <Trans
+            i18nKey="mcp.copay-balances.zero-balance-card.current-balance"
+            values={{ amount: currency(0.0) }}
+            components={{ bold: <strong /> }}
+          />
+        </span>
       </p>
       <div className="vads-u-display--flex vads-u-margin-top--0  vads-u-margin-bottom--1p5">
         <va-icon
-          icon="warning"
+          icon="info"
           size={3}
-          srtext="Warning"
-          class="icon-color--warning vads-u-padding-right--1"
+          srtext="Information"
+          class="icon-color--info vads-u-padding-right--1"
         />
-        {isCurrentBalance ? (
-          <CurrentContent id={id} date={date} />
-        ) : (
-          <PastDueContent id={id} date={date} />
-        )}
+        <ZeroBalanceContent id={id} updatedDate={updatedDate} />
       </div>
       <div className="vads-u-display--flex vads-u-flex-direction--column">
         <p className="vads-u-margin--0">
@@ -110,35 +102,16 @@ const BalanceCard = ({ id, amount, facility, city, date }) => {
             label={`Review details for ${facility}`}
           />
         </p>
-
-        <p className="vads-u-margin-top--1 vads-u-margin-bottom--0">
-          <VaLink
-            active
-            data-testid={`resolve-link-${id}`}
-            onClick={event => {
-              event.preventDefault();
-              if (shouldShowVHAPaymentHistory) {
-                dispatch(getCopayDetailStatement(`${id}`));
-              }
-              recordEvent({ event: 'cta-link-click-copay-balance-card' });
-              history.push(`/copay-balances/${id}/resolve`);
-            }}
-            href={`/copay-balances/${id}/resolve`}
-            text="Resolve this bill"
-            label={`Resolve this bill for ${facility}`}
-          />
-        </p>
       </div>
     </va-card>
   );
 };
 
-BalanceCard.propTypes = {
-  amount: PropTypes.number,
+ZeroBalanceCopayCard.propTypes = {
   city: PropTypes.string,
-  date: PropTypes.string,
   facility: PropTypes.string,
   id: PropTypes.string,
+  updatedDate: PropTypes.string,
 };
 
-export default BalanceCard;
+export default ZeroBalanceCopayCard;
