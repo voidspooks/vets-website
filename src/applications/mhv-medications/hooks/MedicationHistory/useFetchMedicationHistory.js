@@ -90,6 +90,7 @@ export const useFetchMedicationHistory = (perPage = 10) => {
     error: apiError,
     isLoading: apiIsLoading,
     isFetching: apiIsFetching,
+    isUninitialized: apiIsUninitialized,
   } = useGetPrescriptionsListQuery(queryParams, {
     skip: featureTogglesLoading !== false,
   });
@@ -98,7 +99,11 @@ export const useFetchMedicationHistory = (perPage = 10) => {
     prescriptions: apiData?.prescriptions || [],
     prescriptionsData: apiData,
     prescriptionsApiError: apiError,
-    isLoading: featureTogglesLoading !== false || apiIsLoading || apiIsFetching,
+    isLoading:
+      featureTogglesLoading !== false ||
+      apiIsLoading ||
+      apiIsFetching ||
+      apiIsUninitialized,
     currentPage: queryParams.page,
   };
 };

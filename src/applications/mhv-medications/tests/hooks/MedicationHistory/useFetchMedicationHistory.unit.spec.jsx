@@ -113,6 +113,7 @@ const getMockQueryResponse = (overrides = {}) => ({
   error: undefined,
   isLoading: false,
   isFetching: false,
+  isUninitialized: false,
   ...overrides,
 });
 
@@ -193,6 +194,30 @@ describe('useFetchMedicationHistory', () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse({ isFetching: true }));
+
+      const mockStore = createMockStore();
+      const wrapper = createTestWrapper(mockStore);
+
+      const { result } = renderHook(() => useFetchMedicationHistory(), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).to.be.true;
+      });
+    });
+
+    it('returns loading true when query is uninitialized', async () => {
+      useGetPrescriptionsListQueryStub = sandbox
+        .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
+        .returns(
+          getMockQueryResponse({
+            data: undefined,
+            isLoading: false,
+            isFetching: false,
+            isUninitialized: true,
+          }),
+        );
 
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);

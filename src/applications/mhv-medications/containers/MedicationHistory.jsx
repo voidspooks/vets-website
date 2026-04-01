@@ -257,13 +257,16 @@ const MedicationHistory = () => {
               updateLoadingStatus={setLoadingMessage}
             />
           )}
-        <PrintDownloadCard
-          onDownload={handleExportListDownload}
-          isSuccess={isExportSuccess}
-          isLoading={isExportLoading}
-          isFiltered={filterApplied}
-          list
-        />
+        {!isLoading &&
+          hasMedications && (
+            <PrintDownloadCard
+              onDownload={handleExportListDownload}
+              isSuccess={isExportSuccess}
+              isLoading={isExportLoading}
+              isFiltered={filterApplied}
+              list
+            />
+          )}
         {!isLoading && noFilterMatches && <NoFilterMatches />}
       </>
     );

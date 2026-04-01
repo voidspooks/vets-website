@@ -336,6 +336,42 @@ describe('MedicationHistory container', () => {
       expect(screen.getByTestId('zero-filter-results')).to.exist;
       expect(screen.getByTestId('medication-history-filter')).to.exist;
     });
+
+    it('does not render PrintDownloadCard when no medications are loaded', () => {
+      stubFetchHook({
+        prescriptions: [],
+        prescriptionsData: { prescriptions: [], pagination: null, meta: {} },
+      });
+      const screen = setup();
+      expect(screen.queryByText(/Print or download your medications list/i)).to
+        .be.null;
+    });
+
+    it('renders PrintDownloadCard when medications exist', () => {
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        pagination: mockPagination,
+      });
+      const screen = setup();
+      expect(screen.getByText(/Print or download your medications list/i)).to
+        .exist;
+    });
+
+    it('hides PrintDownloadCard while loading with existing medications', () => {
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        prescriptionsData: {
+          prescriptions: mockPrescriptions,
+          pagination: mockPagination,
+          meta: {},
+        },
+        isLoading: true,
+        pagination: mockPagination,
+      });
+      const screen = setup();
+      expect(screen.queryByText(/Print or download your medications list/i)).to
+        .be.null;
+    });
   });
 
   describe('filter integration', () => {
