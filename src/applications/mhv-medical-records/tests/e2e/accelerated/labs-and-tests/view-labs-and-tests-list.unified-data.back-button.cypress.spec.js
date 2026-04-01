@@ -51,8 +51,7 @@ describe('Medical Records View Lab and Tests', () => {
 
     // go to a specific lab
     LabsAndTests.selectLabAndTest({
-      labName:
-        'Platelets, RDW, MCHC, MCH, MCV, Hematocrit, Hemoglobin, RBC, WBC',
+      labName: 'CBC w/ Diff',
     });
 
     cy.get('[data-testid="mr-breadcrumbs"] > a').should('have.attr', 'href');

@@ -142,12 +142,8 @@ class LabsAndTests {
   };
 
   selectLabAndTest = ({ labName }) => {
-    // Use a regex that matches the lab name followed by a space and the
-    // sr-only date suffix (e.g. "GLUCOSE, UREA NITROGEN on Jan...").
-    // This avoids substring collisions when one name is a prefix of another.
-    const escaped = labName.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
     cy.get('[data-testid="record-list-item"]')
-      .contains('a', new RegExp(`^${escaped} `))
+      .contains(labName)
       .click({ waitForAnimations: true });
     cy.get('[data-testid="lab-name"]').should('be.visible');
     cy.get('[data-testid="lab-name"]').contains(labName);

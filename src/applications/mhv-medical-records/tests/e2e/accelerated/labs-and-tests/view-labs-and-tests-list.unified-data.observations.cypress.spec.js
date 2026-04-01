@@ -49,7 +49,7 @@ describe('Medical Records View Lab and Tests', () => {
     cy.get("[data-testid='filter-display-message']").should('not.be.empty');
     // go to a specific lab
     LabsAndTests.selectLabAndTest({
-      labName: 'GLUCOSE, UREA NITROGEN',
+      labName: 'CH - FULL SAMPLE',
     });
 
     cy.get('.test-results-header').should('be.visible');

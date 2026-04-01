@@ -14,8 +14,6 @@ import {
   extractPerformingLabLocation,
   extractPractitioner,
   extractSpecimen,
-  extractUnit,
-  extractUnifiedTestName,
   labsAndTestsReducer,
   convertUnifiedLabsAndTestRecord,
   convertPathologyRecord,
@@ -868,95 +866,6 @@ describe('labsAndTestsReducer', () => {
   });
 });
 
-describe('extractUnit', () => {
-  it('should extract the unit from a value string', () => {
-    expect(extractUnit('99 mg/dL')).to.equal('mg/dL');
-  });
-
-  it('should extract multi-word units', () => {
-    expect(extractUnit('12.2 10^3/uL')).to.equal('10^3/uL');
-  });
-
-  it('should return empty string when no unit is present', () => {
-    expect(extractUnit('50')).to.equal('');
-  });
-
-  it('should return empty string for null input', () => {
-    expect(extractUnit(null)).to.equal('');
-  });
-
-  it('should return empty string for undefined input', () => {
-    expect(extractUnit(undefined)).to.equal('');
-  });
-
-  it('should return empty string for non-string input', () => {
-    expect(extractUnit(123)).to.equal('');
-  });
-});
-
-describe('extractUnifiedTestName', () => {
-  it('should join observation testCodes into a comma-separated name', () => {
-    const attributes = {
-      display: 'CH',
-      testCodeDisplay: 'Chemistry and hematology',
-      observations: [
-        { testCode: 'GLUCOSE' },
-        { testCode: 'UREA NITROGEN' },
-        { testCode: 'SODIUM' },
-      ],
-    };
-    expect(extractUnifiedTestName(attributes)).to.equal(
-      'GLUCOSE, UREA NITROGEN, SODIUM',
-    );
-  });
-
-  it('should skip observations with no testCode', () => {
-    const attributes = {
-      display: 'CH',
-      observations: [{ testCode: 'GLUCOSE' }, { testCode: '' }, {}],
-    };
-    expect(extractUnifiedTestName(attributes)).to.equal('GLUCOSE');
-  });
-
-  it('should fall back to testCodeDisplay when observations is not an array', () => {
-    const attributes = {
-      display: 'CH',
-      testCodeDisplay: 'Chemistry and hematology',
-      observations: 'some string',
-    };
-    expect(extractUnifiedTestName(attributes)).to.equal(
-      'Chemistry and hematology',
-    );
-  });
-
-  it('should fall back to display when testCodeDisplay is missing', () => {
-    const attributes = {
-      display: 'SP',
-      observations: null,
-    };
-    expect(extractUnifiedTestName(attributes)).to.equal('SP');
-  });
-
-  it('should return null when attributes is undefined', () => {
-    expect(extractUnifiedTestName(undefined)).to.equal(null);
-  });
-
-  it('should return null when attributes is empty', () => {
-    expect(extractUnifiedTestName({})).to.equal(null);
-  });
-
-  it('should fall back to testCodeDisplay when all observation testCodes are empty', () => {
-    const attributes = {
-      display: 'CH',
-      testCodeDisplay: 'Chemistry and hematology',
-      observations: [{ testCode: '' }, {}],
-    };
-    expect(extractUnifiedTestName(attributes)).to.equal(
-      'Chemistry and hematology',
-    );
-  });
-});
-
 describe('convertUnifiedLabsAndTestRecord', () => {
   let clock;
   beforeEach(() => {
@@ -987,9 +896,7 @@ describe('convertUnifiedLabsAndTestRecord', () => {
 
     const result = convertUnifiedLabsAndTestRecord(record);
     expect(result.id).to.equal('test-id');
-    // observations is a string (not an array), so extractUnifiedTestName
-    // falls through to testCodeDisplay.
-    expect(result.name).to.equal('12345');
+    expect(result.name).to.equal('Test Name');
     expect(result.location).to.equal('Test Location');
     expect(result.observations).to.equal('Test Observations');
     expect(result.orderedBy).to.equal('Dr. Smith');
@@ -1013,7 +920,7 @@ describe('convertUnifiedLabsAndTestRecord', () => {
     expect(result).to.deep.equal({
       id: 'test-id',
       date: EMPTY_FIELD,
-      name: null,
+      name: undefined,
       location: undefined,
       observations: undefined,
       orderedBy: undefined,
@@ -1033,33 +940,6 @@ describe('convertUnifiedLabsAndTestRecord', () => {
     });
   });
 
-  it('should derive name from observation testCodes instead of display', () => {
-    const record = {
-      id: 'ch-id',
-      attributes: {
-        dateCompleted: '2025-01-23T22:06:02Z',
-        display: 'CH',
-        testCode: 'CH',
-        testCodeDisplay: 'Chemistry and hematology',
-        observations: [
-          {
-            testCode: 'GLUCOSE',
-            referenceRange: '70 - 110',
-            value: { text: '99 mg/dL', type: 'Quantity' },
-          },
-          {
-            testCode: 'UREA NITROGEN',
-            referenceRange: '7 - 18',
-            value: { text: '200 mg/dL', type: 'Quantity' },
-          },
-        ],
-      },
-    };
-
-    const result = convertUnifiedLabsAndTestRecord(record);
-    expect(result.name).to.equal('GLUCOSE, UREA NITROGEN');
-  });
-
   it('should handle invalid dateCompleted gracefully', () => {
     const record = {
       id: 'test-id',
@@ -1073,7 +953,7 @@ describe('convertUnifiedLabsAndTestRecord', () => {
     expect(result).to.deep.equal({
       id: 'test-id',
       date: EMPTY_FIELD,
-      name: null,
+      name: undefined,
       location: undefined,
       observations: undefined,
       orderedBy: undefined,
@@ -1210,113 +1090,6 @@ describe('convertUnifiedLabsAndTestRecord', () => {
     expect(result.testCodeDisplay).to.equal('UNKNOWN_CODE'); // falls back to raw testCode
     expect(result.type).to.equal('UNKNOWN_CODE'); // type is raw testCode value
   });
-
-  it('should append unit from value.text to referenceRange', () => {
-    const record = {
-      id: 'test-id',
-      attributes: {
-        dateCompleted: '2025-01-23T22:06:02Z',
-        observations: [
-          {
-            testCode: 'GLUCOSE',
-            referenceRange: '70 - 110',
-            status: 'final',
-            value: { text: '99 mg/dL', type: 'Quantity' },
-            comments: '',
-          },
-        ],
-      },
-    };
-
-    const result = convertUnifiedLabsAndTestRecord(record);
-    expect(result.observations[0].referenceRange).to.equal('70 - 110 mg/dL');
-  });
-
-  it('should handle multi-word units in referenceRange', () => {
-    const record = {
-      id: 'test-id',
-      attributes: {
-        dateCompleted: '2025-01-23T22:06:02Z',
-        observations: [
-          {
-            testCode: 'WBC',
-            referenceRange: '4.5 - 10.0',
-            status: 'final',
-            value: { text: '12.2 10^3/uL', type: 'Quantity' },
-            comments: '',
-          },
-        ],
-      },
-    };
-
-    const result = convertUnifiedLabsAndTestRecord(record);
-    expect(result.observations[0].referenceRange).to.equal(
-      '4.5 - 10.0 10^3/uL',
-    );
-  });
-
-  it('should not modify referenceRange when value.text has no unit', () => {
-    const record = {
-      id: 'test-id',
-      attributes: {
-        dateCompleted: '2025-01-23T22:06:02Z',
-        observations: [
-          {
-            testCode: 'TEST',
-            referenceRange: '0 - 100',
-            status: 'final',
-            value: { text: '50', type: 'Quantity' },
-            comments: '',
-          },
-        ],
-      },
-    };
-
-    const result = convertUnifiedLabsAndTestRecord(record);
-    expect(result.observations[0].referenceRange).to.equal('0 - 100');
-  });
-
-  it('should not duplicate unit when referenceRange already includes it', () => {
-    const record = {
-      id: 'test-id',
-      attributes: {
-        dateCompleted: '2025-01-23T22:06:02Z',
-        observations: [
-          {
-            testCode: 'CALCIUM',
-            referenceRange: '8.6 - 10.0 mg/dL',
-            status: 'final',
-            value: { text: '9.2 mg/dL', type: 'Quantity' },
-            comments: '',
-          },
-        ],
-      },
-    };
-
-    const result = convertUnifiedLabsAndTestRecord(record);
-    expect(result.observations[0].referenceRange).to.equal('8.6 - 10.0 mg/dL');
-  });
-
-  it('should not modify referenceRange when referenceRange is empty', () => {
-    const record = {
-      id: 'test-id',
-      attributes: {
-        dateCompleted: '2025-01-23T22:06:02Z',
-        observations: [
-          {
-            testCode: 'TEST',
-            referenceRange: '',
-            status: 'final',
-            value: { text: '50 mg/dL', type: 'Quantity' },
-            comments: '',
-          },
-        ],
-      },
-    };
-
-    const result = convertUnifiedLabsAndTestRecord(record);
-    expect(result.observations[0].referenceRange).to.equal('');
-  });
 });
 
 describe('labsAndTestsReducer - unified labs and tests', () => {
@@ -1351,8 +1124,7 @@ describe('labsAndTestsReducer - unified labs and tests', () => {
     expect(newState.labsAndTestsList.length).to.equal(1);
     const testRecord = newState.labsAndTestsList[0];
     expect(testRecord.id).to.equal('test-id');
-    // observations is a string (not an array), so name falls through to testCodeDisplay
-    expect(testRecord.name).to.equal('12345');
+    expect(testRecord.name).to.equal('Test Name');
     expect(testRecord.location).to.equal('Test Location');
     expect(testRecord.observations).to.equal('Test Observations');
     expect(testRecord.orderedBy).to.equal('Dr. Smith');
