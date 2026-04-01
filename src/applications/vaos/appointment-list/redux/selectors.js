@@ -788,3 +788,16 @@ export function selectRequestedAppointmentDetails(state, id) {
     isCerner,
   };
 }
+export const selectIsClaimExam = appointment => {
+  return appointment?.vaos?.isCompAndPenAppointment;
+};
+
+export const selectIsEligibleForAVS = appointment => {
+  return (
+    selectIsPast(appointment) &&
+    (APPOINTMENT_STATUS.booked === appointment?.status ||
+      APPOINTMENT_STATUS.fulfilled === appointment?.status) &&
+    !selectIsCommunityCare(appointment) &&
+    !selectIsClaimExam(appointment)
+  );
+};
