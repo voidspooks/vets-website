@@ -38,6 +38,7 @@
   "cernerNonEligibleSisEnabled": "cerner_non_eligible_sis_enabled",
   "champvaClaimsLlmValidation": "champva_claims_llm_validation",
   "champvaEnableClaimResubmitQuestion": "champva_enable_claim_resubmit_question",
+  "champvaClaimsInsuranceDates": "champva_claims_insurance_dates",
   "champvaForm107959cRev2025": "champva_form_10_7959c_rev2025",
   "checkInExperienceBrowserMonitoring": "check_in_experience_browser_monitoring",
   "checkInExperienceDayOfDemographicsFlagsEnabled": "check_in_experience_day_of_demographics_flags_enabled",
