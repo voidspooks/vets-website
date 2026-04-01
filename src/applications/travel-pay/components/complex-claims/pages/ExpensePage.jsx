@@ -22,6 +22,7 @@ import {
   EXPENSE_TYPES,
   EXPENSE_TYPE_KEYS,
   TRIP_TYPES,
+  PROOF_OF_ATTENDANCE_FILENAME,
 } from '../../../constants';
 import {
   createExpense,
@@ -611,6 +612,9 @@ const ExpensePage = () => {
     // If no receipt exists AND no prior error exists, set error
     if (!formState.receipt && !existingReceiptError) {
       errors.receipt = 'Select an approved file type under 5MB';
+    } else if (existingReceiptError) {
+      // Carry any existing receipt error into the blocking errors object so hasBlockingErrors is true and Continue is blocked
+      errors.receipt = existingReceiptError;
     }
 
     // Type-specific validations (pass null to validate all fields)
@@ -815,8 +819,19 @@ const ExpensePage = () => {
       return;
     }
 
+    const file = files[0];
+
+    if (
+      file.name.toLowerCase().startsWith(`${PROOF_OF_ATTENDANCE_FILENAME}.`)
+    ) {
+      setExtraFieldErrors(prev => ({
+        ...prev,
+        receipt: `Choose a name other than "${PROOF_OF_ATTENDANCE_FILENAME}"`,
+      }));
+      return;
+    }
+
     try {
-      const file = files[0];
       const base64File = await toBase64(file);
 
       // Update document state
