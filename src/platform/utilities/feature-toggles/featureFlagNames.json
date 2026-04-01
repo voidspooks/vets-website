@@ -12,6 +12,7 @@
   "askVaAlertLinkToOldPortal": "ask_va_alert_link_to_old_portal",
   "askVaAnnouncementBanner": "ask_va_ask_va_announcement_banner",
   "askVaCanaryRelease": "ask_va_canary_release",
+  "askVADatadogRum": "ask_va_datadog_rum",
   "askVaEnhancedInbox": "ask_va_enhanced_inbox",
   "askVaMockApiForTesting": "ask_va_mock_api_for_testing",
   "authExpVbaDowntimeMessage": "auth_exp_vba_downtime_message",
