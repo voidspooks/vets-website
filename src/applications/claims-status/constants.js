@@ -248,4 +248,10 @@ export const ANCHOR_LINKS = {
 
 export const LINKS = {
   findVaLocations: '/find-locations',
+  disabilityCompensationClaimIntro:
+    '/disability/file-disability-claim-form-21-526ez/introduction',
+  veteransPensionOnlineIntro:
+    '/pension/apply-for-veteran-pension-form-21p-527ez/introduction',
+  intentToFileForm0966: '/forms/21-0966/',
+  intentToFileAboutClaim: '/resources/your-intent-to-file-a-va-claim/',
 };
