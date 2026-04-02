@@ -239,7 +239,6 @@ export const CONTACT_INFO = {
 
 export const ANCHOR_LINKS = {
   addFiles: 'add-files',
-  documentsFiled: 'documents-filed', // anchor link to old documents filed section
   otherWaysToSendDocuments: 'other-ways-to-send',
   fileSubmissionsInProgress: 'file-submissions-in-progress',
   filesReceived: 'files-received',
