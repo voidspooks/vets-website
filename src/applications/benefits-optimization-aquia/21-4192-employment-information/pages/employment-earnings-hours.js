@@ -71,6 +71,17 @@ const getWeeklyHoursTitle = formData => {
   return `How many hours ${tense.does} ${veteranName} work each week?`;
 };
 
+const validateWeeklyHours = (errors, fieldData, fullData) => {
+  const dailyHours = fullData?.employmentEarningsHours?.dailyHours;
+  if (
+    dailyHours !== undefined &&
+    fieldData !== undefined &&
+    parseInt(fieldData, 10) < parseInt(dailyHours, 10)
+  ) {
+    errors.addError(`Weekly hours cannot be less than daily hours`);
+  }
+};
+
 /**
  * Generate page title
  * @param {Object} props - Props object with formData and formContext
@@ -95,6 +106,17 @@ const getPageTitle = ({ formData }) => {
   }
   return title;
 };
+
+const weeklyHoursUISchema = numberUI({
+  title: 'Weekly hours worked',
+  min: 0,
+  max: 168,
+  errorMessages: {
+    required: 'Weekly hours is required',
+    min: 'Weekly hours must be at least 0',
+    max: 'Weekly hours cannot exceed 168',
+  },
+});
 
 /**
  * uiSchema for Employment Earnings/Hours page
@@ -137,16 +159,13 @@ export const employmentEarningsHoursUiSchema = {
         max: 'Daily hours cannot exceed 24',
       },
     }),
-    weeklyHours: numberUI({
-      title: 'Weekly hours worked',
-      min: 0,
-      max: 168,
-      errorMessages: {
-        required: 'Weekly hours is required',
-        min: 'Weekly hours must be at least 0',
-        max: 'Weekly hours cannot exceed 168',
-      },
-    }),
+    weeklyHours: {
+      ...weeklyHoursUISchema,
+      'ui:validations': [
+        ...weeklyHoursUISchema['ui:validations'],
+        validateWeeklyHours,
+      ],
+    },
   },
   'ui:options': {
     updateUiSchema: (formData, fullData) => {
