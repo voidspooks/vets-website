@@ -306,15 +306,9 @@ export const entityAcceptsDigitalPoaRequests = (
       return false;
     }
 
-    return accreditedOrganizations.data.some(org => {
-      if (individualAcceptEnabled) {
-        return (
-          org?.attributes?.canAcceptDigitalPoaRequests === true &&
-          org?.attributes?.repsCanAcceptAnyRequest === true
-        );
-      }
-      return org?.attributes?.canAcceptDigitalPoaRequests === true;
-    });
+    return accreditedOrganizations.data.some(
+      org => org?.attributes?.canAcceptDigitalPoaRequests === true,
+    );
   }
   return false;
 };
@@ -324,19 +318,11 @@ export const filterOrganizations = formData => {
     formData['view:selectedRepresentative']?.attributes?.accreditedOrganizations
       ?.data;
   const submissionMethod = formData.representativeSubmissionMethod;
-  const individualAcceptEnabled =
-    formData?.['view:individualAcceptEnabled'] || false;
 
   if (submissionMethod === 'digital') {
-    return organizations?.filter(org => {
-      if (individualAcceptEnabled) {
-        return (
-          org.attributes?.canAcceptDigitalPoaRequests === true &&
-          org.attributes?.repsCanAcceptAnyRequest === true
-        );
-      }
-      return org.attributes?.canAcceptDigitalPoaRequests === true;
-    });
+    return organizations?.filter(
+      org => org.attributes?.canAcceptDigitalPoaRequests === true,
+    );
   }
 
   return organizations;
