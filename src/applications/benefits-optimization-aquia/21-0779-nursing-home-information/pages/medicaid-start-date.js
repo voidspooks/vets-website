@@ -8,6 +8,7 @@ import {
   currentOrPastDateUI,
   currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { isDateAfterPatientDOB } from '../utils';
 
 /**
  * uiSchema for Medicaid Start Date page
@@ -15,10 +16,13 @@ import {
  */
 export const medicaidStartDateUiSchema = {
   medicaidStartDate: {
-    medicaidStartDate: currentOrPastDateUI({
-      title: "When did the patient's Medicaid plan begin?",
-      dataDogHidden: true,
-    }),
+    medicaidStartDate: {
+      ...currentOrPastDateUI({
+        title: "When did the patient's Medicaid plan begin?",
+        dataDogHidden: true,
+      }),
+      'ui:validations': [isDateAfterPatientDOB],
+    },
   },
 };
 

@@ -8,6 +8,7 @@ import {
   currentOrPastDateUI,
   currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { isDateAfterPatientDOB } from '../utils';
 
 /**
  * uiSchema for Admission Date page
@@ -15,10 +16,13 @@ import {
  */
 export const admissionDateUiSchema = {
   admissionDate: {
-    admissionDate: currentOrPastDateUI({
-      title: 'When was the patient admitted to the nursing home?',
-      dataDogHidden: true,
-    }),
+    admissionDate: {
+      ...currentOrPastDateUI({
+        title: 'When was the patient admitted to the nursing home?',
+        dataDogHidden: true,
+      }),
+      'ui:validations': [isDateAfterPatientDOB],
+    },
   },
 };
 

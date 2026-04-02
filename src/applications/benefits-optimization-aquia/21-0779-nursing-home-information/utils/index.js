@@ -11,3 +11,4 @@ export {
 export { getPatientName } from './patientName';
 export { isMedicaidCovered } from './medicaidStatus';
 export { formatDate } from './dateFormat';
+export { isDateAfterPatientDOB } from './dateValidation';
