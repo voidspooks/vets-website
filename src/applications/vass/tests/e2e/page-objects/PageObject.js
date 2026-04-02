@@ -1,8 +1,4 @@
-import {
-  FLOW_TYPES,
-  VASS_PHONE_NUMBER,
-  SOLID_START_URL,
-} from '../../../utils/constants';
+import { FLOW_TYPES, VASS_PHONE_NUMBER } from '../../../utils/constants';
 
 export default class PageObject {
   rootUrl = '/service-member/benefits/solid-start/schedule';
@@ -91,8 +87,8 @@ export default class PageObject {
       this.assertHeading({
         name:
           flowType === FLOW_TYPES.SCHEDULE
-            ? 'Error Alert We can’t schedule your appointment right now'
-            : 'Error Alert We can’t cancel your appointment right now',
+            ? 'Error Alert We can’t schedule your call right now'
+            : 'Error Alert We can’t cancel your call right now',
         level: 2,
         exist: true,
       });
@@ -168,9 +164,10 @@ export default class PageObject {
       cy.findByTestId('solid-start-telephone')
         .should('exist')
         .and('have.attr', 'contact', VASS_PHONE_NUMBER);
-      cy.get(`a[href="${SOLID_START_URL}"]`)
-        .should('exist')
-        .and('contain.text', 'VA Solid Start');
+      cy.root().should(
+        'contain.text',
+        'We’re here Monday through Friday, 8:00 a.m. to 9:00 p.m. ET.',
+      );
 
       // Assert Veterans Crisis Line section content
       cy.root().should(
@@ -206,13 +203,17 @@ export default class PageObject {
    */
   assertMaintenanceWindow({ exist = true } = {}) {
     if (exist) {
-      cy.findByText(/This application is down for maintenance/i).should(
+      cy.get('va-alert[status="warning"]').should('be.visible');
+      cy.findByText(/We're working on this scheduling tool right now/i).should(
         'be.visible',
       );
+      cy.findByText(
+        /You can't access the VA Solid Start scheduling tool right now/i,
+      ).should('be.visible');
+      cy.findByText(/Check back soon/i).should('be.visible');
+      cy.get('va-telephone[contact="8008270611"]').should('exist');
     } else {
-      cy.findByText(/This application is down for maintenance/i).should(
-        'not.exist',
-      );
+      cy.get('va-alert[status="warning"]').should('not.exist');
     }
     return this;
   }

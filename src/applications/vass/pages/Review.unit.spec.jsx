@@ -67,7 +67,7 @@ describe('VASS Component: Review', () => {
     expect(getByTestId('back-link')).to.exist;
     expect(getByTestId('header')).to.exist;
     expect(getByTestId('header').textContent).to.contain(
-      'Review your VA Solid Start appointment details',
+      'Review your VA Solid Start call details',
     );
     expect(getByTestId('date-time-title')).to.exist;
     expect(getByTestId('date-time-edit-link')).to.exist;

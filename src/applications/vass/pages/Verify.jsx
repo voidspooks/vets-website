@@ -19,9 +19,9 @@ const getPageTitle = (cancellationFlow, verificationError) => {
     return 'We couldn’t verify your information';
   }
   if (cancellationFlow) {
-    return 'Cancel VA Solid Start appointment';
+    return 'Cancel VA Solid Start call';
   }
-  return 'Schedule an appointment with VA Solid Start';
+  return 'Schedule a call with VA Solid Start';
 };
 
 const Verify = () => {
@@ -86,7 +86,7 @@ const Verify = () => {
       setAuthError('error');
       if (attemptCount === 3 || isRateLimitExceededError(response.error)) {
         setVerificationError(
-          'We’re sorry. We couldn’t match your information to your records. Please call us for help.',
+          'We’re sorry. We couldn’t match your information to your records. Call us for help.',
         );
       }
       setAttemptCount(count => count + 1);
@@ -117,7 +117,7 @@ const Verify = () => {
         <div className="vads-u-margin-bottom--2">
           <va-alert data-testid="verify-error-alert" status="error">
             We’re sorry. We couldn’t find a record that matches that last name
-            or date of birth. Please try again.
+            or date of birth. Try again.
           </va-alert>
         </div>
       )}

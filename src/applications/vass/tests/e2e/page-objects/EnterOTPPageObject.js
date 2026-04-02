@@ -11,8 +11,8 @@ export class EnterOTPPageObject extends PageObject {
     this.assertUrl(URLS.ENTER_OTP);
 
     const headingText = cancellationFlow
-      ? 'Cancel VA Solid Start appointment'
-      : 'Schedule an appointment with VA Solid Start';
+      ? 'Cancel VA Solid Start call'
+      : 'Schedule a call with VA Solid Start';
 
     this.assertHeading({
       name: headingText,

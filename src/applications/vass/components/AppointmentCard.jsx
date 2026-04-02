@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import CardSection from './CardSection';
-import { VASS_PHONE_NUMBER } from '../utils/constants';
 /**
  * @typedef {import('../utils/appointments').Appointment} Appointment
  */
@@ -31,21 +30,6 @@ const AppointmentCard = ({
       >
         Phone appointment
       </h2>
-      <CardSection
-        data-testid="how-to-join-section"
-        heading="How to join"
-        customBodyElement={
-          <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
-            Your representative will call you from{' '}
-            <va-telephone
-              contact={VASS_PHONE_NUMBER}
-              data-testid="solid-start-telephone"
-            />
-            . If you have questions or need to reschedule, contact VA Solid
-            Start.
-          </p>
-        }
-      />
       {appointmentData?.startUtc && (
         <CardSection
           data-testid="when-section"
@@ -92,7 +76,7 @@ const AppointmentCard = ({
               data-testid="cancel-button"
               secondary
               onClick={handleCancelAppointment}
-              text="Cancel appointment"
+              text="Cancel call"
               uswds
             />
           </div>

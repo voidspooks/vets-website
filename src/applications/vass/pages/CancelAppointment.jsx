@@ -75,7 +75,7 @@ const CancelAppointment = () => {
         isAppointmentNotFoundError(appointmentError)
       }
       testID="cancel-appointment-page"
-      pageTitle="Would you like to cancel this appointment?"
+      pageTitle="Would you like to cancel this call?"
       loadingMessage={loadingMessage}
     >
       <div className="vads-u-margin-top--6">
@@ -86,7 +86,7 @@ const CancelAppointment = () => {
       </div>
       <VaButtonPair
         data-testid="cancel-confirm-button-pair"
-        leftButtonText="Yes, cancel appointment"
+        leftButtonText="Yes, cancel call"
         rightButtonText="No, don’t cancel"
         onPrimaryClick={onCancelAppointment}
         onSecondaryClick={onAbortCancelAppointment}

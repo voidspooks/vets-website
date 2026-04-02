@@ -5,8 +5,8 @@ import { FLOW_TYPES, VASS_PHONE_NUMBER } from '../utils/constants';
 const ErrorAlert = ({ flowType = FLOW_TYPES.SCHEDULE }) => {
   const header =
     flowType === FLOW_TYPES.CANCEL
-      ? 'We can’t cancel your appointment right now'
-      : 'We can’t schedule your appointment right now';
+      ? 'We can’t cancel your call right now'
+      : 'We can’t schedule your call right now';
   return (
     <va-alert
       status="error"
@@ -21,7 +21,8 @@ const ErrorAlert = ({ flowType = FLOW_TYPES.SCHEDULE }) => {
       </p>
       <p>
         If you need to schedule now, call us at{' '}
-        <va-telephone contact={VASS_PHONE_NUMBER} />.
+        <va-telephone contact={VASS_PHONE_NUMBER} />. We’re here Monday through
+        Friday, 8:00 a.m. to 9:00 p.m. ET.
       </p>
     </va-alert>
   );

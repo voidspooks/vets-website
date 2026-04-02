@@ -6,7 +6,7 @@ export default function Error() {
     <Wrapper
       testID="error-page"
       errorAlert
-      pageTitle="Schedule an appointment with VA Solid Start"
+      pageTitle="Schedule a call with VA Solid Start"
     />
   );
 }

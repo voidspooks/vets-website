@@ -12,7 +12,7 @@ export class AlreadyScheduledPageObject extends PageObject {
 
     // Page heading
     this.assertHeading({
-      name: 'You already scheduled your appointment with VA Solid Start',
+      name: 'You already scheduled your call with VA Solid Start',
       level: 1,
       exist: true,
     });
@@ -25,7 +25,7 @@ export class AlreadyScheduledPageObject extends PageObject {
 
     // Date/time message
     this.assertElement('already-scheduled-date-time', {
-      containsText: 'Your VA Solid Start appointment is scheduled for',
+      containsText: 'Your VA Solid Start call is scheduled for',
     });
 
     // Phone number message with contact info
@@ -41,7 +41,7 @@ export class AlreadyScheduledPageObject extends PageObject {
     // Cancel button
     cy.findByTestId('already-scheduled-cancel-button')
       .should('exist')
-      .and('have.attr', 'text', 'Cancel this appointment');
+      .and('have.attr', 'text', 'Cancel your VASS call');
 
     // Reschedule message with phone number
     this.assertElement('already-scheduled-reschedule-message', {
@@ -59,7 +59,7 @@ export class AlreadyScheduledPageObject extends PageObject {
   }
 
   /**
-   * Click the cancel appointment link
+   * Click the cancel call link
    * @returns {AlreadyScheduledPageObject}
    */
   clickCancelAppointment() {

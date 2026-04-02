@@ -2,7 +2,6 @@ import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 
-import { SOLID_START_URL } from '../utils/constants';
 import NeedHelp from './NeedHelp';
 
 describe('VASS Component: NeedHelp', () => {
@@ -15,8 +14,5 @@ describe('VASS Component: NeedHelp', () => {
     expect(screen.getByTestId('veterans-crisis-line-telephone')).to.exist;
     expect(screen.getByTestId('veterans-crisis-line-text-telephone')).to.exist;
     expect(screen.getByTestId('emergency-telephone')).to.exist;
-    expect(
-      screen.getByRole('link', { name: /va solid start/i }),
-    ).to.have.attribute('href', SOLID_START_URL);
   });
 });

@@ -71,7 +71,7 @@ describe('VASS Error Paths', () => {
 
     it('should display the maintenance window downtime banner', () => {
       VerifyPageObject.assertHeading({
-        name: 'Schedule an appointment with VA Solid Start',
+        name: 'Schedule a call with VA Solid Start',
         level: 1,
         exist: true,
       });
@@ -580,7 +580,7 @@ describe('VASS Error Paths', () => {
           DateTimeSelectionPageObject.submitWithoutSelection();
 
           DateTimeSelectionPageObject.assertValidationError(
-            'Please select a preferred date and time for your appointment.',
+            'Choose a preferred date and time for your appointment',
           );
           cy.injectAxeThenAxeCheck();
           saveScreenshot('vass_error_dateTime_emptyInput');
@@ -593,7 +593,7 @@ describe('VASS Error Paths', () => {
           DateTimeSelectionPageObject.clickContinue();
 
           DateTimeSelectionPageObject.assertValidationError(
-            'Please select a preferred date and time for your appointment.',
+            'Choose a preferred date and time for your appointment',
           );
           cy.injectAxeThenAxeCheck();
           saveScreenshot('vass_error_dateTime_missingTimeSelection');
@@ -606,7 +606,7 @@ describe('VASS Error Paths', () => {
 
           DateTimeSelectionPageObject.submitWithoutSelection();
           DateTimeSelectionPageObject.assertValidationError(
-            'Please select a preferred date and time for your appointment.',
+            'Choose a preferred date and time for your appointment',
           );
 
           DateTimeSelectionPageObject.selectFirstAvailableDateTimeAndContinue();
@@ -683,7 +683,7 @@ describe('VASS Error Paths', () => {
           TopicSelectionPageObject.submitWithoutSelection();
 
           TopicSelectionPageObject.assertValidationError(
-            'Please choose a topic for your appointment.',
+            'Choose a topic for your appointment',
           );
           cy.injectAxeThenAxeCheck();
           saveScreenshot('vass_error_topics_emptySelection');
@@ -699,7 +699,7 @@ describe('VASS Error Paths', () => {
           TopicSelectionPageObject.clickContinue();
 
           TopicSelectionPageObject.assertValidationError(
-            'Please choose a topic for your appointment.',
+            'Choose a topic for your appointment',
           );
           cy.injectAxeThenAxeCheck();
           saveScreenshot('vass_error_topics_unselectedAfterSelection');
@@ -710,7 +710,7 @@ describe('VASS Error Paths', () => {
         it('should clear the validation error and proceed to review', () => {
           TopicSelectionPageObject.submitWithoutSelection();
           TopicSelectionPageObject.assertValidationError(
-            'Please choose a topic for your appointment.',
+            'Choose a topic for your appointment',
           );
 
           TopicSelectionPageObject.selectTopicAndContinue(

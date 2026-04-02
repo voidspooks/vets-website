@@ -45,7 +45,7 @@ const AlreadyScheduled = () => {
   return (
     <Wrapper
       testID="already-scheduled-page"
-      pageTitle="You already scheduled your appointment with VA Solid Start"
+      pageTitle="You already scheduled your call with VA Solid Start"
       loading={isLoading}
       loadingMessage="Loading appointment details. This may take up to 30 seconds. Please don’t refresh the page."
       errorAlert={isServerError(appointmentError)}
@@ -55,17 +55,18 @@ const AlreadyScheduled = () => {
         data-dd-privacy="mask"
         data-testid="already-scheduled-date-time"
       >
-        Your VA Solid Start appointment is scheduled for {appointmentDate} at{' '}
+        Your VA Solid Start call is scheduled for {appointmentDate} at{' '}
         {appointmentTime}.
       </p>
       <p data-testid="already-scheduled-phone-number">
         Your VA Solid Start representative will call you at the time you
         requested from <va-telephone contact={VASS_PHONE_NUMBER} />. Save this
-        number to ensure you don’t miss the appointment.
+        number to ensure you don’t miss the call.
       </p>
+      <p>If you need to, you can cancel your call with VASS online.</p>
       <va-link-action
         href={`${URLS.CANCEL_APPOINTMENT}/${appointmentData?.appointmentId}`}
-        text="Cancel this appointment"
+        text="Cancel your VASS call"
         aria-labelledby="appointment-date-time"
         type="secondary"
         data-testid="already-scheduled-cancel-button"

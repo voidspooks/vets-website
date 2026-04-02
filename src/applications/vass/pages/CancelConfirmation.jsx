@@ -20,7 +20,7 @@ const CancelConfirmation = () => {
       testID="cancel-confirmation-page"
       disableBeforeUnload
       loading={isLoading}
-      pageTitle="You have canceled your appointment"
+      pageTitle="You have canceled your call"
       loadingMessage="Loading appointment details. This may take up to 30 seconds. Please don’t refresh the page."
       errorAlert={
         isServerError(appointmentError) ||

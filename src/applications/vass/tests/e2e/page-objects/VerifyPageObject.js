@@ -14,8 +14,8 @@ export class VerifyPageObject extends PageObject {
 
     // Assert correct heading based on flow
     const headingText = cancellationFlow
-      ? 'Cancel VA Solid Start appointment'
-      : 'Schedule an appointment with VA Solid Start';
+      ? 'Cancel VA Solid Start call'
+      : 'Schedule a call with VA Solid Start';
 
     this.assertHeading({
       name: headingText,
@@ -59,7 +59,7 @@ export class VerifyPageObject extends PageObject {
     this.assertElement('verify-error-alert', {
       exist,
       containsText: exist
-        ? 'We’re sorry. We couldn’t find a record that matches that last name or date of birth. Please try again.'
+        ? 'We’re sorry. We couldn’t find a record that matches that last name or date of birth. Try again.'
         : undefined,
     });
     return this;
@@ -76,7 +76,7 @@ export class VerifyPageObject extends PageObject {
       this.assertVerificationErrorAlert({
         headingText: 'We couldn’t verify your information',
         containsText:
-          'We’re sorry. We couldn’t match your information to your records. Please call us for help.',
+          'We’re sorry. We couldn’t match your information to your records. Call us for help.',
       });
     } else {
       this.assertVerificationErrorAlert({ exist: false });

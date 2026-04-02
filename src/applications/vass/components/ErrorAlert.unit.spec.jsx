@@ -21,26 +21,29 @@ describe('VASS Component: ErrorAlert', () => {
     const telephone = container.querySelector('va-telephone');
     expect(telephone).to.exist;
     expect(telephone.getAttribute('contact')).to.equal(VASS_PHONE_NUMBER);
+    expect(alert.textContent).to.contain(
+      'We’re here Monday through Friday, 8:00 a.m. to 9:00 p.m. ET.',
+    );
   });
 
   it('should display the schedule heading by default', () => {
     const { getByRole } = render(<ErrorAlert />);
 
     const heading = getByRole('heading', { level: 2 });
-    expect(heading.textContent).to.contain('schedule your appointment');
+    expect(heading.textContent).to.contain('schedule your call');
   });
 
   it('should display the schedule heading when flowType is SCHEDULE', () => {
     const { getByRole } = render(<ErrorAlert flowType={FLOW_TYPES.SCHEDULE} />);
 
     const heading = getByRole('heading', { level: 2 });
-    expect(heading.textContent).to.contain('schedule your appointment');
+    expect(heading.textContent).to.contain('schedule your call');
   });
 
   it('should display the cancel heading when flowType is CANCEL', () => {
     const { getByRole } = render(<ErrorAlert flowType={FLOW_TYPES.CANCEL} />);
 
     const heading = getByRole('heading', { level: 2 });
-    expect(heading.textContent).to.contain('cancel your appointment');
+    expect(heading.textContent).to.contain('cancel your call');
   });
 });

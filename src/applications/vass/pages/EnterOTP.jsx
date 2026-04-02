@@ -46,9 +46,9 @@ const getPageTitle = (cancellationFlow, hasError) => {
     return 'We couldn’t verify your information';
   }
   if (cancellationFlow) {
-    return 'Cancel VA Solid Start appointment';
+    return 'Cancel VA Solid Start call';
   }
-  return 'Schedule an appointment with VA Solid Start';
+  return 'Schedule a call with VA Solid Start';
 };
 
 const EnterOTP = () => {
@@ -163,7 +163,9 @@ const EnterOTP = () => {
             className="vads-u-margin-y--0 vads-u-margin-bottom--2"
             data-dd-privacy="mask"
           >
-            {`We emailed a one-time verification code (OTC) to ${obfuscatedEmail}. Enter the code here to complete your verification process and schedule your appointment.`}
+            {`We emailed a one-time verification code (OTC) to ${obfuscatedEmail}. Enter the code here to complete your verification process and ${
+              cancellationFlow ? 'cancel' : 'schedule'
+            } your call.`}
           </p>
           <p className="vads-u-margin-y--0">
             <strong>Note:</strong> If you don’t receive the OTC, request a new

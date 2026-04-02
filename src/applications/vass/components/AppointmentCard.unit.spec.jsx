@@ -27,11 +27,6 @@ describe('VASS Component: AppointmentCard', () => {
     expect(getByTestId('appointment-type').textContent).to.equal(
       'Phone appointment',
     );
-    expect(getByTestId('solid-start-telephone')).to.exist;
-    expect(
-      getByTestId('solid-start-telephone').getAttribute('contact'),
-    ).to.equal('8008270611');
-    expect(getByTestId('how-to-join-section')).to.exist;
     expect(getByTestId('when-section')).to.exist;
     expect(getByTestId('what-section')).to.exist;
     expect(getByTestId('who-section')).to.exist;

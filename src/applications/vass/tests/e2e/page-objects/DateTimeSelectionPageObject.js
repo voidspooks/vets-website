@@ -11,7 +11,7 @@ export class DateTimeSelectionPageObject extends PageObject {
     this.assertUrl(URLS.DATE_TIME);
 
     this.assertHeading({
-      name: 'When do you want to schedule your appointment?(*Required)',
+      name: 'When do you want to schedule your call?(*Required)',
       level: 1,
       exist: true,
     });
@@ -28,7 +28,7 @@ export class DateTimeSelectionPageObject extends PageObject {
     this.assertCalendarWidget();
     cy.findByText(/Appointment times are displayed in/i).should('exist');
     cy.findByText(
-      /You can schedule an appointment on a weekday within the next 2 weeks\./i,
+      /You can schedule an call on a weekday within the next 2 weeks\./i,
     ).should('exist');
 
     // Assert need help footer

@@ -14,7 +14,7 @@ export class CancelConfirmationPageObject extends PageObject {
 
     // Page heading
     this.assertHeading({
-      name: 'You have canceled your appointment',
+      name: 'You have canceled your call',
       level: 1,
       exist: true,
     });
@@ -37,16 +37,6 @@ export class CancelConfirmationPageObject extends PageObject {
     this.assertElement('appointment-card');
     this.assertElement('appointment-type', {
       containsText: 'Phone appointment',
-    });
-
-    // How to join section with phone number
-    this.assertElement('how-to-join-section', {
-      containsText: 'Your representative will call you from',
-    });
-    cy.findByTestId('how-to-join-section').within(() => {
-      cy.findByTestId('solid-start-telephone')
-        .should('exist')
-        .and('have.attr', 'contact', VASS_PHONE_NUMBER);
     });
 
     // When section

@@ -33,7 +33,7 @@ const Review = () => {
 
   return (
     <Wrapper
-      pageTitle="Review your VA Solid Start appointment details"
+      pageTitle="Review your VA Solid Start call details"
       testID="review-page"
       showBackLink
       errorAlert={
@@ -90,7 +90,7 @@ const Review = () => {
           big
           onClick={handleConfirmCall}
           loading={isLoading}
-          text="Confirm appointment"
+          text="Confirm call"
           data-testid="confirm-call-button"
           uswds
         />

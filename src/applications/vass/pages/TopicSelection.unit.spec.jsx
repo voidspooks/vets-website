@@ -137,7 +137,7 @@ describe('VASS Component: TopicSelection', () => {
     await waitFor(() => {
       expect(
         getByTestId('topic-checkbox-group').getAttribute('error'),
-      ).to.equal('Please choose a topic for your appointment.');
+      ).to.equal('Choose a topic for your appointment');
     });
   });
 
@@ -272,7 +272,7 @@ describe('VASS Component: TopicSelection', () => {
     await waitFor(() => {
       expect(
         getByTestId('topic-checkbox-group').getAttribute('error'),
-      ).to.equal('Please choose a topic for your appointment.');
+      ).to.equal('Choose a topic for your appointment');
     });
 
     const firstTopic = topics[0];

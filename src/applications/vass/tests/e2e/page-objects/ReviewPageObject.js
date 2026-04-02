@@ -11,7 +11,7 @@ export class ReviewPageObject extends PageObject {
     this.assertUrl(URLS.REVIEW);
 
     this.assertHeading({
-      name: 'Review your VA Solid Start appointment details',
+      name: 'Review your VA Solid Start call details',
       level: 1,
       exist: true,
     });
@@ -132,7 +132,7 @@ export class ReviewPageObject extends PageObject {
     cy.findByTestId('confirm-call-button').should(
       'have.attr',
       'text',
-      'Confirm appointment',
+      'Confirm call',
     );
     return this;
   }

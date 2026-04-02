@@ -1,5 +1,5 @@
 import React from 'react';
-import { VASS_PHONE_NUMBER, SOLID_START_URL } from '../utils/constants';
+import { VASS_PHONE_NUMBER } from '../utils/constants';
 
 export default function NeedHelp() {
   return (
@@ -22,8 +22,8 @@ export default function NeedHelp() {
             contact={VASS_PHONE_NUMBER}
             data-testid="solid-start-telephone"
           />
-          or visit <a href={SOLID_START_URL}>VA Solid Start</a> for more
-          information.
+          {'. '}
+          We’re here Monday through Friday, 8:00 a.m. to 9:00 p.m. ET.
         </span>
       </p>
       <p className="vads-u-margin-top--0">

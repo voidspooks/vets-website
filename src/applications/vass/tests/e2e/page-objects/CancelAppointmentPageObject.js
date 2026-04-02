@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { VASS_PHONE_NUMBER, URLS } from '../../../utils/constants';
+import { URLS } from '../../../utils/constants';
 
 export class CancelAppointmentPageObject extends PageObject {
   /**
@@ -14,7 +14,7 @@ export class CancelAppointmentPageObject extends PageObject {
 
     // Page heading
     this.assertHeading({
-      name: 'Would you like to cancel this appointment?',
+      name: 'Would you like to cancel this call?',
       level: 1,
       exist: true,
     });
@@ -29,16 +29,6 @@ export class CancelAppointmentPageObject extends PageObject {
     this.assertElement('appointment-card');
     this.assertElement('appointment-type', {
       containsText: 'Phone appointment',
-    });
-
-    // How to join section with phone number
-    this.assertElement('how-to-join-section', {
-      containsText: 'Your representative will call you from',
-    });
-    cy.findByTestId('how-to-join-section').within(() => {
-      cy.findByTestId('solid-start-telephone')
-        .should('exist')
-        .and('have.attr', 'contact', VASS_PHONE_NUMBER);
     });
 
     // When section

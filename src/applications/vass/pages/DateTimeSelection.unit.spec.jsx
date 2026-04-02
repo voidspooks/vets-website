@@ -77,8 +77,7 @@ describe('VASS Component: DateTimeSelection', () => {
 
     // Validation error should be displayed
     await waitFor(() => {
-      expect(screen.queryByText(/Please select a preferred date and time/)).to
-        .exist;
+      expect(screen.queryByText(/Choose a preferred date and time/)).to.exist;
     });
   });
 
@@ -99,8 +98,8 @@ describe('VASS Component: DateTimeSelection', () => {
 
     // No validation error should appear since the date was pre-selected
     await waitFor(() => {
-      expect(screen.queryByText(/Please select a preferred date and time/)).to
-        .not.exist;
+      expect(screen.queryByText(/Choose a preferred date and time/)).to.not
+        .exist;
     });
   });
 
@@ -116,8 +115,7 @@ describe('VASS Component: DateTimeSelection', () => {
 
     // Validation error should be displayed
     await waitFor(() => {
-      expect(screen.queryByText(/Please select a preferred date and time/)).to
-        .exist;
+      expect(screen.queryByText(/Choose a preferred date and time/)).to.exist;
     });
 
     // The calendar widget should be present for selecting a date
@@ -323,8 +321,8 @@ describe('VASS Component: DateTimeSelection', () => {
       await userEvent.click(continueButton);
 
       await waitFor(() => {
-        expect(screen.queryByText(/Please select a preferred date and time/)).to
-          .not.exist;
+        expect(screen.queryByText(/Choose a preferred date and time/)).to.not
+          .exist;
       });
     });
   });

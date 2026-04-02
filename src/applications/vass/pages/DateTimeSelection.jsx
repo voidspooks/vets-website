@@ -104,9 +104,7 @@ const DateTimeSelection = () => {
 
   const handleContinue = () => {
     if (!selectedSlot.dtStartUtc || !selectedSlot.dtEndUtc) {
-      handleSetError(
-        'Please select a preferred date and time for your appointment.',
-      );
+      handleSetError('Choose a preferred date and time for your appointment');
       return;
     }
     navigate('/topic-selection');
@@ -114,7 +112,7 @@ const DateTimeSelection = () => {
 
   return (
     <Wrapper
-      pageTitle="When do you want to schedule your appointment?"
+      pageTitle="When do you want to schedule your call?"
       classNames="vads-u-margin-top--4"
       testID="date-time-selection"
       required
@@ -131,8 +129,8 @@ const DateTimeSelection = () => {
           times are displayed in {getTimezoneDescByTimeZoneString(timezone)}.
         </p>
         <p>
-          <strong>Note:</strong> You can schedule an appointment on a weekday
-          within the next 2 weeks.
+          <strong>Note:</strong> You can schedule an call on a weekday within
+          the next 2 weeks.
         </p>
       </div>
 

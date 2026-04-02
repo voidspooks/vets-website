@@ -65,7 +65,7 @@ describe('VASS Page: CancelAppointment', () => {
 
     expect(screen.getByTestId('cancel-appointment-page')).to.exist;
     expect(screen.getByTestId('header').textContent).to.contain(
-      'Would you like to cancel this appointment?',
+      'Would you like to cancel this call?',
     );
     expect(screen.getByTestId('appointment-card')).to.exist;
     expect(screen.getByTestId('cancel-confirm-button-pair')).to.exist;
@@ -73,7 +73,7 @@ describe('VASS Page: CancelAppointment', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to cancel confirmation page when "Yes, cancel appointment" is clicked', async () => {
+    it('should navigate to cancel confirmation page when "Yes, cancel call" is clicked', async () => {
       setFetchJSONResponse(
         global.fetch.onCall(0),
         createAppointmentDetailsResponse({ appointmentId }),

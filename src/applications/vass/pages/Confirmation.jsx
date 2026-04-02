@@ -41,8 +41,8 @@ const Confirmation = () => {
       loadingMessage="Loading appointment details. This may take up to 30 seconds. Please don’t refresh the page."
       pageTitle={
         detailsCardOnly
-          ? 'Your appointment details'
-          : 'Your VA Solid Start appointment is scheduled'
+          ? 'Your VA Solid Start call details'
+          : 'Your VA Solid Start call is scheduled'
       }
       errorAlert={
         isServerError(appointmentError) ||
@@ -54,7 +54,7 @@ const Confirmation = () => {
           data-testid="confirmation-message"
           className="vads-u-margin-bottom--5"
         >
-          We’ve confirmed your appointment.
+          We’ve confirmed your call.
         </p>
       )}
       <AppointmentCard

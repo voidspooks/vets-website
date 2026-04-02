@@ -2,7 +2,7 @@ import React from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { fireEvent, waitFor } from '@testing-library/react';
-import { addDays, addMinutes, subDays, format } from 'date-fns';
+import { addDays, subDays, format } from 'date-fns';
 import { createServiceMap } from '@department-of-veterans-affairs/platform-monitoring';
 import { renderWithStoreAndRouterV6 as renderWithStoreAndRouter } from 'platform/testing/unit/react-testing-library-helpers';
 import { $ } from 'platform/forms-system/src/js/utilities/ui';
@@ -359,9 +359,8 @@ describe('VASS Component: Wrapper', () => {
         </Wrapper>,
         defaultRenderOptions,
       );
-      expect(
-        screen.getByText(/We can\u2019t schedule your appointment right now/),
-      ).to.exist;
+      expect(screen.getByText(/We can\u2019t schedule your call right now/)).to
+        .exist;
     });
 
     it('should render cancel error header when flowType is CANCEL', () => {
@@ -374,7 +373,7 @@ describe('VASS Component: Wrapper', () => {
       const errorAlert = screen.getByTestId('api-error-alert');
       expect(errorAlert).to.exist;
       expect(errorAlert.textContent).to.include(
-        'We can’t cancel your appointment right now',
+        'We can’t cancel your call right now',
       );
     });
 
@@ -446,54 +445,55 @@ describe('VASS Component: Wrapper', () => {
         },
       );
 
-      expect(screen.queryByText(/down for maintenance/)).to.exist;
+      expect(screen.getByTestId('vass-downtime-message')).to.exist;
       expect(screen.queryByTestId('child-content')).to.not.exist;
     });
 
-    it('should render maintenance approaching message', () => {
-      // startTime 30 minutes from now triggers "downtimeApproaching" status
-      const serviceMap = createServiceMap([
-        {
-          attributes: {
-            externalService: 'vass',
-            startTime: format(
-              addMinutes(new Date(), 30),
-              "yyyy-MM-dd'T'HH:mm:ss",
-            ),
-            endTime: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm:ss"),
-          },
-        },
-      ]);
+    // TODO: Add test for maintenance approaching message when it is implemented with content
+    // it('should render maintenance approaching message', () => {
+    //   // startTime 30 minutes from now triggers "downtimeApproaching" status
+    //   const serviceMap = createServiceMap([
+    //     {
+    //       attributes: {
+    //         externalService: 'vass',
+    //         startTime: format(
+    //           addMinutes(new Date(), 30),
+    //           "yyyy-MM-dd'T'HH:mm:ss",
+    //         ),
+    //         endTime: format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm:ss"),
+    //       },
+    //     },
+    //   ]);
 
-      const screen = renderWithStoreAndRouter(
-        <Wrapper>
-          <div data-testid="child-content">Child content</div>
-        </Wrapper>,
-        {
-          ...defaultRenderOptions,
-          initialState: {
-            ...defaultRenderOptions.initialState,
-            scheduledDowntime: {
-              globalDowntime: null,
-              isReady: true,
-              isPending: false,
-              serviceMap,
-              dismissedDowntimeWarnings: [],
-            },
-          },
-        },
-      );
+    //   const screen = renderWithStoreAndRouter(
+    //     <Wrapper>
+    //       <div data-testid="child-content">Child content</div>
+    //     </Wrapper>,
+    //     {
+    //       ...defaultRenderOptions,
+    //       initialState: {
+    //         ...defaultRenderOptions.initialState,
+    //         scheduledDowntime: {
+    //           globalDowntime: null,
+    //           isReady: true,
+    //           isPending: false,
+    //           serviceMap,
+    //           dismissedDowntimeWarnings: [],
+    //         },
+    //       },
+    //     },
+    //   );
 
-      // The modal element uses id attribute, not data-testid
-      const modal = screen.container.querySelector(
-        '#downtime-approaching-modal',
-      );
-      expect(modal).to.exist;
-      expect(screen.getByTestId('child-content')).to.exist;
-      expect(modal.getAttribute('secondary-button-text')).to.eq('Dismiss');
-    });
+    //   // The modal element uses id attribute, not data-testid
+    //   const modal = screen.container.querySelector(
+    //     '#downtime-approaching-modal',
+    //   );
+    //   expect(modal).to.exist;
+    //   expect(screen.getByTestId('child-content')).to.exist;
+    //   expect(modal.getAttribute('secondary-button-text')).to.eq('Dismiss');
+    // });
 
-    it('should render default maintenance message without description', () => {
+    it('should not render children when service is down', () => {
       const serviceMap = createServiceMap([
         {
           attributes: {
@@ -524,7 +524,7 @@ describe('VASS Component: Wrapper', () => {
         },
       );
 
-      expect(screen.queryByText(/down for maintenance/)).to.exist;
+      expect(screen.getByTestId('vass-downtime-message')).to.exist;
       expect(screen.queryByTestId('child-content')).to.not.exist;
     });
 
@@ -537,7 +537,7 @@ describe('VASS Component: Wrapper', () => {
       );
 
       expect(screen.getByTestId('child-content')).to.exist;
-      expect(screen.queryByText(/down for maintenance/)).to.not.exist;
+      expect(screen.queryByTestId('vass-downtime-message')).to.not.exist;
     });
   });
 });

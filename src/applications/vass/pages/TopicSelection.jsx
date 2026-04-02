@@ -46,7 +46,7 @@ const TopicSelection = () => {
 
   const handleContinue = () => {
     if (!selectedTopics?.length) {
-      handleSetError('Please choose a topic for your appointment.');
+      handleSetError('Choose a topic for your appointment');
       return;
     }
     navigate(URLS.REVIEW);
@@ -58,6 +58,7 @@ const TopicSelection = () => {
       showBackLink
       required
       loading={loading}
+      loadingMessage="Loading topics. This may take up to 30 seconds. Please don’t refresh the page."
       errorAlert={isServerError(topicsError)}
     >
       <va-checkbox-group

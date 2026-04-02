@@ -1,6 +1,4 @@
 const VASS_PHONE_NUMBER = '8008270611';
-const SOLID_START_URL = 'https://benefits.va.gov/benefits/solid-start.asp';
-
 const URLS = Object.freeze({
   VERIFY: '/',
   ENTER_OTP: '/enter-otp',
@@ -50,7 +48,7 @@ const AUTH_ERROR_CODES = Object.freeze({
   RATE_LIMIT_EXCEEDED: 'rate_limit_exceeded',
   INVALID_CREDENTIALS: 'invalid_credentials',
   MISSING_PARAMETER: 'missing_parameter',
-  MISSING_CONTACT_INFORMATION: 'missing_contact_information',
+  MISSING_CONTACT_INFORMATION: 'missing_contact_info',
 });
 
 // OTP Verification errors (POST /vass/v0/authenticate-otp)
@@ -90,7 +88,6 @@ const SERVER_ERROR_CODES = Object.freeze({
 
 module.exports = {
   VASS_PHONE_NUMBER,
-  SOLID_START_URL,
   URLS,
   FLOW_TYPES,
   AUTH_LEVELS,

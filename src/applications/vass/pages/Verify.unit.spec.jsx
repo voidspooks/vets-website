@@ -150,7 +150,7 @@ describe('VASS Component: Verify', () => {
       });
 
       expect(getByTestId('header').textContent).to.contain(
-        'Cancel VA Solid Start appointment',
+        'Cancel VA Solid Start call',
       );
     });
 

@@ -10,6 +10,7 @@ import { focusElement } from 'platform/utilities/ui';
 import NeedHelp from '../components/NeedHelp';
 import ErrorAlert from '../components/ErrorAlert';
 import VerificationErrorAlert from '../components/VerificationErrorAlert';
+import VassDowntimeMessage from '../components/VassDowntimeMessage';
 import { FLOW_TYPES } from '../utils/constants';
 
 // TODO: Maybe combine errorAlert and verificationError into a single prop
@@ -143,6 +144,11 @@ const Wrapper = props => {
           <DowntimeNotification
             appTitle="VA Solid Start"
             dependencies={[externalServices.vass]}
+            render={(downtimeProps, childContent) => (
+              <VassDowntimeMessage {...downtimeProps}>
+                {childContent}
+              </VassDowntimeMessage>
+            )}
           >
             {content}
           </DowntimeNotification>

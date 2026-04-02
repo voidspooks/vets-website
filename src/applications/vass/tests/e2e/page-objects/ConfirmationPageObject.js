@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { VASS_PHONE_NUMBER, URLS } from '../../../utils/constants';
+import { URLS } from '../../../utils/constants';
 
 export class ConfirmationPageObject extends PageObject {
   /**
@@ -15,7 +15,7 @@ export class ConfirmationPageObject extends PageObject {
 
     // Page heading
     this.assertHeading({
-      name: 'Your VA Solid Start appointment is scheduled',
+      name: 'Your VA Solid Start call is scheduled',
       level: 1,
       exist: true,
     });
@@ -26,23 +26,13 @@ export class ConfirmationPageObject extends PageObject {
     // Confirmation page structure
     this.assertElement('confirmation-page');
     this.assertElement('confirmation-message', {
-      containsText: 'We’ve confirmed your appointment',
+      containsText: 'We’ve confirmed your call',
     });
 
     // Appointment card
     this.assertElement('appointment-card');
     this.assertElement('appointment-type', {
       containsText: 'Phone appointment',
-    });
-
-    // How to join section with phone number
-    this.assertElement('how-to-join-section', {
-      containsText: `Your representative will call you from`,
-    });
-    cy.findByTestId('how-to-join-section').within(() => {
-      cy.findByTestId('solid-start-telephone')
-        .should('exist')
-        .and('have.attr', 'contact', VASS_PHONE_NUMBER);
     });
 
     // When section
@@ -85,7 +75,7 @@ export class ConfirmationPageObject extends PageObject {
 
     // Page heading
     this.assertHeading({
-      name: 'Your appointment details',
+      name: 'Your VA Solid Start call details',
       level: 1,
       exist: true,
     });
@@ -98,14 +88,6 @@ export class ConfirmationPageObject extends PageObject {
     this.assertElement('appointment-card');
     this.assertElement('appointment-type', {
       containsText: 'Phone appointment',
-    });
-
-    // How to join section with phone number
-    this.assertElement('how-to-join-section');
-    cy.findByTestId('appointment-card').within(() => {
-      cy.findByTestId('solid-start-telephone')
-        .should('exist')
-        .and('have.attr', 'contact', VASS_PHONE_NUMBER);
     });
 
     // When section
@@ -144,7 +126,7 @@ export class ConfirmationPageObject extends PageObject {
   }
 
   /**
-   * Click the cancel appointment button
+   * Click the cancel call button
    * @returns {ConfirmationPageObject}
    */
   clickCancelAppointment() {
