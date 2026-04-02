@@ -451,4 +451,92 @@ describe('useSearchSubmit hook', () => {
       expect(props.selectMobileMapPin.called).to.be.false;
     });
   });
+
+  describe('error flags persist after submit with invalid fields', () => {
+    it('should set both locationChanged and facilityTypeChanged in draftFormState when both are empty', () => {
+      const props = getDefaultProps();
+      props.draftFormState = {
+        ...getDefaultDraftFormState(),
+        searchString: '',
+        facilityType: null,
+      };
+      const { result } = renderHook(() => useSearchSubmit(props));
+
+      act(() => {
+        result.current.handleSubmit(createMockEvent());
+      });
+
+      expect(props.setDraftFormState.calledOnce).to.be.true;
+      const updater = props.setDraftFormState.firstCall.args[0];
+      const newState = updater(props.draftFormState);
+      expect(newState.locationChanged).to.be.true;
+      expect(newState.facilityTypeChanged).to.be.true;
+      expect(newState.isValid).to.be.false;
+    });
+
+    it('should set locationChanged and serviceTypeChanged in draftFormState for CC_PROVIDER with empty location and service type', () => {
+      const props = getDefaultProps();
+      props.draftFormState = {
+        ...getDefaultDraftFormState(),
+        facilityType: LocationType.CC_PROVIDER,
+        serviceType: null,
+        searchString: '',
+      };
+      props.selectedServiceType = null;
+      const { result } = renderHook(() => useSearchSubmit(props));
+
+      act(() => {
+        result.current.handleSubmit(createMockEvent());
+      });
+
+      expect(props.setDraftFormState.calledOnce).to.be.true;
+      const updater = props.setDraftFormState.firstCall.args[0];
+      const newState = updater(props.draftFormState);
+      expect(newState.locationChanged).to.be.true;
+      expect(newState.serviceTypeChanged).to.be.true;
+      expect(newState.facilityTypeChanged).to.be.false;
+      expect(newState.isValid).to.be.false;
+    });
+
+    it('should call setSubmitErrors with both errors when both fields are empty', () => {
+      const props = getDefaultProps();
+      props.draftFormState = {
+        ...getDefaultDraftFormState(),
+        searchString: '',
+        facilityType: null,
+      };
+      const { result } = renderHook(() => useSearchSubmit(props));
+
+      act(() => {
+        result.current.handleSubmit(createMockEvent());
+      });
+
+      expect(props.setSubmitErrors.calledOnce).to.be.true;
+      const errors = props.setSubmitErrors.firstCall.args[0];
+      expect(errors.locationChanged).to.be.true;
+      expect(errors.facilityTypeChanged).to.be.true;
+    });
+
+    it('should call setSubmitErrors with locationChanged and serviceTypeChanged for CC_PROVIDER with empty location and service type', () => {
+      const props = getDefaultProps();
+      props.draftFormState = {
+        ...getDefaultDraftFormState(),
+        facilityType: LocationType.CC_PROVIDER,
+        serviceType: null,
+        searchString: '',
+      };
+      props.selectedServiceType = null;
+      const { result } = renderHook(() => useSearchSubmit(props));
+
+      act(() => {
+        result.current.handleSubmit(createMockEvent());
+      });
+
+      expect(props.setSubmitErrors.calledOnce).to.be.true;
+      const errors = props.setSubmitErrors.firstCall.args[0];
+      expect(errors.locationChanged).to.be.true;
+      expect(errors.serviceTypeChanged).to.be.true;
+      expect(errors.facilityTypeChanged).to.be.undefined;
+    });
+  });
 });

@@ -22,7 +22,12 @@ function AddressAutosuggest({
   useProgressiveDisclosure,
 }) {
   const [inputValue, setInputValue] = useState(null);
-  const { locationChanged, searchString, geolocationInProgress } = currentQuery;
+  const {
+    locationChanged,
+    searchString,
+    geolocationInProgress,
+    submitErrorLocation,
+  } = currentQuery;
   const [selectedItem, setSelectedItem] = useState(null);
   const [options, setOptions] = useState([]);
   const [showAddressError, setShowAddressError] = useState(false);
@@ -135,15 +140,16 @@ function AddressAutosuggest({
 
   useEffect(
     () => {
-      // If the location is changed, and there is no value in searchString or inputValue then show the error
       setShowAddressError(
-        locationChanged &&
-          !geolocationInProgress &&
-          !searchString?.length &&
-          !inputValue, // not null but empty string (null on start)
+        submitErrorLocation ||
+          (locationChanged &&
+            !geolocationInProgress &&
+            !searchString?.length &&
+            !inputValue),
       );
     },
     [
+      submitErrorLocation,
       locationChanged,
       geolocationInProgress,
       searchString,
@@ -204,7 +210,12 @@ function AddressAutosuggest({
       onClearClick={inputClearClick}
       /* eslint-disable prettier/prettier */
 
-      inputError={<AddressInputError showError={showAddressError || false} errorId={errorID} />}
+      inputError={
+        <AddressInputError
+          showError={showAddressError || false}
+          errorId={errorID}
+        />
+      }
       /* eslint-enable prettier/prettier */
 
       showError={showAddressError}
@@ -237,6 +248,7 @@ AddressAutosuggest.propTypes = {
     geolocationInProgress: PropTypes.bool,
     locationChanged: PropTypes.bool,
     searchString: PropTypes.string,
+    submitErrorLocation: PropTypes.bool,
   }),
   geolocateUser: PropTypes.func,
   inputRef: PropTypes.object,

@@ -319,7 +319,7 @@ describe('search query reducer', () => {
       ...INITIAL_STATE,
       searchString: '',
       isValid: false,
-      locationChanged: true,
+      locationChanged: false,
     });
   });
 
@@ -414,7 +414,7 @@ describe('search query reducer', () => {
 
     expect(state.isValid).to.eql(false);
     expect(state.searchString).to.eql('');
-    expect(state.locationChanged).to.eql(true);
+    expect(state.locationChanged).to.eql(false);
     expect(state.facilityTypeChanged).to.be.undefined;
     expect(state.serviceTypeChanged).to.be.undefined;
   });

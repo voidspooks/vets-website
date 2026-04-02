@@ -64,6 +64,9 @@ const useSearchSubmit = ({
           ...prev,
           ...errors,
           isValid: false,
+          submitErrorLocation: !!errors.locationChanged,
+          submitErrorFacilityType: !!errors.facilityTypeChanged,
+          submitErrorServiceType: !!errors.serviceTypeChanged,
         }));
         setTimeout(() => {
           if (firstErrorFocus === 'facilityType') {
@@ -86,6 +89,12 @@ const useSearchSubmit = ({
       }
 
       clearSubmitErrors();
+      setDraftFormState(prev => ({
+        ...prev,
+        submitErrorLocation: false,
+        submitErrorFacilityType: false,
+        submitErrorServiceType: false,
+      }));
 
       lastQueryRef.current = {
         facilityType: draftFormState.facilityType,

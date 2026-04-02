@@ -17,11 +17,16 @@ const FacilityType = ({
   suppressPPMS,
   useProgressiveDisclosure,
 }) => {
-  const { facilityType, isValid, facilityTypeChanged } = currentQuery;
+  const {
+    facilityType,
+    facilityTypeChanged,
+    submitErrorFacilityType,
+  } = currentQuery;
   const locationOptions = suppressPPMS
     ? nonPPMSfacilityTypeOptions
     : facilityTypesOptions;
-  const showError = !isValid && facilityTypeChanged && !facilityType;
+  const showError =
+    submitErrorFacilityType || (facilityTypeChanged && !facilityType);
 
   const options = Object.keys(locationOptions).map(facility => (
     <option key={facility} value={facility}>

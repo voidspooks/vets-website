@@ -98,6 +98,9 @@ export const CurrentQueryTypes = PropTypes.shape({
   searchStarted: PropTypes.bool,
   searchString: PropTypes.string,
   serviceType: PropTypes.string,
+  submitErrorFacilityType: PropTypes.bool,
+  submitErrorLocation: PropTypes.bool,
+  submitErrorServiceType: PropTypes.bool,
   zoomLevel: PropTypes.number,
 });
 

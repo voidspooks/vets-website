@@ -26,7 +26,12 @@ const ServiceType = ({
   useProgressiveDisclosure,
   vamcAutoSuggestEnabled,
 }) => {
-  const { facilityType, serviceType, serviceTypeChanged } = currentQuery;
+  const {
+    facilityType,
+    serviceType,
+    serviceTypeChanged,
+    submitErrorServiceType,
+  } = currentQuery;
 
   const isHealthFacility = facilityType === LocationType.HEALTH;
   const serviceNotInStaticList = serviceType && !healthServices[serviceType];
@@ -54,7 +59,8 @@ const ServiceType = ({
     LocationType.EMERGENCY_CARE,
   ].includes(facilityType);
 
-  const showError = serviceTypeChanged && !disabled && !serviceType;
+  const showError =
+    submitErrorServiceType || (serviceTypeChanged && !disabled && !serviceType);
   const filteredHealthServices = healthServices;
 
   let services;

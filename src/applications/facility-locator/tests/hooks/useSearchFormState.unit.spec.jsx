@@ -270,7 +270,7 @@ describe('useSearchFormState hook', () => {
       expect(result.current.draftFormState.locationChanged).to.be.true;
     });
 
-    it('clears submit error when the corresponding field becomes valid', () => {
+    it('preserves submit error even after corresponding field gets valid value', () => {
       const currentQuery = {
         facilityType: null,
         serviceType: null,
@@ -279,24 +279,21 @@ describe('useSearchFormState hook', () => {
       };
       const { result } = renderHook(() => useSearchFormState(currentQuery));
 
-      // Simulate submit setting location error
       act(() => {
         result.current.setSubmitErrors({ locationChanged: true });
       });
 
-      // Fix the field by entering a location
       act(() => {
         result.current.updateDraftState({ searchString: 'Austin, TX' });
       });
 
       expect(result.current.draftFormState.locationChanged).to.be.true;
 
-      // Update without changing searchString — error no longer sticky
       act(() => {
         result.current.updateDraftState({ facilityType: 'health' });
       });
 
-      expect(result.current.draftFormState.locationChanged).to.be.false;
+      expect(result.current.draftFormState.locationChanged).to.be.true;
     });
 
     it('clears service type submit error when facility type changes', () => {
@@ -390,6 +387,284 @@ describe('useSearchFormState hook', () => {
       });
 
       expect(result.current.draftFormState.isValid).to.be.true;
+    });
+  });
+
+  describe('error persistence until revised and resubmitted (VACMS-20271)', () => {
+    it('all errors persist even after all fields get valid values', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({
+          locationChanged: true,
+          facilityTypeChanged: true,
+          serviceTypeChanged: true,
+        });
+      });
+
+      act(() => {
+        result.current.updateDraftState({
+          searchString: 'Austin, TX',
+          facilityType: 'provider',
+          serviceType: 'dentist',
+        });
+      });
+
+      act(() => {
+        result.current.updateDraftState(prev => ({ ...prev }));
+      });
+
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+      expect(result.current.draftFormState.facilityTypeChanged).to.be.true;
+      expect(result.current.draftFormState.serviceTypeChanged).to.be.true;
+    });
+
+    it('errors persist after fixing unrelated field', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({
+          locationChanged: true,
+          facilityTypeChanged: true,
+        });
+      });
+
+      act(() => {
+        result.current.updateDraftState({ facilityType: 'health' });
+      });
+
+      act(() => {
+        result.current.updateDraftState(prev => ({ ...prev }));
+      });
+
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+      expect(result.current.draftFormState.facilityTypeChanged).to.be.true;
+    });
+
+    it('errors only clear after clearSubmitErrors (resubmit)', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({ locationChanged: true });
+      });
+
+      act(() => {
+        result.current.updateDraftState({ facilityType: 'health' });
+      });
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+
+      act(() => {
+        result.current.updateDraftState({ searchString: 'Austin, TX' });
+      });
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+
+      act(() => {
+        result.current.clearSubmitErrors();
+      });
+
+      act(() => {
+        result.current.updateDraftState(prev => ({ ...prev }));
+      });
+
+      expect(result.current.draftFormState.locationChanged).to.be.false;
+    });
+
+    it('exposes submitError flags for component-level persistent display', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({
+          locationChanged: true,
+          facilityTypeChanged: true,
+        });
+      });
+
+      act(() => {
+        result.current.updateDraftState({
+          searchString: 'Austin, TX',
+          facilityType: 'health',
+        });
+      });
+
+      expect(result.current.draftFormState.submitErrorLocation).to.be.true;
+      expect(result.current.draftFormState.submitErrorFacilityType).to.be.true;
+      expect(result.current.draftFormState.submitErrorServiceType).to.be.false;
+    });
+
+    it('submitError flags clear after clearSubmitErrors', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({ locationChanged: true });
+      });
+
+      act(() => {
+        result.current.updateDraftState(prev => ({ ...prev }));
+      });
+      expect(result.current.draftFormState.submitErrorLocation).to.be.true;
+
+      act(() => {
+        result.current.clearSubmitErrors();
+      });
+
+      act(() => {
+        result.current.updateDraftState(prev => ({ ...prev }));
+      });
+
+      expect(result.current.draftFormState.submitErrorLocation).to.be.false;
+    });
+
+    it('cross-field independence — location error survives facilityType change', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({ locationChanged: true });
+      });
+
+      act(() => {
+        result.current.updateDraftState({ facilityType: 'health' });
+      });
+
+      expect(result.current.draftFormState.locationChanged).to.be.true;
+    });
+
+    it('submitErrorFacilityType persists through handleFacilityTypeChange', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({
+          locationChanged: true,
+          facilityTypeChanged: true,
+        });
+      });
+
+      // Simulate what the submit handler does — set flags directly
+      act(() => {
+        result.current.setDraftFormState(prev => ({
+          ...prev,
+          locationChanged: true,
+          facilityTypeChanged: true,
+          isValid: false,
+          submitErrorLocation: true,
+          submitErrorFacilityType: true,
+          submitErrorServiceType: false,
+        }));
+      });
+
+      expect(result.current.draftFormState.submitErrorFacilityType).to.be.true;
+
+      // User selects facility type via the real handler
+      act(() => {
+        result.current.handleFacilityTypeChange({
+          target: { value: 'health' },
+        });
+      });
+
+      expect(result.current.draftFormState.submitErrorFacilityType).to.be.true;
+      expect(result.current.draftFormState.submitErrorLocation).to.be.true;
+      expect(result.current.draftFormState.facilityType).to.equal('health');
+    });
+
+    it('submitErrorLocation persists after typing in location field', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({
+          locationChanged: true,
+          facilityTypeChanged: true,
+        });
+      });
+
+      act(() => {
+        result.current.setDraftFormState(prev => ({
+          ...prev,
+          locationChanged: true,
+          facilityTypeChanged: true,
+          isValid: false,
+          submitErrorLocation: true,
+          submitErrorFacilityType: true,
+          submitErrorServiceType: false,
+        }));
+      });
+
+      // User types a location
+      act(() => {
+        result.current.updateDraftState({ searchString: 'Austin, TX' });
+      });
+
+      expect(result.current.draftFormState.submitErrorLocation).to.be.true;
+      expect(result.current.draftFormState.submitErrorFacilityType).to.be.true;
+    });
+
+    it('all submitError flags clear on valid resubmit', () => {
+      const { result } = renderHook(() =>
+        useSearchFormState(getDefaultQuery()),
+      );
+
+      act(() => {
+        result.current.setSubmitErrors({
+          locationChanged: true,
+          facilityTypeChanged: true,
+        });
+      });
+
+      act(() => {
+        result.current.setDraftFormState(prev => ({
+          ...prev,
+          locationChanged: true,
+          facilityTypeChanged: true,
+          isValid: false,
+          submitErrorLocation: true,
+          submitErrorFacilityType: true,
+          submitErrorServiceType: false,
+        }));
+      });
+
+      // User fixes fields
+      act(() => {
+        result.current.updateDraftState({
+          searchString: 'Austin, TX',
+          facilityType: 'health',
+        });
+      });
+
+      // Flags still persist
+      expect(result.current.draftFormState.submitErrorLocation).to.be.true;
+      expect(result.current.draftFormState.submitErrorFacilityType).to.be.true;
+
+      // Simulate valid resubmit
+      act(() => {
+        result.current.clearSubmitErrors();
+      });
+
+      act(() => {
+        result.current.setDraftFormState(prev => ({
+          ...prev,
+          submitErrorLocation: false,
+          submitErrorFacilityType: false,
+          submitErrorServiceType: false,
+        }));
+      });
+
+      expect(result.current.draftFormState.submitErrorLocation).to.be.false;
+      expect(result.current.draftFormState.submitErrorFacilityType).to.be.false;
+      expect(result.current.draftFormState.submitErrorServiceType).to.be.false;
     });
   });
 });

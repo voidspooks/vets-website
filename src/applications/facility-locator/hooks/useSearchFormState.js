@@ -30,34 +30,38 @@ const useSearchFormState = currentQuery => {
       const flags = validateForm(prev, updates);
 
       const submitErrors = submitErrorsRef.current;
-      if (submitErrors.locationChanged && !updates.searchString?.length) {
+      if (submitErrors.locationChanged) {
         flags.locationChanged = true;
       }
-      if (submitErrors.facilityTypeChanged && !updates.facilityType?.length) {
+      if (submitErrors.facilityTypeChanged) {
         flags.facilityTypeChanged = true;
       }
       if (
         submitErrors.serviceTypeChanged &&
-        updates.facilityType === LocationType.CC_PROVIDER &&
-        !updates.serviceType?.length
+        updates.facilityType === LocationType.CC_PROVIDER
       ) {
         flags.serviceTypeChanged = true;
       }
 
-      // Safe to mutate ref inside updater: deletes are idempotent, so
-      // React StrictMode double-invocation in dev causes no issues.
-      if (updates.searchString?.length > 0) delete submitErrors.locationChanged;
-      if (updates.facilityType?.length > 0)
-        delete submitErrors.facilityTypeChanged;
-      if (updates.serviceType?.length > 0)
-        delete submitErrors.serviceTypeChanged;
-      // Clear service type error when facility type changes — the error
-      // should only reappear on the next explicit submit.
-      if (prev.facilityType !== updates.facilityType) {
+      if (
+        prev.facilityType !== updates.facilityType &&
+        prev.facilityType === LocationType.CC_PROVIDER
+      ) {
         delete submitErrors.serviceTypeChanged;
       }
 
-      return { ...updates, ...flags };
+      // Expose submit error state directly so components can show
+      // persistent errors until resubmit (VACMS-20271).
+      const submitErrorFlags = {
+        submitErrorLocation: !!submitErrors.locationChanged,
+        submitErrorFacilityType: !!submitErrors.facilityTypeChanged,
+        submitErrorServiceType: !!(
+          submitErrors.serviceTypeChanged &&
+          updates.facilityType === LocationType.CC_PROVIDER
+        ),
+      };
+
+      return { ...updates, ...flags, ...submitErrorFlags };
     });
   }, []);
 

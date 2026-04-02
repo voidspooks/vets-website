@@ -226,7 +226,7 @@ export const SearchQueryReducer = (state = INITIAL_STATE, action) => {
         ...state,
         searchString: '',
         isValid: false,
-        locationChanged: true,
+        locationChanged: false,
       };
     default:
       return state;
