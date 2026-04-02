@@ -5,14 +5,11 @@ export class ChooseDateAndTimePageObject extends PageObject {
    * Validates that we're on the Choose Date and Time page
    */
   validate() {
-    // Check for the header
     cy.findByRole('heading', {
       level: 1,
-      name: 'Schedule an appointment with your provider',
+      name: 'What date and time do you want for this appointment?',
     }).should('exist');
 
-    // Check for other key elements
-    cy.findByText(/Choose a date and time/).should('exist');
     cy.findByTestId('cal-widget').should('exist');
 
     return this;
@@ -22,13 +19,10 @@ export class ChooseDateAndTimePageObject extends PageObject {
    * Validates provider information is displayed correctly
    */
   assertProviderInfo() {
-    // Verify provider information
-    cy.findByText(/You or your VA facility chose this/).should('exist');
-    cy.findByText(/Dr. Moreen S. Rafa/).should('exist');
-    cy.findByText(/Meridian Health/).should('exist');
     cy.findByText(
-      /Appointment times are displayed in (Eastern time \(ET\))/,
+      /Scheduling with CC Provider Name at CC Provider Organization Name/,
     ).should('exist');
+    cy.findByText(/Times are displayed in/).should('exist');
     return this;
   }
 
@@ -153,7 +147,7 @@ export class ChooseDateAndTimePageObject extends PageObject {
   _validateHeader() {
     cy.findByRole('heading', {
       level: 1,
-      name: 'Schedule an appointment with your provider',
+      name: 'What date and time do you want for this appointment?',
     }).should('exist');
     return this;
   }

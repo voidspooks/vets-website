@@ -11,19 +11,32 @@ import {
   getSelectedSlotStartTime,
 } from '../redux/selectors';
 import { getSlotByDate } from '../utils/provider';
-import { getDriveTimeString } from '../../utils/appointment';
 import { getTimezoneDescByTimeZoneString } from '../../utils/timezone';
 import { getReferralSlotKey } from '../utils/referrals';
-import { titleCase } from '../../utils/formatters';
-import ProviderAddress from './ProviderAddress';
 import { scrollAndFocus } from '../../utils/scrollAndFocus';
 import FindCommunityCareOfficeLink from './FindCCFacilityLink';
 import { getIsInPilotReferralStation } from '../utils/pilot';
+import { vaClinicInfo, ccProviderInfo } from '../utils/mocks';
 
 export const DateAndTimeContent = props => {
   const { currentReferral, draftAppointmentInfo, appointmentsByMonth } = props;
   const dispatch = useDispatch();
   const history = useHistory();
+  // TODO: Add a selector to determine if the appointment is a VA clinic appointment or CC
+  const isVAClinicAppointment = false;
+
+  const appointmentInfo = isVAClinicAppointment ? vaClinicInfo : ccProviderInfo;
+  const schedulingName = isVAClinicAppointment
+    ? vaClinicInfo.clinicName
+    : ccProviderInfo.providerName;
+  const schedulingLocation = isVAClinicAppointment
+    ? vaClinicInfo.vaFacilityName
+    : ccProviderInfo.providerOrganizationName;
+  const {
+    name: facilityName,
+    phone: facilityPhone,
+    tty: facilityTty,
+  } = appointmentInfo.facilityDetails;
 
   const isStationIdValid = getIsInPilotReferralStation(currentReferral);
 
@@ -116,17 +129,6 @@ export const DateAndTimeContent = props => {
 
   const noSlotsAvailable = !draftAppointmentInfo.attributes.slots.length;
 
-  // Get the drive time string
-  const driveTimeInSeconds =
-    draftAppointmentInfo?.attributes?.drivetime?.destination
-      ?.driveTimeInSecondsWithoutTraffic;
-  const driveTimeDistance =
-    draftAppointmentInfo?.attributes?.drivetime?.destination?.distanceInMiles;
-  const driveTimeString = getDriveTimeString(
-    driveTimeInSeconds,
-    driveTimeDistance,
-  );
-
   const disabledMessage = (
     <va-loading-indicator
       data-testid="loadingIndicator"
@@ -205,6 +207,29 @@ export const DateAndTimeContent = props => {
           onSubmit={onSubmit}
           loadingText="Page change in progress"
         />
+        <div
+          className="vads-u-margin-top--4"
+          data-testid="different-time-section"
+        >
+          <h5 className="vads-u-margin--0 vads-u-margin-bottom--1">
+            Need a different time?
+          </h5>
+          <p className="vads-u-margin--0">
+            Contact your facility, or find a new facility.
+          </p>
+          <p className="vads-u-margin--0">{facilityName}</p>
+          <p className="vads-u-margin--0">Main Phone: {facilityPhone}</p>
+          <p className="vads-u-margin--0">(TTY: {facilityTty})</p>
+          <p className="vads-u-margin-top--4 vads-u-margin-bottom--0">
+            Or find a different VA location.
+          </p>
+          <va-link
+            href="/find-locations"
+            text="Facility locator"
+            className="vads-u-display--block"
+            data-testid="facility-locator-link"
+          />
+        </div>
       </>
     );
   };
@@ -212,40 +237,13 @@ export const DateAndTimeContent = props => {
   return (
     <>
       <div>
-        <p className="vads-u-font-weight--bold vads-u-margin--0">
-          <span data-dd-privacy="mask">{currentReferral.provider.name}</span>
+        <p className="vads-u-margin--0" data-dd-privacy="mask">
+          {`Scheduling with ${schedulingName}${
+            isVAClinicAppointment ? ' clinic' : ''
+          } at ${schedulingLocation}.`}
+          <br />
+          {`Times are displayed in ${timezoneDescription}`}
         </p>
-        <p className="vads-u-margin-top--0">
-          <span data-dd-privacy="mask">
-            {titleCase(currentReferral.categoryOfCare)}
-          </span>
-        </p>
-        <p className="vads-u-margin--0 vads-u-font-weight--bold">
-          <span data-dd-privacy="mask">
-            {draftAppointmentInfo.attributes.provider.providerOrganization.name}
-          </span>
-        </p>
-        <ProviderAddress
-          address={draftAppointmentInfo.attributes.provider.location.address}
-          showDirections
-          directionsName={
-            draftAppointmentInfo.attributes.provider.providerOrganization.name
-          }
-          phone={currentReferral.provider.phone}
-        />
-        {driveTimeString && <p>{driveTimeString}</p>}
-        <p>
-          <strong>Note:</strong> You or your VA facility chose this provider for
-          this referral. If you want a different provider, you’ll need to
-          request a new referral.
-        </p>
-        <h2>Choose a date and time</h2>
-        {!noSlotsAvailable && (
-          <p>
-            Select an available date and time from the calendar below.
-            Appointment times are displayed in {`${timezoneDescription}`}.
-          </p>
-        )}
       </div>
       {getContent()}
     </>

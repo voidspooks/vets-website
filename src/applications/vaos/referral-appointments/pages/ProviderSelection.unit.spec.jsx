@@ -57,10 +57,11 @@ describe('VAOS Page: ProviderSelection', () => {
     expect(screen.getByTestId('show-more-providers-button')).to.exist;
   });
 
-  it('should render the "Need a different time?" section', () => {
+  it('should render the "different provider" section with contact info and community care link', () => {
     const screen = renderWithStoreAndRouter(<ProviderSelection />, {
       initialState,
     });
-    expect(screen.getByText('Need a different time?')).to.exist;
+    expect(screen.getByTestId('different-provider-section')).to.exist;
+    expect(screen.getByTestId('referral-community-care-office')).to.exist;
   });
 });

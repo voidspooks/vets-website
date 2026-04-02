@@ -2,6 +2,7 @@ import React from 'react';
 import ReferralLayout from '../components/ReferralLayout';
 import ProviderSelectionCard from '../components/ProviderSelectionCard';
 import { mockProviderDetails } from '../utils/mocks';
+import FindCCFacilityLink from '../components/FindCCFacilityLink';
 
 export default function ProviderSelection() {
   const providers = Array(5).fill(mockProviderDetails);
@@ -38,26 +39,26 @@ export default function ProviderSelection() {
             text={`Show ${moreProviders} more providers`}
           />
         )}
-        <div className="vads-u-margin-top--4">
-          <h5 className="vads-u-margin--0 vads-u-margin-bottom--1">
-            Need a different time?
-          </h5>
+        <div
+          className="vads-u-margin-top--4"
+          data-testid="different-provider-section"
+        >
+          <h3 className="vads-u-margin--0 vads-u-margin-bottom--1">
+            If you want to schedule with a different provider
+          </h3>
           <p className="vads-u-margin--0">
-            Contact your facility, or find a new facility.
+            For appointments at a VA health facility, call us at{' '}
+            {facilityDetails.phone} (TTY: {facilityDetails.tty}
+            ).
           </p>
-          <p className="vads-u-margin--0">{facilityDetails.name}</p>
           <p className="vads-u-margin--0">
-            Main Phone: {facilityDetails.phone}
+            We’re here Monday through Friday, 8:00 a.m. to 8:00 p.m. ET.
           </p>
-          <p className="vads-u-margin--0">(TTY: {facilityDetails.tty})</p>
           <p className="vads-u-margin-top--4 vads-u-margin-bottom--0">
-            Or find a different VA location.
+            For appointments at a community care facility, contact your
+            community care provider.
           </p>
-          <va-link
-            href="/find-locations"
-            text="Facility locator"
-            className="vads-u-display--block"
-          />
+          <FindCCFacilityLink />
         </div>
       </div>
     </ReferralLayout>

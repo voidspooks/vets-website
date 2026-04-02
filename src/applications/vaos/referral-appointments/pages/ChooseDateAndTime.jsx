@@ -33,6 +33,8 @@ export const ChooseDateAndTime = props => {
   );
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const scheduleHeader = 'What date and time do you want for this appointment?';
+
   useEffect(
     () => {
       if (draftAppointmentInfo?.attributes) {
@@ -79,7 +81,7 @@ export const ChooseDateAndTime = props => {
         data-testid="loading"
         loadingMessage="Loading available appointment times..."
         hasEyebrow
-        heading="Schedule an appointment with your provider"
+        heading={scheduleHeader}
       />
     );
   }
@@ -88,7 +90,7 @@ export const ChooseDateAndTime = props => {
     <ReferralLayout
       hasEyebrow
       apiFailure={failed || isDraftError}
-      heading="Schedule an appointment with your provider"
+      heading={scheduleHeader}
     >
       <DateAndTimeContent
         draftAppointmentInfo={draftAppointmentInfo}

@@ -186,6 +186,21 @@ describe('VAOS Component: DateAndTimeContent', () => {
     });
   });
 
+  it('should render the "Need a different time?" section when slots are available', () => {
+    const screen = renderWithStoreAndRouter(
+      <DateAndTimeContent
+        currentReferral={referral}
+        draftAppointmentInfo={draftAppointmentInfo}
+        appointmentsByMonth={appointmentsByMonth}
+      />,
+      {
+        initialState,
+      },
+    );
+    expect(screen.getByTestId('different-time-section')).to.exist;
+    expect(screen.getByTestId('facility-locator-link')).to.exist;
+  });
+
   it('should display provider timezone when it differs from referral timezone', async () => {
     // Create draft appointment info with Pacific timezone provider
     const pacificTimezoneDraftAppointmentInfo = createDraftAppointmentInfo();
@@ -209,11 +224,8 @@ describe('VAOS Component: DateAndTimeContent', () => {
     );
 
     // Should display Pacific time zone information for the provider
-    expect(
-      screen.getByText(
-        /Appointment times are displayed in Pacific time \(PT\)/,
-      ),
-    ).to.exist;
+    expect(screen.getByText(/Times are displayed in Pacific time \(PT\)/)).to
+      .exist;
     expect(screen.getByTestId('cal-widget')).to.exist;
   });
 });
