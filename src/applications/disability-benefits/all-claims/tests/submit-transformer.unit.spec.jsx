@@ -451,4 +451,49 @@ describe('SHA upload attachment transformation', () => {
       'separationHealthAssessmentUploads',
     );
   });
+
+  it('preserves BDD SHA uploads in attachments when enforcement is disabled', () => {
+    const form = {
+      data: {
+        ...minimalBddData.data,
+        serviceInformation: {
+          ...minimalBddData.data.serviceInformation,
+          servicePeriods: [
+            {
+              serviceBranch: 'Air Force',
+              dateRange: {
+                from: '2001-03-21',
+                to: daysFromToday(90),
+              },
+            },
+          ],
+        },
+        disability526NewBddShaEnforcementWorkflowEnabled: false,
+        'view:hasSeparationHealthAssessment': true,
+        separationHealthAssessmentUploads: [
+          {
+            name: 'sha-part-a.pdf',
+            confirmationCode: 'sha-code-123',
+            attachmentId: 'L702',
+            size: 1024,
+            type: 'application/pdf',
+          },
+        ],
+      },
+    };
+
+    const result = JSON.parse(transform(formConfig, form));
+
+    expect(result.form526.attachments)
+      .to.be.an('array')
+      .with.lengthOf(1);
+    expect(result.form526.attachments[0]).to.include({
+      name: 'sha-part-a.pdf',
+      confirmationCode: 'sha-code-123',
+      attachmentId: 'L702',
+    });
+    expect(result.form526).to.not.have.property(
+      'separationHealthAssessmentUploads',
+    );
+  });
 });

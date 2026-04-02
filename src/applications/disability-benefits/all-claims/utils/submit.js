@@ -13,6 +13,7 @@ import {
   disabilityIsSelected,
   hasGuardOrReservePeriod,
   sippableId,
+  isBDD,
 } from './index';
 
 import { normalizeAddressLine } from './contactInformationHelpers';
@@ -943,7 +944,23 @@ export const flattenAttachments = formData => {
 // Flatten all attachment pages into attachments ARRAY
 export const addFileAttachments = formData => {
   const clonedData = flattenAttachments(formData);
-  let attachments = [];
+
+  /**
+   * TODO: Once `disability526NewBddShaEnforcementWorkflowEnabled` is fully
+   * rolled out, revert this line back to:
+   *
+   * ```
+   * let attachments = [];
+   * ```
+   *
+   * This will express that `attachments` is not some appropriate pre-submit
+   * form data property that maps directly to form UX.
+   *
+   * We only want this tweak temporarily in order to carry out the edge case
+   * handling of `salvageOutmodedBddSha` while rolling out the BDD SHA feature.
+   */
+  let attachments = clonedData.attachments || [];
+
   ATTACHMENT_KEYS.forEach(key => {
     const documentArr = _.get(key, clonedData, []);
     attachments = [...attachments, ...documentArr];
@@ -975,4 +992,36 @@ export const checkValidations = (
     validation(errors, data, fullData, null, null, index, fullData),
   );
   return errors.errorMessages;
+};
+
+/**
+ * TODO: Remove once `disability526NewBddShaEnforcementWorkflowEnabled` is fully
+ * rolled out.
+ */
+export const salvageOutmodedBddSha = formData => {
+  const uploads = formData.separationHealthAssessmentUploads || [];
+
+  /**
+   * This boolean expression is intentionally duplicative of `isUploadingBddSha`:
+   * - *minus* any connective with the BDD SHA feature toggle value
+   * - *plus* a conjunction with the presence of any uploads
+   */
+  const isBBddShaUploaded =
+    _.get('view:hasSeparationHealthAssessment', formData, false) &&
+    isBDD(formData) &&
+    uploads.length > 0;
+
+  if (
+    // If the BDD SHA is uploaded,
+    isBBddShaUploaded &&
+    // but it is "outmoded",
+    !formData.disability526NewBddShaEnforcementWorkflowEnabled
+  ) {
+    // then salvage it!
+    const clonedData = _.cloneDeep(formData);
+    clonedData.attachments = [...(clonedData.attachments || []), ...uploads];
+    return clonedData;
+  }
+
+  return formData;
 };

@@ -31,6 +31,7 @@ import {
   addFileAttachments,
   normalizeIncreases,
   sanitizeNewDisabilities,
+  salvageOutmodedBddSha,
 } from './utils/submit';
 import { purgeToxicExposureData } from './utils/on-submit';
 
@@ -338,6 +339,7 @@ export function transform(formConfig, form) {
 
   // Apply the transformations
   const transformedData = [
+    salvageOutmodedBddSha, // Must run before filterEmptyObjects; TODO: remove.
     filterEmptyObjects,
     addBackRatedDisabilities, // Must run after filterEmptyObjects
     addBackAndTransformSeparationLocation, // Must run after filterEmptyObjects
