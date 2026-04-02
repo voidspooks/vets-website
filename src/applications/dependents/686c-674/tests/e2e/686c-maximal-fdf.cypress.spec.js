@@ -10,10 +10,8 @@ import { setupCypress } from './cypress.helpers';
 Cypress.config('waitForAnimations', false);
 
 /**
- * FDF-specific page hooks — identical form-fill logic to the shared hooks
- * but WITHOUT cy.injectAxeThenAxeCheck() on every page. Axe accessibility
- * coverage is handled by the dedicated accessibility test suite; this spec
- * validates that every conditional FDF field is reachable and submittable.
+ * FDF-specific page hooks — identical form-fill logic to the shared hooks.
+ * This spec validates that every conditional FDF field is reachable and submittable.
  *
  * Marriage history hooks are omitted because the FDF fixture uses empty
  * arrays for spouseMarriageHistory / veteranMarriageHistory to keep total
@@ -363,10 +361,6 @@ const testConfig = createTestConfig(
     fixtures: { data: path.join(__dirname, 'fixtures') },
     setupPerTest: () => setupCypress({ useFdfMocks: true }),
     pageHooks: fdfPageHooks,
-
-    // Performance: skip form-tester's built-in axe checks (2 per page).
-    // Accessibility is validated by the dedicated a11y test suite.
-    _13647Exception: true,
   },
 
   manifest,

@@ -1,0 +1,48 @@
+{
+  "vaDependentsNetWorthAndPension": false,
+  "vaDependentsDuplicateModals": false,
+  "useV2": true,
+  "veteranInformation": {
+    "fullName": { "first": "Pauline", "middle": "E", "last": "Foster" },
+    "ssn": "796330625",
+    "birthDate": "1976-06-09",
+    "ssnLastFour": "0625",
+    "vaFileLastFour": "0625"
+  },
+  "veteranContactInformation": {
+    "phoneNumber": "8008885555",
+    "emailAddress": "pauline.foster@example.com",
+    "veteranAddress": {
+      "view:militaryBaseDescription": {},
+      "country": "USA",
+      "street": "4826 Orchid Dr",
+      "city": "Brownsville",
+      "state": "TX",
+      "postalCode": "78526"
+    }
+  },
+  "view:addOrRemoveDependents": { "add": true },
+  "view:addDependentOptions": { "addChild": true },
+  "view:addDependentOptionsDescription": {},
+  "view:selectable686Options": { "addChild": true },
+  "childrenToAdd": [
+    {
+      "fullName": { "first": "Tommy", "last": "Foster" },
+      "ssn": "111223333",
+      "birthDate": "2015-04-19",
+      "relationshipType": "BIOLOGICAL",
+      "isBiologicalChild": true,
+      "relationshipToChild": {},
+      "birthLocation": {
+        "location": { "city": "Brownsville", "state": "TX", "postalCode": "78526" }
+      },
+      "doesChildLiveWithYou": true,
+      "doesChildHaveDisability": false,
+      "hasChildEverBeenMarried": false
+    }
+  ],
+  "view:completedAddChild": false,
+  "daysTillExpires": 365,
+  "statementOfTruthSignature": "Pauline E Foster",
+  "statementOfTruthCertified": true
+}
