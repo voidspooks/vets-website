@@ -90,6 +90,7 @@ describe('ConfirmationPoll', () => {
     disabilities: [],
     submittedAt: new Date(),
     isSubmittingBDD: false,
+    hasUploadedSha: false,
     route: {
       formConfig,
       pageList: [],
@@ -140,6 +141,7 @@ describe('ConfirmationPoll', () => {
         disabilities: defaultProps.disabilities,
         submittedAt: defaultProps.submittedAt,
         isSubmittingBDD: defaultProps.isSubmittingBDD,
+        hasUploadedSha: defaultProps.hasUploadedSha,
         route: defaultProps.route,
       });
       tree.unmount();
