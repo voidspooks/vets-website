@@ -46,34 +46,6 @@ Wrapper.propTypes = {
 
 Wrapper.defaultProps = {};
 
-const MontgomeryGiBillDescription = className => (
-  <va-additional-info
-    trigger="Learn how to update your direct deposit information for Montgomery GI Bill"
-    class={`${className} gi-bill-info`}
-    uswds
-    data-testid="gi-bill-additional-info"
-  >
-    <div>
-      <p
-        className="vads-u-margin-top--0 vads-u-color--black"
-        data-testid="gi-bill-description"
-      >
-        If you’re getting benefits through the Montgomery GI Bill Active Duty
-        (MGIB-AD) or Montgomery GI Bill Selected Reserve (MGIB-SR), you’ll need
-        to update your direct deposit information using our enrollment
-        verification tool.
-      </p>
-      <p className="vads-u-margin-bottom--0">
-        <va-link
-          href="https://www.va.gov/education/verify-school-enrollment/#for-montgomery-gi-bill-benefit"
-          text="Update direct deposit information for MGIB benefits"
-          data-testid="gi-bill-update-link"
-        />
-      </p>
-    </div>
-  </va-additional-info>
-);
-
 export const DirectDeposit = () => {
   const directDepositHookResult = useDirectDeposit();
 
@@ -197,10 +169,9 @@ export const DirectDeposit = () => {
             <Toggler.Enabled>
               <h2 className="vads-u-margin-top--4">Bank account information</h2>
               <p>
-                We’ll send payments for your disability compensation, pension,
-                and education benefits to this bank account.
+                We send payments for your disability compensation, pension, and
+                education benefits to this bank account.
               </p>
-              <MontgomeryGiBillDescription className="vads-u-margin-top--2" />
               <ProfileInfoSection
                 data={[{ value: cardDataValue }]}
                 namedAnchor={cardHeadingId}
@@ -214,7 +185,6 @@ export const DirectDeposit = () => {
                 namedAnchor={cardHeadingId}
                 level={2}
               />
-              <MontgomeryGiBillDescription className="vads-u-margin-top--4" />
             </Toggler.Disabled>
           </Toggler>
         </DowntimeNotification>
@@ -234,6 +204,24 @@ export const DirectDeposit = () => {
             setFormData,
           }}
         />
+        <div className="vads-u-margin-top--4">
+          <va-accordion open-single>
+            <va-accordion-item header="How do I update direct deposit information for the Foreign Medical Program?">
+              <p>
+                The Foreign Medical Program (FMP) uses a different system for
+                direct deposit than other VA benefits use. To update your direct
+                deposit information for FMP, you’ll need to go to the Financial
+                Services Center’s Customer Engagement Portal.
+              </p>
+              <p>
+                <va-link
+                  href="/resources/how-to-set-up-direct-deposit-for-foreign-medical-program-claims/"
+                  text="Learn how to set up direct deposit for Foreign Medical Program claims"
+                />
+              </p>
+            </va-accordion-item>
+          </va-accordion>
+        </div>
         <FraudVictimSummary />
       </Wrapper>
     </div>
