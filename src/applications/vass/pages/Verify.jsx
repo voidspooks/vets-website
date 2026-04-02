@@ -108,6 +108,7 @@ const Verify = () => {
       pageTitle={pageTitle}
       verificationError={verificationError}
       disableBeforeUnload={!dirty}
+      flowType={cancellationFlow ? FLOW_TYPES.CANCEL : FLOW_TYPES.SCHEDULE}
     >
       <p data-testid="verify-intro-text">
         First, we’ll need your information so we can send you a one-time

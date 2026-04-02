@@ -121,6 +121,25 @@ describe('vassApi', () => {
       expect(result.error.detail).to.equal('Internal Server Error');
     });
 
+    it('falls back to "An unknown error occurred" when error has no error or message property', async () => {
+      setFetchJSONFailure(global.fetch.onCall(0), {
+        status: 500,
+      });
+
+      const store = createTestStore();
+      const result = await store.dispatch(
+        vassApi.endpoints.postAuthentication.initiate({
+          uuid: 'test-uuid',
+          lastName: 'Smith',
+          dob: '1990-01-15',
+        }),
+      );
+
+      expect(result.error).to.exist;
+      expect(result.error.code).to.equal(SERVER_ERROR_CODES.SERVICE_ERROR);
+      expect(result.error.detail).to.equal('An unknown error occurred');
+    });
+
     it('passes through a standard vets-api error unchanged', async () => {
       setFetchJSONFailure(global.fetch.onCall(0), {
         errors: [

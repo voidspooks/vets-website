@@ -39,6 +39,8 @@ export class CancelConfirmationPageObject extends PageObject {
       containsText: 'Phone appointment',
     });
 
+    this.assertElement('how-to-join-section', { exist: false });
+
     // When section
     this.assertElement('when-section');
 

@@ -258,19 +258,8 @@ describe('VASS Schedule Appointment', () => {
   });
 
   describe('Cancel Appointment', () => {
+    const appointmentId = 'abcdef123456';
     beforeEach(() => {
-      const appointmentId = 'abcdef123456';
-      const availabilityResponse = new MockAppointmentAvailabilityResponse({
-        appointmentId,
-        availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
-      }).toJSON();
-      mockAppointmentAvailabilityApi({
-        response: availabilityResponse,
-        responseCode: 200,
-      });
-
-      mockTopicsApi();
-
       mockCreateAppointmentApi();
 
       mockAppointmentDetailsApi({
@@ -283,6 +272,14 @@ describe('VASS Schedule Appointment', () => {
     });
 
     it('should cancel an appointment from the scheduled appointment confirmation page', () => {
+      const availabilityResponse = new MockAppointmentAvailabilityResponse({
+        appointmentId,
+        availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
+      }).toJSON();
+      mockAppointmentAvailabilityApi({
+        response: availabilityResponse,
+        responseCode: 200,
+      });
       seedAppState({
         uuid,
         selectedSlot: {
@@ -324,6 +321,15 @@ describe('VASS Schedule Appointment', () => {
     });
 
     it('should cancel an appointment from a cancelation link', () => {
+      // When cancelling an appointment, the availability response will be an appointment already booked error
+      mockAppointmentAvailabilityApi({
+        response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
+          {
+            appointmentId,
+          },
+        ),
+        responseCode: 409,
+      });
       cy.visit(`${rootUrl}?uuid=${uuid}&cancel=true`);
 
       VerifyPageObject.assertVerifyPage({ cancellationFlow: true });
@@ -338,7 +344,7 @@ describe('VASS Schedule Appointment', () => {
       saveScreenshot('vass_cancel_enterOTP_cancellationLink');
       EnterOTPPageObject.fillAndSubmitOTP();
 
-      cy.wait('@vass:get:appointment-details');
+      cy.wait('@vass:get:appointment-availability');
 
       CancelAppointmentPageObject.assertCancelAppointmentPage({
         agentName: 'Agent Smith',

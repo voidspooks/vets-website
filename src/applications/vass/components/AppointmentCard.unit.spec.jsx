@@ -27,6 +27,11 @@ describe('VASS Component: AppointmentCard', () => {
     expect(getByTestId('appointment-type').textContent).to.equal(
       'Phone appointment',
     );
+    expect(getByTestId('solid-start-telephone')).to.exist;
+    expect(
+      getByTestId('solid-start-telephone').getAttribute('contact'),
+    ).to.equal('8008270611');
+    expect(getByTestId('how-to-join-section')).to.exist;
     expect(getByTestId('when-section')).to.exist;
     expect(getByTestId('what-section')).to.exist;
     expect(getByTestId('who-section')).to.exist;
@@ -79,6 +84,17 @@ describe('VASS Component: AppointmentCard', () => {
 
     expect(printStub.calledOnce).to.be.true;
     printStub.restore();
+  });
+
+  it('hides how-to-join section when no handleCancelAppointment is provided', () => {
+    const appointmentData = createAppointmentData();
+
+    const { queryByTestId } = render(
+      <AppointmentCard appointmentData={appointmentData} />,
+    );
+
+    expect(queryByTestId('how-to-join-section')).to.not.exist;
+    expect(queryByTestId('solid-start-telephone')).to.not.exist;
   });
 
   it('omits topics section when no topics are provided', () => {

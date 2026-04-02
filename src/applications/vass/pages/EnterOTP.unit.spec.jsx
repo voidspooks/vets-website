@@ -467,9 +467,9 @@ describe('VASS Component: EnterOTP', () => {
           tokenType: 'Bearer',
         },
       });
-      setFetchJSONResponse(
+      setFetchJSONFailure(
         global.fetch.onCall(1),
-        createAppointmentAvailabilityResponse({
+        createAppointmentAlreadyBookedError({
           appointmentId: 'abcdef123456',
         }),
       );

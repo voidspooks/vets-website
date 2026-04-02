@@ -527,6 +527,26 @@ describe('VASS Error Paths', () => {
         });
       });
 
+      describe('when the user attempts to cancel but no appointment is booked', () => {
+        beforeEach(() => {
+          mockSuccessfulAuth({ uuid });
+          mockAppointmentAvailabilityApi();
+          visitAndVerify(`${rootUrl}?uuid=${uuid}&cancel=true`);
+        });
+
+        it('should display a wrapper error alert', () => {
+          EnterOTPPageObject.fillAndSubmitOTP();
+          cy.wait('@vass:get:appointment-availability');
+
+          EnterOTPPageObject.assertWrapperErrorAlert({
+            exist: true,
+            flowType: FLOW_TYPES.CANCEL,
+          });
+          cy.injectAxeThenAxeCheck();
+          saveScreenshot('vass_error_availability_noAppointmentToCancel');
+        });
+      });
+
       describe('when the API returns a server error', () => {
         beforeEach(() => {
           seedAppState({ uuid });
@@ -1070,7 +1090,7 @@ describe('VASS Error Paths', () => {
 
     describe('when the user navigates to the solid start page without a uuid', () => {
       beforeEach(() => {
-        cy.visit('/service-member/benefits/solid-start/schedule');
+        cy.visit(rootUrl);
       });
 
       it('should show the wrapper error alert', () => {
@@ -1085,11 +1105,12 @@ describe('VASS Error Paths', () => {
       beforeEach(() => {
         mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
-          response: new MockAppointmentAvailabilityResponse({
-            appointmentId,
-            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
-          }).toJSON(),
-          responseCode: 200,
+          response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
+            {
+              appointmentId,
+            },
+          ),
+          responseCode: 409,
         });
         mockAppointmentDetailsApi({
           response: new MockAppointmentDetailsResponse({
@@ -1172,11 +1193,12 @@ describe('VASS Error Paths', () => {
       beforeEach(() => {
         mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
-          response: new MockAppointmentAvailabilityResponse({
-            appointmentId,
-            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
-          }).toJSON(),
-          responseCode: 200,
+          response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
+            {
+              appointmentId,
+            },
+          ),
+          responseCode: 409,
         });
         mockAppointmentDetailsApi({
           response: new MockAppointmentDetailsResponse({
@@ -1262,11 +1284,12 @@ describe('VASS Error Paths', () => {
       beforeEach(() => {
         mockSuccessfulAuth({ uuid });
         mockAppointmentAvailabilityApi({
-          response: new MockAppointmentAvailabilityResponse({
-            appointmentId,
-            availableSlots: MockAppointmentAvailabilityResponse.createSlots(),
-          }).toJSON(),
-          responseCode: 200,
+          response: MockAppointmentAvailabilityResponse.createAppointmentAlreadyBookedError(
+            {
+              appointmentId,
+            },
+          ),
+          responseCode: 409,
         });
         mockAppointmentDetailsApi({
           response: new MockAppointmentDetailsResponse({

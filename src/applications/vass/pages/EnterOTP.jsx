@@ -41,6 +41,14 @@ const getErrorMessage = (errorCode, attemptsRemaining = 0) => {
   }
 };
 
+const validateOTP = otp => {
+  if (otp === '') return 'Please enter your one-time verification code';
+  if (!/^\d+$/.test(otp))
+    return 'Your verification code should only contain numbers';
+  if (otp.length !== 6) return 'Your verification code should be 6 digits';
+  return null;
+};
+
 const getPageTitle = (cancellationFlow, hasError) => {
   if (hasError) {
     return 'We couldn’t verify your information';
@@ -65,6 +73,7 @@ const EnterOTP = () => {
   ]);
 
   const [code, setCode] = useState('');
+  const [noAppointmentToCancel, setNoAppointmentToCancel] = useState(false);
 
   const [
     postOTPVerification,
@@ -76,54 +85,43 @@ const EnterOTP = () => {
   ] = useLazyGetAppointmentAvailabilityQuery();
 
   const handleSubmit = async () => {
-    if (code === '') {
-      setOtpError('Please enter your one-time verification code');
+    const validationError = validateOTP(code);
+    if (validationError) {
+      setOtpError(validationError);
       return;
     }
 
-    if (!/^\d+$/.test(code)) {
-      setOtpError('Your verification code should only contain numbers');
-      return;
-    }
-
-    if (code.length !== 6) {
-      setOtpError('Your verification code should be 6 digits');
-      return;
-    }
-
-    const response = await postOTPVerification({
-      otp: code,
-    });
-
+    const response = await postOTPVerification({ otp: code });
     if (response.error) {
       setApiError('API Error');
       return;
     }
 
-    const availabilityCheck = await getAppointmentAvailability();
+    const { error } = await getAppointmentAvailability();
 
     if (
-      isServerError(availabilityCheck.error) ||
-      isNotWhithinCohortError(availabilityCheck.error) ||
-      isNoSlotsAvailableError(availabilityCheck.error)
+      isServerError(error) ||
+      isNotWhithinCohortError(error) ||
+      isNoSlotsAvailableError(error)
     ) {
       return;
     }
 
-    if (isAppointmentAlreadyBookedError(availabilityCheck.error)) {
-      const { appointmentId } = availabilityCheck.error.appointment;
-      navigate(`${URLS.ALREADY_SCHEDULED}/${appointmentId}`, { replace: true });
+    if (isAppointmentAlreadyBookedError(error)) {
+      const { appointmentId } = error.appointment;
+      const url = cancellationFlow
+        ? `${URLS.CANCEL_APPOINTMENT}/${appointmentId}`
+        : `${URLS.ALREADY_SCHEDULED}/${appointmentId}`;
+      navigate(url, { replace: true });
       return;
     }
 
     if (cancellationFlow) {
-      const { appointmentId } = availabilityCheck.data;
-      navigate(`${URLS.CANCEL_APPOINTMENT}/${appointmentId}`, {
-        replace: true,
-      });
-    } else {
-      navigate(URLS.DATE_TIME, { replace: true });
+      setNoAppointmentToCancel(true);
+      return;
     }
+
+    navigate(URLS.DATE_TIME, { replace: true });
   };
 
   const errorMessage = getErrorMessage(
@@ -143,11 +141,13 @@ const EnterOTP = () => {
           ? errorMessage
           : undefined
       }
+      flowType={flowType}
       errorAlert={
         isServerError(postOTPVerificationError) ||
         isServerError(appointmentAvailabilityError) ||
         isNotWhithinCohortError(appointmentAvailabilityError) ||
-        isNoSlotsAvailableError(appointmentAvailabilityError)
+        isNoSlotsAvailableError(appointmentAvailabilityError) ||
+        noAppointmentToCancel
       }
     >
       {!postOTPVerificationError?.code && (

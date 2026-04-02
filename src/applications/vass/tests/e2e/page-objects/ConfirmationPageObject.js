@@ -1,5 +1,5 @@
 import PageObject from './PageObject';
-import { URLS } from '../../../utils/constants';
+import { URLS, VASS_PHONE_NUMBER } from '../../../utils/constants';
 
 export class ConfirmationPageObject extends PageObject {
   /**
@@ -33,6 +33,15 @@ export class ConfirmationPageObject extends PageObject {
     this.assertElement('appointment-card');
     this.assertElement('appointment-type', {
       containsText: 'Phone appointment',
+    });
+
+    this.assertElement('how-to-join-section', {
+      containsText: 'Your representative will call you from',
+    });
+    cy.findByTestId('how-to-join-section').within(() => {
+      cy.findByTestId('solid-start-telephone')
+        .should('exist')
+        .and('have.attr', 'contact', VASS_PHONE_NUMBER);
     });
 
     // When section
@@ -88,6 +97,14 @@ export class ConfirmationPageObject extends PageObject {
     this.assertElement('appointment-card');
     this.assertElement('appointment-type', {
       containsText: 'Phone appointment',
+    });
+
+    // How to join section with phone number
+    this.assertElement('how-to-join-section');
+    cy.findByTestId('appointment-card').within(() => {
+      cy.findByTestId('solid-start-telephone')
+        .should('exist')
+        .and('have.attr', 'contact', VASS_PHONE_NUMBER);
     });
 
     // When section
