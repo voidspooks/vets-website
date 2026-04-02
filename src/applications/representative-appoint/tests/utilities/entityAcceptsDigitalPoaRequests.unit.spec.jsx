@@ -167,6 +167,91 @@ describe('entityAcceptsDigitalPoaRequests', () => {
         expect(result).to.be.false;
       });
     });
+
+    context('when individualAcceptEnabled is true', () => {
+      context(
+        'when at least one org has both canAcceptDigitalPoaRequests and repsCanAcceptAnyRequest true',
+        () => {
+          it('returns true', () => {
+            const mockEntity = {
+              type: 'representative',
+              attributes: {
+                accreditedOrganizations: {
+                  data: [
+                    {
+                      attributes: {
+                        canAcceptDigitalPoaRequests: true,
+                        repsCanAcceptAnyRequest: true,
+                      },
+                    },
+                    {
+                      attributes: {
+                        canAcceptDigitalPoaRequests: true,
+                        repsCanAcceptAnyRequest: false,
+                      },
+                    },
+                  ],
+                },
+              },
+            };
+            const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+            expect(result).to.be.true;
+          });
+        },
+      );
+
+      context(
+        'when orgs have canAcceptDigitalPoaRequests but not repsCanAcceptAnyRequest',
+        () => {
+          it('returns false', () => {
+            const mockEntity = {
+              type: 'representative',
+              attributes: {
+                accreditedOrganizations: {
+                  data: [
+                    {
+                      attributes: {
+                        canAcceptDigitalPoaRequests: true,
+                        repsCanAcceptAnyRequest: false,
+                      },
+                    },
+                    {
+                      attributes: {
+                        canAcceptDigitalPoaRequests: true,
+                      },
+                    },
+                  ],
+                },
+              },
+            };
+            const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+            expect(result).to.be.false;
+          });
+        },
+      );
+
+      context('when no orgs accept digital submissions', () => {
+        it('returns false', () => {
+          const mockEntity = {
+            type: 'representative',
+            attributes: {
+              accreditedOrganizations: {
+                data: [
+                  {
+                    attributes: {
+                      canAcceptDigitalPoaRequests: false,
+                      repsCanAcceptAnyRequest: true,
+                    },
+                  },
+                ],
+              },
+            },
+          };
+          const result = entityAcceptsDigitalPoaRequests(mockEntity, true);
+          expect(result).to.be.false;
+        });
+      });
+    });
   });
 
   context('when the representative is an attorney', () => {
