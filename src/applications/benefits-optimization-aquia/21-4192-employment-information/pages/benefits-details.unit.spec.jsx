@@ -41,4 +41,63 @@ describe('Benefits Details Page', () => {
       expect(title).to.include('Veteran');
     });
   });
+  describe('date relationship validations', () => {
+    const getValidation = () => benefitsDetailsUiSchema['ui:validations'][0];
+
+    const buildErrors = () => {
+      const messages = {
+        benefitsDetails: {
+          stopReceivingDate: [],
+          firstPaymentDate: [],
+        },
+      };
+
+      const errors = {
+        benefitsDetails: {
+          stopReceivingDate: {
+            addError: message =>
+              messages.benefitsDetails.stopReceivingDate.push(message),
+          },
+          firstPaymentDate: {
+            addError: message =>
+              messages.benefitsDetails.firstPaymentDate.push(message),
+          },
+        },
+      };
+
+      return { errors, messages };
+    };
+
+    it('should add error when stop receiving date is before start receiving date', () => {
+      const validation = getValidation();
+      const { errors, messages } = buildErrors();
+
+      validation(errors, {
+        benefitsDetails: {
+          stopReceivingDate: '2020-01-01',
+          startReceivingDate: '2020-01-02',
+        },
+      });
+
+      expect(messages.benefitsDetails.stopReceivingDate).to.deep.equal([
+        'Stop receiving date must be after start receiving date',
+      ]);
+    });
+
+    it('should add error when first payment date is before start receiving date', () => {
+      const validation = getValidation();
+      const { errors, messages } = buildErrors();
+
+      validation(errors, {
+        benefitsDetails: {
+          firstPaymentDate: '2020-01-01',
+          startReceivingDate: '2020-01-02',
+        },
+      });
+
+      expect(messages.benefitsDetails.firstPaymentDate).to.deep.equal([
+        'First payment date must be after start receiving date',
+      ]);
+    });
+  });
 });

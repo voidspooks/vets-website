@@ -12,8 +12,11 @@ import {
   currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import commonDefinitions from 'vets-json-schema/dist/definitions.json';
+import { isValidDateRange } from 'platform/forms-system/src/js/utilities/validations';
+import { convertToDateField } from 'platform/forms-system/src/js/validation';
 import { getVeteranName } from './helpers';
 import { MemorableDateUI } from '../components/memorable-date-ui';
+import { isDateAfterDOB } from '../../shared/utils/validators';
 
 /**
  * Generate title for start receiving date field
@@ -42,6 +45,32 @@ const getStopReceivingDateTitle = formData => {
   return `When will ${veteranName} no longer receive this benefit (if known)?`;
 };
 
+const validateDateBeforeStartReceivingDate = (errors, fieldData) => {
+  const startDate = convertToDateField(
+    fieldData?.benefitsDetails?.startReceivingDate,
+  );
+  const stopDate = convertToDateField(
+    fieldData?.benefitsDetails?.stopReceivingDate,
+  );
+  const firstPaymentDate = convertToDateField(
+    fieldData?.benefitsDetails?.firstPaymentDate,
+  );
+  if (startDate && stopDate && !isValidDateRange(startDate, stopDate)) {
+    errors.benefitsDetails.stopReceivingDate.addError(
+      'Stop receiving date must be after start receiving date',
+    );
+  }
+  if (
+    startDate &&
+    firstPaymentDate &&
+    !isValidDateRange(startDate, firstPaymentDate)
+  ) {
+    errors.benefitsDetails.firstPaymentDate.addError(
+      'First payment date must be after start receiving date',
+    );
+  }
+};
+
 /**
  * uiSchema for Benefits Details page
  * Collects details about benefits received (conditional page)
@@ -49,6 +78,7 @@ const getStopReceivingDateTitle = formData => {
  */
 export const benefitsDetailsUiSchema = {
   'ui:title': 'Benefit entitlement and/or payments',
+  'ui:validations': [validateDateBeforeStartReceivingDate],
   benefitsDetails: {
     benefitType: textareaUI({
       title: 'Type of benefit',
@@ -67,13 +97,18 @@ export const benefitsDetailsUiSchema = {
         max: 'Gross monthly amount cannot exceed $999,999.99',
       },
     }),
-    startReceivingDate: currentOrPastDateUI({
-      title: 'Start receiving date', // Default title, will be updated by updateUiSchema
-      dataDogHidden: true,
-      errorMessages: {
-        required: 'Start date is required',
-      },
-    }),
+    startReceivingDate: {
+      ...currentOrPastDateUI({
+        title: 'Start receiving date', // Default title, will be updated by updateUiSchema
+        dataDogHidden: true,
+        errorMessages: {
+          required: 'Start date is required',
+        },
+      }),
+      'ui:validations': [
+        isDateAfterDOB(`Enter a start date after the employee's date of birth`),
+      ],
+    },
     firstPaymentDate: currentOrPastDateUI({
       title: 'First payment date', // Default title, will be updated by updateUiSchema
       dataDogHidden: true,

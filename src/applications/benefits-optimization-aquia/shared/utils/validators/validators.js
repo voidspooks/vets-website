@@ -21,6 +21,10 @@ import {
   isValidUSZipCode as platformIsValidUSZipCode,
 } from 'platform/forms/address';
 
+import { isValidDateRange } from 'platform/forms-system/src/js/utilities/validations';
+
+import { convertToDateField } from 'platform/forms-system/src/js/validation';
+
 /**
  * Re-export platform validators
  */
@@ -148,6 +152,22 @@ export const isValidNameLength = (errors, fieldData, length) => {
       `Please enter a name under ${length} characters. If your name is longer, enter the first ${length} characters only.`,
     );
   }
+};
+
+export const isDateAfterDOB = message => {
+  return (errors, fieldData, formData) => {
+    const dateToValidate = convertToDateField(fieldData);
+    if (dateToValidate && formData?.veteranInformation?.dateOfBirth) {
+      const birthDate = convertToDateField(
+        formData?.veteranInformation?.dateOfBirth,
+      );
+      if (!isValidDateRange(birthDate, dateToValidate)) {
+        errors.addError(
+          message || `Enter a date after the Veteran's date of birth`,
+        );
+      }
+    }
+  };
 };
 
 /**
