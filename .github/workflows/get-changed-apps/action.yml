@@ -16,7 +16,7 @@ outputs:
   changed_files:
     description: 'Space delimited list of paths for changed files that differ from `main` branch.'
     value: ${{ steps.get-changed-files.outputs.changed_files }}
-  
+
   continuous_deployment:
     description: 'Whether all changed applications have continuous deployment enabled.'
     value: ${{ steps.check-continuous-deployment.outputs.is_enabled }}
@@ -52,7 +52,7 @@ runs:
       id: get-changed-files
       shell: bash
       run: |
-        if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+        if [[ ${{ github.ref }} == 'refs/heads/main' || ${{ github.ref }} == 'refs/heads/production-bypass' ]]; then
             echo changed_files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }}) >> $GITHUB_OUTPUT
         else
           echo changed_files=$(git diff --name-only origin/main...) >> $GITHUB_OUTPUT
