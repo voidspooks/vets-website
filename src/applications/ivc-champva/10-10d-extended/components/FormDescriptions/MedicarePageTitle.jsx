@@ -29,7 +29,7 @@ const resolveTitleName = (item, formData) => {
   return match ? formatFullName(match.applicantName) : participantName;
 };
 
-const MedicarePageTitle = ({ item, title }) => {
+const MedicarePageTitle = ({ formData: item, title }) => {
   const formData = useSelector(state => state.form?.data ?? {});
   const fullName = resolveTitleName(item, formData) || APPLICANT_TEXT;
   const isEdit = Boolean(getArrayUrlSearchParams().get('edit'));
@@ -39,7 +39,7 @@ const MedicarePageTitle = ({ item, title }) => {
 
 MedicarePageTitle.propTypes = {
   title: PropTypes.string.isRequired,
-  item: PropTypes.object,
+  formData: PropTypes.object,
 };
 
 export default MedicarePageTitle;

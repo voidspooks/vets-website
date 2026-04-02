@@ -3,9 +3,9 @@ import {
   checkboxGroupUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { toHash } from '../../../shared/utilities';
-import { healthInsurancePageTitleUI } from '../../utils/titles';
-import { formatFullName } from '../../utils/helpers';
 import content from '../../locales/en/content.json';
+import { formatFullName } from '../../utils/helpers';
+import { titleWithFormDataUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['health-insurance--participant-title'];
 const INPUT_LABEL = content['health-insurance--participant-label'];
@@ -36,7 +36,11 @@ const updateSchema = (_formData, schema, uiSchema, _index, _path, fullData) => {
 
 export default {
   uiSchema: {
-    ...healthInsurancePageTitleUI(TITLE_TEXT),
+    ...titleWithFormDataUI(TITLE_TEXT, null, {
+      dataKey: 'provider',
+      fallback: content['noun--provider'],
+      arrayBuilder: true,
+    }),
     healthcareParticipants: checkboxGroupUI({
       title: INPUT_LABEL,
       hint: HINT_TEXT,

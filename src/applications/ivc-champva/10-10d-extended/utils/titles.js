@@ -1,8 +1,8 @@
 import {
-  arrayBuilderItemSubsequentPageTitleUI,
   titleUI,
   withEditTitle,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import get from 'platform/utilities/data/get';
 import React from 'react';
 import MedicarePageTitle from '../components/FormDescriptions/MedicarePageTitle';
 import content from '../locales/en/content.json';
@@ -15,8 +15,10 @@ import {
 
 const DEFAULT_OPTS = {
   // common template behavior
-  placeholder: '%s',
+  arrayBuilder: false,
   capitalize: true,
+  lowercaseOnEdit: false,
+  placeholder: '%s',
 
   // role logic
   roleKey: 'certifierRole',
@@ -29,13 +31,24 @@ const DEFAULT_OPTS = {
   firstNameOnly: false,
   possessive: true,
 
-  // titleWithNameUI styling
+  // form data value logic
+  dataKey: '',
+  fallback: '',
+
+  // default styling
   piiClassNames:
     'vads-u-color--black vads-u-margin-top--0 mobile-lg:vads-u-font-size--h2 vads-u-font-size--h3 dd-privacy-mask',
 };
 
 /**
- * Fills a title template by replacing placeholder with a value.
+ * Merges user options with defaults.
+ * @param {Object} opts - User-provided options
+ * @returns {Object} Merged options object
+ */
+const mergeOpts = (opts = {}) => ({ ...DEFAULT_OPTS, ...opts });
+
+/**
+ * Fills a title template by replacing a placeholder with a value.
  * @param {string} src - Template string with placeholder
  * @param {string} value - Value to insert into template
  * @param {Object} opts - Options containing placeholder and capitalize flags
@@ -50,6 +63,27 @@ const fillTitleTemplate = (src, value, opts) => {
 };
 
 /**
+ * Wraps a computed title with array builder edit-title behavior when configured.
+ * @param {Function} computedTitle - Function that returns the computed title
+ * @param {Object} opts - Configuration options
+ * @returns {Function|string} Title function or wrapped edit title
+ */
+const wrapTitleForArrayBuilder = (computedTitle, opts) =>
+  opts.arrayBuilder
+    ? withEditTitle(computedTitle, opts.lowercaseOnEdit)
+    : computedTitle;
+
+/**
+ * Creates a computed title function from a value resolver.
+ * @param {string} title - Title template with placeholder
+ * @param {Function} resolveValue - Function that resolves the replacement value from formData and opts
+ * @param {Object} opts - Configuration options
+ * @returns {Function} Function that returns the computed title string
+ */
+const makeTitleValue = (title, resolveValue, opts) => ({ formData }) =>
+  fillTitleTemplate(title, resolveValue(formData, opts), opts);
+
+/**
  * Checks if the form certifier is the applicant (self).
  * @param {Object} formData - Form data object
  * @param {Object} opts - Options containing roleKey and matchRole
@@ -58,11 +92,25 @@ const fillTitleTemplate = (src, value, opts) => {
 const isSelf = (formData, opts) => formData?.[opts.roleKey] === opts.matchRole;
 
 /**
- * Merges user options with defaults.
- * @param {Object} opts - User-provided options
- * @returns {Object} Merged options object
+ * Resolves a configured value from form data.
+ * Supports either a direct form data key or a resolver function.
+ * @param {Object} formData - Form data object
+ * @param {Object} opts - Options containing dataKey and fallback
+ * @returns {string} Resolved value or fallback
  */
-const mergeOpts = (opts = {}) => ({ ...DEFAULT_OPTS, ...opts });
+const resolveFormDataValue = (formData, opts) => {
+  const fallback = String(opts?.fallback ?? '');
+  const { dataKey } = opts || {};
+  if (!dataKey || (typeof dataKey === 'string' && dataKey.trim() === '')) {
+    return fallback;
+  }
+  const rawValue =
+    typeof dataKey === 'function' ? dataKey(formData) : get(dataKey, formData);
+  if (rawValue == null) return fallback;
+  const normalized =
+    typeof rawValue === 'string' ? rawValue.trim() : String(rawValue);
+  return normalized === '' ? fallback : normalized;
+};
 
 /**
  * Generates a label from the applicant's name.
@@ -78,7 +126,7 @@ const nameLabel = (formData, opts) => {
 };
 
 /**
- * Generates a label from the role text.
+ * Generates a label from the configured role text.
  * @param {Object} opts - Options containing other and possessive
  * @returns {string} Formatted role label
  */
@@ -99,65 +147,41 @@ const subjectLabel = (formData, options = {}) => {
 };
 
 /**
- * Factory function that creates title UI functions with preset options.
+ * Factory function that creates title UI helpers from a value resolver.
+ * @param {Function} resolveValue - Function that resolves the replacement value from formData and opts
  * @param {Object} baseOptions - Base options to merge with user options
  * @returns {Function} Title UI function
  */
-const makeSubjectTitleUI = (baseOptions = {}) => (
+const makeDynamicTitleUI = (resolveValue, baseOptions = {}) => (
   title,
   description = null,
   options = {},
 ) => {
   const opts = mergeOpts({ ...baseOptions, ...options });
-  const { arrayBuilder = false } = opts;
-  const computedTitle = ({ formData }) =>
-    fillTitleTemplate(title, subjectLabel(formData, opts), opts);
-  const titleStr = arrayBuilder
-    ? withEditTitle(computedTitle, !opts.capitalize)
-    : computedTitle;
-  return titleUI({ title: titleStr, description, classNames: opts.classNames });
+  const computedTitle = makeTitleValue(title, resolveValue, opts);
+  const titleValue = wrapTitleForArrayBuilder(computedTitle, opts);
+  return titleUI({
+    title: titleValue,
+    description,
+    classNames: opts.classNames,
+  });
 };
 
-/**
- * Creates a dynamic health insurance page title with provider name.
- *
- * Replaces a placeholder in the title template with the insurance provider name
- * from form data. Used within array builder patterns for multiple insurance policies.
- *
- * @param {string} title - Title template with placeholder
- * @param {string|React.Component} [description=null] - Optional description element
- * @param {Object} [options] - Configuration options
- * @param {boolean} [options.lowercase=false] - Whether to lowercase the title
- * @param {string} [options.placeholder='%s'] - Placeholder token to replace
- * @returns {Object} UI schema object for arrayBuilderItemSubsequentPageTitleUI
- *
- * @example
- * // "Cigna prescription coverage"
- * healthInsurancePageTitleUI('%s prescription coverage')
- *
- * @example
- * // "Type of insurance for Cigna"
- * healthInsurancePageTitleUI('Type of insurance for %s')
- *
- * @example
- * // Custom placeholder: "Upload [Cigna] card"
- * healthInsurancePageTitleUI('Upload [%p] card', null, { placeholder: '%p' })
- */
-export const healthInsurancePageTitleUI = (
+const makeComponentTitleUI = (Component, baseOptions = {}) => (
   title,
   description = null,
-  { lowercase = false, placeholder = DEFAULT_OPTS.placeholder } = {},
-) =>
-  arrayBuilderItemSubsequentPageTitleUI(
-    ({ formData }) =>
-      fillTitleTemplate(
-        title,
-        formData?.provider,
-        mergeOpts({ placeholder, capitalize: false }),
-      ),
-    description,
-    lowercase,
+  options = {},
+) => {
+  const opts = mergeOpts({ ...baseOptions, ...options });
+  const titleValue = props => (
+    <Component {...props} title={title} opts={opts} />
   );
+  return titleUI({
+    title: titleValue,
+    description,
+    classNames: opts.classNames,
+  });
+};
 
 /**
  * Creates a dynamic Medicare page title with participant name.
@@ -168,16 +192,10 @@ export const healthInsurancePageTitleUI = (
  * @param {string|React.Component} [description=null] - Optional description
  * @returns {Object} UI schema object for titleUI
  */
-export const medicarePageTitleUI = (title, description = null) => {
-  const pageTitle = ({ formData: item }) => (
-    <MedicarePageTitle item={item} title={title} />
-  );
-  return titleUI({
-    title: pageTitle,
-    description,
-    classNames: DEFAULT_OPTS.piiClassNames,
-  });
-};
+export const medicarePageTitleUI = makeComponentTitleUI(MedicarePageTitle, {
+  classNames: DEFAULT_OPTS.piiClassNames,
+  arrayBuilder: true,
+});
 
 /**
  * Creates a dynamic title that adapts based on the certifier's role.
@@ -196,6 +214,8 @@ export const medicarePageTitleUI = (title, description = null) => {
  * @param {string} [options.self='Your'] - Text to use when user is applicant
  * @param {string} [options.other='Veteran'] - Text to use when user is not applicant
  * @param {boolean} [options.possessive=true] - Whether to add possessive 's to other
+ * @param {boolean} [options.arrayBuilder=false] - Whether to apply array builder edit title behavior
+ * @param {boolean} [options.lowercaseOnEdit=false] - Whether array builder edit titles should remain lowercase
  * @returns {Object} UI schema object for titleUI
  *
  * @example
@@ -218,7 +238,9 @@ export const medicarePageTitleUI = (title, description = null) => {
  *   matchRole: 'self'
  * })
  */
-export const titleWithRoleUI = makeSubjectTitleUI({ mode: 'role' });
+export const titleWithRoleUI = makeDynamicTitleUI(subjectLabel, {
+  mode: 'role',
+});
 
 /**
  * Creates a dynamic title using the applicant's name or role-based text.
@@ -240,6 +262,8 @@ export const titleWithRoleUI = makeSubjectTitleUI({ mode: 'role' });
  * @param {string} [options.self='Your'] - Text to use when user is applicant
  * @param {string} [options.other='Veteran'] - Fallback text when name is unavailable
  * @param {string} [options.classNames] - Custom CSS classes (defaults to PII masking classes)
+ * @param {boolean} [options.arrayBuilder=false] - Whether to apply array builder edit title behavior
+ * @param {boolean} [options.lowercaseOnEdit=false] - Whether array builder edit titles should remain lowercase
  * @returns {Object} UI schema object for titleUI with PII protection
  *
  * @example
@@ -266,7 +290,43 @@ export const titleWithRoleUI = makeSubjectTitleUI({ mode: 'role' });
  *   placeholder: '%p'
  * })
  */
-export const titleWithNameUI = makeSubjectTitleUI({
+export const titleWithNameUI = makeDynamicTitleUI(subjectLabel, {
   mode: 'name',
   classNames: DEFAULT_OPTS.piiClassNames,
 });
+
+/**
+ * Creates a dynamic title using a configurable form data value.
+ *
+ * Replaces a placeholder in the title template with a value resolved from form data.
+ * The value may come from a direct form data key or from a resolver function.
+ * Can be used for standard pages or array builder pages. When used with
+ * `arrayBuilder: true`, automatically adds edit title behavior for existing items.
+ *
+ * @param {string} title - Title template with placeholder for the form data value
+ * @param {string|React.Component} [description=null] - Optional description element
+ * @param {Object} [options] - Configuration options
+ * @param {string|Function} [options.dataKey=''] - Form data key or resolver function that returns the value to display
+ * @param {string} [options.fallback=''] - Fallback value when the resolved value is missing
+ * @param {boolean} [options.capitalize=true] - Whether to capitalize the inserted value
+ * @param {string} [options.placeholder='%s'] - Placeholder token to replace
+ * @param {string} [options.classNames] - Optional CSS classes to apply to the title
+ * @param {boolean} [options.arrayBuilder=false] - Whether to apply array builder edit title behavior
+ * @param {boolean} [options.lowercaseOnEdit=false] - Whether array builder edit titles should remain lowercase
+ * @returns {Object} UI schema object for titleUI
+ *
+ * @example
+ * // "Cigna prescription coverage"
+ * titleWithFormDataUI('%s prescription coverage', null, {
+ *   dataKey: 'name',
+ *   capitalize: false,
+ * })
+ *
+ * @example
+ * // "Explanation of benefits for Aetna"
+ * titleWithFormDataUI('Explanation of benefits for %s', null, {
+ *   dataKey: formData => formData?.policies?.[0]?.name,
+ *   capitalize: false,
+ * })
+ */
+export const titleWithFormDataUI = makeDynamicTitleUI(resolveFormDataValue);

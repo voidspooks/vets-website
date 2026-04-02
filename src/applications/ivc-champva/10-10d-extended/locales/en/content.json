@@ -164,6 +164,7 @@
   "medicare--yes-no-more-title": "Do you have any other applicants with Medicare plans to report?",
   "medicare--yes-no-hint": "If so, you must report this information for us to process your application.",
   "noun--applicant": "applicant",
+  "noun--provider": "Provider",
   "noun--veteran": "Veteran",
   "noun--your": "Your",
   "ohi--section-title": "Submit your Other Health Insurance Certification (VA Form 10-7959c)",

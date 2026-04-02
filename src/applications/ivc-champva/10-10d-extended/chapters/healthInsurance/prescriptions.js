@@ -2,8 +2,8 @@ import {
   yesNoSchema,
   yesNoUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { healthInsurancePageTitleUI } from '../../utils/titles';
 import content from '../../locales/en/content.json';
+import { titleWithFormDataUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['health-insurance--prescription-title'];
 const INPUT_LABEL = content['health-insurance--prescription-label'];
@@ -11,7 +11,11 @@ const HINT_TEXT = content['health-insurance--prescription-hint'];
 
 export default {
   uiSchema: {
-    ...healthInsurancePageTitleUI(TITLE_TEXT),
+    ...titleWithFormDataUI(TITLE_TEXT, null, {
+      dataKey: 'provider',
+      fallback: content['noun--provider'],
+      arrayBuilder: true,
+    }),
     eob: yesNoUI({
       title: INPUT_LABEL,
       hint: HINT_TEXT,
