@@ -478,7 +478,7 @@ describe('674 Add students: Student income', () => {
     );
 
     expect($$('va-radio', container).length).to.equal(1);
-    expect($$('va-radio-option', container).length).to.equal(3);
+    expect($$('va-radio-option', container).length).to.equal(2);
   });
 });
 
