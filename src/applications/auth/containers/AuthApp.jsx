@@ -57,11 +57,6 @@ function AuthApp({ location }) {
     store => store?.featureToggles?.portalNoticeInterstitialEnabled,
   );
 
-  // Remove after testing
-  // const isSignInDisableUserInteractionEnabled = useSelector(
-  //   store => store?.featureToggles?.signInDisableUserInteraction,
-  // );
-
   const handleAuthError = (error, codeOverride) => {
     const { errorCode: detailedErrorCode } = getAuthError(
       codeOverride || errorCode,
@@ -250,7 +245,7 @@ function AuthApp({ location }) {
 
   useEffect(
     () => {
-      if (hasError || environment.isProduction()) return undefined;
+      if (hasError) return undefined;
 
       // Prevent user interaction while waiting for authentication
       document.body.style.pointerEvents = 'none';

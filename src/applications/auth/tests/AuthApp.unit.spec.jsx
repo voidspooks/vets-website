@@ -459,6 +459,87 @@ describe('AuthApp', () => {
     sessionStorage.clear();
   });
 
+  context('post-auth interaction lock', () => {
+    afterEach(() => {
+      document.body.style.pointerEvents = '';
+      document.body.style.cursor = '';
+      document
+        .querySelectorAll('.sr-only[aria-live]')
+        .forEach(el => el.remove());
+    });
+
+    it('applies pointer-events and cursor lock when auth is in progress', () => {
+      render(
+        <Provider store={mockStore}>
+          <AuthApp
+            location={{ query: { auth: 'success', type: 'logingov' } }}
+          />
+        </Provider>,
+      );
+
+      expect(document.body.style.pointerEvents).to.equal('none');
+      expect(document.body.style.cursor).to.equal('not-allowed');
+    });
+
+    it('does not apply lock when there is an auth error', () => {
+      render(
+        <Provider store={mockStore}>
+          <AuthApp location={{ query: { code: '001', auth: 'fail' } }} />
+        </Provider>,
+      );
+
+      expect(document.body.style.pointerEvents).to.not.equal('none');
+      expect(document.body.style.cursor).to.not.equal('not-allowed');
+    });
+
+    it('adds a screen reader live region when auth is in progress', () => {
+      render(
+        <Provider store={mockStore}>
+          <AuthApp
+            location={{ query: { auth: 'success', type: 'logingov' } }}
+          />
+        </Provider>,
+      );
+
+      const liveRegion = document.querySelector('[aria-live="polite"].sr-only');
+      expect(liveRegion).to.not.be.null;
+      expect(liveRegion.textContent).to.include('Loading your account');
+    });
+
+    it('blocks keydown events during auth lock', () => {
+      render(
+        <Provider store={mockStore}>
+          <AuthApp
+            location={{ query: { auth: 'success', type: 'logingov' } }}
+          />
+        </Provider>,
+      );
+
+      const event = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+      });
+      document.dispatchEvent(event);
+      expect(event.defaultPrevented).to.be.true;
+    });
+
+    it('releases lock and removes live region on unmount', () => {
+      const { unmount } = render(
+        <Provider store={mockStore}>
+          <AuthApp
+            location={{ query: { auth: 'success', type: 'logingov' } }}
+          />
+        </Provider>,
+      );
+
+      expect(document.body.style.pointerEvents).to.equal('none');
+      unmount();
+      expect(document.body.style.pointerEvents).to.equal('');
+      expect(document.body.style.cursor).to.equal('');
+      expect(document.querySelector('[aria-live="polite"].sr-only')).to.be.null;
+    });
+  });
+
   it('should redirect to /my-health', async () => {
     const originalLocation = window.location;
     if (!Location.prototype.replace) {
