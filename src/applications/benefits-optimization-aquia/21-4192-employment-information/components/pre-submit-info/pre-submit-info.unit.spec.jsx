@@ -20,21 +20,26 @@ describe('PreSubmitInfo Component', () => {
   });
 
   describe('isSignatureValid Function', () => {
-    it('should return false for empty signature', () => {
-      expect(isSignatureValid('')).to.be.false;
+    it('should return an error message for empty signature', () => {
+      // expect it to have the value Enter your full name
+      expect(isSignatureValid('')).to.equal('Enter your full name');
     });
 
-    it('should return false for null signature', () => {
-      expect(isSignatureValid(null)).to.be.false;
+    it('should return an error message for null signature', () => {
+      expect(isSignatureValid(null)).to.equal('Enter your full name');
     });
 
-    it('should return false for undefined signature', () => {
-      expect(isSignatureValid(undefined)).to.be.false;
+    it('should return an error message for undefined signature', () => {
+      expect(isSignatureValid(undefined)).to.equal('Enter your full name');
     });
 
-    it('should return false for signatures with less than 3 characters', () => {
-      expect(isSignatureValid('J')).to.be.false;
-      expect(isSignatureValid('Jo')).to.be.false;
+    it('should return an error message for signatures with less than 3 characters', () => {
+      expect(isSignatureValid('J')).to.equal(
+        'Name must be at least 3 characters long',
+      );
+      expect(isSignatureValid('Jo')).to.equal(
+        'Name must be at least 3 characters long',
+      );
     });
 
     it('should return true for signatures with 3+ characters', () => {
@@ -44,9 +49,15 @@ describe('PreSubmitInfo Component', () => {
     });
 
     it('should trim whitespace before validation', () => {
-      expect(isSignatureValid('   ')).to.be.false;
-      expect(isSignatureValid('  J  ')).to.be.false;
-      expect(isSignatureValid('  Jo  ')).to.be.false;
+      expect(isSignatureValid('   ')).to.equal(
+        'Name must be at least 3 characters long',
+      );
+      expect(isSignatureValid('  J  ')).to.equal(
+        'Name must be at least 3 characters long',
+      );
+      expect(isSignatureValid('  Jo  ')).to.equal(
+        'Name must be at least 3 characters long',
+      );
       expect(isSignatureValid('  Joe  ')).to.be.true;
       expect(isSignatureValid(' John Doe ')).to.be.true;
     });
@@ -68,27 +79,63 @@ describe('PreSubmitInfo Component', () => {
     });
 
     it('should reject names with numbers', () => {
-      expect(isSignatureValid('John123')).to.be.false;
-      expect(isSignatureValid('123 Main')).to.be.false;
-      expect(isSignatureValid('Test User 2')).to.be.false;
-      expect(isSignatureValid('Jane Doe 3rd')).to.be.false;
+      expect(isSignatureValid('John123')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('123 Main')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('Test User 2')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('Jane Doe 3rd')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
     });
 
     it('should reject names with invalid special characters', () => {
-      expect(isSignatureValid('John@Smith')).to.be.false;
-      expect(isSignatureValid('Jane#Doe')).to.be.false;
-      expect(isSignatureValid('Test$User')).to.be.false;
-      expect(isSignatureValid('Name (Nickname)')).to.be.false;
-      expect(isSignatureValid('User!!')).to.be.false;
-      expect(isSignatureValid('Name&Name')).to.be.false;
+      expect(isSignatureValid('John@Smith')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('Jane#Doe')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('Test$User')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('Name (Nickname)')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('User!!')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('Name&Name')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
     });
 
     it('should reject strings with only special characters (no letters)', () => {
-      expect(isSignatureValid('---')).to.be.false;
-      expect(isSignatureValid('...')).to.be.false;
-      expect(isSignatureValid('- - -')).to.be.false;
-      expect(isSignatureValid("'-'-'")).to.be.false;
-      expect(isSignatureValid('...---...')).to.be.false;
+      expect(isSignatureValid('- - -')).to.equal(
+        'Name must contain at least one letter',
+      );
+      expect(isSignatureValid("'-'-'")).to.equal(
+        'Name must contain at least one letter',
+      );
+      expect(isSignatureValid('...---...')).to.equal(
+        'Name must contain at least one letter',
+      );
+    });
+
+    it('should reject strings with only one unique character', () => {
+      expect(isSignatureValid('aaa')).to.equal(
+        'Name must contain more than one unique character',
+      );
+      expect(isSignatureValid('---')).to.equal(
+        'Name must contain more than one unique character',
+      );
+      expect(isSignatureValid('...')).to.equal(
+        'Name must contain more than one unique character',
+      );
     });
 
     it('should accept fixture test signatures', () => {
@@ -98,7 +145,7 @@ describe('PreSubmitInfo Component', () => {
     });
 
     it('should handle very long signatures', () => {
-      const longName = 'A'.repeat(100);
+      const longName = 'BA'.repeat(50);
       expect(isSignatureValid(longName)).to.be.true;
     });
   });
@@ -124,15 +171,27 @@ describe('PreSubmitInfo Component', () => {
     });
 
     it('should reject signatures with invalid characters even if length is valid', () => {
-      expect(isSignatureValid('Test User 123')).to.be.false; // Has numbers
-      expect(isSignatureValid('John@Doe')).to.be.false; // Has special char
-      expect(isSignatureValid('abc123')).to.be.false; // Has numbers
+      expect(isSignatureValid('Test User 123')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      ); // Has numbers
+      expect(isSignatureValid('John@Doe')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      ); // Has special char
+      expect(isSignatureValid('abc123')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      ); // Has numbers
     });
 
     it('should reject signatures shorter than 3 characters', () => {
-      expect(isSignatureValid('AB')).to.be.false;
-      expect(isSignatureValid('X')).to.be.false;
-      expect(isSignatureValid('Jo')).to.be.false;
+      expect(isSignatureValid('AB')).to.equal(
+        'Name must be at least 3 characters long',
+      );
+      expect(isSignatureValid('X')).to.equal(
+        'Name must be at least 3 characters long',
+      );
+      expect(isSignatureValid('Jo')).to.equal(
+        'Name must be at least 3 characters long',
+      );
     });
 
     it('should not perform any name comparison logic', () => {
@@ -150,8 +209,12 @@ describe('PreSubmitInfo Component', () => {
       expect(isSignatureValid('XYZ')).to.be.true;
 
       // But invalid characters are rejected
-      expect(isSignatureValid('123')).to.be.false;
-      expect(isSignatureValid('!!!')).to.be.false;
+      expect(isSignatureValid('123')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
+      expect(isSignatureValid('!!!')).to.equal(
+        'Name can only include letters, spaces, hyphens, apostrophes, and periods',
+      );
     });
 
     it('should accept names that do NOT match typical veteran names', () => {

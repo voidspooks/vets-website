@@ -15,25 +15,35 @@ import { setPreSubmit as setPreSubmitAction } from 'platform/forms-system/src/js
  * Allows letters (including accented/international characters), spaces, hyphens, apostrophes, and periods
  * Must contain at least one letter (rejects strings like "---" or "...")
  * Does not allow numbers or invalid special characters
+ * Cannot be all the same repeated character (e.g. "aaa", "   ", "---", "...")
  *
  * @param {string} signatureValue - The signature input value
- * @returns {boolean} - True if valid, false otherwise
+ * @returns {String | boolean} - Error message if invalid, or true if valid
  */
 export const isSignatureValid = signatureValue => {
-  if (!signatureValue) return false;
+  if (!signatureValue) return 'Enter your full name';
 
   const trimmed = signatureValue.trim();
-  if (trimmed.length < 3) return false;
+  if (trimmed.length < 3) return 'Name must be at least 3 characters long';
 
   // Allow letters (including Unicode/accented characters), spaces, hyphens, apostrophes, and periods
   // \p{L} matches any Unicode letter including é, ñ, ü, etc.
   // This supports names like "José García", "Mary-Jane O'Connor Jr.", "François Müller"
   // Note: Hyphen at end of character class to be literal, not a range
   const namePattern = /^[\p{L}\s'.-]+$/u;
-  if (!namePattern.test(trimmed)) return false;
+  if (!namePattern.test(trimmed))
+    return 'Name can only include letters, spaces, hyphens, apostrophes, and periods';
+
+  const repeatPattern = /^(.)(\1)*$/;
+  if (repeatPattern.test(trimmed))
+    return 'Name must contain more than one unique character';
 
   // Must contain at least one letter (prevents "---", "...", etc.)
-  return /\p{L}/u.test(trimmed);
+  const letterPattern = /\p{L}/u;
+  if (!letterPattern.test(trimmed))
+    return 'Name must contain at least one letter';
+
+  return true;
 };
 
 /**
@@ -79,7 +89,7 @@ const PreSubmitInfo = ({
   useEffect(
     () => {
       const isValid =
-        isSignatureValid(formData?.statementOfTruthSignature) &&
+        isSignatureValid(formData?.statementOfTruthSignature) === true &&
         formData?.statementOfTruthCertified === true;
 
       if (onSectionCompleteRef.current) {
@@ -109,8 +119,8 @@ const PreSubmitInfo = ({
 
   const signatureError =
     (showError || signatureBlurred) &&
-    !isSignatureValid(formData?.statementOfTruthSignature)
-      ? 'Enter your full name'
+    isSignatureValid(formData?.statementOfTruthSignature) !== true
+      ? isSignatureValid(formData?.statementOfTruthSignature)
       : undefined;
 
   const checkboxError =
