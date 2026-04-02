@@ -7,7 +7,13 @@ const ResultsList = ({ loading, query, searchData, typeaheadUsed }) => {
   const { results } = searchData;
 
   if (loading) {
-    return <va-loading-indicator message="Loading results..." />;
+    return (
+      <va-loading-indicator
+        label="Loading search results"
+        message="Loading results..."
+        set-focus
+      />
+    );
   }
 
   if (results && results.length > 0) {
