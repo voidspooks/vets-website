@@ -137,8 +137,11 @@ export default {
         depends: (formData, index) =>
           isChapterFieldRequired(formData, TASK_KEYS.report674) &&
           isAddingDependents(formData) &&
-          formData?.studentInformation?.[index]?.tuitionIsPaidByGovAgency ===
-            true,
+          (['ch35', 'fry', 'feca'].includes(
+            formData?.studentInformation?.[index]?.typeOfProgramOrBenefit,
+          ) ||
+            formData?.studentInformation?.[index]?.tuitionIsPaidByGovAgency ===
+              true),
       }),
       addStudentsPartTen: pageBuilder.itemPage({
         title: 'Add one or more students between ages 18 and 23',
