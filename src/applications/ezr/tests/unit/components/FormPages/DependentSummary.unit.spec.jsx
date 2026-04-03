@@ -228,7 +228,9 @@ describe('ezr DependentSummary page', () => {
     it('should fire the `setFormData` spy when confirming the action', async () => {
       const { props } = getData({ dependents: dependentData.populated });
       const { container } = render(<DependentSummary {...props} />);
-      const removeBtn = container.querySelector('.ezr-button-remove');
+      const removeBtn = container.querySelector(
+        'va-button-icon.ezr-button-remove-v3',
+      );
 
       fireEvent.click(removeBtn);
 
@@ -247,7 +249,9 @@ describe('ezr DependentSummary page', () => {
     it('should not fire the `setFormData` spy when canceling the action', async () => {
       const { props } = getData({ dependents: dependentData.populated });
       const { container } = render(<DependentSummary {...props} />);
-      const removeBtn = container.querySelector('.ezr-button-remove');
+      const removeBtn = container.querySelector(
+        'va-button-icon.ezr-button-remove-v3',
+      );
 
       fireEvent.click(removeBtn);
 

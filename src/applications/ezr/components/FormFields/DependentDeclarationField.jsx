@@ -45,7 +45,7 @@ const DependentDeclaration = ({ defaultValue, error, hasList, onChange }) => {
           'usa-input-error-label': error,
         })}
       >
-        <span className="vads-u-display--block vads-u-margin-top--2">
+        <span className="vads-u-display--block vads-u-margin-top--2 vads-u-font-weight--bold">
           {!hasList
             ? content['household-dependent-report-question']
             : content['household-dependent-report-question-addtl']}

@@ -134,23 +134,16 @@ const DependentList = ({ labelledBy, list, mode, onDelete }) => {
               aria-hidden="true"
             />
           </Link>
-          {/* eslint-disable-next-line @department-of-veterans-affairs/prefer-button-component */}
-          <button
-            type="button"
-            className="va-button-link ezr-button-remove"
+          <va-button-icon
+            class="ezr-button-remove-v3"
             onClick={() =>
               handlers.showConfirm({ index, description: modalDescription })
             }
+            button-type="delete"
+            uswds
           >
-            <va-icon
-              class="vads-u-margin-right--0p5"
-              icon="close"
-              size={3}
-              aria-hidden="true"
-            />{' '}
-            {content['button-remove']}{' '}
-            <span className="sr-only dd-privacy-mask">{dependentName}</span>
-          </button>
+            <span className="sr-only dd-privacy-mask">{dependentName}</span>{' '}
+          </va-button-icon>
         </span>
       </li>
     );
