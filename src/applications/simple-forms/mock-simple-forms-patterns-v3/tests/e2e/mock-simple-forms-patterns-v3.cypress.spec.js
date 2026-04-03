@@ -32,12 +32,15 @@ const testConfig = createTestConfig(
       'upload-file': ({ afterHook }) => {
         afterHook(() => {
           cy.fillVaFileInput('root_uploadedFile', {});
-          cy.selectVaFileInputAdditionalInfo('tax', 'root_uploadedFile');
+          cy.selectVaSelect('root_documentStatus', 'tax');
           cy.findByText(/continue/i, { selector: 'button' }).click();
         });
       },
       'supporting-documents': ({ afterHook }) => {
-        afterHook(() => addFile('private', 'root_supportingDocuments'));
+        afterHook(() => {
+          cy.fillVaFileInputMultiple('root_supportingDocuments', {});
+          cy.findByText(/continue/i, { selector: 'button' }).click();
+        });
       },
       'treatment-records/:index/supporting-documents': ({ afterHook }) => {
         afterHook(() => addFile('xray', 'root_supportingDocuments'));
