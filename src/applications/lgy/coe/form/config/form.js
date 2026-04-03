@@ -83,7 +83,11 @@ const formConfig = {
     },
   },
   title: 'Request a VA home loan Certificate of Eligibility (COE)',
-  subTitle: 'VA Form 26-1880',
+  subTitle: data => {
+    return data.formData[`view:${TOGGLE_KEY}`]
+      ? 'Request for a Certificate of Eligibility (VA Form 26-1880)'
+      : 'VA Form 26-1880';
+  },
   useCustomScrollAndFocus: true,
   defaultDefinitions: definitions,
   chapters: {

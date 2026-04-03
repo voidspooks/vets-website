@@ -6,6 +6,7 @@ import DocumentList from '../DocumentList';
 import DocumentUploader from '../DocumentUploader';
 import { MoreQuestions } from '../MoreQuestions';
 import { PendingAlert } from '../StatusAlerts/PendingAlert';
+import { PendingUploadAlert } from '../StatusAlerts/PendingUploadAlert';
 
 const Pending = ({
   notOnUploadPage,
@@ -26,22 +27,36 @@ const Pending = ({
     return <va-loading-indicator message="Loading your application..." />;
   }
 
+  let alert;
+  if (enableCveStatus && uploadsNeeded) {
+    alert = (
+      <PendingUploadAlert
+        referenceNumber={referenceNumber}
+        requestDate={requestDate}
+      />
+    );
+  } else if (enableCveStatus) {
+    alert = (
+      <PendingAlert
+        referenceNumber={referenceNumber}
+        requestDate={requestDate}
+      />
+    );
+  } else {
+    alert = (
+      <StatusAlert.Pending
+        origin="status"
+        referenceNumber={referenceNumber}
+        requestDate={requestDate}
+        status={status}
+      />
+    );
+  }
+
   return (
     <div className="row vads-u-margin-bottom--7">
       <div className="medium-8 columns">
-        {enableCveStatus ? (
-          <PendingAlert
-            referenceNumber={referenceNumber}
-            requestDate={requestDate}
-          />
-        ) : (
-          <StatusAlert.Pending
-            origin="status"
-            referenceNumber={referenceNumber}
-            requestDate={requestDate}
-            status={status}
-          />
-        )}
+        {alert}
         {uploadsNeeded ? <DocumentUploader /> : ''}
         <DocumentList notOnUploadPage={notOnUploadPage} />
         <h2>Should I request a COE again?</h2>
