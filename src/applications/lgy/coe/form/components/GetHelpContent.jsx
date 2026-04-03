@@ -40,11 +40,11 @@ export const GetHelpContent = () => (
       Select the category and topic for the VA benefit this form is related to.
     </p>
 
-    <va-link
-      href="/contact-us/ask-va/introduction/"
-      text="Contact us online through Ask VA"
-    />
-
-    <hr className="vads-u-margin-top--4 vads-u-margin-bottom--2" />
+    <p className="vads-u-margin-top--0">
+      <va-link
+        href="/contact-us/ask-va/introduction/"
+        text="Contact us online through Ask VA"
+      />
+    </p>
   </>
 );

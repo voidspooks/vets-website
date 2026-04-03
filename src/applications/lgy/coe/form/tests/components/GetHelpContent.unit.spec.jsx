@@ -54,8 +54,4 @@ describe('<GetHelpContent>', () => {
       '/contact-us/ask-va/introduction/',
     );
   });
-
-  it('should render an hr divider', () => {
-    expect($('hr', container)).to.exist;
-  });
 });
