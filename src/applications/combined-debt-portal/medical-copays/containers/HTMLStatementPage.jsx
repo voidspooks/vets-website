@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { format, isValid } from 'date-fns';
 import { VaBreadcrumbs } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
@@ -20,7 +21,9 @@ const HTMLStatementPage = ({ match }) => {
     useSelector(state => state),
   );
 
+  const location = useLocation();
   const selectedId = match.params.id;
+  const copayId = location.state?.copayId || selectedId;
   const combinedPortalData = useSelector(state => state.combinedPortal);
   const statements = combinedPortalData.mcp.statements ?? [];
   const userFullName = useSelector(({ user }) => user.profile.userFullName);
@@ -75,7 +78,7 @@ const HTMLStatementPage = ({ match }) => {
             label: 'Copay balances',
           },
           {
-            href: `/manage-va-debt/summary/copay-balances/${selectedId}`,
+            href: `/manage-va-debt/summary/copay-balances/${copayId}`,
             label: `${prevPage}`,
           },
           {

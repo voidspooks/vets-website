@@ -132,6 +132,25 @@ describe('PreviousStatements', () => {
     });
   });
 
+  it('should forward copayId to each HTMLStatementLink', () => {
+    const wrapper = mountWithRouter(
+      <PreviousStatements
+        previousStatements={[
+          vhaStatement('1', '2024-01-01'),
+          vhaStatement('2', '2024-02-01'),
+        ]}
+        isVHA
+        copayId="parent-copay-123"
+      />,
+    );
+
+    const links = wrapper.find(HTMLStatementLink);
+    expect(links).to.have.lengthOf(2);
+    expect(links.at(0).prop('copayId')).to.equal('parent-copay-123');
+    expect(links.at(1).prop('copayId')).to.equal('parent-copay-123');
+    wrapper.unmount();
+  });
+
   it('should return null when previousStatements is undefined', () => {
     const wrapper = mountWithRouter(
       <PreviousStatements previousStatements={undefined} />,

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import HTMLStatementLink from './HTMLStatementLink';
 
-const PreviousStatements = ({ previousStatements, isVHA }) => {
+const PreviousStatements = ({ previousStatements, isVHA, copayId }) => {
   if (!previousStatements?.length) return null;
 
   return (
@@ -21,6 +21,7 @@ const PreviousStatements = ({ previousStatements, isVHA }) => {
         {previousStatements.map(statement => (
           <HTMLStatementLink
             id={statement.id}
+            copayId={copayId}
             statementDate={
               isVHA ? statement.invoiceDate : statement.pSStatementDateOutput
             }
@@ -33,6 +34,7 @@ const PreviousStatements = ({ previousStatements, isVHA }) => {
 };
 
 PreviousStatements.propTypes = {
+  copayId: PropTypes.string,
   isVHA: PropTypes.bool,
   previousStatements: PropTypes.array,
 };

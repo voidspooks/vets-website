@@ -298,6 +298,7 @@ const DetailCopayPage = ({ match }) => {
           <PreviousStatements
             previousStatements={previousStatements}
             isVHA={shouldShowVHAPaymentHistory}
+            copayId={selectedId}
           />
         )}
         <StatementAddresses

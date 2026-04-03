@@ -6,7 +6,7 @@ import { VaLink } from '@department-of-veterans-affairs/component-library/dist/r
 
 import { formatDate } from '../../combined/utils/helpers';
 
-const HTMLStatementLink = ({ id, statementDate }) => {
+const HTMLStatementLink = ({ id, copayId, statementDate }) => {
   const history = useHistory();
 
   return (
@@ -16,7 +16,7 @@ const HTMLStatementLink = ({ id, statementDate }) => {
         onClick={event => {
           event.preventDefault();
           recordEvent({ event: 'cta-link-click-copay-statement-link' });
-          history.push(`/copay-balances/${id}/statement`);
+          history.push(`/copay-balances/${id}/statement`, { copayId });
         }}
         href={`/copay-balances/${id}/statement`}
         text={`${formatDate(statementDate)} statement`}
@@ -26,6 +26,7 @@ const HTMLStatementLink = ({ id, statementDate }) => {
 };
 
 HTMLStatementLink.propTypes = {
+  copayId: PropTypes.string,
   id: PropTypes.string,
   statementDate: PropTypes.string,
 };
