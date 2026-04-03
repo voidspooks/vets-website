@@ -87,13 +87,14 @@ const CalendarCell = ({
   const dateObj = parseISO(date);
   const dateDay = format(dateObj, 'd');
   const ariaDate = format(dateObj, 'EEEE, MMMM do');
+  const buttonPrefix = `${ariaDate}, ${disabled ? 'Unavailable' : 'Available'}`;
   const buttonLabel = inSelectedArray
-    ? `${ariaDate}, ${
+    ? `${buttonPrefix}, ${
         renderSelectedLabel
           ? renderSelectedLabel(date, selectedDates)
           : 'selected.'
       }`
-    : ariaDate;
+    : buttonPrefix;
 
   const cssClasses = classNames('vaos-calendar__calendar-day', {
     'vaos-calendar__day--current': isCurrentlySelected,

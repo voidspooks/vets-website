@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import { CalendarContext } from './CalendarContext';
@@ -78,6 +79,7 @@ export default function CalendarOptions({
   });
 
   const containerClasses = classNames('vaos-calendar__options-container');
+  const legendDate = format(parseISO(currentlySelectedDate), 'EEEE, MMMM do');
 
   return (
     <div
@@ -111,7 +113,7 @@ export default function CalendarOptions({
       )}
       <fieldset>
         <legend className="vads-u-visibility--screen-reader">
-          Please select an option for this date
+          Please select an option for {legendDate}
         </legend>
         {!!renderOptions &&
           renderOptions({
