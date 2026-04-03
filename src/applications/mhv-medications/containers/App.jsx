@@ -76,7 +76,7 @@ const App = ({ children }) => {
     site: 'ddog-gov.com',
     service: 'va.gov-mhv-medications',
     sessionSampleRate: 100,
-    sessionReplaySampleRate: 50,
+    sessionReplaySampleRate: 100,
     trackInteractions: true,
     trackFrustrations: true,
     trackUserInteractions: true,
