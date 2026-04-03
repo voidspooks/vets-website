@@ -941,6 +941,31 @@ export const flattenAttachments = formData => {
   return clonedData;
 };
 
+/**
+ * Adds attachmentId: L702 to separationHealthAssessmentUploads entries that are missing it.
+ * This is called at submit time for V1 SHA uploads (which intentionally omit attachmentId
+ * from form data to prevent the file-type dropdown from rendering in the UI).
+ *
+ * @param {object} formData - The form data containing SHA uploads
+ * @returns {object} - Form data with SHA uploads updated to include attachmentId
+ */
+export const setSeparationHealthAssessmentAttachmentId = formData => {
+  const uploads = formData.separationHealthAssessmentUploads;
+  if (!uploads) return formData;
+
+  const clonedData = _.cloneDeep(formData);
+  clonedData.separationHealthAssessmentUploads = uploads.map(upload => {
+    // Only add attachmentId if it's missing (V1 path without dropdown)
+    // Preserve any existing attachmentId (V3 path with additionalData)
+    if (!upload.attachmentId) {
+      return { ...upload, attachmentId: 'L702' };
+    }
+    return upload;
+  });
+
+  return clonedData;
+};
+
 // Flatten all attachment pages into attachments ARRAY
 export const addFileAttachments = formData => {
   const clonedData = flattenAttachments(formData);

@@ -481,9 +481,7 @@ describe('SHA upload attachment transformation', () => {
         ],
       },
     };
-
     const result = JSON.parse(transform(formConfig, form));
-
     expect(result.form526.attachments)
       .to.be.an('array')
       .with.lengthOf(1);
@@ -495,5 +493,86 @@ describe('SHA upload attachment transformation', () => {
     expect(result.form526).to.not.have.property(
       'separationHealthAssessmentUploads',
     );
+  });
+
+  it('adds attachmentId: L702 to V1 SHA uploads that are missing it', () => {
+    const form = {
+      data: {
+        ...minimalBddData.data,
+        serviceInformation: {
+          ...minimalBddData.data.serviceInformation,
+          servicePeriods: [
+            {
+              serviceBranch: 'Air Force',
+              dateRange: {
+                from: '2001-03-21',
+                to: daysFromToday(90),
+              },
+            },
+          ],
+        },
+        disability526NewBddShaEnforcementWorkflowEnabled: true,
+        'view:hasSeparationHealthAssessment': true,
+        separationHealthAssessmentUploads: [
+          {
+            name: 'sha-part-a.pdf',
+            confirmationCode: 'sha-code-123',
+            size: 1024,
+            type: 'application/pdf',
+            // Note: no attachmentId (V1 upload without dropdown)
+          },
+        ],
+      },
+    };
+
+    const result = JSON.parse(transform(formConfig, form));
+
+    expect(result.form526.attachments).to.be.an('array');
+    const shaAttachment = result.form526.attachments.find(
+      attachment => attachment.name === 'sha-part-a.pdf',
+    );
+    expect(shaAttachment).to.exist;
+    expect(shaAttachment.attachmentId).to.equal('L702');
+    expect(shaAttachment.confirmationCode).to.equal('sha-code-123');
+  });
+
+  it('preserves existing attachmentId on SHA uploads', () => {
+    const form = {
+      data: {
+        ...minimalBddData.data,
+        serviceInformation: {
+          ...minimalBddData.data.serviceInformation,
+          servicePeriods: [
+            {
+              serviceBranch: 'Air Force',
+              dateRange: {
+                from: '2001-03-21',
+                to: daysFromToday(90),
+              },
+            },
+          ],
+        },
+        disability526NewBddShaEnforcementWorkflowEnabled: true,
+        'view:hasSeparationHealthAssessment': true,
+        separationHealthAssessmentUploads: [
+          {
+            name: 'sha-part-a.pdf',
+            confirmationCode: 'sha-code-123',
+            attachmentId: 'L702',
+            size: 1024,
+            type: 'application/pdf',
+            // V3 path already includes attachmentId via additionalData
+          },
+        ],
+      },
+    };
+
+    const result = JSON.parse(transform(formConfig, form));
+
+    expect(result.form526.attachments).to.be.an('array');
+    const shaAttachment = result.form526.attachments.find(
+      attachment => attachment.name === 'sha-part-a.pdf',
+    );
+    expect(shaAttachment.attachmentId).to.equal('L702');
   });
 });

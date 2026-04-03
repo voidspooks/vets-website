@@ -7,22 +7,45 @@
  */
 
 import React from 'react';
+import fileUploadUI from 'platform/forms-system/src/js/definitions/file';
+import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 
 import { isUploadingBddSha } from '../utils';
-import { ancillaryFormUploadUi, getAttachmentsSchema } from '../utils/schemas';
-import { MAX_FILE_SIZE_MB, MAX_PDF_FILE_SIZE_MB } from '../constants';
+import { createPayload } from '../utils/fileInputComponent/fileInputMultiUIConfig';
+import {
+  MAX_FILE_SIZE_MB,
+  MAX_PDF_FILE_SIZE_MB,
+  MAX_FILE_SIZE_BYTES,
+  MAX_PDF_FILE_SIZE_BYTES,
+} from '../constants';
 
 const MAXIMUM_NUMBER_OF_FILES = 20;
-const SHA_ATTACHMENT_ID = 'L702';
 
-const fileUploadUi = ancillaryFormUploadUi(
-  'Upload your Separation Health Assessment (self-assessment, also called “Part A”) to support your claim.',
-  '',
+/**
+ * Custom parseResponse that does NOT include attachmentId in form data.
+ * This prevents the file-type dropdown from rendering in the UI.
+ * The attachmentId will be added at submit time in the transformer.
+ */
+const parseShaResponse = (response, file) => ({
+  name: file?.name,
+  confirmationCode: response?.data?.attributes?.guid,
+  // Note: attachmentId intentionally omitted from form data to prevent UI dropdown
+});
+
+const fileUploadUi = fileUploadUI(
+  'Upload your Separation Health Assessment (self-assessment, also called "Part A") to support your claim.',
   {
-    attachmentId: SHA_ATTACHMENT_ID,
-    addAnotherLabel: 'Add another file',
+    itemDescription: '',
+    hideLabelText: false,
+    fileUploadUrl: `${environment.API_URL}/v0/upload_supporting_evidence`,
     buttonText: 'Upload file',
-    isDisabled: true,
+    addAnotherLabel: 'Add another file',
+    fileTypes: ['pdf', 'jpg', 'jpeg', 'png'],
+    maxSize: MAX_FILE_SIZE_BYTES,
+    maxPdfSize: MAX_PDF_FILE_SIZE_BYTES,
+    minSize: 1,
+    createPayload,
+    parseResponse: parseShaResponse,
   },
 );
 
@@ -81,7 +104,19 @@ export const schema = {
       properties: {},
     },
     separationHealthAssessmentUploads: {
-      ...getAttachmentsSchema(SHA_ATTACHMENT_ID),
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['name'],
+        properties: {
+          name: {
+            type: 'string',
+          },
+          confirmationCode: {
+            type: 'string',
+          },
+        },
+      },
       minItems: 1,
       maxItems: MAXIMUM_NUMBER_OF_FILES,
     },

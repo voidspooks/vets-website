@@ -15,11 +15,12 @@ describe('separationHealthAssessmentUploadV1 page', () => {
   const uploadOptions = uploadField['ui:options'];
 
   describe('schema', () => {
-    it('sets the SHA attachment id by default', () => {
-      expect(
-        schema.properties.separationHealthAssessmentUploads.items.properties
-          .attachmentId.default,
-      ).to.equal('L702');
+    it('omits attachmentId to prevent file-type dropdown rendering', () => {
+      const itemProperties =
+        schema.properties.separationHealthAssessmentUploads.items.properties;
+      expect(itemProperties).to.not.have.property('attachmentId');
+      expect(itemProperties).to.have.property('name');
+      expect(itemProperties).to.have.property('confirmationCode');
     });
 
     it('enforces minItems: 1 to reject empty file arrays', () => {
@@ -119,7 +120,7 @@ describe('separationHealthAssessmentUploadV1 page', () => {
   });
 
   describe('parseResponse', () => {
-    it('maps upload response to the fixed SHA attachment id', () => {
+    it('returns file data without attachmentId to prevent UI dropdown', () => {
       const { parseResponse } = uploadOptions;
       const file = { name: 'sha-part-a.pdf' };
       const response = {
@@ -135,8 +136,8 @@ describe('separationHealthAssessmentUploadV1 page', () => {
       expect(result).to.deep.equal({
         name: 'sha-part-a.pdf',
         confirmationCode: 'sha-guid-123',
-        attachmentId: 'L702',
       });
+      expect(result).to.not.have.property('attachmentId');
     });
   });
 });
