@@ -22,7 +22,6 @@ import {
 } from 'platform/forms/address';
 
 import { isValidDateRange } from 'platform/forms-system/src/js/utilities/validations';
-
 import { convertToDateField } from 'platform/forms-system/src/js/validation';
 
 /**
@@ -154,6 +153,79 @@ export const isValidNameLength = (errors, fieldData, length) => {
   }
 };
 
+/*
+ * @param {Object} errorMessages - a map of error message strings
+ * @param errorMessages.month - message for month not being selected
+ * @param errorMessages.past - message for date being too far in the past
+ * @param errorMessages.future - message for the date being in the future
+ * @returns {Function} A validation function for use in a form schema
+ * Validates that the date is valid, not more than 120 years in the past, and not in the future.
+ * Expects fieldData to have day, month, and year properties (e.g. from a DateField component).
+ */
+export const isValidDate = (errorMessages = {}) => {
+  return (errors, fieldData) => {
+    const { day, month, year } = convertToDateField(fieldData);
+    if (!month.value) {
+      errors.addError(errorMessages.month || 'Select a month');
+      return;
+    }
+
+    // prevent dates from 120 years ago including month and day
+    const date120YearsAgo = new Date();
+    date120YearsAgo.setFullYear(date120YearsAgo.getFullYear() - 120);
+    if (year.value && month.value && day.value) {
+      const inputDate = new Date(year.value, month.value - 1, day.value);
+      if (inputDate < date120YearsAgo) {
+        errors.addError(
+          errorMessages.past || 'Enter a date within the last 120 years',
+        );
+        return;
+      }
+    }
+
+    if (month.value && year.value && month.value >= 1 && month.value <= 12) {
+      const maxDay = new Date(year.value, month.value, 0).getDate();
+      if (day.value < 1 || day.value > maxDay || !day.value) {
+        errors.addError(
+          errorMessages.day ||
+            `Enter a day between 1 and ${maxDay} in selected month`,
+        );
+        return;
+      }
+    }
+    // disallow future dates
+    const today = new Date();
+    const inputDate = new Date(year.value, month.value - 1, day.value);
+    if (inputDate > today) {
+      errors.addError(
+        errorMessages.future || `Enter a date before today's date`,
+      );
+    }
+  };
+};
+
+/**
+ *
+ * @param {number} minAge - minimum age in years (e.g. 14 for birth date validation)
+ * @param {string} message - message to display when validation fails (optional)
+ * @returns {Function} A validation function for use in a form schema
+ */
+export const isValidBirthDateAgeLimit = (minAge, message) => {
+  return (errors, fieldData) => {
+    const { day, month, year } = convertToDateField(fieldData);
+    // must be at least 14 years old
+    if (day && month && year) {
+      const birthDate = new Date(year.value, month.value - 1, day.value);
+      const ageLimit = new Date();
+      ageLimit.setFullYear(ageLimit.getFullYear() - minAge);
+      if (birthDate > ageLimit) {
+        errors.addError(
+          message || `Enter a date at least ${minAge} years in the past`,
+        );
+      }
+    }
+  };
+};
 export const isDateAfterDOB = message => {
   return (errors, fieldData, formData) => {
     const dateToValidate = convertToDateField(fieldData);

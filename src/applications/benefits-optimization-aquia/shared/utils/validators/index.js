@@ -16,6 +16,7 @@ export {
   isValidVAFileNumber,
   isValidMexicoPostalCode,
   isValidMilitaryZip,
+  isValidDate,
   isDateAfterDOB,
   isValidNameLength,
   MILITARY_ZIP_PATTERNS,

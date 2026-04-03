@@ -12,7 +12,11 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 
 import { isPatientVeteran } from '../utils';
-import { isValidNameLength } from '../../shared/utils/validators/validators';
+import {
+  isValidNameLength,
+  isValidBirthDateAgeLimit,
+  isValidDate,
+} from '../../shared/utils/validators/validators';
 
 const customVeteranNameUISchema = () => {
   const baseSchema = fullNameNoSuffixUI();
@@ -61,9 +65,22 @@ export const veteranPersonalInfoUiSchema = {
   'ui:title': "Veteran's name and date of birth",
   veteranPersonalInfo: {
     fullName: customVeteranNameUISchema(),
-    dateOfBirth: dateOfBirthUI({
-      dataDogHidden: true,
-    }),
+    dateOfBirth: {
+      ...dateOfBirthUI({
+        dataDogHidden: true,
+      }),
+      'ui:validations': [
+        isValidBirthDateAgeLimit(
+          14,
+          'Enter a date at least 14 years in the past',
+        ),
+        isValidDate({
+          month: 'Select a month',
+          past: 'Enter a date within the last 120 years',
+          future: 'Enter a date before today',
+        }),
+      ],
+    },
   },
   'ui:options': {
     updateUiSchema: (formData, fullData) => {
