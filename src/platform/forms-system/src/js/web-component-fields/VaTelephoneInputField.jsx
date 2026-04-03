@@ -45,6 +45,7 @@ export default function VaTelephoneInputField(props) {
         detail: {
           callingCode: 1,
           contact: 'not valid',
+          contactRaw: 'not valid',
           countryCode: 'US',
           error: 'This is a test',
           isValid: false,
