@@ -72,23 +72,50 @@ const generateAppCoverage = (rootDir, coverageSummary) => {
             coverageSummary[fullCoveragePath][seg].total;
           coverageItem[seg].covered +=
             coverageSummary[fullCoveragePath][seg].covered;
-          coverageItem[seg].pct = (
-            (coverageItem[seg].covered / coverageItem[seg].total) * 100 || 0
-          ).toFixed(2);
+          coverageItem[seg].pct = parseFloat(
+            (
+              (coverageItem[seg].covered / coverageItem[seg].total) * 100 || 0
+            ).toFixed(2),
+          );
         }
       });
       return acc;
     }, initialCoverage);
 };
 
+const sanitizeCoverageMetric = metric => {
+  if (!metric) return { total: 0, covered: 0, pct: 0 };
+
+  return {
+    total: metric.total || 0,
+    covered: metric.covered || 0,
+    pct:
+      metric.pct === 'Unknown' ||
+      metric.pct === undefined ||
+      metric.pct === null
+        ? 0
+        : parseFloat(metric.pct),
+  };
+};
+
+const sanitizeCoverageData = coverage => {
+  return {
+    path: coverage.path || '/',
+    lines: sanitizeCoverageMetric(coverage.lines),
+    statements: sanitizeCoverageMetric(coverage.statements),
+    functions: sanitizeCoverageMetric(coverage.functions),
+    branches: sanitizeCoverageMetric(coverage.branches),
+  };
+};
+
 const generateCoverage = (rootDir, coverageSummary) => {
   const appCoverage = generateAppCoverage(rootDir, coverageSummary);
 
   return {
-    'all-files': {
+    'all-files': sanitizeCoverageData({
       path: '/',
       ...coverageSummary.total,
-    },
+    }),
     ...appCoverage,
   };
 };
