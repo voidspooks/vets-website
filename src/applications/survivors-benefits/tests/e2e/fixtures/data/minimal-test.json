@@ -71,7 +71,9 @@
     },
     "claimantHasAdditionalMarriages": true,
     "recognizedAsSpouse": true,
-    "hadPreviousMarriages": false,
+    "hadPreviousMarriages": {
+      "neither": true
+    },
     "pregnantWithVeteran": false,
     "childWithVeteran": false,
     "veteranChildrenCount": "0",

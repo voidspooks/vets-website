@@ -46,6 +46,43 @@ describe('Survivors Benefits submit transformer', () => {
     expect(form.marriageToVeteranEndDate).to.exist;
     expect(form.marriageToVeteranEndDate).to.equal('2020-01-01');
   });
+
+  it('should transform hadPreviousMarriages selections to a boolean true value', () => {
+    const formConfig = {};
+    const transformed = JSON.parse(transform(formConfig, completedForm));
+    const form = JSON.parse(transformed.survivorsBenefitsClaim.form);
+
+    expect(form.hadPreviousMarriages).to.equal(true);
+  });
+
+  it('should set hadPreviousMarriages to true when claimant is selected', () => {
+    const formConfig = {};
+
+    const completeForm = {
+      ...completedForm,
+      hadPreviousMarriages: {
+        claimant: true,
+      },
+    };
+    const transformed = JSON.parse(transform(formConfig, completeForm));
+    const submittedForm = JSON.parse(transformed.survivorsBenefitsClaim.form);
+
+    expect(submittedForm.hadPreviousMarriages).to.equal(true);
+  });
+
+  it('should set hadPreviousMarriages to false when neither is selected', () => {
+    const formConfig = {};
+    const completeForm = {
+      ...completedForm,
+      hadPreviousMarriages: {
+        neither: true,
+      },
+    };
+    const transformed = JSON.parse(transform(formConfig, completeForm));
+    const submittedForm = JSON.parse(transformed.survivorsBenefitsClaim.form);
+
+    expect(submittedForm.hadPreviousMarriages).to.equal(false);
+  });
 });
 
 describe('feature flag - unit name and address transformation', () => {

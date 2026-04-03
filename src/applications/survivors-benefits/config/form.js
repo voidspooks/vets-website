@@ -432,8 +432,7 @@ const formConfig = {
           path: 'household/children-of-veteran',
           title: 'Children of Veteran',
           depends: formData =>
-            formData.claimantRelationship === 'SURVIVING_SPOUSE' ||
-            formData.hadPreviousMarriages === true,
+            formData.claimantRelationship === 'SURVIVING_SPOUSE',
           uiSchema: veteranChildren.uiSchema,
           schema: veteranChildren.schema,
         },

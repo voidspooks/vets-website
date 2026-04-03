@@ -12,7 +12,10 @@
   "view:vaMedicalCentersMissingInformation": {},
   "view:isAddingDicBenefits": false,
   "recognizedAsSpouse": true,
-  "hadPreviousMarriages": true,
+  "hadPreviousMarriages": {
+    "claimant": true,
+    "veteran": true
+  },
   "remarriedAfterVeteralDeath": true,
   "remarriageDates": {
     "from": "2020-01-01",

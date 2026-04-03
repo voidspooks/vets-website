@@ -12,6 +12,18 @@ import {
 } from '../../../../config/chapters/04-household-information/veteranMarriagesPages';
 import { previousMarriageEndOptions } from '../../../../utils/labels';
 
+const veteranPreviousMarriage = {
+  hadPreviousMarriages: {
+    veteran: true,
+  },
+};
+
+const noVeteranPreviousMarriage = {
+  hadPreviousMarriages: {
+    neither: true,
+  },
+};
+
 describe('Veteran Previous Marriages pages', () => {
   const {
     veteranMarriagesIntro,
@@ -30,21 +42,21 @@ describe('Veteran Previous Marriages pages', () => {
     return wrapper ? wrapper.items : null;
   };
 
-  it('renders intro description and depends logic honors SURVIVING_SPOUSE + hadPreviousMarriages', () => {
+  it('renders intro description and depends logic honors SURVIVING_SPOUSE + veteran previous marriage', () => {
     expect(veteranMarriagesIntro, 'intro page').to.exist;
 
     // depends logic scenarios
     const showData = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNotSpouse = {
       claimantRelationship: 'CHILD',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNoPrevious = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: false,
+      ...noVeteranPreviousMarriage,
     };
     expect(veteranMarriagesIntro.depends(showData)).to.be.true;
     expect(veteranMarriagesIntro.depends(hideDataNotSpouse)).to.be.false;
@@ -64,21 +76,21 @@ describe('Veteran Previous Marriages pages', () => {
     );
   });
 
-  it('renders summary description and depends logic honors SPOUSE + hadPreviousMarriages', () => {
+  it('renders summary description and depends logic honors SPOUSE + veteran previous marriage', () => {
     expect(veteranMarriagesSummary, 'summary page').to.exist;
 
     // depends logic scenarios
     const showData = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNotSpouse = {
       claimantRelationship: 'CHILD',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNoPrevious = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: false,
+      ...noVeteranPreviousMarriage,
     };
     expect(veteranMarriagesSummary.depends(showData)).to.be.true;
     expect(veteranMarriagesSummary.depends(hideDataNotSpouse)).to.be.false;
@@ -93,7 +105,7 @@ describe('Veteran Previous Marriages pages', () => {
     );
   });
 
-  it('renders veteran previous spouse name and depends logic honors SPOUSE + hadPreviousMarriages', () => {
+  it('renders veteran previous spouse name and depends logic honors SPOUSE + veteran previous marriage', () => {
     expect(
       veteranPreviousSpouseName,
       'veteranPreviousSpouseName page definition',
@@ -102,15 +114,15 @@ describe('Veteran Previous Marriages pages', () => {
     // depends logic scenarios (same gating as intro/summary pages)
     const showData = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNotSpouse = {
       claimantRelationship: 'CHILD',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNoPrevious = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: false,
+      ...noVeteranPreviousMarriage,
     };
     expect(veteranPreviousSpouseName.depends(showData)).to.be.true;
     expect(veteranPreviousSpouseName.depends(hideDataNotSpouse)).to.be.false;
@@ -179,19 +191,19 @@ describe('Veteran Previous Marriages pages', () => {
     expect(Boolean(countryRequired(itemEndedOutside, 0))).to.be.true;
   });
 
-  it('veteranMarriageDatePlace depends logic honors SPOUSE + hadPreviousMarriages and shows dateOfMarriage', () => {
+  it('veteranMarriageDatePlace depends logic honors SPOUSE + veteran previous marriage and shows dateOfMarriage', () => {
     // depends logic scenarios
     const showData = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNotSpouse = {
       claimantRelationship: 'CHILD',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNoPrevious = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: false,
+      ...noVeteranPreviousMarriage,
     };
     expect(
       veteranMarriageDatePlace.depends(showData),
@@ -240,19 +252,19 @@ describe('Veteran Previous Marriages pages', () => {
     expect(Boolean(requiredFn({}))).to.be.true;
   });
 
-  it('veteranMarriageEnded depends logic honors SPOUSE + hadPreviousMarriages and includes reasonForSeparation radio + reasonForSeparationExplanation expansion and validation', () => {
+  it('veteranMarriageEnded depends logic honors SPOUSE + veteran previous marriage and includes reasonForSeparation radio + reasonForSeparationExplanation expansion and validation', () => {
     // depends logic scenarios
     const showData = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNotSpouse = {
       claimantRelationship: 'CHILD',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNoPrevious = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: false,
+      ...noVeteranPreviousMarriage,
     };
     expect(
       veteranMarriageEnded.depends(showData),
@@ -312,19 +324,19 @@ describe('Veteran Previous Marriages pages', () => {
     );
   });
 
-  it('veteranMarriageEndDateLocation depends logic honors SPOUSE + hadPreviousMarriages and dateOfSeparation is visible with correct title, description, and is required', () => {
+  it('veteranMarriageEndDateLocation depends logic honors SPOUSE + veteran previous marriage and dateOfSeparation is visible with correct title, description, and is required', () => {
     // depends logic scenarios
     const showData = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNotSpouse = {
       claimantRelationship: 'CHILD',
-      hadPreviousMarriages: true,
+      ...veteranPreviousMarriage,
     };
     const hideDataNoPrevious = {
       claimantRelationship: 'SURVIVING_SPOUSE',
-      hadPreviousMarriages: false,
+      ...noVeteranPreviousMarriage,
     };
     expect(
       veteranMarriageEndDateLocation.depends(showData),

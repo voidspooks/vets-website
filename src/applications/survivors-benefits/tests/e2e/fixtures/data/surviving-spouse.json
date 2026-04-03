@@ -56,7 +56,9 @@
     "livedContinuouslyWithVeteran": true,
     "remarriedAfterVeteralDeath": false,
     "recognizedAsSpouse": true,
-    "hadPreviousMarriages": false,
+    "hadPreviousMarriages": {
+      "neither": true
+    },
     "pregnantWithVeteran": false,
     "childWithVeteran": true,
     "veteranChildrenCount": 0,

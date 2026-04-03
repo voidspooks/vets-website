@@ -31,8 +31,9 @@ import { validations } from '../../validations';
 
 // Show previous marriages pages ONLY if user answered YES to hadPreviousMarriages
 // Ansering NO skips all previous marriage flows and jumps to Dependents
-const shouldShowPreviousMarriages = formData =>
-  formData.hadPreviousMarriages === true;
+const showClaimantMarriagePage = formData =>
+  formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
+  formData.hadPreviousMarriages?.claimant === true;
 
 /** @type {ArrayBuilderOptions} */
 // arrayPath is spouseMarriages because it's the spouse's previous marriages
@@ -383,9 +384,7 @@ export const previousMarriagesPages = arrayBuilderPages(
     previousMarriagesIntro: pageBuilder.introPage({
       title: 'Your previous marriages',
       path: 'household/previous-marriage-intro',
-      depends: formData =>
-        formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-        shouldShowPreviousMarriages(formData),
+      depends: formData => showClaimantMarriagePage(formData),
       uiSchema: introPage.uiSchema,
       schema: introPage.schema,
     }),
@@ -393,45 +392,35 @@ export const previousMarriagesPages = arrayBuilderPages(
       title:
         'Do you have a marriage to add that was before your marriage to the Veteran?',
       path: 'household/previous-marriage',
-      depends: formData =>
-        formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-        shouldShowPreviousMarriages(formData),
+      depends: formData => showClaimantMarriagePage(formData),
       uiSchema: summaryPage.uiSchema,
       schema: summaryPage.schema,
     }),
     previousMarriageItemPage: pageBuilder.itemPage({
       title: 'Previous spouse’s name',
       path: 'household/previous-marriage/:index/name',
-      depends: formData =>
-        formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-        shouldShowPreviousMarriages(formData),
+      depends: formData => showClaimantMarriagePage(formData),
       uiSchema: previousMarriageItemPage.uiSchema,
       schema: previousMarriageItemPage.schema,
     }),
     previousMarriageDateAndLocationPage: pageBuilder.itemPage({
       title: 'When and where did you get married?',
       path: 'household/previous-marriage/:index/date-and-location',
-      depends: formData =>
-        formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-        shouldShowPreviousMarriages(formData),
+      depends: formData => showClaimantMarriagePage(formData),
       uiSchema: marriageDateAndLocationPage.uiSchema,
       schema: marriageDateAndLocationPage.schema,
     }),
     previousMarriageEndPage: pageBuilder.itemPage({
       title: 'How did the marriage end?',
       path: 'household/previous-marriage/:index/end',
-      depends: formData =>
-        formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-        shouldShowPreviousMarriages(formData),
+      depends: formData => showClaimantMarriagePage(formData),
       uiSchema: marriageEndPage.uiSchema,
       schema: marriageEndPage.schema,
     }),
     previousMarriageEndDateAndLocationPage: pageBuilder.itemPage({
       title: 'When and where did your marriage end?',
       path: 'household/previous-marriage/:index/end-date-and-location',
-      depends: formData =>
-        formData.claimantRelationship === 'SURVIVING_SPOUSE' &&
-        shouldShowPreviousMarriages(formData),
+      depends: formData => showClaimantMarriagePage(formData),
       uiSchema: marriageEndDateAndLocationPage.uiSchema,
       schema: marriageEndDateAndLocationPage.schema,
     }),

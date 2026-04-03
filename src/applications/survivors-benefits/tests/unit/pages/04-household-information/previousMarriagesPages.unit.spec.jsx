@@ -11,6 +11,18 @@ import {
   options,
 } from '../../../../config/chapters/04-household-information/previousMarriagesPages';
 
+const claimantPreviousMarriage = {
+  hadPreviousMarriages: {
+    claimant: true,
+  },
+};
+
+const noPreviousMarriage = {
+  hadPreviousMarriages: {
+    neither: true,
+  },
+};
+
 describe('Previous marriages pages', () => {
   const {
     previousMarriagesIntro,
@@ -29,147 +41,133 @@ describe('Previous marriages pages', () => {
     return wrapper ? wrapper.items : null;
   };
 
-  it('renders intro and summary only when spouse answered Yes to previous marriages', () => {
-    // when recognizedAsSpouse true and hadPreviousMarriages true => should show
+  it('renders intro and summary only when claimant selected a previous marriage', () => {
     const formData1 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: true,
-      hadPreviousMarriages: true,
+      ...claimantPreviousMarriage,
     };
     expect(previousMarriagesIntro.depends(formData1)).to.equal(true);
     expect(previousMarriagesSummary.depends(formData1)).to.equal(true);
 
-    // when not recognized as spouse and hadPreviousMarriages false => shouldn't show
     const formData2 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: false, // Answered NO
+      ...noPreviousMarriage,
     };
     expect(previousMarriagesIntro.depends(formData2)).to.equal(false);
     expect(previousMarriagesSummary.depends(formData2)).to.equal(false);
 
-    // when claimantRelationship not SURVIVING_SPOUSE => shouldn't show
     const formData3 = {
       claimantRelationship: 'CHILD',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: true,
+      ...claimantPreviousMarriage,
     };
     expect(previousMarriagesIntro.depends(formData3)).to.equal(false);
     expect(previousMarriagesSummary.depends(formData3)).to.equal(false);
 
-    // when spouse has been married before => should show
     const formData4 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: true,
-      hadPreviousMarriages: true,
+      hadPreviousMarriages: {
+        claimant: true,
+        veteran: true,
+      },
     };
     expect(previousMarriagesIntro.depends(formData4)).to.equal(true);
     expect(previousMarriagesSummary.depends(formData4)).to.equal(true);
   });
 
-  it('shows Previous Spouse Name page only when spouse answered Yes to previous marriages', () => {
-    // when recognizedAsSpouse true and hadPreviousMarriages false => shouldn't show
+  it('shows Previous Spouse Name page only when claimant selected a previous marriage', () => {
     const formData1 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: true,
-      hadPreviousMarriages: false, // Answered NO
+      ...noPreviousMarriage,
     };
     expect(previousMarriageItemPage.depends(formData1)).to.be.false;
-    // console.log('dependentsIntro', dependentsIntro);
 
-    // when not recognized as spouse => shouldn't show
     const formData2 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageItemPage.depends(formData2)).to.be.false;
 
-    // when claimantRelationship not SURVIVING_SPOUSE => shouldn't show
     const formData3 = {
       claimantRelationship: 'CHILD',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: true,
+      ...claimantPreviousMarriage,
     };
     expect(previousMarriageItemPage.depends(formData3)).to.be.false;
   });
 
-  it('shows Marriage Date and Location page only when spouse answered Yes to previous marriages', () => {
-    // when recognizedAsSpouse true and hadPreviousMarriages false => shouldn't show
+  it('shows Marriage Date and Location page only when claimant selected a previous marriage', () => {
     const formData1 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: true,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageDateAndLocationPage.depends(formData1)).to.be.false;
 
-    // when not recognized as spouse => shouldn't show
     const formData2 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageDateAndLocationPage.depends(formData2)).to.be.false;
 
-    // when claimantRelationship not SURVIVING_SPOUSE => shouldn't show
     const formData3 = {
       claimantRelationship: 'CHILD',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: true,
+      ...claimantPreviousMarriage,
     };
     expect(previousMarriageDateAndLocationPage.depends(formData3)).to.be.false;
   });
 
-  it('shows Marriage End Reason page only when spouse answered Yes to previous marriages', () => {
-    // when recognizedAsSpouse true and hadPreviousMarriages false => shouldn't show
+  it('shows Marriage End Reason page only when claimant selected a previous marriage', () => {
     const formData1 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: true,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageEndPage.depends(formData1)).to.be.false;
 
-    // when not recognized as spouse => shouldn't show
     const formData2 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageEndPage.depends(formData2)).to.be.false;
 
-    // when claimantRelationship not SURVIVING_SPOUSE => shouldn't show
     const formData3 = {
       claimantRelationship: 'CHILD',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: true,
+      ...claimantPreviousMarriage,
     };
     expect(previousMarriageEndPage.depends(formData3)).to.be.false;
   });
 
-  it('shows Marriage End Date and Location page only when spouse answered Yes to previous marriages', () => {
-    // when recognizedAsSpouse true and hadPreviousMarriages false => shouldn't show
+  it('shows Marriage End Date and Location page only when claimant selected a previous marriage', () => {
     const formData1 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: true,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageEndDateAndLocationPage.depends(formData1)).to.be
       .false;
 
-    // when not recognized as spouse => shouldn't show
     const formData2 = {
       claimantRelationship: 'SURVIVING_SPOUSE',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: false,
+      ...noPreviousMarriage,
     };
     expect(previousMarriageEndDateAndLocationPage.depends(formData2)).to.be
       .false;
 
-    // when claimantRelationship not SURVIVING_SPOUSE => shouldn't show
     const formData3 = {
       claimantRelationship: 'CHILD',
       recognizedAsSpouse: false,
-      hadPreviousMarriages: true,
+      ...claimantPreviousMarriage,
     };
     expect(previousMarriageEndDateAndLocationPage.depends(formData3)).to.be
       .false;

@@ -8,6 +8,7 @@ export * from './splitSsn';
 export * from './switchToInternationalPhone';
 export * from './transformCareExpenses';
 export * from './transformClaim';
+export * from './transformPreviousMarriages';
 export * from './updateFullNames';
 export * from './updateBankValues';
 export * from './autoPopulateMarriageEndDate';

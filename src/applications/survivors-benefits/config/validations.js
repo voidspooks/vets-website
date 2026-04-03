@@ -12,6 +12,18 @@ const checkIfEndDateAfterStartDate = (endDate, startDate) => {
 };
 
 export const validations = {
+  previousMarriageSelections: (errors, values) => {
+    if (values?.neither && (values?.claimant || values?.veteran)) {
+      errors.addError(
+        'Select previous marriage options or select We were never married before, but not both.',
+      );
+    }
+    if (!values?.neither && !values?.claimant && !values?.veteran) {
+      errors.addError(
+        'Select at least one previous marriage option or select We were never married before.',
+      );
+    }
+  },
   isAfterMarriageStartDate: (errors, values, formData) => {
     if (
       formData?.marriageToVeteranStartDate &&

@@ -247,23 +247,18 @@ describe('Survivors Benefits Form config', () => {
       expect(pages.additionalMarriages.depends(notRemarried)).to.be.false;
     });
 
-    it('should show veteranChildren page when claimantRelationship is SURVIVING_SPOUSE or had previous marriages', () => {
+    it('should show veteranChildren page when claimantRelationship is SURVIVING_SPOUSE', () => {
       const { householdInformation } = formConfig.chapters;
       const { pages } = householdInformation;
 
       const survivingSpouse = { claimantRelationship: 'SURVIVING_SPOUSE' };
-      const hadPreviousMarriages = { hadPreviousMarriages: true };
-      const neither = {
-        claimantRelationship: 'OTHER',
-        hadPreviousMarriages: false,
-      };
+      const other = { claimantRelationship: 'OTHER' };
 
-      // Should show when claimant is surviving spouse
+      // Should show for surviving spouse
       expect(pages.veteranChildren.depends(survivingSpouse)).to.be.true;
-      // Should show when had previous marriages
-      expect(pages.veteranChildren.depends(hadPreviousMarriages)).to.be.true;
-      // Should hide when neither condition is met
-      expect(pages.veteranChildren.depends(neither)).to.be.false;
+
+      // Should hide for other relationships
+      expect(pages.veteranChildren.depends(other)).to.be.false;
     });
 
     it('should show dependentsResidence when children do not all live with spouse', () => {
