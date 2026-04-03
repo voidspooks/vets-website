@@ -32,8 +32,7 @@ const INSURANCE_TYPE_LABELS = {
 const yesNoOptions = {
   title: content['health-insurance--yes-no-label-more'],
   hint: content['health-insurance--yes-no-hint'],
-  labelHeaderLevel: '2',
-  labelHeaderLevelStyle: '4',
+  labelHeaderLevel: '',
 };
 
 /** @type {ArrayBuilderOptions} */

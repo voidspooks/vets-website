@@ -134,14 +134,12 @@ export const medicareOptions = {
 const yesNoOptions = {
   title: content['medicare--yes-no-title'],
   hint: null,
-  labelHeaderLevel: '2',
-  labelHeaderLevelStyle: '4',
+  labelHeaderLevel: '',
 };
 const yesNoOptionsMore = {
   title: content['medicare--yes-no-title'],
   hint: content['medicare--yes-no-hint'],
-  labelHeaderLevel: '2',
-  labelHeaderLevelStyle: '4',
+  labelHeaderLevel: '',
 };
 
 // declare page schemas

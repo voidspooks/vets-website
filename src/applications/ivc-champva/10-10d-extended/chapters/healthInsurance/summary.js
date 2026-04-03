@@ -10,15 +10,13 @@ import { validateHealthInsurancePlan } from '../../utils/validations';
 
 const yesNoOptions = {
   title: content['health-insurance--yes-no-title'],
-  labelHeaderLevel: '2',
-  labelHeaderLevelStyle: '4',
+  labelHeaderLevel: '',
 };
 
 const yesNoOptionsMore = {
   title: content['health-insurance--yes-no-more-title'],
   hint: content['health-insurance--yes-no-hint'],
-  labelHeaderLevel: '2',
-  labelHeaderLevelStyle: '4',
+  labelHeaderLevel: '',
 };
 
 export const ohiArrayOptions = {
