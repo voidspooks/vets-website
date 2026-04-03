@@ -9,6 +9,8 @@ import manifest from '../manifest.json';
 import Breadcrumbs from '../components/Breadcrumbs';
 import NeedHelp from '../components/NeedHelp';
 
+import { addStyleToShadowDomOnPages } from '../../utils/helpers';
+
 export default function App({ location, children }) {
   const userLoggedIn = useSelector(state => isLoggedIn(state));
   const profileLoading = useSelector(state => isProfileLoading(state));
@@ -29,6 +31,16 @@ export default function App({ location, children }) {
     },
     [userLoggedIn, profileLoading, location],
   );
+
+  useEffect(() => {
+    // Insert CSS to hide 'For example: January 19 2000' hint on memorable dates
+    // (can't be overridden by passing 'hint' to uiOptions):
+    addStyleToShadowDomOnPages(
+      ['/exam-name-and-date-taken'],
+      ['va-memorable-date'],
+      '#dateHint {display: none}',
+    );
+  });
 
   return (
     <div className="form-22-0810-container row">

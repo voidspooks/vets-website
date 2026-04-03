@@ -10,16 +10,16 @@ import { validateWhiteSpace } from 'platform/forms/validations';
 
 const uiSchema = {
   ...titleUI(
-    'The name and mailing address of organization awarding license or certification',
-    'Provide the name and mailing address of the organization that issues the certification.',
+    'Name and address of organization issuing the exam',
+    'To qualify for reimbursement, the organization must be located in the United States.',
   ),
   organizationName: {
     ...textUI({
-      title: 'Organization name',
+      title: 'Name of organization',
       required: () => true,
       validations: [validateWhiteSpace],
       errorMessages: {
-        required: 'Enter the name of the organization',
+        required: 'Enter name of organization',
       },
     }),
   },

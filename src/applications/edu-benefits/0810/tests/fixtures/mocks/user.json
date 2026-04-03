@@ -49,6 +49,42 @@
             "is_cerner": false
           }
         ]
+      },
+      "vet360ContactInformation": {
+        "mailingAddress": {
+          "addressLine1": "123 Charlesgate Rd",
+          "addressLine2": null,
+          "addressLine3": null,
+          "addressPou": "CORRESPONDENCE",
+          "addressType": "DOMESTIC",
+          "city": "Providence",
+          "countryName": "United States",
+          "countryCodeIso2": "US",
+          "countryCodeIso3": "USA",
+          "countryCodeFips": null,
+          "countyCode": null,
+          "countyName": null,
+          "createdAt": "2022-03-21T21:06:15.000Z",
+          "effectiveEndDate": null,
+          "effectiveStartDate": "2022-03-23T19:14:59.000Z",
+          "geocodeDate": "2022-03-23T19:15:00.000Z",
+          "geocodePrecision": null,
+          "id": 311999,
+          "internationalPostalCode": null,
+          "latitude": 45.2248,
+          "longitude": -121.3595,
+          "province": null,
+          "sourceDate": "2022-03-23T19:14:59.000Z",
+          "sourceSystemUser": null,
+          "stateCode": "RI",
+          "transactionId": "3ea3ecf8-3ddf-46d9-8a4b-b5554385b3fb",
+          "updatedAt": "2022-03-23T19:15:01.000Z",
+          "validationKey": null,
+          "vet360Id": "1273766",
+          "zipCode": "02903",
+          "zipCodeSuffix": null,
+          "badAddress": null
+        }
       }
     }
   },

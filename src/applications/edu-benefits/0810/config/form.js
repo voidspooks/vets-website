@@ -1,7 +1,9 @@
 import footerContent from 'platform/forms/components/FormFooter';
 import { VA_FORM_IDS } from 'platform/forms/constants';
-import { profilePersonalInfoPage } from 'platform/forms-system/src/js/patterns/prefill/PersonalInformation';
-import { profileContactInfoPages } from 'platform/forms-system/src/js/patterns/prefill/ContactInfo';
+import {
+  profilePersonalInfoPage,
+  profileContactInfoPages,
+} from 'platform/forms-system/src/js/patterns/prefill';
 import { getContent } from 'platform/forms-system/src/js/utilities/data/profile';
 import { TITLE, SUBTITLE } from '../constants';
 import manifest from '../manifest.json';
@@ -17,6 +19,9 @@ import {
   hasPreviouslyApplied,
   selectVaBenefit,
   payeeNumber,
+  examNameAndDateTaken,
+  organizationInfo,
+  examCost,
   remarks,
   submissionInstructions,
 } from '../pages';
@@ -120,6 +125,32 @@ const formConfig = {
           },
           // prefillPatternEnabled: false,
         }),
+      },
+    },
+    examInformationChapter: {
+      title: 'Exam information',
+      pages: {
+        examNameAndDateTaken: {
+          path: 'exam-name-and-date-taken',
+          title: 'Exam name and date taken',
+          uiSchema: examNameAndDateTaken.uiSchema,
+          schema: examNameAndDateTaken.schema,
+        },
+        organizationInfo: {
+          path: 'organization-info',
+          title: 'Name and address of organization issuing the exam',
+          uiSchema: organizationInfo.uiSchema,
+          schema: organizationInfo.schema,
+          initialData: {
+            organizationAddress: { country: 'USA' },
+          },
+        },
+        examCost: {
+          path: 'exam-cost',
+          title: 'Exam cost',
+          uiSchema: examCost.uiSchema,
+          schema: examCost.schema,
+        },
       },
     },
     remarksChapter: {

@@ -12,8 +12,7 @@ export const uiSchema = {
     title:
       "Use this space to add any information you'd like to include in your request",
     errorMessages: {
-      maxLength:
-        'You are over the character limit. Please adjust your remarks.',
+      maxLength: 'You are over the character limit. Adjust your remarks.',
     },
     charcount: true,
   }),

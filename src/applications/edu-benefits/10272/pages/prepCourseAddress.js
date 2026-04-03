@@ -19,7 +19,7 @@ const uiSchema = {
       required: () => true,
       validations: [validateWhiteSpace],
       errorMessages: {
-        required: 'Please provide the name of the organization',
+        required: 'Enter the name of the organization',
       },
     }),
   },
