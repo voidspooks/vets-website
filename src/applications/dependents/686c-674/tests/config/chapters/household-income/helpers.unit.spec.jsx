@@ -19,25 +19,8 @@ describe('household income helpers', () => {
   });
 
   describe('netWorthTitle', () => {
-    it('should return default title when feature flag is false', () => {
-      const result = netWorthTitle({ featureFlag: false });
-
-      expect(result).to.equal(
-        `Did your household have a net worth greater than $${NETWORTH_VALUE} in the last tax year?`,
-      );
-    });
-
-    it('should return default title when feature flag is undefined', () => {
-      const result = netWorthTitle({});
-
-      expect(result).to.equal(
-        `Did your household have a net worth greater than $${NETWORTH_VALUE} in the last tax year?`,
-      );
-    });
-
     it('should return formatted title when feature flag is true and netWorthLimit is provided', () => {
       const result = netWorthTitle({
-        featureFlag: true,
         netWorthLimit: '200000',
       });
 
@@ -48,7 +31,6 @@ describe('household income helpers', () => {
 
     it('should handle netWorthLimit with commas', () => {
       const result = netWorthTitle({
-        featureFlag: true,
         netWorthLimit: '1,500,000',
       });
 
@@ -58,9 +40,7 @@ describe('household income helpers', () => {
     });
 
     it('should use default NETWORTH_VALUE when netWorthLimit is not provided and feature flag is true', () => {
-      const result = netWorthTitle({
-        featureFlag: true,
-      });
+      const result = netWorthTitle();
 
       // When netWorthLimit is undefined, it falls back to NETWORTH_VALUE
       const expectedValue = parseInt(
@@ -74,7 +54,6 @@ describe('household income helpers', () => {
 
     it('should handle empty string netWorthLimit', () => {
       const result = netWorthTitle({
-        featureFlag: true,
         netWorthLimit: '',
       });
 
@@ -90,7 +69,6 @@ describe('household income helpers', () => {
 
     it('should handle null netWorthLimit', () => {
       const result = netWorthTitle({
-        featureFlag: true,
         netWorthLimit: null,
       });
 
@@ -106,7 +84,6 @@ describe('household income helpers', () => {
 
     it('should format large numbers correctly', () => {
       const result = netWorthTitle({
-        featureFlag: true,
         netWorthLimit: '12345678',
       });
 
@@ -117,7 +94,6 @@ describe('household income helpers', () => {
 
     it('should handle small numbers correctly', () => {
       const result = netWorthTitle({
-        featureFlag: true,
         netWorthLimit: '100',
       });
 

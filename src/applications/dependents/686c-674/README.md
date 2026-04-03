@@ -24,7 +24,6 @@ From time to time Veterans need to make updates to the dependents they receive b
 - `va_dependents_v3` - Enable picklist (v3) removal feature
 - `dependents_pension_check` - Enable pension check
 - `va_dependents_no_ssn` - Enable no SSN flow for adding dependents
-- `va_dependents_net_worth_and_pension` - Enable net worth & pension questions
 - `va_dependents_duplicate_modals` - Enable duplicate entry checks for current spouse (adding a child duplicate is enabled via platform)
 - `va_dependents_fully_digital_form_project` - Owned by FDF team
 - `dependents_enable_form_viewer_mfe` - Owned by FDF team

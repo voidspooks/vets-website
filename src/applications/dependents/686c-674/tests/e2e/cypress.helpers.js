@@ -80,8 +80,6 @@ export const setupCypress = ({
 
   cy.intercept('GET', '/v0/user', userData);
   const baseToggles = [
-    { name: 'vaDependentsNetWorthAndPension', value: true },
-    { name: 'va_dependents_net_worth_and_pension', value: true },
     { name: 'vaDependentsDuplicateModals', value: true },
     { name: 'va_dependents_duplicate_modals', value: true },
   ];
