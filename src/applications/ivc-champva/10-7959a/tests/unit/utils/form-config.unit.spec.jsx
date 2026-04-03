@@ -12,12 +12,14 @@ import {
   isPharmacyClaim,
   isNewMedicalClaim,
   isNewPharmacyClaim,
-  hasOhi,
-  hasOhiAndMedicalClaim,
-  hasOhiMedicalAndMultiplePolicies,
   needsDocHelp,
   hasClaimDocs,
 } from '../../../utils/helpers/form-config';
+import {
+  hasOhi,
+  hasOhiAndMedicalClaim,
+  hasOhiMedicalAndMultiplePolicies,
+} from '../../../utils/helpers/health-insurance';
 
 describe('10-7959a form-config helpers', () => {
   context('enrollment status helpers', () => {

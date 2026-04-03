@@ -1,29 +1,26 @@
 import { arrayBuilderPages } from 'platform/forms-system/src/js/patterns/array-builder';
 import { VaTextInputField } from 'platform/forms-system/src/js/web-component-fields';
 import {
-  arrayBuilderItemFirstPageTitleUI,
   arrayBuilderYesNoSchema,
   arrayBuilderYesNoUI,
   descriptionUI,
-  phoneSchema,
-  phoneUI,
   radioSchema,
   radioUI,
   textSchema,
-  textUI,
   titleUI,
   yesNoSchema,
   yesNoUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { privWrapper } from '../../shared/utilities';
-import { validFieldCharsOnly } from '../../shared/validations';
 import content from '../locales/en/content.json';
-import { hasOhi, replaceStrValues } from '../utils/helpers';
+import { hasOhi, policyDatesEnabled, replaceStrValues } from '../utils/helpers';
 import {
   titleWithFormDataUI,
   titleWithNameText,
   titleWithNameUI,
 } from '../utils/titles';
+import provider from './healthInsurance/provider';
+import policy from './healthInsurance/policy';
 
 const INSURANCE_TYPE_LABELS = {
   group: content['health-insurance--type-label--group'],
@@ -127,33 +124,6 @@ export const insuranceStatusSchema = {
   },
 };
 
-const policyPage = {
-  uiSchema: {
-    ...arrayBuilderItemFirstPageTitleUI({
-      title: 'Policy information',
-      showEditExplanationText: false,
-    }),
-    name: textUI('Name of insurance provider'),
-    policyNum: textUI('Policy number'),
-    providerPhone: phoneUI('Insurance provider phone number'),
-    'ui:validations': [
-      (errors, page, formData) =>
-        validFieldCharsOnly(errors, page, formData, 'name'),
-      (errors, page, formData) =>
-        validFieldCharsOnly(errors, page, formData, 'policyNum'),
-    ],
-  },
-  schema: {
-    type: 'object',
-    properties: {
-      name: textSchema,
-      policyNum: textSchema,
-      providerPhone: phoneSchema,
-    },
-    required: ['name'],
-  },
-};
-
 const insuranceProviderPage = {
   uiSchema: {
     ...titleWithFormDataUI('%s insurance type', null, {
@@ -244,10 +214,16 @@ export const insurancePages = arrayBuilderPages(
       title: 'Policy information',
       path: 'policy-info/:index',
       depends: hasOhi,
-      ...policyPage,
+      ...policy,
+    }),
+    insuranceProvider: pageBuilder.itemPage({
+      title: 'Provider information',
+      path: 'provider-info/:index',
+      depends: policyDatesEnabled,
+      ...provider,
     }),
     insuranceType: pageBuilder.itemPage({
-      title: 'Type',
+      title: 'Insurance Type',
       path: 'insurance-type/:index',
       depends: hasOhi,
       ...insuranceProviderPage,

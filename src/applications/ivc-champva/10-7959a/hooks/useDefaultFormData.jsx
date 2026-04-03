@@ -6,6 +6,7 @@ import { setData } from 'platform/forms-system/src/js/actions';
 const FEATURE_TOGGLES = [
   'champvaEnableClaimResubmitQuestion',
   'champvaClaimsLlmValidation',
+  'champvaClaimsInsuranceDates',
 ];
 
 export const useDefaultFormData = () => {
