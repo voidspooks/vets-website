@@ -200,7 +200,6 @@
   "mhvMedicalRecordsCcdOH": "mhv_medical_records_ccd_oh",
   "mhvMedicalRecordsFetchScdfImagingStudies": "mhv_medical_records_fetch_scdf_imaging_studies",
   "mhvMedicalRecordsFilterAndSort": "mhv_medical_records_filter_and_sort",
-  "mhvMedicalRecordsHoldTimeMessagingUpdate": "mhv_medical_records_hold_time_messaging_update",
   "mhvMedicalRecordsImagesDomain": "mhv_medical_records_images_domain",
   "mhvMedicalRecordsMergeCvixIntoScdf": "mhv_medical_records_merge_cvix_into_scdf",
   "mhvMedicalRecordsShowMissingAlert": "mhv_medical_records_show_missing_alert",

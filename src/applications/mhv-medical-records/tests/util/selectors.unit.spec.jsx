@@ -4,7 +4,6 @@ import {
   selectBypassDowntime,
   selectFilterAndSortFlag,
   selectImagesDomainFlag,
-  selectHoldTimeMessagingUpdate,
 } from '../../util/selectors';
 
 describe('Medical Records selectors', () => {
@@ -70,26 +69,6 @@ describe('Medical Records selectors', () => {
         },
       };
       expect(selectImagesDomainFlag(state)).to.be.false;
-    });
-  });
-
-  describe('selectHoldTimeMessagingUpdate', () => {
-    it('returns true when the flag is enabled', () => {
-      const state = {
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate]: true,
-        },
-      };
-      expect(selectHoldTimeMessagingUpdate(state)).to.be.true;
-    });
-
-    it('returns false when the flag is disabled', () => {
-      const state = {
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate]: false,
-        },
-      };
-      expect(selectHoldTimeMessagingUpdate(state)).to.be.false;
     });
   });
 });

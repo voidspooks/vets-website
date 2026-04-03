@@ -10,10 +10,7 @@ import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 
-import {
-  selectHoldTimeMessagingUpdate,
-  selectImagesDomainFlag,
-} from '../util/selectors';
+import { selectImagesDomainFlag } from '../util/selectors';
 import { Actions } from '../util/actionTypes';
 import RecordList from '../components/RecordList/RecordList';
 import {
@@ -74,7 +71,6 @@ const LabsAndTests = () => {
   );
   const showImagesDomain = useSelector(selectImagesDomainFlag);
   const { imageStatus: studyJobs } = useSelector(state => state.mr.images);
-  const holdTimeMessagingUpdate = useSelector(selectHoldTimeMessagingUpdate);
   const mergeCvixWithScdf = useSelector(
     state =>
       state.featureToggles[
@@ -253,16 +249,7 @@ const LabsAndTests = () => {
       </h1>
       {isCerner && <DuplicateRecordsAlert />}
 
-      {holdTimeMessagingUpdate && <HoldTimeInfo locationPhrase="here" />}
-      {!holdTimeMessagingUpdate && (
-        <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
-          Most lab and test results are available{' '}
-          <span className="vads-u-font-weight--bold">36 hours</span> after the
-          lab confirms them. Pathology results may take{' '}
-          <span className="vads-u-font-weight--bold">14 days</span> or longer to
-          confirm.
-        </p>
-      )}
+      <HoldTimeInfo locationPhrase="here" />
 
       <RecordListSection
         accessAlert={activeAlert && activeAlert.type === ALERT_TYPE_ERROR}

@@ -50,7 +50,6 @@ const IntroSection = ({
   ohFacilityNamesAfterCutover = [],
   ohFacilityNamesBeforeCutover = [],
   vistaFacilityNames = [],
-  showHoldTimeMessaging = false,
 }) => {
   const content = CONTENT[dataSourceType];
   const description =
@@ -64,9 +63,7 @@ const IntroSection = ({
     <>
       <h1>{content.heading}</h1>
       {description}
-      {showHoldTimeMessaging && (
-        <HoldTimeInfo locationPhrase="in your reports" />
-      )}
+      <HoldTimeInfo locationPhrase="in your reports" />
       <LastUpdatedCard lastSuccessfulUpdate={lastSuccessfulUpdate} />
     </>
   );
@@ -87,7 +84,6 @@ IntroSection.propTypes = {
   lastSuccessfulUpdate: PropTypes.object,
   ohFacilityNamesAfterCutover: PropTypes.arrayOf(facilityNameShape),
   ohFacilityNamesBeforeCutover: PropTypes.arrayOf(facilityNameShape),
-  showHoldTimeMessaging: PropTypes.bool,
   vistaFacilityNames: PropTypes.arrayOf(facilityNameShape),
 };
 

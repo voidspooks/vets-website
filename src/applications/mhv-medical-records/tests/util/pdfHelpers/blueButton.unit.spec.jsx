@@ -51,29 +51,13 @@ describe('generateBlueButtonData', () => {
     expect(result.length).to.equal(11);
   });
 
-  it('should generate data for labs and tests', () => {
+  it('should generate data for labs and tests with zero hold subtitles', () => {
     const result = generateBlueButtonData({ labsAndTests }, ['labTests']);
     expect(result).to.be.an('array').that.is.not.empty;
     const labsAndTestsSection = result.find(
       section => section.type === recordType.LABS_AND_TESTS,
     );
     expect(labsAndTestsSection).to.exist;
-    expect(labsAndTestsSection.subtitles[0]).to.equal(
-      'Most lab and test results are available 36 hours after the lab confirms them. Pathology results may take 14 days or longer to confirm.',
-    );
-    expect(labsAndTestsSection.subtitles).to.have.lengthOf(4);
-    expect(labsAndTestsSection.records).to.have.lengthOf(5);
-    expect(labsAndTestsSection.records[0].title).to.equal('Test 1');
-    expect(
-      labsAndTestsSection.records[0].results.items[0].items[0].value,
-    ).to.equal('Test result 1');
-  });
-
-  it('should generate data for labs and tests: subtitles based on holdTimeMessagingUpdate being true', () => {
-    const result = generateBlueButtonData({ labsAndTests }, ['labTests'], true);
-    const labsAndTestsSection = result.find(
-      section => section.type === recordType.LABS_AND_TESTS,
-    );
     expect(labsAndTestsSection.subtitles[0]).to.equal(
       `Your test results are available here as soon as they're ready. You may have access to your results before your care team reviews them.`,
     );
@@ -84,6 +68,11 @@ describe('generateBlueButtonData', () => {
       'If you do review results on your own, remember that many factors can affect what they mean for you. If you have concerns, contact your care team.',
     );
     expect(labsAndTestsSection.subtitles).to.have.lengthOf(6);
+    expect(labsAndTestsSection.records).to.have.lengthOf(5);
+    expect(labsAndTestsSection.records[0].title).to.equal('Test 1');
+    expect(
+      labsAndTestsSection.records[0].results.items[0].items[0].value,
+    ).to.equal('Test result 1');
   });
 
   it('should generate data for care summaries and notes', () => {

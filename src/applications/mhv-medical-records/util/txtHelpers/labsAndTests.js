@@ -1,19 +1,13 @@
 import { txtLineDotted } from '@department-of-veterans-affairs/mhv/exports';
 
-export const parseLabsAndTests = (
-  records,
-  index = 1,
-  holdTimeMessagingUpdate = false,
-) => {
-  const holdTimeMessage = holdTimeMessagingUpdate
-    ? `Your test results are available here as soon as they're ready. You may have access to your results before your care team reviews them.
+export const parseLabsAndTests = (records, index = 1) => {
+  const holdTimeMessage = `Your test results are available here as soon as they're ready. You may have access to your results before your care team reviews them.
 
 Please give your care team some time to review your results. Test results can be complex. Your team can help you understand what the results mean for your overall health.
 
 If you do review results on your own, remember that many factors can affect what they mean for you. If you have concerns, contact your care team.
 
-`
-    : '';
+`;
 
   return `
 ${index}) Lab and test results

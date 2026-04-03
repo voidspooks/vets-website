@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import { waitFor } from '@testing-library/react';
 import { beforeEach } from 'mocha';
-import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import Radiology from '../../containers/Radiology';
 import reducer from '../../reducers';
 import radiologyTests from '../fixtures/radiologyRecordsMhv.json';
@@ -49,7 +48,7 @@ describe('Radiology list container', () => {
 
   it('displays a subheading', () => {
     expect(
-      screen.getByText('Review reports from your VA imaging tests', {
+      screen.getByText('Your test results are available here', {
         exact: false,
       }),
     ).to.exist;
@@ -295,48 +294,26 @@ describe('Radiology list container with images ready', () => {
   });
 });
 
-describe('Radiology list container with holdTimeMessagingUpdate feature flag', () => {
+describe('Radiology list container hold time messaging', () => {
   const radiologyRecords = radiologyTests.map(item =>
     convertMhvRadiologyRecord({ ...item, hash: `hash-${item.id}` }),
   );
 
-  let initialState;
-
-  beforeEach(() => {
-    initialState = {
-      mr: {
-        radiology: {
-          radiologyList: radiologyRecords,
-          listState: 'fetched',
-          dateRange: {
-            option: '3',
-            fromDate: '2025-08-13',
-            toDate: '2025-11-13',
-          },
+  const initialState = {
+    mr: {
+      radiology: {
+        radiologyList: radiologyRecords,
+        listState: 'fetched',
+        dateRange: {
+          option: '3',
+          fromDate: '2025-08-13',
+          toDate: '2025-11-13',
         },
       },
-      featureToggles: {
-        [FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate]: false,
-      },
-    };
-  });
+    },
+  };
 
-  it('displays the old message when holdTimeMessagingUpdate is false', () => {
-    const screen = renderWithStoreAndRouter(<Radiology />, {
-      initialState,
-      reducers: reducer,
-      path: '/imaging-results',
-    });
-
-    expect(screen.getByText(/Review reports from your VA imaging tests/i)).to
-      .exist;
-  });
-
-  it('displays the new HoldTimeInfo when holdTimeMessagingUpdate is true', () => {
-    initialState.featureToggles[
-      FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate
-    ] = true;
-
+  it('always displays the zero hold HoldTimeInfo message', () => {
     const screen = renderWithStoreAndRouter(<Radiology />, {
       initialState,
       reducers: reducer,
@@ -349,11 +326,7 @@ describe('Radiology list container with holdTimeMessagingUpdate feature flag', (
     );
   });
 
-  it('displays va-additional-info when holdTimeMessagingUpdate is true', () => {
-    initialState.featureToggles[
-      FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate
-    ] = true;
-
+  it('displays va-additional-info with review guidance', () => {
     const screen = renderWithStoreAndRouter(<Radiology />, {
       initialState,
       reducers: reducer,

@@ -20,7 +20,6 @@ import {
 import { VaRadio } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { isBefore, isAfter } from 'date-fns';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
-import { selectHoldTimeMessagingUpdate } from '../../util/selectors';
 import NeedHelpSection from './NeedHelpSection';
 import DownloadingRecordsInfo from '../shared/DownloadingRecordsInfo';
 import {
@@ -88,7 +87,6 @@ const DownloadFileType = props => {
   const recordFilter = useSelector(state => state.mr.downloads?.recordFilter);
   const dateFilter = useSelector(state => state.mr.downloads?.dateFilter);
   const refreshStatus = useSelector(state => state.mr.refresh.status);
-  const holdTimeMessagingUpdate = useSelector(selectHoldTimeMessagingUpdate);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const { fromDate, toDate, option: dateFilterOption } = dateFilter;
@@ -368,11 +366,7 @@ const DownloadFileType = props => {
           const pdfName = `VA-Blue-Button-report-${getNameDateAndTime(user)}`;
           const pdfData = {
             ...formatDateRange(),
-            recordSets: generateBlueButtonData(
-              recordData,
-              recordFilter,
-              holdTimeMessagingUpdate,
-            ),
+            recordSets: generateBlueButtonData(recordData, recordFilter),
             failedDomains: getFailedDomainList(
               failedDomains,
               BB_DOMAIN_DISPLAY_MAP,
@@ -415,7 +409,6 @@ const DownloadFileType = props => {
       formatDateRange,
       recordData,
       recordFilter,
-      holdTimeMessagingUpdate,
       failedDomains,
       name,
       dob,
@@ -448,7 +441,6 @@ const DownloadFileType = props => {
             user,
             dateRange,
             failedDomainsList,
-            holdTimeMessagingUpdate,
           );
 
           generateTextFile(content, pdfName, user);
@@ -471,7 +463,6 @@ const DownloadFileType = props => {
       dispatch,
       failedDomains,
       formatDateRange,
-      holdTimeMessagingUpdate,
       isDataFetched,
       recordData,
       user,

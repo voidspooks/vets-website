@@ -16,7 +16,6 @@ import { focusElement } from '@department-of-veterans-affairs/platform-utilities
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import { selectPatientFacilities } from '~/platform/user/cerner-dsot/selectors';
 import { getVamcSystemNameFromVhaId } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/utils';
-import { selectHoldTimeMessagingUpdate } from '../util/selectors';
 import NeedHelpSection from '../components/DownloadRecords/NeedHelpSection';
 import { getLastSuccessfulUpdate, sendDataDogAction } from '../util/helpers';
 import {
@@ -65,8 +64,6 @@ const DownloadReportPage = ({ runningUnitTest }) => {
         FEATURE_FLAG_NAMES.mhvMedicalRecordsCcdExtendedFileTypes
       ],
   );
-  const holdTimeMessagingUpdate = useSelector(selectHoldTimeMessagingUpdate);
-
   const [expandSelfEntered, setExpandSelfEntered] = useState(false);
 
   const activeAlert = useAlerts(dispatch);
@@ -324,7 +321,6 @@ const DownloadReportPage = ({ runningUnitTest }) => {
           ohFacilityNamesAfterCutover={ohFacilityNamesAfterCutover}
           ohFacilityNamesBeforeCutover={ohFacilityNamesBeforeCutover}
           vistaFacilityNames={vistaFacilityNames}
-          showHoldTimeMessaging={holdTimeMessagingUpdate}
         />
         <BlueButtonSection
           activeAlert={activeAlert}

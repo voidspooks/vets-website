@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updatePageTitle } from '@department-of-veterans-affairs/mhv/exports';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 
-import { selectHoldTimeMessagingUpdate } from '../util/selectors';
 import { Actions } from '../util/actionTypes';
 import RecordList from '../components/RecordList/RecordList';
 import { getRadiologyList, reloadRadiologyRecords } from '../actions/radiology';
@@ -40,8 +39,6 @@ const Radiology = () => {
   );
   const radiologyList = useSelector(state => state.mr.radiology.radiologyList);
   const { imageStatus: studyJobs } = useSelector(state => state.mr.images);
-  const holdTimeMessagingUpdate = useSelector(selectHoldTimeMessagingUpdate);
-
   const radRecordsWithImagesReady = radiologyList?.filter(radRecord => {
     const isRadRecord =
       radRecord?.type === labTypes.RADIOLOGY ||
@@ -108,13 +105,7 @@ const Radiology = () => {
         Medical imaging results
       </h1>
 
-      {holdTimeMessagingUpdate && <HoldTimeInfo locationPhrase="here" />}
-      {!holdTimeMessagingUpdate && (
-        <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
-          Review reports from your VA imaging tests like X-rays, MRIs, and CT
-          scans. Request and download your radiology images.
-        </p>
-      )}
+      <HoldTimeInfo locationPhrase="here" />
 
       <RecordListSection
         accessAlert={activeAlert && activeAlert.type === ALERT_TYPE_ERROR}

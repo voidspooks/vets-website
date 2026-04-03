@@ -49,7 +49,7 @@ describe('LabsAndTests list container', () => {
 
   it('displays a subheading', () => {
     expect(
-      screen.getByText('Most lab and test results are available', {
+      screen.getByText('Your test results are available here', {
         exact: false,
       }),
     ).to.exist;
@@ -365,7 +365,7 @@ describe('Labs and tests list container with warnings', () => {
   });
 });
 
-describe('Labs and tests list container with holdTimeMessagingUpdate feature flag', () => {
+describe('Labs and tests list container hold time messaging', () => {
   const labsAndTestsFhir = labsAndTests.entry.map(item =>
     convertLabsAndTestsRecord(item),
   );
@@ -373,44 +373,20 @@ describe('Labs and tests list container with holdTimeMessagingUpdate feature fla
     convertLabsAndTestsRecord(item),
   );
 
-  let initialState;
-
-  beforeEach(() => {
-    initialState = {
-      mr: {
-        labsAndTests: {
-          labsAndTestsList: [...labsAndTestsFhir, ...radiologyTestsMhv],
-          dateRange: {
-            option: '3',
-            fromDate: '2025-08-13',
-            toDate: '2025-11-13',
-          },
+  const initialState = {
+    mr: {
+      labsAndTests: {
+        labsAndTestsList: [...labsAndTestsFhir, ...radiologyTestsMhv],
+        dateRange: {
+          option: '3',
+          fromDate: '2025-08-13',
+          toDate: '2025-11-13',
         },
       },
-      featureToggles: {
-        [FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate]: false,
-      },
-    };
-  });
+    },
+  };
 
-  it('displays the old hold time message when holdTimeMessagingUpdate is false', () => {
-    const screen = renderWithStoreAndRouter(<LabsAndTests />, {
-      initialState,
-      reducers: reducer,
-      path: '/labs-and-tests',
-    });
-
-    expect(screen.getByText(/Most lab and test results are available/i)).to
-      .exist;
-    expect(screen.getByText(/36 hours/i)).to.exist;
-    expect(screen.getByText(/14 days/i)).to.exist;
-  });
-
-  it('displays the new HoldTimeInfo when holdTimeMessagingUpdate is true', () => {
-    initialState.featureToggles[
-      FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate
-    ] = true;
-
+  it('always displays the zero hold HoldTimeInfo message', () => {
     const screen = renderWithStoreAndRouter(<LabsAndTests />, {
       initialState,
       reducers: reducer,
@@ -422,16 +398,11 @@ describe('Labs and tests list container with holdTimeMessagingUpdate feature fla
       'Your test results are available here',
     );
 
-    // does not display old hold time message
     expect(screen.queryByText(/36 hours/i)).to.not.exist;
     expect(screen.queryByText(/14 days/i)).to.not.exist;
   });
 
-  it('displays va-additional-info when holdTimeMessagingUpdate is true', () => {
-    initialState.featureToggles[
-      FEATURE_FLAG_NAMES.mhvMedicalRecordsHoldTimeMessagingUpdate
-    ] = true;
-
+  it('displays va-additional-info with review guidance', () => {
     const screen = renderWithStoreAndRouter(<LabsAndTests />, {
       initialState,
       reducers: reducer,

@@ -173,24 +173,10 @@ describe('IntroSection', () => {
   });
 
   describe('HoldTimeInfo rendering', () => {
-    it('renders HoldTimeInfo when showHoldTimeMessaging is true', () => {
-      const { getByText } = render(<IntroSection showHoldTimeMessaging />);
+    it('always renders HoldTimeInfo with zero hold messaging', () => {
+      const { getByText } = render(<IntroSection />);
 
       expect(getByText(/in your reports/i)).to.exist;
-    });
-
-    it('does not render HoldTimeInfo when showHoldTimeMessaging is false', () => {
-      const { queryByText } = render(
-        <IntroSection showHoldTimeMessaging={false} />,
-      );
-
-      expect(queryByText(/in your reports/i)).to.not.exist;
-    });
-
-    it('does not render HoldTimeInfo by default', () => {
-      const { queryByText } = render(<IntroSection />);
-
-      expect(queryByText(/in your reports/i)).to.not.exist;
     });
   });
 });
