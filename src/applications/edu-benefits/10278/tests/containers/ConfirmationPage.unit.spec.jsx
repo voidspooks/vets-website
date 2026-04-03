@@ -27,7 +27,7 @@ const getPage = (submission = {}) =>
 describe('ConfirmationPage', () => {
   afterEach(cleanup);
 
-  it('renders confirmation number when present', () => {
+  it('renders the submission alert with in-progress message', () => {
     const { container } = getPage({
       response: {
         attributes: { confirmationNumber: '1234567890' },
@@ -37,6 +37,6 @@ describe('ConfirmationPage', () => {
 
     const alert = container.querySelector('va-alert');
     expect(alert).to.have.attribute('status', 'success');
-    expect(alert).to.contain.text('Your confirmation number is 1234567890');
+    expect(alert).to.contain.text('Your submission is in progress.');
   });
 });
