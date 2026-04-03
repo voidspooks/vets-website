@@ -9,11 +9,20 @@ import {
   formatInternationalPhoneNumber,
   formatMilitaryPostOffice,
   formatStateName,
+  formatCountryCodeAlpha2,
 } from './util';
 
 import './sass/FormRenderer.scss';
 
 function createLabel(obj) {
+  if (obj.labelType === 'body') {
+    const className = obj.style
+      ? `vads-u-margin-top--0 vads-u-margin-bottom--0p5 block-style-${
+          obj.style
+        }`
+      : 'vads-u-margin-top--0 vads-u-margin-bottom--0p5';
+    return React.createElement('p', { className, key: obj.key }, obj.label);
+  }
   const tag = `h${obj.depth + 2}`;
   const baseClassName =
     {
@@ -79,6 +88,17 @@ function createChecklist(obj) {
   );
 }
 
+const createNotAnsweredMessage = index => {
+  return (
+    <div
+      key={`not-answered-${index}`}
+      className="vads-u-font-style--italic vads-u-margin-bottom--2p5"
+    >
+      Not answered
+    </div>
+  );
+};
+
 function handleStringFormatting(field, data) {
   let renderedValue = renderStr(field.fieldValue, data);
   const formatToken = field.fieldFormat?.toLowerCase();
@@ -103,6 +123,9 @@ function handleStringFormatting(field, data) {
     case 'state':
       renderedValue = formatStateName(renderedValue);
       break;
+    case 'countrycodealpha2':
+      renderedValue = formatCountryCodeAlpha2(renderedValue);
+      break;
     default:
       if (
         !field.fieldFormat &&
@@ -126,7 +149,17 @@ function emit(obj) {
 }
 
 function renderPart(part, data, depth, key, suppressRepeatable) {
-  if (part.showIf && !getNestedProperty(data, part.showIf)) return [];
+  if (part.showIf) {
+    const value = getNestedProperty(data, part.showIf);
+
+    if (part.showIfCondition === 'defined') {
+      if (value === null || value === undefined) {
+        return [];
+      }
+    } else if (!value) {
+      return [];
+    }
+  }
   if (part.showUnless && getNestedProperty(data, part.showUnless)) return [];
 
   if ('blocks' in part || 'fields' in part) {
@@ -154,7 +187,14 @@ function renderPart(part, data, depth, key, suppressRepeatable) {
     const label =
       typeof labelValue === 'string' ? renderStr(labelValue, data) : labelValue;
     const style = grouping.blockStyle;
-    const header = { label, depth, key, ...(style && { style }) };
+    const labelType = grouping.blockLabelType;
+    const header = {
+      label,
+      depth,
+      key,
+      ...(style && { style }),
+      ...(labelType && { labelType }),
+    };
     emit(header);
 
     const renderables = [header];
@@ -280,6 +320,8 @@ function render(template, data) {
     if (currentListItems.length > 0) {
       createList(currentListItems, index);
       currentListItems = [];
+    } else {
+      elements.push(createNotAnsweredMessage(index));
     }
   }
 

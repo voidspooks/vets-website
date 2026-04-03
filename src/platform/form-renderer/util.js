@@ -1,11 +1,24 @@
 import Handlebars from 'handlebars';
 import { format, parseISO } from 'date-fns';
+import { alpha3to2, fullNameTo2 } from './countryUtils';
 
 Handlebars.registerHelper('lastFour', ssn => ssn.slice(-4));
 Handlebars.registerHelper('formatDate', iso8601 =>
   format(parseISO(iso8601), 'MMMM d, yyyy'),
 );
-Handlebars.registerHelper('formatBool', (bool, yes, no) => (bool ? yes : no));
+Handlebars.registerHelper('formatBool', (bool, trueValue, falseValue) => {
+  if (bool == null || bool === undefined) {
+    if (trueValue === '✓ Selected' && falseValue === 'Not selected') {
+      return 'Not selected';
+    }
+    if (trueValue === 'Yes' && falseValue === 'No') {
+      return '';
+    }
+    return falseValue;
+  }
+  return bool ? trueValue : falseValue;
+});
+
 Handlebars.registerHelper('multilineList', (list, options) => {
   let processedList = list;
   if (options.hash.pluck) {
@@ -170,4 +183,32 @@ export function formatStateName(state) {
 
   const normalized = state.trim().toUpperCase();
   return STATE_NAME_MAP[normalized] ?? state;
+}
+
+export function formatCountryCodeAlpha2(country) {
+  if (!country || typeof country !== 'string') {
+    return '';
+  }
+
+  if (country.match(/^\w{2}$/)) {
+    return country;
+  }
+
+  let result;
+  if (country.match(/^\w{3}$/)) {
+    result = alpha3to2[country.toUpperCase()] || '';
+  } else {
+    const normalizedCountry = country.trim();
+    result =
+      fullNameTo2[normalizedCountry] ||
+      Object.entries(fullNameTo2).find(
+        ([name]) => name.toLowerCase() === normalizedCountry.toLowerCase(),
+      )?.[1] ||
+      '';
+  }
+
+  if (result) {
+    return result;
+  }
+  return country;
 }

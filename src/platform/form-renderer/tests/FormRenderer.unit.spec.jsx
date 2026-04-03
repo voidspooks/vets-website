@@ -663,4 +663,114 @@ describe('FormRenderer', () => {
     );
     expect(listItems.length).to.equal(0);
   });
+  it('shows the Not answered text if the data is missing', () => {
+    const stateConfig = {
+      formDescription: 'Test state form',
+      formId: 'test-state-form',
+      formVersion: '1.0',
+      sections: [
+        {
+          sectionHeader: 'Section 2: Add your spouse',
+          blocks: [
+            {
+              showIf: 'spouseInformation',
+              blockLabel: "Your spouse's personal information",
+              fields: [
+                {
+                  fieldLabel: "Spouse's first name:",
+                  fieldType: 'string',
+                  fieldValue: '{{spouseInformation.fullName.first}}',
+                },
+                {
+                  fieldLabel: "Spouse's middle name:",
+                  fieldType: 'string',
+                  fieldValue: '{{spouseInformation.fullName.middle}}',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const stateData = {};
+
+    const tree = render(<FormRenderer config={stateConfig} data={stateData} />);
+
+    expect(tree.getByText('Section 2: Add your spouse')).to.exist;
+    expect(tree.queryByText("Your spouse's personal information")).not.to.exist;
+    expect(tree.queryByText("Spouse's first name:")).not.to.exist;
+    expect(tree.queryByText("Spouse's middle name:")).not.to.exist;
+    expect(tree.getByText('Not answered')).to.exist;
+  });
+
+  it('shows the Spouse section conditionally', () => {
+    const stateConfig = {
+      formDescription: 'Test state form',
+      formId: 'test-state-form',
+      formVersion: '1.0',
+      sections: [
+        {
+          sectionHeader: 'Section 2: Add your spouse',
+          blocks: [
+            {
+              showIf: 'spouseInformation',
+              blockLabel: "Your spouse's personal information",
+              fields: [
+                {
+                  fieldLabel: "Spouse's first name:",
+                  fieldType: 'string',
+                  fieldValue: '{{spouseInformation.fullName.first}}',
+                },
+                {
+                  fieldLabel: "Spouse's middle name:",
+                  fieldType: 'string',
+                  fieldValue: '{{spouseInformation.fullName.middle}}',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const stateData = {};
+
+    const tree = render(<FormRenderer config={stateConfig} data={stateData} />);
+
+    expect(tree.getByText('Section 2: Add your spouse')).to.exist;
+    expect(tree.queryByText("Your spouse's personal information")).not.to.exist;
+    expect(tree.queryByText("Spouse's first name:")).not.to.exist;
+    expect(tree.queryByText("Spouse's middle name:")).not.to.exist;
+  });
+
+  it('converts country names to alpha-2 country codes', () => {
+    const template = {
+      formDescription: 'Test country code form',
+      formId: 'test-country-code-form',
+      formVersion: '1.0',
+      sections: [
+        {
+          sectionHeader: 'Address',
+          fields: [
+            {
+              fieldLabel: 'Country:',
+              fieldFormat: 'countrycodealpha2',
+              fieldValue: '{{address.country}}',
+            },
+          ],
+        },
+      ],
+    };
+
+    const data = {
+      address: {
+        country: 'MEX',
+      },
+    };
+
+    const tree = render(<FormRenderer config={template} data={data} />);
+
+    expect(tree.getByText('MX')).to.exist;
+  });
 });
