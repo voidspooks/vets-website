@@ -1332,21 +1332,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      # ----------------
-      # | Notify Slack |
-      # ----------------
-
-      - name: Notify Slack about Unit test failures
-        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass' }}
-        uses: ./.github/workflows/slack-notify
-        continue-on-error: true
-        env:
-          SSL_CERT_DIR: /etc/ssl/certs
-        with:
-          payload: '{"attachments": [{"mrkdwn_in": ["text"], "color": "danger", "text": "<!here> Unit tests in `vets-website` have failed on the `main` branch, run: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|${{github.run_id}}>"}]}'
-          channel_id: C026PD47Z19 #gha-test-status
-          role: ${{ vars.AWS_ASSUME_ROLE }}
-
       # ------------------------
       # | Upload BigQuery Data |
       # ------------------------
@@ -1420,6 +1405,30 @@ jobs:
           conclusion: ${{ needs.unit-tests.result }}
           output: |
             {"summary": ${{ env.MOCHAWESOME_REPORT_RESULTS || '{}' }}}
+
+  notify-unit-test-failure:
+    name: Notify Unit Test Failure
+    runs-on: ubuntu-22.04
+    needs: [unit-tests]
+    permissions:
+      id-token: write
+      contents: read
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout
+        if: ${{ needs.unit-tests.result == 'failure' }}
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Notify Slack about Unit test failures
+        if: ${{ needs.unit-tests.result == 'failure' }}
+        uses: ./.github/workflows/slack-notify
+        continue-on-error: true
+        env:
+          SSL_CERT_DIR: /etc/ssl/certs
+        with:
+          payload: '{"attachments": [{"mrkdwn_in": ["text"], "color": "danger", "text": "<!here> Unit tests in `vets-website` have failed on the `main` branch, run: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|${{github.run_id}}>"}]}'
+          channel_id: C026PD47Z19 #gha-test-status
+          role: ${{ vars.AWS_ASSUME_ROLE }}
 
   testing-reports-unit-tests-stress-test:
     name: Testing Reports - Unit Test Stability Review
