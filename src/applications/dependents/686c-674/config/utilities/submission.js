@@ -548,6 +548,19 @@ export function cleanUpDates(data = {}) {
       divorceDate: reformatDate(data.reportDivorce.divorceDate),
     };
   }
+  // childStoppedAttendingSchool.:index.dateChildLeftSchool
+  if (data.childStoppedAttendingSchool?.length) {
+    cleanedData.childStoppedAttendingSchool = data.childStoppedAttendingSchool.map(
+      child => {
+        const date = child?.dateChildLeftSchool || '';
+        return {
+          ...child,
+          dateChildLeftSchool: date ? reformatDate(date) : date,
+        };
+      },
+    );
+  }
+
   return {
     ...data,
     ...cleanedData,

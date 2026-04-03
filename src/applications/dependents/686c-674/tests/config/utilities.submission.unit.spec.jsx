@@ -1228,7 +1228,13 @@ describe('clean up utilities', () => {
   });
 
   context('cleanUpDates', () => {
-    const getData = date => ({ reportDivorce: { divorceDate: date } });
+    const getData = date => ({
+      reportDivorce: { divorceDate: date },
+      childStoppedAttendingSchool: [
+        { dateChildLeftSchool: date },
+        { dateChildLeftSchool: date },
+      ],
+    });
     it('should reformat all date fields in the data object', () => {
       expect(cleanUpDates(getData('2026-5-9'))).to.deep.equal(
         getData('2026-05-09'),
