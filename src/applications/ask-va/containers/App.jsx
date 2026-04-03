@@ -10,6 +10,7 @@ import DowntimeNotification, {
 import { useBrowserMonitoring } from 'platform/monitoring/Datadog';
 import environment from 'platform/utilities/environment';
 import BreadCrumbs from '../components/BreadCrumbs';
+import EnvironmentBanner from '../components/EnvironmentBanner';
 import ProgressBar from '../components/ProgressBar';
 import formConfig from '../config/form';
 import { dataDog } from '../constants';
@@ -74,6 +75,7 @@ export default function App({ location, children }) {
 
   return !isLoadingFeatureFlags ? (
     <>
+      <EnvironmentBanner />
       <BreadCrumbs currentLocation={location.pathname} />
       <DowntimeNotification
         appTitle="Ask VA"

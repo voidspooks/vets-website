@@ -4,6 +4,7 @@ import { envApiUrl } from '../constants';
 const baseURL = '/ask_va_api/v0';
 
 export const ENDPOINTS = {
+  diagnostics: `${envApiUrl}${baseURL}/diagnostics`,
   inquiries: `${envApiUrl}${baseURL}/inquiries`,
   inquiriesAuth: `${envApiUrl}${baseURL}/inquiries/auth`,
 };
@@ -20,4 +21,8 @@ export async function getInquiry(inquiryId) {
 /** @param {string} inquiryId Also known as "reference number" or "inquiry number" */
 export async function getInquiryStatus(inquiryId) {
   return apiRequest(`${ENDPOINTS.inquiries}/${inquiryId}/status`);
+}
+
+export async function getDiagnostics() {
+  return apiRequest(ENDPOINTS.diagnostics);
 }

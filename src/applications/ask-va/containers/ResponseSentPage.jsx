@@ -1,9 +1,12 @@
-import { focusElement } from 'platform/utilities/ui';
 import React, { useEffect, useRef } from 'react';
-import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import cookie from 'js-cookie';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+
+import { focusElement } from 'platform/utilities/ui';
+import { useFeatureToggle } from 'platform/utilities/feature-toggles';
+
 import BreadCrumbs from '../components/BreadCrumbs';
+import EnvironmentBanner from '../components/EnvironmentBanner';
 import NeedHelpFooter from '../components/NeedHelpFooter';
 import manifest from '../manifest.json';
 
@@ -55,6 +58,7 @@ const ResponseSentPage = () => {
 
   return !isLoadingFeatureFlags ? (
     <div className="row vads-u-padding-x--1">
+      <EnvironmentBanner />
       <BreadCrumbs currentLocation="/response-sent" />
       <div className="usa-width-two-thirds medium-8 columns vads-u-padding--0">
         <h1 className="vads-u-font-family--serif vads-u-margin-bottom--5">

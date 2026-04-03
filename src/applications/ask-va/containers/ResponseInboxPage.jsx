@@ -1,3 +1,9 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { parse } from 'date-fns';
+import DOMPurify from 'dompurify';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import {
   VaAlert,
   VaButton,
@@ -6,16 +12,13 @@ import {
   VaLink,
   VaTelephone,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+
 import { isLoggedIn } from '@department-of-veterans-affairs/platform-user/selectors';
 import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/api';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
-import { parse } from 'date-fns';
-import DOMPurify from 'dompurify';
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+
 import BreadCrumbs from '../components/BreadCrumbs';
+import EnvironmentBanner from '../components/EnvironmentBanner';
 import FileUpload from '../components/FileUpload';
 import NeedHelpFooter from '../components/NeedHelpFooter';
 import {
@@ -31,9 +34,9 @@ import {
   URL,
 } from '../constants';
 import manifest from '../manifest.json';
+import { ENDPOINTS, getInquiry } from '../utils/api';
 import { mockInquiryResponse, mockAttachmentResponse } from '../utils/mockData';
 import { askVAAttachmentStorage } from '../utils/StorageAdapter';
-import { ENDPOINTS, getInquiry } from '../utils/api';
 
 const getReplySubHeader = messageType => {
   if (!messageType) return 'No messageType';
@@ -291,6 +294,7 @@ const ResponseInboxPage = ({ router }) => {
 
   return (
     <div className="row vads-u-padding-x--1">
+      <EnvironmentBanner />
       <BreadCrumbs currentLocation={window.location.pathname} />
       <div className="usa-width-two-thirds medium-8 columns vads-u-padding--0">
         <h1 className="vads-u-margin-bottom--2p5">
