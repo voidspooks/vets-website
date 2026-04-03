@@ -22,55 +22,49 @@ const EntitlementRestorationOptions = () => (
   <div className="vads-u-margin-top--5">
     <VaAccordion openSingle>
       <VaAccordionItem header="Understanding your VA home loan entitlement restoration options">
-        <p className="vads-u-margin-top--0">
+        <p className="vads-u-margin-y--0">
           Your VA home loan entitlement amount determines how much you can
           borrow without a down payment.
-          <div>
-            <VaLink
-              external
-              href="https://www.va.gov/housing-assistance/home-loans/loan-limits/"
-              text="View VA loan entitlement and loan limits"
-            />
-          </div>
         </p>
+        <VaLink
+          external
+          href="https://www.va.gov/housing-assistance/home-loans/loan-limits/"
+          text="View VA loan entitlement and loan limits"
+        />
 
-        <p className="vads-u-margin-top--0">
+        <p>
           Here’s what you should know about entitlement restoration options:
         </p>
 
         <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
           Cash-out refinance programs
         </p>
-        <p className="vads-u-margin-top--0">
+        <p className="vads-u-margin-y--0">
           You can request an entitlement restoration to refinance your home and
           cash out part of your equity. Entitlement restoration will only apply
           to the home that you bought with your VA home loan entitlement.{' '}
-          <div>
-            <VaLink
-              external
-              href="https://www.va.gov/housing-assistance/home-loans/loan-types/cash-out-loan/"
-              text="Learn more about a Cash-out refinance loan"
-            />
-          </div>
         </p>
+        <VaLink
+          external
+          href="https://www.va.gov/housing-assistance/home-loans/loan-types/cash-out-loan/"
+          text="Learn more about a Cash-out refinance loan"
+        />
 
         <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
           Refinance to change my interest rate
         </p>
-        <p className="vads-u-margin-top--0">
+        <p className="vads-u-margin-y--0">
           You can refinance your current VA home loan to get a lower interest
           rate with the Interest Rate Reduction Refinancing Loan (IRRRL)
           program. You can also use this program to switch from an adjustable
           rate to a fixed rate. Your entitlement will be re-used with this
           program.
-          <div>
-            <VaLink
-              external
-              href="https://www.va.gov/housing-assistance/home-loans/loan-types/interest-rate-reduction-loan/"
-              text="Learn more about an IRRRL"
-            />
-          </div>
         </p>
+        <VaLink
+          external
+          href="https://www.va.gov/housing-assistance/home-loans/loan-types/interest-rate-reduction-loan/"
+          text="Learn more about an IRRRL"
+        />
 
         <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
           Regular restoration of entitlement

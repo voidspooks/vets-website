@@ -29,7 +29,7 @@ export default {
       title: 'Property with VA home loan: Property address',
       nounSingular: 'property address',
       description:
-        'Provide the address of the property that was purchased with a VA home loan.',
+        'Provide the address of the property you purchased with a VA home loan.',
     }),
     propertyAddress: {
       ...remappedUI,

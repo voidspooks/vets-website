@@ -37,34 +37,30 @@ const OptionsAccordion = () => (
       <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
         To obtain a Cash-out Refinance loan
       </p>
-      <p className="vads-u-margin-top--0">
+      <p className="vads-u-margin-y--0">
         You can use your COE to refinance your home and take cash out from the
         equity. You can also use your COE to refinance a non-VA loan into a VA
         loan.
-        <div>
-          <VaLink
-            external
-            href="https://www.va.gov/housing-assistance/home-loans/loan-types/cash-out-loan/"
-            text="Learn more about the cash-out refinance program"
-          />
-        </div>
       </p>
+      <VaLink
+        external
+        href="https://www.va.gov/housing-assistance/home-loans/loan-types/cash-out-loan/"
+        text="Learn more about the cash-out refinance program"
+      />
 
       <p className="vads-u-margin-bottom--0 vads-u-font-weight--bold">
         To obtain an Interest Rate Reduction Refinancing Loan (IRRRL)
       </p>
-      <p className="vads-u-margin-top--0">
+      <p className="vads-u-margin-y--0">
         You can use your COE to lower your interest rate or switch from an
         adjustable rate to a fixable rate with the IRRRL program. You can only
         use this program if your current loan is a VA-guaranteed home loan.
-        <div>
-          <VaLink
-            external
-            href="https://www.va.gov/housing-assistance/home-loans/loan-types/interest-rate-reduction-loan/"
-            text="Learn more about the IRRRL program"
-          />
-        </div>
       </p>
+      <VaLink
+        external
+        href="https://www.va.gov/housing-assistance/home-loans/loan-types/interest-rate-reduction-loan/"
+        text="Learn more about the IRRRL program"
+      />
     </VaAccordionItem>
   </VaAccordion>
 );

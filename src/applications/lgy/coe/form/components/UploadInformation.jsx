@@ -24,14 +24,12 @@ const UploadInformation = props => {
             <p>
               The information included in your Statement of Service will be
               different based on your service type.
-              <div>
-                <VaLink
-                  external
-                  href="https://www.va.gov/housing-assistance/home-loans/how-to-request-coe/"
-                  text="Review requirements for your service type"
-                />
-              </div>
             </p>
+            <VaLink
+              external
+              href="https://www.va.gov/housing-assistance/home-loans/how-to-request-coe/"
+              text="Review requirements for your service type"
+            />
           </va-accordion-item>
         )}
         {hadPriorLoans && (

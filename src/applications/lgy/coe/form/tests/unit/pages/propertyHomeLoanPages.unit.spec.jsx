@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { propertiesHomeLoansPages } from '../../../pages/propertiesHomeLoansPages';
-import { certificateUseOptions } from '../../../constants';
 
 describe('COE VA home loans array builder pages', () => {
   it('includes summary and item pages', () => {
@@ -43,7 +42,6 @@ describe('COE VA home loans array builder pages', () => {
     const showLoop = {
       'view:coeFormRebuildCveteam': true,
       loanHistory: {
-        certificateUse: certificateUseOptions.HOME_PURCHASE,
         hadPriorLoans: true,
       },
     };

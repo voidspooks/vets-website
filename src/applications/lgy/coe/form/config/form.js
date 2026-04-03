@@ -33,11 +33,7 @@ import { servicePeriodsPages } from '../pages/servicePeriodsPages';
 import serviceStatus2 from '../pages/serviceStatus2';
 import { uploadDocumentsSchema, getUiSchema } from '../pages/uploadDocuments';
 
-import {
-  certificateUseOptions,
-  serviceStatuses,
-  TOGGLE_KEY,
-} from '../constants';
+import { serviceStatuses, TOGGLE_KEY } from '../constants';
 import certificateUse from '../pages/certificateUse';
 import hadPriorLoans from '../pages/hadPriorLoans';
 import { propertiesHomeLoansPages } from '../pages/propertiesHomeLoansPages';
@@ -206,7 +202,7 @@ const formConfig = {
         serviceHistory: {
           path: 'service-history',
           title: 'Service history',
-          depends: formData => !formData['view:coeFormRebuildCveteam'],
+          depends: formData => !formData[`view:${TOGGLE_KEY}`],
           uiSchema: serviceHistory.uiSchema,
           schema: serviceHistory.schema,
         },
@@ -248,16 +244,7 @@ const formConfig = {
         hadPriorLoans: {
           path: 'prior-loans',
           title: 'Previous VA home loans',
-          depends: formData => {
-            return (
-              formData[`view:${TOGGLE_KEY}`] &&
-              [
-                certificateUseOptions.ENTITLEMENT_INQUIRY_ONLY,
-                certificateUseOptions.HOME_PURCHASE,
-                certificateUseOptions.CASH_OUT_REFINANCE,
-              ].includes(formData?.loanHistory?.certificateUse)
-            );
-          },
+          depends: formData => formData[`view:${TOGGLE_KEY}`],
           uiSchema: hadPriorLoans.uiSchema,
           schema: hadPriorLoans.schema,
         },

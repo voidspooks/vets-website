@@ -9,7 +9,7 @@ import propertyAddress from './propertyAddress';
 import loanDetails from './loanDetails';
 import entitlementRestoration from './entitlementRestoration';
 import disasterDamage from './disasterDamage';
-import { certificateUseOptions } from '../constants';
+import { TOGGLE_KEY } from '../constants';
 
 const formatPropertyAddress = itemData => {
   const { propertyAddress: itemPropertyAddress } = itemData || {};
@@ -143,15 +143,7 @@ const summaryPage = {
 };
 
 const shouldShowPropertiesHomeLoansLoop = formData =>
-  formData['view:coeFormRebuildCveteam'] &&
-  ((formData.loanHistory?.hadPriorLoans &&
-    [
-      certificateUseOptions.ENTITLEMENT_INQUIRY_ONLY,
-      certificateUseOptions.HOME_PURCHASE,
-      certificateUseOptions.CASH_OUT_REFINANCE,
-    ].includes(formData.loanHistory?.certificateUse)) ||
-    formData.loanHistory?.certificateUse ===
-      certificateUseOptions.INTEREST_RATE_REDUCTION_REFINANCE);
+  formData[`view:${TOGGLE_KEY}`] && formData.loanHistory?.hadPriorLoans;
 
 export const propertiesHomeLoansPages = arrayBuilderPages(
   options,
