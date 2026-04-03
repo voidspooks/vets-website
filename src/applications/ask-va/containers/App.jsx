@@ -7,9 +7,12 @@ import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/
 import DowntimeNotification, {
   externalServices,
 } from 'platform/monitoring/DowntimeNotification';
+import { useBrowserMonitoring } from 'platform/monitoring/Datadog';
+import environment from 'platform/utilities/environment';
 import BreadCrumbs from '../components/BreadCrumbs';
 import ProgressBar from '../components/ProgressBar';
 import formConfig from '../config/form';
+import { dataDog } from '../constants';
 
 export default function App({ location, children }) {
   const {
@@ -33,6 +36,16 @@ export default function App({ location, children }) {
     !isLoadingFeatureFlags && isOldPortalAlertEnabled && !isAppEnabledViaCookie;
   const performRedirect =
     !isLoadingFeatureFlags && !(isCanaryEnabled || isCanaryEnabledViaCookie);
+
+  const dataDogConfig = {
+    ...dataDog,
+    env: environment.vspEnvironment(),
+    sessionReplaySampleRate:
+      environment.vspEnvironment() === 'staging'
+        ? dataDog.replaySampleRateNonProd
+        : dataDog.replaySampleRateProd,
+  };
+  useBrowserMonitoring(dataDogConfig);
 
   if (performRedirect) {
     window.location.href = 'https://ask.va.gov/';
