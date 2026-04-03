@@ -1,0 +1,18 @@
+{
+  "appName": "Apply for Annual Clothing Allowance",
+  "entryFile": "./app-entry.jsx",
+  "entryName": "10-8678",
+  "rootUrl": "/disability/eligibility/annual-clothing-allowance/apply-form-10-8678",
+  "productId": "eef9f9da-91ba-43e2-8b3c-c44256263b35",
+  "template": {
+    "vagovprod": false,
+    "layout": "page-react.html",
+    "includeBreadcrumbs": false,
+    "minimalExcludePaths": ["/introduction", "/confirmation"],
+    "minimalFooter": true,
+    "minimalHeader": {
+      "title": "Apply for Annual Clothing Allowance",
+      "subtitle": "(VA Form 10-8678)"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "data": {
+    "fullName": {
+      "first": "John",
+      "middle": "Michael",
+      "last": "Doe"
+    },
+    "ssn": "987654321",
+    "address": {
+      "country": "USA",
+      "street": "123 Main St",
+      "street2": "Apt 4B",
+      "city": "City",
+      "state": "CA",
+      "postalCode": "12345"
+    },
+    "isNewAddress": true,
+    "daytimePhone": "5551234567",
+    "eveningPhone": "5559876543",
+    "emailAddress": "john.doe@example.com",
+    "applicationYear": "2026",
+    "clothingItems": [
+      {
+        "itemType": "Artificial leg",
+        "serviceConnectedDisability": "Left leg amputation",
+        "issuedDate": "01/2024",
+        "issuingFacility": "VA Medical Center, Los Angeles, CA",
+        "impactedLocations": {
+          "chest": false,
+          "back": false,
+          "buttock": false,
+          "leftLeg": true,
+          "rightLeg": false,
+          "leftArm": false,
+          "rightArm": false
+        }
+      },
+      {
+        "itemType": "Skin medication",
+        "serviceConnectedDisability": "Dermatitis",
+        "issuedDate": "06/2023",
+        "issuingFacility": "VA Medical Center, San Francisco, CA",
+        "impactedLocations": {
+          "chest": true,
+          "back": true,
+          "buttock": false,
+          "leftLeg": false,
+          "rightLeg": false,
+          "leftArm": false,
+          "rightArm": false
+        }
+      }
+    ]
+  }
+}
