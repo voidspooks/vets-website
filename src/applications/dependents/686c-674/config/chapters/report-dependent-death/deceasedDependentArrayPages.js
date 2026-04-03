@@ -14,13 +14,12 @@ import {
   ssnUI,
   ssnSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
   dateOfDeathUI,
-  dateOfDeathSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
 import VaSelectField from 'platform/forms-system/src/js/web-component-fields/VaSelectField';
 import VaCheckboxField from 'platform/forms-system/src/js/web-component-fields/VaCheckboxField';
+import { DATE_SCHEMA } from '../../constants';
 
 import {
   relationshipEnums,
@@ -156,7 +155,7 @@ export const deceasedDependentPersonalInfoPage = {
     properties: {
       fullName: fullNameNoSuffixSchema,
       ssn: ssnSchema,
-      birthDate: currentOrPastDateSchema,
+      birthDate: DATE_SCHEMA,
     },
   },
 };
@@ -233,7 +232,7 @@ export const deceasedDependentDateOfDeathPage = {
     type: 'object',
     required: ['dependentDeathDate'],
     properties: {
-      dependentDeathDate: dateOfDeathSchema,
+      dependentDeathDate: DATE_SCHEMA,
     },
   },
 };

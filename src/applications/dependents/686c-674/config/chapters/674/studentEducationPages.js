@@ -7,7 +7,6 @@ import {
   radioUI,
   radioSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
 import {
@@ -15,6 +14,7 @@ import {
   benefitUiLabels,
   ProgramExamples,
 } from './helpers';
+import { DATE_SCHEMA } from '../../constants';
 
 /** @returns {PageSchema} */
 export const studentEducationBenefitsPage = {
@@ -147,7 +147,7 @@ export const studentEducationBenefitsStartDatePage = {
   schema: {
     type: 'object',
     properties: {
-      benefitPaymentDate: currentOrPastDateSchema,
+      benefitPaymentDate: DATE_SCHEMA,
     },
   },
 };

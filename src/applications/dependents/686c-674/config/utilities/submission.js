@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep';
+import { format } from 'date-fns';
 
 import {
   filterInactivePageData,
@@ -15,13 +16,17 @@ import {
 } from '../dataMappings';
 
 import { isVetInReceiptOfPension } from './api';
-import { customFormReplacer, showV3Picklist } from './formHelpers';
+import {
+  customFormReplacer,
+  showV3Picklist,
+  parseDateToDateObj,
+} from './formHelpers';
 import {
   transformPicklistToV2,
   enrichDivorceWithSSN,
   cleanupAddressData,
 } from './picklistTransform';
-import { PICKLIST_REMOVAL_FLAG } from '../constants';
+import { PICKLIST_REMOVAL_FLAG, FORMAT_YMD_DATE_FNS } from '../constants';
 
 /**
  * Extract data fields with values from source data
@@ -517,6 +522,39 @@ function cleanDataWithAddresses(data = {}) {
 }
 
 /**
+ * Process date string for submission by adding leading zeros to month and day
+ * parts using date-fns
+ * @param {String} date - date string
+ * @returns {String} Processed date string
+ */
+export function reformatDate(date) {
+  const dateObj = parseDateToDateObj(date, FORMAT_YMD_DATE_FNS);
+  if (!dateObj) return date; // Return original value if parsing fails
+  return format(dateObj, FORMAT_YMD_DATE_FNS);
+}
+
+/**
+ * Add leading zeros to month and day parts in YYYY-MM-DD format
+ * @param {Object} data - form data
+ * @returns {Object} data with zero-padded single digit month or day
+ */
+export function cleanUpDates(data = {}) {
+  const cleanedData = {};
+
+  // Divorce date
+  if (data.reportDivorce?.divorceDate) {
+    cleanedData.reportDivorce = {
+      ...data.reportDivorce,
+      divorceDate: reformatDate(data.reportDivorce.divorceDate),
+    };
+  }
+  return {
+    ...data,
+    ...cleanedData,
+  };
+}
+
+/**
  * Rebuilds submission data with validated flags and wraps in payload structure.
  *
  * This is where submission flags are set based on actual data presence.
@@ -584,7 +622,10 @@ export function customTransformForSubmit(formConfig, form) {
 
   // Step 5a: Clean up address data in enriched data (strip out street2 if empty
   // after trimming whitespace)
-  const cleanedEnrichedData = cleanDataWithAddresses(enrichedData);
+  const cleanedEnrichedData = [cleanDataWithAddresses, cleanUpDates].reduce(
+    (data, fn) => fn(data),
+    enrichedData,
+  );
 
   // Step 6: Rebuild payload with validated flags (single source of truth)
   const finalPayload = rebuildSubmissionPayload(

@@ -7,9 +7,9 @@ import {
   yesNoUI,
   yesNoSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { asciiValidation } from '../../helpers';
+import { DATE_SCHEMA } from '../../constants';
 
 /** @returns {PageSchema} */
 export const studentIncomePage = {
@@ -149,7 +149,7 @@ export const studentMarriageDatePage = {
   schema: {
     type: 'object',
     properties: {
-      marriageDate: currentOrPastDateSchema,
+      marriageDate: DATE_SCHEMA,
     },
   },
 };

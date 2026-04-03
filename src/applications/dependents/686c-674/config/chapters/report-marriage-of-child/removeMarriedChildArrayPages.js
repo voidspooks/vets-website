@@ -12,11 +12,11 @@ import {
   ssnUI,
   ssnSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
 import { CancelButton, fullNameNoSuffixWithAsciiUI } from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
+import { DATE_SCHEMA } from '../../constants';
 
 /** @type {ArrayBuilderOptions} */
 export const removeMarriedChildOptions = {
@@ -115,7 +115,7 @@ export const marriedChildInformationPage = {
     properties: {
       fullName: fullNameNoSuffixSchema,
       ssn: ssnSchema,
-      birthDate: currentOrPastDateSchema,
+      birthDate: DATE_SCHEMA,
     },
   },
 };
@@ -133,7 +133,7 @@ export const dateChildMarriedPage = {
     type: 'object',
     required: ['dateMarried'],
     properties: {
-      dateMarried: currentOrPastDateSchema,
+      dateMarried: DATE_SCHEMA,
     },
   },
 };

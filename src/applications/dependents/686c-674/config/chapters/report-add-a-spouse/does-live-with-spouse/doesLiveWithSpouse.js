@@ -2,9 +2,9 @@ import {
   yesNoSchema,
   yesNoUI,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { DATE_SCHEMA } from '../../../constants';
 
 export const schema = {
   type: 'object',
@@ -18,7 +18,7 @@ export const schema = {
     currentMarriageInformation: {
       type: 'object',
       properties: {
-        date: currentOrPastDateSchema,
+        date: DATE_SCHEMA,
       },
     },
   },

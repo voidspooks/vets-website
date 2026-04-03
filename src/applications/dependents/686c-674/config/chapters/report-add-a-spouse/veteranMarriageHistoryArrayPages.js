@@ -7,7 +7,6 @@ import {
   radioUI,
   radioSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
 import VaSelectField from 'platform/forms-system/src/js/web-component-fields/VaSelectField';
@@ -22,6 +21,7 @@ import {
   fullNameNoSuffixWithAsciiUI,
 } from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
+import { DATE_SCHEMA } from '../../constants';
 
 /* NOTE:
  * In "Add mode" of the array builder, formData represents the entire formData object.
@@ -172,7 +172,7 @@ export const vetFormerMarriageStartDatePage = {
     type: 'object',
     required: ['startDate'],
     properties: {
-      startDate: currentOrPastDateSchema,
+      startDate: DATE_SCHEMA,
     },
   },
 };
@@ -209,7 +209,7 @@ export const vetFormerMarriageEndDatePage = {
     type: 'object',
     required: ['endDate'],
     properties: {
-      endDate: currentOrPastDateSchema,
+      endDate: DATE_SCHEMA,
     },
   },
 };

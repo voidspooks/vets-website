@@ -16,10 +16,10 @@ import {
   ssnUI,
   ssnSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
 import { CancelButton, fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import { DATE_SCHEMA } from '../../constants';
 import {
   isFieldMissing,
   isEmptyObject,
@@ -214,7 +214,7 @@ export const householdChildInfoPage = {
     properties: {
       fullName: fullNameNoSuffixSchema,
       ssn: ssnSchema,
-      birthDate: currentOrPastDateSchema,
+      birthDate: DATE_SCHEMA,
     },
   },
 };
@@ -234,7 +234,7 @@ export const stepchildLeftHouseholdDatePage = {
     type: 'object',
     required: ['dateStepchildLeftHousehold'],
     properties: {
-      dateStepchildLeftHousehold: currentOrPastDateSchema,
+      dateStepchildLeftHousehold: DATE_SCHEMA,
     },
   },
 };

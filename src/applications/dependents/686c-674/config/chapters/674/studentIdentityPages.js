@@ -4,7 +4,6 @@ import {
   arrayBuilderItemSubsequentPageTitleUI,
   fullNameNoSuffixSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
   checkboxUI,
   checkboxSchema,
   radioUI,
@@ -17,6 +16,7 @@ import { relationshipToStudentLabels } from './helpers';
 import { addStudentsOptions } from './addStudentsSetup';
 import { NO_SSN_REASON_UI_MAPPINGS } from '../../dataMappings';
 import { fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import { DATE_SCHEMA } from '../../constants';
 
 /** @returns {PageSchema} */
 export const studentInformationPage = {
@@ -83,7 +83,7 @@ export const studentInformationPage = {
     properties: {
       'view:studentNameTitle': { type: 'object', properties: {} },
       fullName: fullNameNoSuffixSchema,
-      birthDate: currentOrPastDateSchema,
+      birthDate: DATE_SCHEMA,
       'view:studentIdTitle': { type: 'object', properties: {} },
       noSsn: checkboxSchema,
       noSsnReason: radioSchema(['NONRESIDENT_ALIEN', 'NONE_ASSIGNED']),

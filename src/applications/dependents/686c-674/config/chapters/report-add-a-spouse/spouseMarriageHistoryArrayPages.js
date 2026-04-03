@@ -8,7 +8,6 @@ import {
   radioUI,
   radioSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
 import VaSelectField from 'platform/forms-system/src/js/web-component-fields/VaSelectField';
@@ -21,6 +20,7 @@ import {
   fullNameNoSuffixWithAsciiUI,
 } from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
+import { DATE_SCHEMA } from '../../constants';
 
 /** @type {ArrayBuilderOptions} */
 export const spouseMarriageHistoryOptions = {
@@ -156,7 +156,7 @@ export const formerMarriageStartDatePage = {
     type: 'object',
     required: ['startDate'],
     properties: {
-      startDate: currentOrPastDateSchema,
+      startDate: DATE_SCHEMA,
     },
   },
 };
@@ -193,7 +193,7 @@ export const formerMarriageEndDatePage = {
     type: 'object',
     required: ['endDate'],
     properties: {
-      endDate: currentOrPastDateSchema,
+      endDate: DATE_SCHEMA,
     },
   },
 };

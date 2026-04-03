@@ -3,9 +3,9 @@ import {
   radioUI,
   radioSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
+import { DATE_SCHEMA } from '../../constants';
 
 export const marriageEndDetails = {
   uiSchema: {
@@ -77,7 +77,7 @@ export const marriageEndDetails = {
     type: 'object',
     required: ['marriageEndDate', 'marriageEndReason'],
     properties: {
-      marriageEndDate: currentOrPastDateSchema,
+      marriageEndDate: DATE_SCHEMA,
       marriageEndReason: radioSchema([
         'Death',
         'Divorce',

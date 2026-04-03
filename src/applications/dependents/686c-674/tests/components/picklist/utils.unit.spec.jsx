@@ -563,6 +563,11 @@ describe('getPastDateError', () => {
     expect(error).to.equal('Enter a valid date');
   });
 
+  it('should return invalid date error message if a date with "X" placeholder is provided', () => {
+    const error = getPastDateError('2000-01-XX');
+    expect(error).to.equal('Enter a valid date');
+  });
+
   it('should return null if date is valid and in the past', () => {
     const error = getPastDateError('2020-01-01', 'Missing date');
     expect(error).to.be.null;

@@ -34,6 +34,16 @@ export const FORMAT_YMD_DATE_FNS = 'yyyy-MM-dd';
 export const FORMAT_COMPACT_DATE_FNS = 'MMM d, yyyy';
 export const FORMAT_READABLE_DATE_FNS = 'MMMM d, yyyy';
 
+/**
+ * Strict date schema that rejects XX/XXXX placeholders.
+ * Use this instead of currentOrPastDateSchema (which uses
+ * commonDefinitions.date and allows XX/XXXX partial dates).
+ */
+export const DATE_SCHEMA = {
+  type: 'string',
+  pattern: '^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$',
+};
+
 export const PICKLIST_DATA = 'view:removeDependentPickList';
 export const PICKLIST_PATHS = 'view:removeDependentPaths';
 

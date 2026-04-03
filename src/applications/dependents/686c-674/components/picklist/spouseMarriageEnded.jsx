@@ -139,7 +139,6 @@ const spouseMarriageEnded = {
           value={itemData.endCity || ''}
           onVaInput={onChange}
           required
-          maxlength={30}
         />
         {itemData.endOutsideUs ? (
           <>

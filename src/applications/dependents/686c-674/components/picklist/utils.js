@@ -363,7 +363,7 @@ export const getPastDateError = (
   }
 
   const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
-  if (!isValid(parsedDate)) {
+  if (!isValid(parsedDate) || date.includes('X')) {
     return 'Enter a valid date';
   }
   if (!isPast(parsedDate)) {

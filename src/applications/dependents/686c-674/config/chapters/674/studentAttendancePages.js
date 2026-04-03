@@ -3,13 +3,13 @@ import {
   yesNoUI,
   yesNoSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import VaMemorableDateField from 'platform/forms-system/src/js/web-component-fields/VaMemorableDateField';
 import { validateCurrentOrFutureDate } from 'platform/forms-system/src/js/validation';
 
 import { AccreditedSchool, TermDateHint } from './helpers';
 import { generateHelpText } from '../../helpers';
+import { DATE_SCHEMA } from '../../constants';
 
 export const studentAttendancePage = {
   uiSchema: {
@@ -77,7 +77,7 @@ export const studentStoppedAttendingDatePage = {
       schoolInformation: {
         type: 'object',
         properties: {
-          dateFullTimeEnded: currentOrPastDateSchema,
+          dateFullTimeEnded: DATE_SCHEMA,
         },
       },
     },
@@ -172,12 +172,9 @@ export const studentTermDatesPage = {
             ],
             type: 'object',
             properties: {
-              officialSchoolStartDate: currentOrPastDateSchema,
-              expectedStudentStartDate: currentOrPastDateSchema,
-              expectedGraduationDate: {
-                type: 'string',
-                pattern: '^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$',
-              },
+              officialSchoolStartDate: DATE_SCHEMA,
+              expectedStudentStartDate: DATE_SCHEMA,
+              expectedGraduationDate: DATE_SCHEMA,
             },
           },
         },
@@ -264,8 +261,8 @@ export const previousTermDatesPage = {
           lastTermSchoolInformation: {
             type: 'object',
             properties: {
-              termBegin: currentOrPastDateSchema,
-              dateTermEnded: currentOrPastDateSchema,
+              termBegin: DATE_SCHEMA,
+              dateTermEnded: DATE_SCHEMA,
             },
           },
         },

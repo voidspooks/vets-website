@@ -5,6 +5,8 @@ import set from 'platform/utilities/data/set';
 import {
   buildSubmissionData,
   customTransformForSubmit,
+  reformatDate,
+  cleanUpDates,
 } from '../../config/utilities/submission';
 
 import { PICKLIST_DATA, PICKLIST_REMOVAL_FLAG } from '../../config/constants';
@@ -1200,5 +1202,51 @@ describe('customTransformForSubmit integration', () => {
       data: set(PICKLIST_DATA, picklist, fixture),
     });
     expect(data.data).to.deep.equal(expectedResult);
+  });
+});
+
+describe('clean up utilities', () => {
+  context('reformatDate', () => {
+    it('should return empty string for invalid dates', () => {
+      expect(reformatDate()).to.be.undefined;
+      expect(reformatDate('')).to.equal('');
+      expect(reformatDate('invalid-date')).to.equal('invalid-date');
+    });
+
+    it('should handle double-digit months and days', () => {
+      expect(reformatDate('2026-04-05')).to.equal('2026-04-05');
+      expect(reformatDate('2026-11-10')).to.equal('2026-11-10');
+      expect(reformatDate('2026-12-11')).to.equal('2026-12-11');
+      expect(reformatDate('2026-10-31')).to.equal('2026-10-31');
+    });
+
+    it('should convert date and include leading zeros in yyyy-MM-dd format', () => {
+      expect(reformatDate('2026-1-3')).to.equal('2026-01-03');
+      expect(reformatDate('2026-11-4')).to.equal('2026-11-04');
+      expect(reformatDate('2026-4-11')).to.equal('2026-04-11');
+    });
+  });
+
+  context('cleanUpDates', () => {
+    const getData = date => ({ reportDivorce: { divorceDate: date } });
+    it('should reformat all date fields in the data object', () => {
+      expect(cleanUpDates(getData('2026-5-9'))).to.deep.equal(
+        getData('2026-05-09'),
+      );
+      expect(cleanUpDates(getData('2026-10-4'))).to.deep.equal(
+        getData('2026-10-04'),
+      );
+      expect(cleanUpDates(getData('2026-7-15'))).to.deep.equal(
+        getData('2026-07-15'),
+      );
+    });
+
+    it('should handle non-date fields and invalid dates gracefully', () => {
+      expect(cleanUpDates()).to.deep.equal({});
+      expect(cleanUpDates(getData(''))).to.deep.equal(getData(''));
+      expect(cleanUpDates(getData('invalid-date'))).to.deep.equal(
+        getData('invalid-date'),
+      );
+    });
   });
 });

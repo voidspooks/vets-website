@@ -3,7 +3,6 @@ import {
   yesNoUI,
   yesNoSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
   firstNameLastNameNoSuffixUI,
   firstNameLastNameNoSuffixSchema,
   ssnUI,
@@ -11,6 +10,7 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import React from 'react';
 import { asciiValidation } from '../../helpers';
+import { DATE_SCHEMA } from '../../constants';
 
 /**
  * Required field function for schema fields
@@ -100,14 +100,14 @@ export const stepchild = {
     ],
     properties: {
       isBiologicalChildOfSpouse: yesNoSchema,
-      dateEnteredHousehold: currentOrPastDateSchema,
+      dateEnteredHousehold: DATE_SCHEMA,
       'view:biologicalParentInfo': {
         type: 'object',
         properties: {},
       },
       biologicalParentName: firstNameLastNameNoSuffixSchema,
       biologicalParentSsn: ssnSchema,
-      biologicalParentDob: currentOrPastDateSchema,
+      biologicalParentDob: DATE_SCHEMA,
     },
   },
 };

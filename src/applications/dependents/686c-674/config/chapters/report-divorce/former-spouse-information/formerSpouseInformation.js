@@ -3,9 +3,9 @@ import {
   titleUI,
   fullNameNoSuffixSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { CancelButton, fullNameNoSuffixWithAsciiUI } from '../../../helpers';
+import { DATE_SCHEMA } from '../../../constants';
 
 export const schema = {
   type: 'object',
@@ -14,7 +14,7 @@ export const schema = {
       type: 'object',
       properties: {
         fullName: fullNameNoSuffixSchema,
-        birthDate: currentOrPastDateSchema,
+        birthDate: DATE_SCHEMA,
         'view:cancelDivorce': {
           type: 'object',
           properties: {},

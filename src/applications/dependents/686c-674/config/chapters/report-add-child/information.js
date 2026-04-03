@@ -2,7 +2,6 @@ import React from 'react';
 import {
   fullNameNoSuffixSchema,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
   arrayBuilderItemFirstPageTitleUI,
   checkboxUI,
   checkboxSchema,
@@ -14,6 +13,7 @@ import {
 import { arrayBuilderOptions } from './config';
 import { NO_SSN_REASON_UI_MAPPINGS } from '../../dataMappings';
 import { fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import { DATE_SCHEMA } from '../../constants';
 
 export const information = {
   uiSchema: {
@@ -79,7 +79,7 @@ export const information = {
     properties: {
       'view:childNameTitle': { type: 'object', properties: {} },
       fullName: fullNameNoSuffixSchema,
-      birthDate: currentOrPastDateSchema,
+      birthDate: DATE_SCHEMA,
       'view:childIdTitle': { type: 'object', properties: {} },
       noSsn: checkboxSchema,
       noSsnReason: radioSchema(['NONRESIDENT_ALIEN', 'NONE_ASSIGNED']),

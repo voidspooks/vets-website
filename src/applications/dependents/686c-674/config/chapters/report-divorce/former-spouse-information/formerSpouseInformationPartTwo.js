@@ -1,7 +1,6 @@
 import {
   titleUI,
   currentOrPastDateUI,
-  currentOrPastDateSchema,
   radioUI,
   radioSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
@@ -9,6 +8,7 @@ import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/
 import VaSelectField from 'platform/forms-system/src/js/web-component-fields/VaSelectField';
 import VaCheckboxField from 'platform/forms-system/src/js/web-component-fields/VaCheckboxField';
 import { customLocationSchema, asciiValidation } from '../../../helpers';
+import { DATE_SCHEMA } from '../../../constants';
 
 export const schema = {
   type: 'object',
@@ -16,7 +16,7 @@ export const schema = {
     reportDivorce: {
       type: 'object',
       properties: {
-        date: currentOrPastDateSchema,
+        date: DATE_SCHEMA,
         divorceLocation: customLocationSchema,
         reasonMarriageEnded: radioSchema(['Divorce', 'Other']),
         explanationOfOther: {

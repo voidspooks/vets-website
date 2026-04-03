@@ -272,7 +272,7 @@ schema: {
   type: 'object',
   required: ['endDate'],
   properties: {
-    endDate: currentOrPastDateSchema,
+    endDate: DATE_SCHEMA, // using a strict date Regex (no "X"s)
   },
 },
 ```
