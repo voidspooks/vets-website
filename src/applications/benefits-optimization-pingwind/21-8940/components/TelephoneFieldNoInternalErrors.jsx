@@ -10,5 +10,20 @@ import vaTelephoneInputFieldMapping from 'platform/forms-system/src/js/web-compo
 export default function TelephoneFieldNoInternalErrors(props) {
   const mappedProps = vaTelephoneInputFieldMapping(props);
 
-  return <VaTelephoneInput {...mappedProps} showInternalErrors={false} />;
+  const onVaContact = (event, value) => {
+    const payload = value || event?.detail || {};
+
+    mappedProps.onVaContact(event, {
+      ...payload,
+      contactRaw: payload.contactRaw ?? payload.contact,
+    });
+  };
+
+  return (
+    <VaTelephoneInput
+      {...mappedProps}
+      onVaContact={onVaContact}
+      showInternalErrors={false}
+    />
+  );
 }
