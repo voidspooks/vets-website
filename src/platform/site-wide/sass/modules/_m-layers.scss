@@ -5,9 +5,15 @@
 .va-modal {
   z-index: $modal-layer !important;
 }
-#va-detailpage-sidebar {
-  z-index: $top-layer;
+
+// Make the sidebar content show up in the top layer only when it needs to.
+// https://github.com/department-of-veterans-affairs/va.gov-cms/issues/23865
+@media (max-width: $medium-screen - 1) {
+  #va-detailpage-sidebar {
+    z-index: $top-layer;
+  }
 }
+
 #preview-site-alert {
   z-index: $low-layer;
 }
@@ -29,7 +35,7 @@
   }
 }
 // and on desktop the opposite is true
-@media(min-width: $medium-screen) {
+@media (min-width: $medium-screen) {
   #login-root {
     z-index: $top-layer;
   }
