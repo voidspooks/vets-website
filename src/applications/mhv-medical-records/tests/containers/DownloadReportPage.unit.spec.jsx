@@ -26,12 +26,17 @@ const ehrDataByVhaId = {
 };
 
 // Base state for VistA-only user (default)
-const getBaseState = (facilities = vistaOnlyFacilities, cernerIds = []) => ({
+const getBaseState = (
+  facilities = vistaOnlyFacilities,
+  cernerIds = [],
+  isCernerPatient = false,
+) => ({
   user: {
     ...user,
     profile: {
       ...user.profile,
       facilities,
+      isCernerPatient,
     },
   },
   drupalStaticData: {
@@ -142,8 +147,8 @@ describe('DownloadRecordsPage - Oracle Health Only User', () => {
   let screen;
 
   beforeEach(() => {
-    // OH-only user: all facilities are Cerner/OH
-    const state = getBaseState(ohOnlyFacilities, ['456']);
+    // OH-only user: all facilities are Cerner/OH — renders VistaAndOHContent
+    const state = getBaseState(ohOnlyFacilities, ['456'], true);
     screen = renderWithStoreAndRouter(<DownloadReportPage />, {
       initialState: state,
       reducers: reducer,
@@ -175,8 +180,8 @@ describe('DownloadRecordsPage - Both VistA and Oracle Health User', () => {
   let screen;
 
   beforeEach(() => {
-    // Both facilities: mix of VistA and OH
-    const state = getBaseState(bothFacilities, ['456']);
+    // Both facilities: mix of VistA and OH — renders VistaAndOHContent
+    const state = getBaseState(bothFacilities, ['456'], true);
     screen = renderWithStoreAndRouter(<DownloadReportPage />, {
       initialState: state,
       reducers: reducer,
@@ -423,7 +428,7 @@ describe('DownloadRecordsPage with last successful update timestamp', () => {
 describe('DownloadRecordsPage - Missing EHR data for facility names', () => {
   const testEmptyFacilityList = ehrData => {
     const state = {
-      ...getBaseState(bothFacilities, ['456']),
+      ...getBaseState(bothFacilities, ['456'], true),
       drupalStaticData: {
         vamcEhrData: {
           data: {
@@ -476,7 +481,7 @@ describe('DownloadRecordsPage - Oracle Health CCD not enabled', () => {
   });
 
   it('shows VistaOnlyContent for OH-only users when flag is false', () => {
-    const state = getBaseState(ohOnlyFacilities, ['456']);
+    const state = getBaseState(ohOnlyFacilities, ['456'], true);
     state.featureToggles[FEATURE_FLAG_NAMES.mhvMedicalRecordsCcdOH] = false;
 
     const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
@@ -493,7 +498,7 @@ describe('DownloadRecordsPage - Oracle Health CCD not enabled', () => {
   });
 
   it('shows VistaOnlyContent for users with both facilities when flag is false', () => {
-    const state = getBaseState(bothFacilities, ['456']);
+    const state = getBaseState(bothFacilities, ['456'], true);
     state.featureToggles[FEATURE_FLAG_NAMES.mhvMedicalRecordsCcdOH] = false;
 
     const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
@@ -507,5 +512,71 @@ describe('DownloadRecordsPage - Oracle Health CCD not enabled', () => {
       screen.getByText(/Download your VA medical records as a single report/i),
     ).to.exist;
     expect(screen.getByText('Download your medical records reports')).to.exist;
+  });
+});
+
+describe('DownloadRecordsPage - Empty facilities array', () => {
+  // VistaAndOHContent requires BOTH isCernerPatient: true in the profile
+  // (so the hook's isAcceleratingCCD is true) AND at least one Cerner
+  // facility in the facilities list (so ohFacilities.length > 0). When
+  // either condition is missing the page renders VistA-only content - even if the flag is enabled.
+
+  it('shows VistaOnlyContent when isCernerPatient is true but facilities list is empty', () => {
+    // isCernerPatient flag is set but there are no OH facilities in the list,
+    // so ohFacilities.length === 0 and we fall back to VistA-only content.
+    const state = getBaseState([], [], true);
+
+    const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
+      initialState: state,
+      reducers: reducer,
+      path: '/download-all',
+    });
+
+    expect(
+      screen.getByText(/Download your VA medical records as a single report/i),
+    ).to.exist;
+    expect(screen.queryByTestId('generateCcdButtonXmlOH')).to.be.null;
+  });
+
+  it('shows VistaOnlyContent when facilities include OH but isCernerPatient is false', () => {
+    // Facilities list has a Cerner facility but the profile isCernerPatient
+    // flag from MPI is false, so isAcceleratingCCD is false.
+    const state = getBaseState(ohOnlyFacilities, ['456'], false);
+
+    const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
+      initialState: state,
+      reducers: reducer,
+      path: '/download-all',
+    });
+
+    expect(
+      screen.getByText(/Download your VA medical records as a single report/i),
+    ).to.exist;
+    expect(screen.queryByTestId('generateCcdButtonXmlOH')).to.be.null;
+  });
+
+  it('does not render VistaAndOHContent or V2 CCD links for user with null facilities', () => {
+    const state = {
+      ...getBaseState([], []),
+      user: {
+        ...getBaseState([], []).user,
+        profile: {
+          ...getBaseState([], []).user.profile,
+          facilities: null,
+        },
+      },
+    };
+
+    const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
+      initialState: state,
+      reducers: reducer,
+      path: '/download-all',
+    });
+
+    // Should show VistA-only content
+    expect(
+      screen.getByText(/Download your VA medical records as a single report/i),
+    ).to.exist;
+    expect(screen.queryByTestId('generateCcdButtonXmlOH')).to.be.null;
   });
 });

@@ -24,7 +24,7 @@ describe('IntroSection', () => {
   });
 
   describe('OH-only', () => {
-    it('renders OH-only intro when dataSourceType is ohOnly', () => {
+    it('renders BOTH intro paragraphs', () => {
       const ohFacilityNamesBeforeCutover = [
         'OH Facility (before January 1, 2022)',
       ];
@@ -33,7 +33,7 @@ describe('IntroSection', () => {
       ];
       const { getByRole, getAllByText, getByText } = render(
         <IntroSection
-          dataSourceType={dataSourceTypes.OH_ONLY}
+          dataSourceType={dataSourceTypes.BOTH}
           ohFacilityNamesBeforeCutover={ohFacilityNamesBeforeCutover}
           ohFacilityNamesAfterCutover={ohFacilityNamesAfterCutover}
         />,

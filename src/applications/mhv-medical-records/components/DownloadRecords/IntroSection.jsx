@@ -32,7 +32,6 @@ const BOTH_CONTENT = {
 };
 
 const CONTENT = {
-  [dataSourceTypes.OH_ONLY]: BOTH_CONTENT,
   [dataSourceTypes.BOTH]: BOTH_CONTENT,
   [dataSourceTypes.VISTA_ONLY]: {
     heading: 'Download your medical records reports',

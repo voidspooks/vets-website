@@ -66,6 +66,10 @@ const useAcceleratedData = () => {
       ],
   );
 
+  const isCcdOHEnabled = useSelector(
+    state => state.featureToggles[FEATURE_FLAG_NAMES.mhvMedicalRecordsCcdOH],
+  );
+
   useEffect(
     () => {
       // TECH DEBT: Do not trigger the connection when running unit tests because
@@ -77,7 +81,14 @@ const useAcceleratedData = () => {
     },
     [dispatch],
   );
+
+  // This is based on the facilities list in the user's profile
   const isCerner = useSelector(selectIsCernerPatient);
+
+  // This is based on the 200CRNR flag from MPI (set in vets-api)
+  const isCernerUser = useSelector(
+    state => state.user?.profile?.isCernerPatient,
+  );
 
   const { featureToggles, drupalStaticData } = useSelector(state => state);
   const isLoading = useMemo(
@@ -158,11 +169,21 @@ const useAcceleratedData = () => {
     [isAcceleratedDeliveryEnabled, isAcceleratingImagingStudiesEnabled],
   );
 
+  // CCD V2 (Oracle Health) is enabled when the CCD OH flag is on
+  // AND the `200CRNR` flag from MPI (isCernerPatient)
+  const isAcceleratingCCD = useMemo(
+    () => {
+      return isCcdOHEnabled && isCernerUser;
+    },
+    [isCcdOHEnabled, isCernerUser],
+  );
+
   const isAccelerating = useMemo(
     () =>
       isAcceleratedDeliveryEnabled ||
       isAcceleratingAllergies ||
       isAcceleratingCareNotes ||
+      isAcceleratingCCD ||
       isAcceleratingConditions ||
       isAcceleratingVitals ||
       isAcceleratingLabsAndTests ||
@@ -173,6 +194,7 @@ const useAcceleratedData = () => {
       isAcceleratingAllergies,
       isAcceleratingConditions,
       isAcceleratingCareNotes,
+      isAcceleratingCCD,
       isAcceleratingVitals,
       isAcceleratingLabsAndTests,
       isAcceleratingMedications,
@@ -186,6 +208,7 @@ const useAcceleratedData = () => {
     isAccelerating,
     isAcceleratingAllergies,
     isAcceleratingCareNotes,
+    isAcceleratingCCD,
     isAcceleratingConditions,
     isAcceleratingVitals,
     isAcceleratingVaccines,

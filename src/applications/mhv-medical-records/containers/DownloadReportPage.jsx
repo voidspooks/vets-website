@@ -7,15 +7,14 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { updatePageTitle } from '@department-of-veterans-affairs/mhv/exports';
+import {
+  updatePageTitle,
+  useAcceleratedData,
+} from '@department-of-veterans-affairs/mhv/exports';
 import { add, compareAsc } from 'date-fns';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
-import {
-  selectPatientFacilities,
-  selectIsCernerPatient,
-  selectIsCernerOnlyPatient,
-} from '~/platform/user/cerner-dsot/selectors';
+import { selectPatientFacilities } from '~/platform/user/cerner-dsot/selectors';
 import { getVamcSystemNameFromVhaId } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/utils';
 import { selectHoldTimeMessagingUpdate } from '../util/selectors';
 import NeedHelpSection from '../components/DownloadRecords/NeedHelpSection';
@@ -60,14 +59,12 @@ const DownloadReportPage = ({ runningUnitTest }) => {
     },
   } = useSelector(state => state);
 
-  const { ccdExtendedFileTypeFlag, ccdOHFlagEnabled } = useSelector(state => ({
-    ccdExtendedFileTypeFlag:
+  const ccdExtendedFileTypeFlag = useSelector(
+    state =>
       state.featureToggles[
         FEATURE_FLAG_NAMES.mhvMedicalRecordsCcdExtendedFileTypes
       ],
-    ccdOHFlagEnabled:
-      state.featureToggles[FEATURE_FLAG_NAMES.mhvMedicalRecordsCcdOH],
-  }));
+  );
   const holdTimeMessagingUpdate = useSelector(selectHoldTimeMessagingUpdate);
 
   const [expandSelfEntered, setExpandSelfEntered] = useState(false);
@@ -75,15 +72,18 @@ const DownloadReportPage = ({ runningUnitTest }) => {
   const activeAlert = useAlerts(dispatch);
   const selfEnteredAccordionRef = useRef(null);
 
-  // Determine user's data sources using platform selectors
-  const { facilities, hasOHFacilities, hasOHOnly } = useSelector(state => ({
-    facilities: selectPatientFacilities(state) || [],
-    hasOHFacilities: selectIsCernerPatient(state),
-    hasOHOnly: selectIsCernerOnlyPatient(state),
-  }));
-  // Note: No platform selector exists for "has VistA facilities only"
-  const hasVistAFacilities = facilities.length > 0 && !hasOHOnly;
-  const hasBothDataSources = hasOHFacilities && hasVistAFacilities;
+  // Use platform hook for Cerner/OH detection. isAcceleratingCCD combines
+  // the CCD OH feature flag with isCernerPatient (200CRNR MPI flag) in the
+  // user's profile.
+  const { isAcceleratingCCD } = useAcceleratedData();
+
+  // Get user's facility list for display name mapping
+  const facilities = useSelector(state => selectPatientFacilities(state) || []);
+
+  // Filter to OH-specific facilities for display name mapping
+  const ohFacilities = useMemo(() => facilities.filter(f => f.isCerner), [
+    facilities,
+  ]);
 
   // Get Drupal EHR data for facility name mapping
   const ehrDataByVhaId = useSelector(
@@ -108,9 +108,6 @@ const DownloadReportPage = ({ runningUnitTest }) => {
 
   // Create facility name arrays with cutover date suffixes for transitioned OH facilities
   // These will be used in CCD download sections to show records "before [date]" and "[date] - present"
-  const ohFacilities = useMemo(() => facilities.filter(f => f.isCerner), [
-    facilities,
-  ]);
 
   const ohFacilityNamesBeforeCutover = useMemo(
     () =>
@@ -257,16 +254,15 @@ const DownloadReportPage = ({ runningUnitTest }) => {
     ],
   );
 
-  // Determine which data source type to use for rendering
-  // When ccdOHFlagEnabled is disabled, it defaults to displaying VistA-only content for all users
-  const getDataSourceType = () => {
-    if (!ccdOHFlagEnabled) return dataSourceTypes.VISTA_ONLY;
-    if (hasBothDataSources) return dataSourceTypes.BOTH;
-    if (hasOHOnly) return dataSourceTypes.OH_ONLY;
-    return dataSourceTypes.VISTA_ONLY;
-  };
-
-  const dataSourceType = getDataSourceType();
+  // Determine which data source type to use for rendering.
+  // isAcceleratingCCD is true only when the CCD OH feature flag is enabled AND
+  // the user has isCernerPatient: true in their profile
+  // Because we display the OH facilities, we also need to check that
+  // the user has at least one Cerner facility in their facilities list.
+  const dataSourceType =
+    isAcceleratingCCD && ohFacilities.length > 0
+      ? dataSourceTypes.BOTH
+      : dataSourceTypes.VISTA_ONLY;
 
   // Context value shared with all content components
   const downloadReportContextValue = useMemo(
@@ -313,14 +309,10 @@ const DownloadReportPage = ({ runningUnitTest }) => {
 
   // Render the appropriate content component based on data source type
   const renderContent = () => {
-    switch (dataSourceType) {
-      case dataSourceTypes.BOTH:
-        return <VistaAndOHContent />;
-      case dataSourceTypes.OH_ONLY:
-        return <VistaAndOHContent />;
-      default:
-        return <VistaOnlyContent />;
+    if (dataSourceType === dataSourceTypes.BOTH) {
+      return <VistaAndOHContent />;
     }
+    return <VistaOnlyContent />;
   };
 
   return (

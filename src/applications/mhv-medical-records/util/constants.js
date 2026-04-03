@@ -10,7 +10,6 @@ export const recordType = {
 
 export const dataSourceTypes = {
   VISTA_ONLY: 'vistaOnly',
-  OH_ONLY: 'ohOnly',
   BOTH: 'both',
 };
 
