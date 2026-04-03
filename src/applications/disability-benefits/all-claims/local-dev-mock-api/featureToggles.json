@@ -27,6 +27,10 @@
         "value": true
       },
       {
+        "name": "disability_526_form_navigation_menu",
+        "value": false 
+      },
+      {
         "name": "disability_526_maximum_rating",
         "value": true
       },
