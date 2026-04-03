@@ -39,10 +39,9 @@ const IntroductionPage = ({ router }) => {
           <br />
           <va-link
             href="https://www.va.gov/family-and-caregiver-benefits/"
-            external
-            text="Learn about family and caregiver benefits"
+            text="Learn about family and caregiver benefits."
             type="secondary"
-            label="Learn about family and caregiver benefits"
+            label="Learn about family and caregiver benefits."
           />
         </p>
       </div>
