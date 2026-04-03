@@ -7,7 +7,7 @@ import {
   parseISO,
   isValid,
 } from 'date-fns';
-import { formatInTimeZone, format } from 'date-fns-tz';
+import { formatInTimeZone, format, zonedTimeToUtc } from 'date-fns-tz';
 
 /**
  * Format a FHIR dateTime string as a "local datetime" string, by stripping off the time zone
@@ -63,12 +63,17 @@ export function dateFormatWithoutTimezone(
 }
 
 /**
- * Format a UTC (or offset) ISO dateTime string in the user's local timezone with
- * timezone abbreviation. Use for unified vitals (SCDF) where the API sends UTC.
- * FHIR dateTime: YYYY-MM-DDThh:mm:ss(.sss)(Z|±HH:MM)
+ * Format an ISO dateTime string in the given timezone with timezone abbreviation.
  *
- * @param {String} isoString ISO dateTime string, e.g. 2024-11-14T18:19:23Z
- * @param {String} fmt defaults to 'MMMM d, yyyy, h:mm a'
+ * Accepts both offset and offset-less datetimes:
+ *  - With offset (e.g. "2024-11-14T18:19:23Z" or "…-05:00"): parsed as an
+ *    absolute instant, then formatted in `timeZone`.
+ *  - Without offset (e.g. "2025-01-31T10:26:00"): treated as wall-clock time
+ *    in `timeZone`. This prevents the browser's local timezone from shifting
+ *    the displayed time when it differs from the facility timezone.
+ *
+ * @param {String} isoString ISO dateTime string
+ * @param {String} fmt date-fns format token string; defaults to 'MMMM d, yyyy, h:mm a'
  * @param {String} [timeZone] IANA timezone (e.g. 'America/New_York'); if omitted, uses browser's timezone
  * @returns {String} e.g. "November 14, 2024, 1:19 p.m. EST", or null for bad inputs
  */
@@ -98,9 +103,18 @@ export function formatDateTimeInUserTimezone(
     return dateFnsFormat(d, 'MMMM d, yyyy');
   }
 
-  // Date-time with Z or offset: parse as instant, format in target timezone
+  // Date-time: fix leap-seconds, then parse
   const fixedLeap = isoString.replace(/:60(\.\d+)?(?=Z|[+-]|$)/, ':59$1');
-  const dt = parseISO(fixedLeap);
+
+  // Check whether the string carries an explicit UTC offset (Z or ±HH:MM).
+  // When the API sends a bare datetime like "2025-01-31T10:26:00" (no offset),
+  // parseISO treats it as browser-local time. If we then formatInTimeZone to
+  // the facility TZ, the time shifts by (browserTZ − facilityTZ).
+  // Fix: anchor bare datetimes to the target timezone with zonedTimeToUtc.
+  const hasOffset = /(?:Z|[+-]\d{2}:\d{2})$/i.test(fixedLeap);
+  const dt = hasOffset
+    ? parseISO(fixedLeap)
+    : zonedTimeToUtc(fixedLeap, timeZone);
   if (!isValid(dt)) return null;
 
   const formatted = formatInTimeZone(dt, timeZone, fmt);

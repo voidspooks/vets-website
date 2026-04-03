@@ -76,6 +76,132 @@ describe('dateHelpers', () => {
       );
       expect(result).to.equal('November 14, 2024, 1:19 p.m. EST');
     });
+
+    it('should treat offset-less datetime as facility-local time (Alaska)', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-31T10:26:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/Anchorage',
+      );
+      expect(result).to.include('January 31, 2025, 10:26 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should treat offset-less datetime as facility-local time (Eastern, DST)', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-07-15T14:30:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/New_York',
+      );
+      expect(result).to.include('July 15, 2025, 2:30 p.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should not crash for offset-less datetime with browser default timezone', () => {
+      // No explicit timeZone param — falls back to Intl default.
+      // Just verify it returns a non-null string (exact value depends on CI TZ).
+      const result = formatDateTimeInUserTimezone('2025-01-31T10:26:00');
+      expect(result).to.be.a('string');
+      expect(result).to.include('January 31, 2025');
+    });
+
+    it('should still correctly convert offset datetime to facility timezone (regression)', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-31T10:26:00-09:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/Anchorage',
+      );
+      expect(result).to.include('January 31, 2025, 10:26 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should handle offset-less datetime near DST spring-forward boundary', () => {
+      // 2025-03-09 02:30 doesn't exist in America/New_York (clocks jump 2→3).
+      // zonedTimeToUtc handles this gracefully; exact output depends on the
+      // library's gap-time resolution strategy, so we only assert it doesn't
+      // crash and returns a plausible result.
+      const result = formatDateTimeInUserTimezone(
+        '2025-03-09T02:30:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/New_York',
+      );
+      expect(result).to.be.a('string');
+      expect(result).to.include('March 9, 2025');
+    });
+
+    it('should treat offset-less datetime with milliseconds as facility-local time', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-31T10:26:00.456',
+        'MMMM d, yyyy, h:mm a',
+        'America/Anchorage',
+      );
+      expect(result).to.include('January 31, 2025, 10:26 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should handle offset-less datetime at midnight', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-31T00:00:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/New_York',
+      );
+      expect(result).to.include('January 31, 2025, 12:00 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should handle offset-less datetime near DST fall-back boundary', () => {
+      // 2025-11-02 01:30 is ambiguous in America/New_York (clocks fall back
+      // from 2:00 AM EDT to 1:00 AM EST). The displayed time should still
+      // show 1:30 regardless of which offset zonedTimeToUtc picks.
+      const result = formatDateTimeInUserTimezone(
+        '2025-11-02T01:30:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/New_York',
+      );
+      expect(result).to.be.a('string');
+      expect(result).to.include('November 2, 2025');
+      expect(result).to.include('1:30');
+    });
+
+    it('should handle offset-less datetime with half-hour timezone', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-31T10:26:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/St_Johns',
+      );
+      expect(result).to.include('January 31, 2025, 10:26 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should treat +00:00 offset as absolute instant, not bare datetime', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-31T10:26:00+00:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/New_York',
+      );
+      expect(result).to.include('January 31, 2025, 5:26 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should handle offset-less datetime in Central timezone (standard time)', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-01-15T08:45:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/Chicago',
+      );
+      expect(result).to.include('January 15, 2025, 8:45 a.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
+
+    it('should handle offset-less datetime in Pacific timezone (daylight time)', () => {
+      const result = formatDateTimeInUserTimezone(
+        '2025-06-20T16:00:00',
+        'MMMM d, yyyy, h:mm a',
+        'America/Los_Angeles',
+      );
+      expect(result).to.include('June 20, 2025, 4:00 p.m.');
+      expect(result).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    });
   });
 
   describe('formatDateYear', () => {

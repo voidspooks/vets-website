@@ -1032,6 +1032,59 @@ describe('convertUnifiedLabsAndTestRecord', () => {
     expect(result.facilityTimezone).to.be.undefined;
   });
 
+  it('should correctly display offset-less datetime in facility timezone', () => {
+    const record = {
+      id: 'test-id',
+      attributes: {
+        dateCompleted: '2025-01-31T10:26:00',
+        display: 'Test Name',
+        facilityTimezone: 'America/Anchorage',
+        source: 'oracle-health',
+      },
+    };
+
+    const result = convertUnifiedLabsAndTestRecord(record);
+
+    expect(result.date).to.include('January 31, 2025, 10:26 a.m.');
+    expect(result.date).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    expect(result.sortDate).to.equal('2025-01-31T10:26:00');
+  });
+
+  it('should correctly display offset-less datetime in Eastern facility timezone during DST', () => {
+    const record = {
+      id: 'test-id',
+      attributes: {
+        dateCompleted: '2025-07-15T14:30:00',
+        display: 'Test Name',
+        facilityTimezone: 'America/New_York',
+        source: 'oracle-health',
+      },
+    };
+
+    const result = convertUnifiedLabsAndTestRecord(record);
+
+    expect(result.date).to.include('July 15, 2025, 2:30 p.m.');
+    expect(result.date).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+    expect(result.sortDate).to.equal('2025-07-15T14:30:00');
+  });
+
+  it('should convert UTC offset datetime to facility timezone in reducer', () => {
+    const record = {
+      id: 'test-id',
+      attributes: {
+        dateCompleted: '2025-01-31T15:26:00Z',
+        display: 'Test Name',
+        facilityTimezone: 'America/New_York',
+        source: 'oracle-health',
+      },
+    };
+
+    const result = convertUnifiedLabsAndTestRecord(record);
+
+    expect(result.date).to.include('January 31, 2025, 10:26 a.m.');
+    expect(result.date).to.match(/\s([A-Z]{2,5}|GMT[+-]\d{1,2}(:\d{2})?)$/);
+  });
+
   it('should use testCodeDisplay from API when available', () => {
     const record = {
       id: 'test-id',
