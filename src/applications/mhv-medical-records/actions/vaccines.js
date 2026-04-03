@@ -15,6 +15,13 @@ export const getVaccinesList = (isCurrent = false) => async dispatch => {
       dispatch,
       getAcceleratedImmunizations,
     );
+
+    const warnings = response?.meta?.warnings || [];
+    dispatch({
+      type: Actions.Vaccines.SET_WARNINGS,
+      payload: warnings,
+    });
+
     dispatch({
       type: Actions.Vaccines.GET_UNIFIED_LIST,
       response,

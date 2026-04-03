@@ -201,8 +201,12 @@ const responses = {
   'GET /my_health/v1/medical_records/status': status.error,
   'GET /my_health/v1/medical_records/labs_and_tests': labsAndTests.all,
   'GET /my_health/v1/medical_records/labs_and_tests/:id': labsAndTests.single,
-  'GET /my_health/v2/medical_records/labs_and_tests':
-    acceleratedLabsAndTests.staging,
+  'GET /my_health/v2/medical_records/labs_and_tests': (_req, res) => {
+    // To test normal 200:
+    return res.json({ data: acceleratedLabsAndTests.staging });
+    // To test 206 partial content with warnings:
+    // return res.status(206).json(acceleratedLabsAndTests.stagingWithWarnings);
+  },
   'GET /my_health/v1/medical_records/radiology': mhvRadiology.empty,
   'GET /my_health/v2/medical_records/imaging': acceleratedImaging.studies,
   'GET /my_health/v2/medical_records/imaging/thumbnail_proxy':
@@ -214,16 +218,26 @@ const responses = {
   'GET /my_health/v1/medical_records/clinical_notes': careSummariesAndNotes.all,
   'GET /my_health/v1/medical_records/clinical_notes/:id':
     careSummariesAndNotes.single,
-  'GET /my_health/v2/medical_records/clinical_notes':
-    acceleratedCareSummariesAndNotes.all,
+  'GET /my_health/v2/medical_records/clinical_notes': (_req, res) => {
+    // To test normal 200:
+    return res.json(acceleratedCareSummariesAndNotes.all);
+    // To test 206 partial content with warnings:
+    // return res
+    //   .status(206)
+    //   .json(acceleratedCareSummariesAndNotes.allWithWarnings);
+  },
   'GET /my_health/v2/medical_records/clinical_notes/:id':
     acceleratedCareSummariesAndNotes.single,
   'GET /my_health/v1/health_records/sharing/status': { status: 200 },
   'POST /my_health/v1/health_records/sharing/:endpoint': { status: 200 },
   'GET /my_health/v1/medical_records/conditions': healthConditions.all,
   'GET /my_health/v1/medical_records/conditions/:id': healthConditions.single,
-  'GET /my_health/v2/medical_records/conditions':
-    acceleratedHealthConditions.all,
+  'GET /my_health/v2/medical_records/conditions': (_req, res) => {
+    // To test normal 200:
+    return res.json(acceleratedHealthConditions.all);
+    // To test 206 partial content with warnings:
+    // return res.status(206).json(acceleratedHealthConditions.allWithWarnings);
+  },
   'GET /my_health/v2/medical_records/conditions/:id':
     acceleratedHealthConditions.single,
   'GET /my_health/v1/medical_records/allergies': (req, res) => {
@@ -240,11 +254,21 @@ const responses = {
     }
     return allergies.single(req, res);
   },
-  'GET /my_health/v2/medical_records/allergies': acceleratedAllergies.all,
+  'GET /my_health/v2/medical_records/allergies': (_req, res) => {
+    // To test normal 200:
+    return res.json(acceleratedAllergies.all);
+    // To test 206 partial content with warnings:
+    // return res.status(206).json(acceleratedAllergies.allWithWarnings);
+  },
   'GET /my_health/v2/medical_records/allergies/:id':
     acceleratedAllergies.single,
   'GET /my_health/v1/medical_records/vaccines': vaccines.all,
-  'GET /my_health/v2/medical_records/immunizations': acceleratedVaccines.all,
+  'GET /my_health/v2/medical_records/immunizations': (_req, res) => {
+    // To test normal 200:
+    return res.json(acceleratedVaccines.all);
+    // To test 206 partial content with warnings:
+    // return res.status(206).json(acceleratedVaccines.allWithWarnings);
+  },
   'GET /my_health/v1/medical_records/vaccines/:id': vaccines.single,
   'GET /my_health/v2/medical_records/immunizations/:id':
     acceleratedVaccines.single,
@@ -269,7 +293,12 @@ const responses = {
     }
     return res.json(vitals.all);
   },
-  'GET /my_health/v2/medical_records/vitals': acceleratedVitals.all,
+  'GET /my_health/v2/medical_records/vitals': (_req, res) => {
+    // To test normal 200:
+    return res.json(acceleratedVitals.all);
+    // To test 206 partial content with warnings:
+    // return res.status(206).json(acceleratedVitals.allWithWarnings);
+  },
 
   // medical records Blue Button
   'GET /vaos/v2/appointments': appointments.appointments,

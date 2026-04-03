@@ -33,6 +33,11 @@ const initialState = {
    * The condition currently being displayed to the user
    */
   conditionDetails: undefined,
+  /**
+   * Warnings from the backend when some records couldn't be retrieved.
+   * @type {Array}
+   */
+  warnings: [],
 };
 
 /**
@@ -241,10 +246,17 @@ export const conditionReducer = (state = initialState, action) => {
         conditionDetails: undefined,
       };
     }
+    case Actions.Conditions.SET_WARNINGS: {
+      return {
+        ...state,
+        warnings: action.payload || [],
+      };
+    }
     case Actions.Conditions.UPDATE_LIST_STATE: {
       return {
         ...state,
         listState: action.payload,
+        ...(action.payload === loadStates.FETCHING ? { warnings: [] } : {}),
       };
     }
     default:

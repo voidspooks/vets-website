@@ -79,6 +79,21 @@ const all = {
 
 const empty = { data: [] };
 
+// 206 Partial Content response — wraps existing data with meta.warnings
+const allWithWarnings = {
+  data: all.data,
+  meta: {
+    warnings: [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ],
+  },
+};
+
 const single = (req, res) => {
   const { id } = req.params;
   const response = all.data.find(item => item.id === id);
@@ -93,6 +108,7 @@ const single = (req, res) => {
 
 module.exports = {
   all,
+  allWithWarnings,
   empty,
   single,
 };

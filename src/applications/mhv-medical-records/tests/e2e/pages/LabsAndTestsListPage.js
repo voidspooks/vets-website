@@ -106,7 +106,7 @@ class LabsAndTestsListPage extends BaseListPage {
   verifyImagesReadyAlert = (alertText = 'Images ready') => {
     cy.get('[data-testid="alert-images-ready"]').should('be.visible');
     cy.get('[data-testid="alert-images-ready"]')
-      .find('h3')
+      .find('h2')
       .contains(alertText);
   };
 

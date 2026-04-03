@@ -160,12 +160,9 @@ const Radiology = () => {
                         role="alert"
                         data-testid="alert-images-ready"
                       >
-                        <h3
-                          slot="headline"
-                          className="vads-u-font-size--lg no-print"
-                        >
+                        <h2 slot="headline" className="no-print">
                           Images ready
-                        </h3>
+                        </h2>
                         <JobCompleteAlert
                           records={radRecordsWithImagesReady}
                           studyJobs={studyJobs}

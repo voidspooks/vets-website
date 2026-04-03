@@ -23,6 +23,7 @@ import useListRefresh from '../hooks/useListRefresh';
 import useReloadResetListOnUnmount from '../hooks/useReloadResetListOnUnmount';
 import NewRecordsIndicator from '../components/shared/NewRecordsIndicator';
 import DuplicateRecordsAlert from '../components/shared/DuplicateRecordsAlert';
+import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 import NoRecordsMessage from '../components/shared/NoRecordsMessage';
 import TrackedSpinner from '../components/shared/TrackedSpinner';
 import { useTrackAction } from '../hooks/useTrackAction';
@@ -37,6 +38,7 @@ const HealthConditions = () => {
 
   const listState = useSelector(state => state.mr.conditions.listState);
   const conditions = useSelector(state => state.mr.conditions.conditionsList);
+  const warnings = useSelector(state => state.mr.conditions.warnings);
   const activeAlert = useAlerts(dispatch);
   const refresh = useSelector(state => state.mr.refresh);
   const conditionsCurrentAsOf = useSelector(
@@ -151,10 +153,13 @@ const HealthConditions = () => {
           conditions !== undefined && (
             <>
               {conditions?.length ? (
-                <RecordList
-                  records={conditions}
-                  type={recordType.HEALTH_CONDITIONS}
-                />
+                <>
+                  <PartialRecordsWarning warnings={warnings} />
+                  <RecordList
+                    records={conditions}
+                    type={recordType.HEALTH_CONDITIONS}
+                  />
+                </>
               ) : (
                 <NoRecordsMessage type={recordType.HEALTH_CONDITIONS} />
               )}

@@ -93,9 +93,46 @@ describe('getConditionsList - isAccelerating feature', () => {
         Actions.Conditions.UPDATE_LIST_STATE,
       );
       expect(dispatch.secondCall.args[0].type).to.equal(
+        Actions.Conditions.SET_WARNINGS,
+      );
+      expect(dispatch.thirdCall.args[0].type).to.equal(
         Actions.Conditions.GET_UNIFIED_LIST,
       );
     });
+  });
+
+  it('should dispatch SET_WARNINGS with warnings array when response has meta.warnings', async () => {
+    const mockWarnings = [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ];
+    const mockData = { data: [], meta: { warnings: mockWarnings } };
+    mockApiRequest(mockData);
+
+    await getConditionsList(false, true)(dispatch);
+
+    const setWarningsCall = dispatch
+      .getCalls()
+      .find(call => call.args[0].type === Actions.Conditions.SET_WARNINGS);
+    expect(setWarningsCall).to.exist;
+    expect(setWarningsCall.args[0].payload).to.deep.equal(mockWarnings);
+  });
+
+  it('should dispatch SET_WARNINGS with empty array when response has no warnings', async () => {
+    const mockData = { data: [] };
+    mockApiRequest(mockData);
+
+    await getConditionsList(false, true)(dispatch);
+
+    const setWarningsCall = dispatch
+      .getCalls()
+      .find(call => call.args[0].type === Actions.Conditions.SET_WARNINGS);
+    expect(setWarningsCall).to.exist;
+    expect(setWarningsCall.args[0].payload).to.deep.equal([]);
   });
 
   it("should Not Call Actions.Conditions.GET_UNIFIED_LIST when there's an error", () => {

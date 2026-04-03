@@ -8,6 +8,7 @@ import {
 } from '@department-of-veterans-affairs/mhv/exports';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
+import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 
 import {
   selectHoldTimeMessagingUpdate,
@@ -314,26 +315,7 @@ const LabsAndTests = () => {
             <>
               {labsAndTests?.length ? (
                 <>
-                  {warnings?.length > 0 && (
-                    <VaAlert
-                      status="warning"
-                      visible
-                      class="vads-u-margin-y--3 no-print"
-                      data-testid="alert-partial-records-warning"
-                    >
-                      <h3
-                        slot="headline"
-                        className="vads-u-font-size--lg no-print"
-                      >
-                        Some records may be incomplete
-                      </h3>
-                      <p>
-                        We couldn’t retrieve all attached documents for some of
-                        your lab and test results. The records below may be
-                        missing PDF reports or other files.
-                      </p>
-                    </VaAlert>
-                  )}
+                  <PartialRecordsWarning warnings={warnings} />
                   {!isAcceleratingLabsAndTests &&
                     radRecordsWithImagesReady?.length > 0 &&
                     studyJobs?.length > 0 && (
@@ -344,12 +326,9 @@ const LabsAndTests = () => {
                         role="alert"
                         data-testid="alert-images-ready"
                       >
-                        <h3
-                          slot="headline"
-                          className="vads-u-font-size--lg no-print"
-                        >
+                        <h2 slot="headline" className="no-print">
                           Images ready
-                        </h3>
+                        </h2>
                         <JobCompleteAlert
                           records={radRecordsWithImagesReady}
                           studyJobs={studyJobs}

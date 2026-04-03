@@ -23,9 +23,48 @@ describe('Get vaccines action', () => {
         Actions.Refresh.CLEAR_INITIAL_FHIR_LOAD,
       );
       expect(dispatch.thirdCall.args[0].type).to.equal(
+        Actions.Vaccines.SET_WARNINGS,
+      );
+      expect(dispatch.getCall(3).args[0].type).to.equal(
         Actions.Vaccines.GET_UNIFIED_LIST,
       );
     });
+  });
+
+  it('should dispatch SET_WARNINGS with warnings array when response has meta.warnings', async () => {
+    const mockWarnings = [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ];
+    const mockData = { data: [], meta: { warnings: mockWarnings } };
+    mockApiRequest(mockData);
+
+    const dispatch = sinon.spy();
+    await getVaccinesList()(dispatch);
+
+    const setWarningsCall = dispatch
+      .getCalls()
+      .find(call => call.args[0].type === Actions.Vaccines.SET_WARNINGS);
+    expect(setWarningsCall).to.exist;
+    expect(setWarningsCall.args[0].payload).to.deep.equal(mockWarnings);
+  });
+
+  it('should dispatch SET_WARNINGS with empty array when response has no warnings', async () => {
+    const mockData = { data: [] };
+    mockApiRequest(mockData);
+
+    const dispatch = sinon.spy();
+    await getVaccinesList()(dispatch);
+
+    const setWarningsCall = dispatch
+      .getCalls()
+      .find(call => call.args[0].type === Actions.Vaccines.SET_WARNINGS);
+    expect(setWarningsCall).to.exist;
+    expect(setWarningsCall.args[0].payload).to.deep.equal([]);
   });
 
   it('should dispatch an add alert action on error and not throw', async () => {

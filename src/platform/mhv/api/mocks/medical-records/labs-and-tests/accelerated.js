@@ -1648,6 +1648,21 @@ const staging = [
 
 const empty = [];
 
+// 206 Partial Content response — wraps staging data with meta.warnings
+const stagingWithWarnings = {
+  data: staging,
+  meta: {
+    warnings: [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ],
+  },
+};
+
 const single = id => {
   const sampleData = sample.find(item => item.id === id);
   if (!sampleData) {
@@ -1662,5 +1677,6 @@ module.exports = {
   sample,
   single,
   staging,
+  stagingWithWarnings,
   empty,
 };

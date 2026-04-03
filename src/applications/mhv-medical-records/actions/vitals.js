@@ -25,6 +25,12 @@ export const getVitals = (
       : Actions.Vitals.GET_LIST;
     if (isAccelerating) {
       response = await getVitalsWithUnifiedData();
+
+      const warnings = response?.meta?.warnings || [];
+      dispatch({
+        type: Actions.Vitals.SET_WARNINGS,
+        payload: warnings,
+      });
     } else if (isCerner) {
       response = await getVitalsWithOHData();
     } else {

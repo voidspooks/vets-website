@@ -26,6 +26,7 @@ import useListRefresh from '../hooks/useListRefresh';
 import useReloadResetListOnUnmount from '../hooks/useReloadResetListOnUnmount';
 import NewRecordsIndicator from '../components/shared/NewRecordsIndicator';
 import DuplicateRecordsAlert from '../components/shared/DuplicateRecordsAlert';
+import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 import RecordListSection from '../components/shared/RecordListSection';
 import NoRecordsMessage from '../components/shared/NoRecordsMessage';
 import TrackedSpinner from '../components/shared/TrackedSpinner';
@@ -37,6 +38,7 @@ const Vitals = () => {
   const updatedRecordList = useSelector(state => state.mr.vitals.updatedList);
   const listState = useSelector(state => state.mr.vitals.listState);
   const vitals = useSelector(state => state.mr.vitals.vitalsList);
+  const warnings = useSelector(state => state.mr.vitals.warnings);
   const user = useSelector(state => state.user.profile);
   const refresh = useSelector(state => state.mr.refresh);
 
@@ -166,15 +168,18 @@ const Vitals = () => {
           cards !== undefined && (
             <>
               {cards?.length ? (
-                <RecordList
-                  records={cards}
-                  type={recordType.VITALS}
-                  perPage={PER_PAGE}
-                  hidePagination
-                  domainOptions={{
-                    isAccelerating: isCerner,
-                  }}
-                />
+                <>
+                  <PartialRecordsWarning warnings={warnings} />
+                  <RecordList
+                    records={cards}
+                    type={recordType.VITALS}
+                    perPage={PER_PAGE}
+                    hidePagination
+                    domainOptions={{
+                      isAccelerating: isCerner,
+                    }}
+                  />
+                </>
               ) : (
                 <NoRecordsMessage type={recordType.VITALS} />
               )}

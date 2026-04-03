@@ -42,6 +42,7 @@ import {
 } from '../util/pdfHelpers/allergies';
 import DownloadSuccessAlert from '../components/shared/DownloadSuccessAlert';
 import DuplicateRecordsAlert from '../components/shared/DuplicateRecordsAlert';
+import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 import NewRecordsIndicator from '../components/shared/NewRecordsIndicator';
 import NoRecordsMessage from '../components/shared/NoRecordsMessage';
 import TrackedSpinner from '../components/shared/TrackedSpinner';
@@ -60,6 +61,7 @@ const Allergies = props => {
   const allergiesCurrentAsOf = useSelector(
     state => state.mr.allergies.listCurrentAsOf,
   );
+  const warnings = useSelector(state => state.mr.allergies.warnings);
   const refresh = useSelector(state => state.mr.refresh);
 
   const user = useSelector(state => state.user.profile);
@@ -279,6 +281,7 @@ ${allergies.map(entry => generateAllergyListItemTxt(entry)).join('')}`;
             <>
               {allergies?.length ? (
                 <>
+                  <PartialRecordsWarning warnings={warnings} />
                   <RecordList
                     records={allergies?.map(allergy => ({
                       ...allergy,

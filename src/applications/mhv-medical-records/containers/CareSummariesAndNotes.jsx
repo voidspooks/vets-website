@@ -6,7 +6,7 @@ import {
   updatePageTitle,
   useAcceleratedData,
 } from '@department-of-veterans-affairs/mhv/exports';
-import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 
 import RecordList from '../components/RecordList/RecordList';
 import {
@@ -179,26 +179,7 @@ const CareSummariesAndNotes = () => {
             <>
               {careSummariesAndNotes?.length ? (
                 <>
-                  {warnings?.length > 0 && (
-                    <VaAlert
-                      status="warning"
-                      visible
-                      class="vads-u-margin-y--3 no-print"
-                      data-testid="alert-partial-records-warning"
-                    >
-                      <h3
-                        slot="headline"
-                        className="vads-u-font-size--lg no-print"
-                      >
-                        Some records may be incomplete
-                      </h3>
-                      <p>
-                        We couldn’t retrieve all attached documents for some of
-                        your care summaries and notes. The records below may be
-                        missing PDF reports or other files.
-                      </p>
-                    </VaAlert>
-                  )}
+                  <PartialRecordsWarning warnings={warnings} />
                   <RecordList
                     records={careSummariesAndNotes}
                     domainOptions={{

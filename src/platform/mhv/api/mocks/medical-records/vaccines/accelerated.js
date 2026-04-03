@@ -750,6 +750,21 @@ const all = {
   },
 };
 
+// 206 Partial Content response — wraps existing data with meta.warnings
+const allWithWarnings = {
+  data: all.data,
+  meta: {
+    warnings: [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ],
+  },
+};
+
 const single = (req, res) => {
   const { id } = req.params;
   const vaccine = all.data.find(v => v.id === id);
@@ -761,4 +776,4 @@ const single = (req, res) => {
       .json({ errors: [{ title: 'Not Found', detail: 'Vaccine not found' }] });
   }
 };
-module.exports = { all, single };
+module.exports = { all, allWithWarnings, single };

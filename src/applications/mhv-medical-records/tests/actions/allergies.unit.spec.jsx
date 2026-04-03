@@ -103,6 +103,42 @@ describe('Get allergies action with parameter-based logic', () => {
       expect(unifiedListCall).to.exist;
       expect(unifiedListCall.args[0].response).to.equal(mockData);
     });
+
+    it('should dispatch SET_WARNINGS with warnings array when response has meta.warnings', async () => {
+      const mockWarnings = [
+        {
+          severity: 'warning',
+          code: 'informational',
+          diagnostics: 'Partial failure',
+          source: 'oracle-health',
+        },
+      ];
+      const mockData = { data: [], meta: { warnings: mockWarnings } };
+      mockApiRequest(mockData);
+
+      const dispatch = sinon.spy();
+      await getAllergiesList(false, true, false)(dispatch);
+
+      const setWarningsCall = dispatch
+        .getCalls()
+        .find(call => call.args[0].type === Actions.Allergies.SET_WARNINGS);
+      expect(setWarningsCall).to.exist;
+      expect(setWarningsCall.args[0].payload).to.deep.equal(mockWarnings);
+    });
+
+    it('should dispatch SET_WARNINGS with empty array when response has no warnings', async () => {
+      const mockData = { data: [] };
+      mockApiRequest(mockData);
+
+      const dispatch = sinon.spy();
+      await getAllergiesList(false, true, false)(dispatch);
+
+      const setWarningsCall = dispatch
+        .getCalls()
+        .find(call => call.args[0].type === Actions.Allergies.SET_WARNINGS);
+      expect(setWarningsCall).to.exist;
+      expect(setWarningsCall.args[0].payload).to.deep.equal([]);
+    });
   });
 
   describe('getAllergyDetails', () => {

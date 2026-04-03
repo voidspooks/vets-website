@@ -25,6 +25,14 @@ export const getConditionsList = (
 
     const response = await getListWithRetry(dispatch, getData);
 
+    if (isAccelerating) {
+      const warnings = response?.meta?.warnings || [];
+      dispatch({
+        type: Actions.Conditions.SET_WARNINGS,
+        payload: warnings,
+      });
+    }
+
     dispatch({
       type: requestActionType,
       response,

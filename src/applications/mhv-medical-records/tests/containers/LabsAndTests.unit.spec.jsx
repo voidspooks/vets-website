@@ -330,8 +330,11 @@ describe('Labs and tests list container with warnings', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('alert-partial-records-warning')).to.exist;
-      expect(screen.getByText(/Some records may be incomplete/i)).to.exist;
+      const alert = screen.getByTestId('alert-partial-records-warning');
+      expect(alert).to.exist;
+      expect(alert.textContent).to.include(
+        'Some of your records may be incomplete',
+      );
     });
   });
 

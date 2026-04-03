@@ -29,6 +29,11 @@ const initialState = {
    * The condition currently being displayed to the user
    */
   allergyDetails: undefined,
+  /**
+   * Warnings from the backend when some records couldn't be retrieved.
+   * @type {Array}
+   */
+  warnings: [],
 };
 
 // Options for Medical Records app (uses defaults)
@@ -107,10 +112,17 @@ export const allergyReducer = (state = initialState, action) => {
         allergyDetails: undefined,
       };
     }
+    case Actions.Allergies.SET_WARNINGS: {
+      return {
+        ...state,
+        warnings: action.payload || [],
+      };
+    }
     case Actions.Allergies.UPDATE_LIST_STATE: {
       return {
         ...state,
         listState: action.payload,
+        ...(action.payload === loadStates.FETCHING ? { warnings: [] } : {}),
       };
     }
     case Actions.Allergies.GET_UNIFIED_LIST: {

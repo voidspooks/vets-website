@@ -42,6 +42,11 @@ const initialState = {
    * The vital currently being displayed to the user
    */
   vitalDetails: undefined,
+  /**
+   * Warnings from the backend when some records couldn't be retrieved.
+   * @type {Array}
+   */
+  warnings: [],
 };
 
 const getUnit = (type, unit) => {
@@ -255,10 +260,17 @@ export const vitalReducer = (state = initialState, action) => {
         vitalDetails: undefined,
       };
     }
+    case Actions.Vitals.SET_WARNINGS: {
+      return {
+        ...state,
+        warnings: action.payload || [],
+      };
+    }
     case Actions.Vitals.UPDATE_LIST_STATE: {
       return {
         ...state,
         listState: action.payload,
+        ...(action.payload === loadStates.FETCHING ? { warnings: [] } : {}),
       };
     }
     default:

@@ -46,6 +46,7 @@ import {
 } from '../util/pdfHelpers/vaccines';
 import DownloadSuccessAlert from '../components/shared/DownloadSuccessAlert';
 import DuplicateRecordsAlert from '../components/shared/DuplicateRecordsAlert';
+import PartialRecordsWarning from '../components/shared/PartialRecordsWarning';
 import NoRecordsMessage from '../components/shared/NoRecordsMessage';
 import TrackedSpinner from '../components/shared/TrackedSpinner';
 import { useTrackAction } from '../hooks/useTrackAction';
@@ -60,6 +61,7 @@ const Vaccines = props => {
     listState,
     vaccinesList: vaccines,
     listCurrentAsOf: vaccinesCurrentAsOf,
+    warnings,
   } = useSelector(state => state.mr.vaccines);
   const user = useSelector(state => state.user.profile);
   const refresh = useSelector(state => state.mr.refresh);
@@ -233,6 +235,7 @@ const Vaccines = props => {
             <>
               {vaccines?.length ? (
                 <>
+                  <PartialRecordsWarning warnings={warnings} />
                   <RecordList
                     records={vaccines?.map(vaccine => ({
                       ...vaccine,

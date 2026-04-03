@@ -1006,6 +1006,22 @@ const all = {
   ],
 };
 
+// 206 Partial Content response — wraps existing data with meta.warnings
+const allWithWarnings = {
+  data: all.data,
+  meta: {
+    warnings: [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ],
+  },
+};
+
 module.exports = {
   all,
+  allWithWarnings,
 };

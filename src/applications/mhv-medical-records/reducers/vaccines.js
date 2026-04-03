@@ -32,6 +32,11 @@ const initialState = {
    * The vaccine currently being displayed to the user
    */
   vaccineDetails: undefined,
+  /**
+   * Warnings from the backend when some records couldn't be retrieved.
+   * @type {Array}
+   */
+  warnings: [],
 };
 
 /**
@@ -249,10 +254,17 @@ export const vaccineReducer = (state = initialState, action) => {
         vaccineDetails: undefined,
       };
     }
+    case Actions.Vaccines.SET_WARNINGS: {
+      return {
+        ...state,
+        warnings: action.payload || [],
+      };
+    }
     case Actions.Vaccines.UPDATE_LIST_STATE: {
       return {
         ...state,
         listState: action.payload,
+        ...(action.payload === loadStates.FETCHING ? { warnings: [] } : {}),
       };
     }
     default:

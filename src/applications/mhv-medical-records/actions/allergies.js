@@ -40,6 +40,15 @@ export const getAllergiesList = (
     }
 
     const response = await getListWithRetry(dispatch, getData);
+
+    if (isAccelerating) {
+      const warnings = response?.meta?.warnings || [];
+      dispatch({
+        type: Actions.Allergies.SET_WARNINGS,
+        payload: warnings,
+      });
+    }
+
     dispatch({
       type: actionType,
       response,

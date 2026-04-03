@@ -47,11 +47,49 @@ describe('Get vitals action', () => {
       expect(dispatch.firstCall.args[0].type).to.equal(
         Actions.Vitals.UPDATE_LIST_STATE,
       );
-      // For the Unified list we don't clear the FHIR load so this is the second call
       expect(dispatch.secondCall.args[0].type).to.equal(
+        Actions.Vitals.SET_WARNINGS,
+      );
+      expect(dispatch.thirdCall.args[0].type).to.equal(
         Actions.Vitals.GET_UNIFIED_LIST,
       );
     });
+  });
+
+  it('should dispatch SET_WARNINGS with warnings array when accelerating response has meta.warnings', async () => {
+    const mockWarnings = [
+      {
+        severity: 'warning',
+        code: 'informational',
+        diagnostics: 'Partial failure',
+        source: 'oracle-health',
+      },
+    ];
+    const mockData = { data: [], meta: { warnings: mockWarnings } };
+    mockApiRequest(mockData);
+
+    const dispatch = sinon.spy();
+    await getVitals(false, true, true)(dispatch);
+
+    const setWarningsCall = dispatch
+      .getCalls()
+      .find(call => call.args[0].type === Actions.Vitals.SET_WARNINGS);
+    expect(setWarningsCall).to.exist;
+    expect(setWarningsCall.args[0].payload).to.deep.equal(mockWarnings);
+  });
+
+  it('should dispatch SET_WARNINGS with empty array when accelerating response has no warnings', async () => {
+    const mockData = { data: [] };
+    mockApiRequest(mockData);
+
+    const dispatch = sinon.spy();
+    await getVitals(false, true, true)(dispatch);
+
+    const setWarningsCall = dispatch
+      .getCalls()
+      .find(call => call.args[0].type === Actions.Vitals.SET_WARNINGS);
+    expect(setWarningsCall).to.exist;
+    expect(setWarningsCall.args[0].payload).to.deep.equal([]);
   });
 
   it('should dispatch an add alert action', () => {
