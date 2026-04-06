@@ -689,7 +689,7 @@ export const dataDog = {
   loggedIn: undefined,
   replaySampleRateNonProd: 100, // Non Production Sample %
   replaySampleRateProd: 20, // Production Sample %
-  site: '[ddog-gov.com](http://ddog-gov.com/)',
+  site: 'ddog-gov.com',
   service: 'ask-va',
   toggleName: 'askVADatadogRum', // Feature toggle implemented by Platform
   version: '1.0.0',
