@@ -354,6 +354,12 @@ class ReviewCollapsibleChapter extends React.Component {
     if (editing) {
       // noop defined as a function for unit tests
       const noop = function noop() {};
+
+      const pageTitle = this.getPageTitle(page.title);
+      const updatePageAriaLabel = pageTitle
+        ? `Update ${pageTitle}`
+        : 'Update page';
+
       return (
         <React.Fragment key={fullPageKey}>
           <Element name={`${fullPageKey}${SCROLL_ELEMENT_SUFFIX}`} />
@@ -369,6 +375,7 @@ class ReviewCollapsibleChapter extends React.Component {
               updatePage={() =>
                 this.handleEdit(page.pageKey, false, page.index)
               }
+              updatePageAriaLabel={updatePageAriaLabel}
               recalculateErrors={this.hasValidationError}
               pagePerItemIndex={page.index}
               schema={pageSchema}
