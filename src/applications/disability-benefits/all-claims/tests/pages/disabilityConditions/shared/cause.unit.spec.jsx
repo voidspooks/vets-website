@@ -93,7 +93,10 @@ describe('526 cause shared page', () => {
 
     await waitFor(() => {
       const radio = container.querySelector('va-radio');
-      expect(radio).to.have.attribute('error', 'You must provide a response');
+      expect(radio).to.have.attribute(
+        'error',
+        'Select a cause for your condition',
+      );
     });
   });
 
@@ -115,7 +118,10 @@ describe('526 cause shared page', () => {
 
     await waitFor(() => {
       const radio = container.querySelector('va-radio');
-      expect(radio).to.have.attribute('error', 'You must provide a response');
+      expect(radio).to.have.attribute(
+        'error',
+        'Select a cause for your condition',
+      );
     });
   });
 

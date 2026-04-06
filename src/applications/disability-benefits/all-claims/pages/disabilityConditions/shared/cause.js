@@ -63,6 +63,9 @@ const allowedCauseValues = (formData, index) => {
 const baseRadioUI = radioUI({
   title: 'What caused your condition?',
   labels: causeOptions,
+  errorMessages: {
+    required: 'Select a cause for your condition',
+  },
 });
 
 const causePage = {
