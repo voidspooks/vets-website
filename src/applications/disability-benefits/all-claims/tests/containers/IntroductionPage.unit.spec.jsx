@@ -201,4 +201,22 @@ describe('<IntroductionPage/>', () => {
     expect(wrapper.find('va-omb-info').length).to.equal(1);
     wrapper.unmount();
   });
+
+  it('should render default subway title when not BDD form', () => {
+    const wrapper = shallow(<IntroductionPage {...defaultProps} />);
+    const subwayTitle = wrapper.find('#main-content');
+
+    expect(subwayTitle.text()).to.equal(
+      'File a claim for a new or secondary condition or for increased disability compensation.',
+    );
+    wrapper.unmount();
+  });
+
+  it('should render BDD subway title when BDD form', () => {
+    const wrapper = shallow(<IntroductionPage {...defaultProps} isBDDForm />);
+    const subwayTitle = wrapper.find('#main-content');
+
+    expect(subwayTitle.text()).to.equal('File a BDD claim.');
+    wrapper.unmount();
+  });
 });
