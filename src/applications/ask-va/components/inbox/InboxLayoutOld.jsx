@@ -35,8 +35,8 @@ export default function InboxLayoutOld({
   const [pendingStatusesFilter, setPendingStatusesFilter] = useState('All');
   const [pendingQuery, setPendingQuery] = useState('');
   const [filters, setFilters] = useState({
-    statuses: ['All'],
-    categories: ['All'],
+    statuses: [],
+    categories: [],
     query: '',
   });
 
@@ -59,7 +59,8 @@ export default function InboxLayoutOld({
   }
 
   return (
-    <>
+    <div id="inbox-old">
+      <h2 className="vads-u-margin--0">Your questions</h2>
       <div className="filter-container">
         <div className="search-container">
           <VaTextInput
@@ -117,16 +118,22 @@ export default function InboxLayoutOld({
             secondaryLabel="Clear all filters"
             onPrimaryClick={() => {
               setFilters(() => ({
-                categories: [pendingCategoriesFilter],
-                statuses: [pendingStatusesFilter],
+                categories:
+                  pendingCategoriesFilter === 'All'
+                    ? []
+                    : [pendingCategoriesFilter],
+                statuses:
+                  pendingStatusesFilter === 'All'
+                    ? []
+                    : [pendingStatusesFilter],
                 query: pendingQuery,
               }));
               focusElement('#search-description');
             }}
             onSecondaryClick={() => {
               setFilters(() => ({
-                statuses: ['All'],
-                categories: ['All'],
+                statuses: [],
+                categories: [],
                 query: '',
               }));
               setPendingStatusesFilter('All');
@@ -140,18 +147,18 @@ export default function InboxLayoutOld({
         </div>
       </div>
 
-      {inquiryTypes.includes('business') ? (
+      {inquiryTypes.includes('Business') ? (
         <div className="tabs">
           <Tabs className="inbox-tab-container">
             <TabList className="inbox-tab-list">
               <Tab className="inbox-tab">Business</Tab>
               <Tab className="inbox-tab">Personal</Tab>
             </TabList>
-            <TabPanel>
+            <TabPanel className="inbox-tab-panel">
               <InquiriesList
                 inquiries={filterAndSort({
                   inquiriesArray: inquiries,
-                  filters: { ...filters, inquiryTypes: ['business'] },
+                  filters: { ...filters, inquiryTypes: ['Business'] },
                 })}
                 tabName="Business"
                 categoryFilter={filters.categories[0]}
@@ -159,11 +166,11 @@ export default function InboxLayoutOld({
                 query={filters.query}
               />
             </TabPanel>
-            <TabPanel>
+            <TabPanel className="inbox-tab-panel">
               <InquiriesList
                 inquiries={filterAndSort({
                   inquiriesArray: inquiries,
-                  filters: { ...filters, inquiryTypes: ['personal'] },
+                  filters: { ...filters, inquiryTypes: ['Personal'] },
                 })}
                 tabName="Personal"
                 categoryFilter={filters.categories[0]}
@@ -177,14 +184,14 @@ export default function InboxLayoutOld({
         <InquiriesList
           inquiries={filterAndSort({
             inquiriesArray: inquiries,
-            filters: { ...filters, inquiryTypes: ['personal'] },
+            filters: { ...filters, inquiryTypes: ['Personal'] },
           })}
           categoryFilter={filters.categories[0]}
           statusFilter={filters.statuses[0]}
           query={filters.query}
         />
       )}
-    </>
+    </div>
   );
 }
 

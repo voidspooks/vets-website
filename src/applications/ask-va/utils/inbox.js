@@ -25,7 +25,7 @@ export function flattenInquiry(rawInquiry) {
  *  @param {Array} rawInquiries
  *  @returns {{
  *   standardInquiries: Inquiry[],
- *   types: ('business' | 'personal')[]
+ *   types: ('Business' | 'Personal')[]
  *   uniqueCategories: string[]
  *   uniqueStatuses: string[]
  * }}
@@ -33,11 +33,11 @@ export function flattenInquiry(rawInquiry) {
 export function standardizeInquiries(rawInquiries) {
   const output = rawInquiries.reduce(
     (accumulator, current) => {
-      const loa = current.attributes.levelOfAuthentication.toLowerCase();
+      const loa = current.attributes.levelOfAuthentication;
       const flattened = flattenInquiry(current);
 
       // If business or personal, add to output
-      if (['business', 'personal'].includes(loa)) {
+      if (['Business', 'Personal'].includes(loa)) {
         accumulator.inquiries.push(flattened);
         accumulator.inquiryTypes.add(loa);
       }
@@ -106,7 +106,7 @@ const sortOptions = {
  * @param {{
  *   categories: string[]
  *   statuses: string[]
- *   inquiryTypes: ('business' | 'personal')[]
+ *   inquiryTypes: ('Business' | 'Personal' | 'All')[]
  *   query: string
  * }} _.filters destructured object
  * @param {string} [_.sortOrder] use the `sortOptions` object to pick the right option
@@ -114,15 +114,10 @@ const sortOptions = {
  */
 export function filterAndSort({
   inquiriesArray,
-  filters: {
-    categories = ['All'],
-    statuses = ['All'],
-    inquiryTypes = ['business', 'personal'],
-    query = '',
-  } = {
-    categories: ['All'],
-    statuses: ['All'],
-    inquiryTypes: ['business', 'personal'],
+  filters: { categories = [], statuses = [], inquiryTypes = [], query = '' } = {
+    categories: [],
+    statuses: [],
+    inquiryTypes: [],
     query: '',
   },
   sortOrder = sortOptions.lastUpdate.newest,
@@ -132,9 +127,10 @@ export function filterAndSort({
   const filteredAndSorted = inquiriesCopy
     .filter(inq => {
       return (
-        (categories.includes('All') || categories.includes(inq.categoryName)) &&
-        (statuses.includes('All') || statuses.includes(inq.status)) &&
-        inquiryTypes.includes(inq.levelOfAuthentication.toLowerCase())
+        (!categories.length || categories.includes(inq.categoryName)) &&
+        (!statuses.length || statuses.includes(inq.status)) &&
+        (!inquiryTypes.length ||
+          inquiryTypes.includes(inq.levelOfAuthentication))
       );
     })
     .sort((a, b) => {

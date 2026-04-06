@@ -10,7 +10,7 @@ import { mockInquiries as rawInquiries } from '../../utils/mock-inquiries';
 describe('InquiriesList', () => {
   const mockData = standardizeInquiries(rawInquiries);
   const personalInquiries = mockData.standardInquiries.filter(
-    inq => inq.levelOfAuthentication.toLowerCase() === 'personal',
+    inq => inq.levelOfAuthentication === 'Personal',
   );
 
   function setupStore(initialState) {

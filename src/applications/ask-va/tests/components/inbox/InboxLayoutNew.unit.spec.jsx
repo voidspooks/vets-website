@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import {
@@ -13,9 +14,20 @@ import { mockInquiries as rawInquiries } from '../../utils/mock-inquiries';
 describe('<InboxLayoutNew />', () => {
   const mockData = standardizeInquiries(rawInquiries);
   const personalInquiries = mockData.standardInquiries.filter(
-    inq => inq.levelOfAuthentication.toLowerCase() === 'personal',
+    inq => inq.levelOfAuthentication === 'Personal',
+  );
+  const businessInquiries = mockData.standardInquiries.filter(
+    inq => inq.levelOfAuthentication === 'Business',
   );
   const selectedStatus = 'In progress';
+  const appliedStatusFilter = {
+    detail: [
+      {
+        label: 'Status',
+        category: [{ label: selectedStatus, active: true }],
+      },
+    ],
+  };
 
   function setupStore(initialState) {
     return configureStore({
@@ -56,7 +68,7 @@ describe('<InboxLayoutNew />', () => {
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -70,21 +82,21 @@ describe('<InboxLayoutNew />', () => {
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
 
-    const allOptions = view.getAllByRole('option');
-    const visibleCategories = allOptions
-      .filter(option => option.parentElement.name === 'category')
-      .map(option => option.textContent);
-    const visibleStatuses = allOptions
-      .filter(option => option.parentElement.name === 'status')
-      .map(option => option.textContent);
+    const searchFilters = view.container.querySelector('va-search-filter');
+    const visibleCategories = searchFilters.filterOptions
+      .find(({ label }) => label === 'Category')
+      .category.map(({ label }) => label);
+    const visibleStatuses = searchFilters.filterOptions
+      .find(({ label }) => label === 'Status')
+      .category.map(({ label }) => label);
 
-    expect(visibleCategories).to.eql(['All', ...mockData.uniqueCategories]);
-    expect(visibleStatuses).to.eql(['All', ...mockData.uniqueStatuses]);
+    expect(visibleCategories).to.eql(mockData.uniqueCategories);
+    expect(visibleStatuses).to.eql(mockData.uniqueStatuses);
   });
 
   it('applies and clears a filter', () => {
@@ -92,43 +104,45 @@ describe('<InboxLayoutNew />', () => {
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
 
     // Confirm filter's starting value and list's variety
-    const statusSelect = view.container.querySelector(
-      'va-select[name="status"]',
-    );
-    expect(statusSelect.getAttribute('value')).to.equal('All');
-
+    const searchFilters = view.container.querySelector('va-search-filter');
     const startingResults = view.getAllByTestId('inquiry-card');
+
     expect(
-      startingResults.every(a =>
-        a.textContent.includes(`Status ${selectedStatus}`),
+      searchFilters.filterOptions
+        .find(({ label }) => label === 'Status')
+        .category.some(({ active }) => active),
+    ).to.equal(false);
+    expect(
+      startingResults.every(result =>
+        result.textContent.includes(`Status ${selectedStatus}`),
       ),
     ).to.be.false;
 
     // Set status filter to "In progress" and apply filters
-    statusSelect.__events.vaSelect({
-      target: { value: selectedStatus },
-    });
-    expect(statusSelect.getAttribute('value')).to.equal(selectedStatus);
+    searchFilters.__events.vaFilterApply(appliedStatusFilter);
 
-    const buttonPair = view.container.querySelector('va-button-pair');
-    buttonPair.__events.primaryClick();
+    expect(
+      searchFilters.filterOptions
+        .find(({ label }) => label === 'Status')
+        .category.filter(({ active }) => active).length,
+    ).to.equal(1);
 
     // Confirm only selected status is present
     const filteredResults = view.getAllByTestId('inquiry-card');
     expect(
-      filteredResults.every(a =>
-        a.textContent.includes(`Status ${selectedStatus}`),
+      filteredResults.every(result =>
+        result.textContent.includes(`Status ${selectedStatus}`),
       ),
     ).to.be.true;
 
     // Reset filters & list, confirm it matches starting state
-    buttonPair.__events.secondaryClick();
+    searchFilters.__events.vaFilterClearAll();
     const endingResults = view.getAllByTestId('inquiry-card');
     const endTextContent = endingResults.map(end => end.textContent);
     const startTextContent = startingResults.map(start => start.textContent);
@@ -136,7 +150,7 @@ describe('<InboxLayoutNew />', () => {
       filtered => filtered.textContent,
     );
 
-    expect(statusSelect.getAttribute('value')).to.equal('All');
+    // expect(statusSelect.getAttribute('value')).to.equal('All');
 
     expect(endTextContent)
       .to.eql(startTextContent)
@@ -160,7 +174,7 @@ describe('<InboxLayoutNew />', () => {
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -195,30 +209,35 @@ describe('<InboxLayoutNew />', () => {
     );
   });
 
-  it('shifts focus to search description after a button is clicked', () => {
+  it('shifts focus to search description after applying and clearing a filter', () => {
     const { view } = renderWithStore(
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
 
-    // Apply filters
-    const statusSelect = view.container.querySelector(
-      'va-select[name="status"]',
-    );
-    statusSelect.__events.vaSelect({
-      target: { value: selectedStatus },
-    });
-    const buttonPair = view.container.querySelector('va-button-pair');
-    buttonPair.__events.primaryClick();
+    const getFocusedElement = () => view.container.ownerDocument.activeElement;
 
-    const focusedElement = view.container.ownerDocument.activeElement;
+    // Check starting focus
     const searchDescription = view.getByText(/showing/i);
+    expect(getFocusedElement()).to.not.equal(searchDescription.parentElement);
 
-    expect(focusedElement).to.equal(searchDescription.parentElement);
+    // Apply filters and confirm focus shifted
+    const searchFilters = view.container.querySelector('va-search-filter');
+    searchFilters.__events.vaFilterApply(appliedStatusFilter);
+    expect(getFocusedElement()).to.equal(searchDescription.parentElement);
+
+    // Move focus elsewhere
+    const firstCard = view.getAllByTestId('inquiry-card')[0];
+    userEvent.click(firstCard);
+    expect(getFocusedElement()).to.not.equal(searchDescription.parentElement);
+
+    // Clear all filters and confirm focus shifted
+    searchFilters.__events.vaFilterClearAll();
+    expect(getFocusedElement()).to.equal(searchDescription.parentElement);
   });
 
   it('shifts focus to search description after selecting a sort order', () => {
@@ -226,7 +245,7 @@ describe('<InboxLayoutNew />', () => {
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -255,7 +274,7 @@ describe('<InboxLayoutNew />', () => {
       <InboxLayoutNew
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={inquiriesCopy}
       />,
     );
@@ -272,12 +291,74 @@ describe('<InboxLayoutNew />', () => {
     searchBox.value = 'A-3';
     searchBox.dispatchEvent(new Event('submit', { bubbles: true }));
     expect(searchBox.value).to.equal('A-3');
-    const buttonPair = view.container.querySelector('va-button-pair');
-    buttonPair.__events.primaryClick();
 
     // Confirm the list is now just one desired result
     const endingResults = view.getAllByTestId('inquiry-card');
     expect(endingResults.length).to.equal(1);
     expect(endingResults[0].textContent).to.include('Reference number: A-3');
+  });
+
+  describe('"Inquiry Types" section', () => {
+    const labelRegex = /inquiry type/i;
+
+    /** @param {HTMLVaSearchFilterElement['filterOptions']} filterOptions */
+    const getInquiryTypeFilters = filterOptions =>
+      filterOptions.filter(({ label }) => labelRegex.test(label));
+
+    it('hides section if only personal inquiries', () => {
+      const { view } = renderWithStore(
+        <InboxLayoutNew
+          categoryOptions={mockData.uniqueCategories}
+          statusOptions={mockData.uniqueStatuses}
+          inquiryTypes={['Personal']}
+          inquiries={personalInquiries}
+        />,
+      );
+
+      const searchFilters = view.container.querySelector('va-search-filter');
+      expect(searchFilters.filterOptions.length).to.equal(2);
+      expect(
+        getInquiryTypeFilters(searchFilters.filterOptions),
+      ).to.have.lengthOf(0);
+    });
+
+    it('hides section if only business inquiries', () => {
+      const { view } = renderWithStore(
+        <InboxLayoutNew
+          categoryOptions={mockData.uniqueCategories}
+          statusOptions={mockData.uniqueStatuses}
+          inquiryTypes={['Business']}
+          inquiries={businessInquiries}
+        />,
+      );
+
+      const searchFilters = view.container.querySelector('va-search-filter');
+      expect(searchFilters.filterOptions.length).to.equal(2);
+      expect(
+        getInquiryTypeFilters(searchFilters.filterOptions),
+      ).to.have.lengthOf(0);
+    });
+
+    it('shows section and defaults to "Business" if both types present', () => {
+      const { view } = renderWithStore(
+        <InboxLayoutNew
+          categoryOptions={mockData.uniqueCategories}
+          statusOptions={mockData.uniqueStatuses}
+          inquiryTypes={mockData.types}
+          inquiries={mockData.standardInquiries}
+        />,
+      );
+
+      const searchFilters = view.container.querySelector('va-search-filter');
+      const inquiryFilters = getInquiryTypeFilters(searchFilters.filterOptions);
+
+      expect(searchFilters.filterOptions.length).to.equal(3);
+      expect(inquiryFilters).to.have.lengthOf(1);
+
+      const businessFilterOption = inquiryFilters[0].category.find(
+        ({ label }) => /business/i.test(label),
+      );
+      expect(businessFilterOption.active).to.be.true;
+    });
   });
 });

@@ -25,17 +25,15 @@ describe('standardizeInquiries', () => {
     expect(output).to.have.property('standardInquiries');
     expect(
       output.standardInquiries?.every(inq =>
-        ['business', 'personal'].includes(
-          inq.levelOfAuthentication.toLowerCase(),
-        ),
+        ['Business', 'Personal'].includes(inq.levelOfAuthentication),
       ),
     ).to.be.true;
   });
 
   it('returns indicators of what inquiry types are present', () => {
     const output = standardizeInquiries(mockInquiries);
-    expect(output.types).to.include('personal');
-    expect(output.types).to.include('business');
+    expect(output.types).to.include('Personal');
+    expect(output.types).to.include('Business');
   });
 
   it('flattens inquiries as they are categorized', () => {
@@ -104,13 +102,13 @@ describe('paginateInquiries', () => {
 });
 
 describe('filterAndSort', () => {
-  const flatInquiries = mockInquiries.map(flattenInquiry);
+  const flatInquiries = standardizeInquiries(mockInquiries).standardInquiries;
   const Dec18At420pmId = '1aed76e7-5bbd-ef11-b8e9-001dd830a0af';
   const Dec18At530pmId = '46a76c10-5bbd-ef11-b8e9-001dd805523c';
 
   it('returns all results if unfiltered', () => {
     const results = filterAndSort({ inquiriesArray: flatInquiries });
-    expect(results.length).to.equal(flatInquiries.length - 1);
+    expect(results.length).to.equal(flatInquiries.length);
   });
 
   it('filters by category', () => {
@@ -132,11 +130,11 @@ describe('filterAndSort', () => {
   it('filters by inquiry type', () => {
     const personal = filterAndSort({
       inquiriesArray: flatInquiries,
-      filters: { inquiryTypes: ['personal'] },
+      filters: { inquiryTypes: ['Personal'] },
     });
     const business = filterAndSort({
       inquiriesArray: flatInquiries,
-      filters: { inquiryTypes: ['business'] },
+      filters: { inquiryTypes: ['Business'] },
     });
     expect(personal.length).to.equal(7);
     expect(business.length).to.equal(2);
@@ -148,7 +146,7 @@ describe('filterAndSort', () => {
       filters: {
         categories: ['Veteran ID Card (VIC)'],
         statuses: ['In progress'],
-        inquiryTypes: ['personal'],
+        inquiryTypes: ['Personal'],
       },
     });
     expect(results.length).to.equal(1);

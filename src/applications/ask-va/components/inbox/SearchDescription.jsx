@@ -1,6 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+/**
+ * @param {{
+ * categoryFilter?: string,
+ * statusFilter?: string,
+ * tabName?: 'Business' | 'Personal',
+ * pageStart?: number,
+ * pageEnd?: number,
+ * total: number,
+ * query: string,
+ * }} props
+ */
 export default function SearchDescription({
   categoryFilter,
   pageEnd,
@@ -19,8 +30,8 @@ export default function SearchDescription({
     <div id="search-description">
       <h3 className="vads-u-font-family--sans vads-u-font-size--md">
         Showing {displayCount} results {queryPart}
-        with the status set to "{statusFilter}" and the category set to "
-        {categoryFilter}
+        with the status set to "{statusFilter || 'All'}" and the category set to
+        "{categoryFilter || 'All'}
         {tabInfo}
         ."
       </h3>
@@ -41,11 +52,11 @@ export default function SearchDescription({
 }
 
 SearchDescription.propTypes = {
-  categoryFilter: PropTypes.string.isRequired,
   query: PropTypes.string.isRequired,
-  statusFilter: PropTypes.string.isRequired,
   total: PropTypes.number.isRequired,
+  categoryFilter: PropTypes.string,
   pageEnd: PropTypes.number,
   pageStart: PropTypes.number,
+  statusFilter: PropTypes.string,
   tabName: PropTypes.oneOf(['Business', 'Personal']),
 };

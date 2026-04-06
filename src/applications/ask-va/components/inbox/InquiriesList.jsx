@@ -14,10 +14,10 @@ import SearchDescription from './SearchDescription';
 /**
  * @typedef {Object} InquiriesListProps
  * @property {Inquiry[]} inquiries
- * @property {string} categoryFilter
- * @property {string} statusFilter
+ * @property {string} [categoryFilter]
+ * @property {string} [statusFilter]
  * @property {string} query
- * @property {string} [tabName]
+ * @property {'Business' | 'Personal'} [tabName]
  */
 
 /**
@@ -94,9 +94,9 @@ export default function InquiriesList({
 }
 
 InquiriesList.propTypes = {
-  categoryFilter: PropTypes.string.isRequired,
   inquiries: PropTypes.arrayOf(InquiryCard.propTypes.inquiry).isRequired,
-  query: PropTypes.string.isRequired,
-  statusFilter: PropTypes.string.isRequired,
+  categoryFilter: SearchDescription.propTypes.categoryFilter,
+  query: SearchDescription.propTypes.query,
+  statusFilter: SearchDescription.propTypes.statusFilter,
   tabName: SearchDescription.propTypes.tabName,
 };

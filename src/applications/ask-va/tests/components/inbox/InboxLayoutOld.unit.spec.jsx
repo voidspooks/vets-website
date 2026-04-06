@@ -10,7 +10,7 @@ import { mockInquiries as rawInquiries } from '../../utils/mock-inquiries';
 describe('<InboxLayoutOld />', () => {
   const mockData = standardizeInquiries(rawInquiries);
   const personalInquiries = mockData.standardInquiries.filter(
-    inq => inq.levelOfAuthentication.toLowerCase() === 'personal',
+    inq => inq.levelOfAuthentication === 'Personal',
   );
   const selectedStatus = 'In progress';
 
@@ -53,7 +53,7 @@ describe('<InboxLayoutOld />', () => {
       <InboxLayoutOld
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -67,7 +67,7 @@ describe('<InboxLayoutOld />', () => {
       <InboxLayoutOld
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -89,7 +89,7 @@ describe('<InboxLayoutOld />', () => {
       <InboxLayoutOld
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -145,7 +145,7 @@ describe('<InboxLayoutOld />', () => {
       <InboxLayoutOld
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={personalInquiries}
       />,
     );
@@ -179,7 +179,7 @@ describe('<InboxLayoutOld />', () => {
       <InboxLayoutOld
         categoryOptions={mockData.uniqueCategories}
         statusOptions={mockData.uniqueStatuses}
-        inquiryTypes={['personal']}
+        inquiryTypes={['Personal']}
         inquiries={inquiriesCopy}
       />,
     );
@@ -210,7 +210,7 @@ describe('<InboxLayoutOld />', () => {
         <InboxLayoutOld
           categoryOptions={mockData.uniqueCategories}
           statusOptions={mockData.uniqueStatuses}
-          inquiryTypes={['personal']}
+          inquiryTypes={['Personal']}
           inquiries={personalInquiries}
         />,
       );
