@@ -65,8 +65,14 @@ export const DocumentTypeSelect = () => {
 export const getUiSchema = () => ({
   ...titleUI('Upload documents', ({ formData }) => (
     <>
-      <DocumentsNeeded formData={formData} hadPriorLoans={hadPriorLoans} />
-      <UploadInformation formData={formData} hadPriorLoans={hadPriorLoans} />
+      <DocumentsNeeded
+        formData={formData}
+        hadPriorLoans={hadPriorLoans(formData)}
+      />
+      <UploadInformation
+        formData={formData}
+        hadPriorLoans={hadPriorLoans(formData)}
+      />
     </>
   )),
   files2: fileInputMultipleUI({

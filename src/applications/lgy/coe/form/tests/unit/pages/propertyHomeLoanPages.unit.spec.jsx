@@ -38,34 +38,60 @@ describe('COE VA home loans array builder pages', () => {
     ).to.equal('relevant-prior-loans/:index/disaster-damage');
   });
 
-  it('gates all array builder pages depending on Step 3 answers', () => {
+  const pageKeys = [
+    'propertiesHomeLoansSummary',
+    'propertyHomeLoanAddressPage',
+    'propertyHomeLoanDetailsPage',
+    'propertyHomeLoanEntitlementRestorationPage',
+    'propertyHomeLoanDisasterDamagePage',
+  ];
+
+  it('shows array builder pages when rebuild toggle is on and hadPriorLoans is yes', () => {
     const showLoop = {
       'view:coeFormRebuildCveteam': true,
       loanHistory: {
         hadPriorLoans: true,
       },
     };
-    const skipLoopHadNoPriorLoans = {
+
+    pageKeys.forEach(key => {
+      expect(propertiesHomeLoansPages[key].depends(showLoop)).to.equal(true);
+    });
+  });
+
+  it('skips array builder pages when rebuild toggle is on but hadPriorLoans is no', () => {
+    const skipNoPriorLoans = {
       'view:coeFormRebuildCveteam': true,
       loanHistory: { hadPriorLoans: false },
     };
+
+    pageKeys.forEach(key => {
+      expect(propertiesHomeLoansPages[key].depends(skipNoPriorLoans)).to.equal(
+        false,
+      );
+    });
+  });
+
+  it('skips array builder pages when rebuild toggle is on but hadPriorLoans is unset', () => {
+    const skipUnsetPriorLoans = {
+      'view:coeFormRebuildCveteam': true,
+      loanHistory: {},
+    };
+
+    pageKeys.forEach(key => {
+      // `true && undefined` is undefined; depends treats any non-true value as skip
+      expect(propertiesHomeLoansPages[key].depends(skipUnsetPriorLoans)).to.not
+        .ok;
+    });
+  });
+
+  it('skips array builder pages when the rebuild toggle is off', () => {
     const skipLoopFlagOff = {
       'view:coeFormRebuildCveteam': false,
       loanHistory: { hadPriorLoans: true },
     };
-    const pageKeys = [
-      'propertiesHomeLoansSummary',
-      'propertyHomeLoanAddressPage',
-      'propertyHomeLoanDetailsPage',
-      'propertyHomeLoanEntitlementRestorationPage',
-      'propertyHomeLoanDisasterDamagePage',
-    ];
 
     pageKeys.forEach(key => {
-      expect(propertiesHomeLoansPages[key].depends(showLoop)).to.equal(true);
-      expect(
-        propertiesHomeLoansPages[key].depends(skipLoopHadNoPriorLoans),
-      ).to.equal(false);
       expect(propertiesHomeLoansPages[key].depends(skipLoopFlagOff)).to.equal(
         false,
       );

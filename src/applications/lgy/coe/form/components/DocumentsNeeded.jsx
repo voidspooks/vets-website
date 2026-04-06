@@ -5,6 +5,10 @@ import { serviceStatuses } from '../constants';
 const DocumentsNeeded = props => {
   const { hadPriorLoans, formData } = props;
 
+  if (!formData?.identity) {
+    return null;
+  }
+
   const requiredDocumentMessages = {
     [serviceStatuses.VETERAN]: (
       <>
@@ -113,7 +117,7 @@ const DocumentsNeeded = props => {
     ),
   };
 
-  return requiredDocumentMessages[formData.identity];
+  return requiredDocumentMessages[formData.identity] ?? null;
 };
 
 DocumentsNeeded.propTypes = {
