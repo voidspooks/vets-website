@@ -53,6 +53,7 @@ export const isCurrentOrpastDate = date => {
 
 export const dateSigned = () => {
   const date = new Date();
-  date.setDate(date.getDate() + 365);
-  return date.toISOString().split('T')[0];
+  const offset = date.getTimezoneOffset();
+  const today = new Date(date.getTime() - offset * 60 * 1000);
+  return today.toISOString().split('T')[0];
 };
