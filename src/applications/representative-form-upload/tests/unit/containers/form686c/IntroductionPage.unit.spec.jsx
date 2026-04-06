@@ -5,9 +5,9 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import userEvent from '@testing-library/user-event';
-import formConfig from '../../../config/form';
-import IntroductionPage from '../../../containers/form686c/IntroductionPage';
-import { getFormContent } from '../../../helpers';
+import formConfig from '../../../../config/form.js';
+import IntroductionPage from '../../../../containers/form686c/IntroductionPage.jsx';
+import { getFormContent } from '../../../../helpers';
 
 const TEST_URL =
   'https://dev.va.gov/representative/representative-form-upload/submit-va-form-21-686c/introduction';

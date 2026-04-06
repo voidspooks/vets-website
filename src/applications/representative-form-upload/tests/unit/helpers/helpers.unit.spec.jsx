@@ -9,7 +9,7 @@ import {
   CustomTopContent,
   form686cBcList,
   CustomAlertPage,
-} from '../../../pages/helpers';
+} from '../../../helpers/helpers.jsx';
 import * as helpers from '../../../helpers';
 
 const TEST_URL = 'https://dev.va.gov/form-upload/21-686c/test-page';

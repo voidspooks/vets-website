@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { expect } from 'chai';
-import { claimantInformationPage } from '../../../pages/claimantInformation';
+import { claimantInformationPage } from '../../../../containers/shared/claimantInformation';
 
 describe('claimantInformationPage', () => {
   const subject = () => render(<claimantInformationPage />);

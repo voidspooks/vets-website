@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   addressSchema,
@@ -10,27 +11,11 @@ import {
   ssnUI,
   dateOfBirthUI,
   dateOfBirthSchema,
-  checkboxGroupSchema,
-  checkboxGroupUI,
+  radioUI,
+  radioSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import ITFClaimantInfoViewField from '../components/ITFClaimantInfoViewField';
-import { ITFVetBenefits } from './helpers';
-
-const claimantSubPageUI = {
-  claimantFullName: firstNameLastNameNoSuffixUI(),
-  claimantSsn: ssnUI(),
-  claimantDateOfBirth: dateOfBirthUI(),
-  vaFileNumber: {
-    ...vaFileNumberUI,
-    'ui:title': 'VA file number',
-  },
-};
-
-const claimantSubPageSchema = {
-  claimantFullName: firstNameLastNameNoSuffixSchema,
-  claimantSsn: ssnSchema,
-  claimantDateOfBirth: dateOfBirthSchema,
-};
+import ITFClaimantInfoViewField from '../../components/ITFClaimantInfoViewField';
+import { CustomAlertPage, ITFBenefitTypes } from '../../helpers/helpers';
 
 const veteranSubPageUI = {
   veteranFullName: firstNameLastNameNoSuffixUI(),
@@ -63,6 +48,7 @@ const veteranSubPageUI = {
 const veteranSubPageSchema = {
   veteranFullName: firstNameLastNameNoSuffixSchema,
   veteranSsn: ssnSchema,
+  veteranDateOfBirth: dateOfBirthSchema,
   address: addressSchema({
     omit: [
       'country',
@@ -75,40 +61,29 @@ const veteranSubPageSchema = {
       'postalCode',
     ],
   }),
-  veteranDateOfBirth: dateOfBirthSchema,
   vaFileNumber: vaFileNumberSchema,
 };
 
 /** @type {PageSchema} */
-export const itfClaimantInformationPage = {
+export const itfVeteranInformationPage = {
   uiSchema: {
     'ui:objectViewField': ITFClaimantInfoViewField,
-    claimantSubPage: {
-      'ui:title': 'Claimant information',
-      ...claimantSubPageUI,
-    },
     veteranSubPage: {
       'ui:title': 'Veteran identification information',
       ...veteranSubPageUI,
     },
-    selectBenefits: checkboxGroupUI({
+    benefitType: radioUI({
       title: 'Select the benefit you intend to file a claim for',
       labelHeaderLevel: '3',
-      required: true,
       tile: true,
-      labels: ITFVetBenefits,
+      required: () => true,
+      labels: ITFBenefitTypes.labels,
+      descriptions: ITFBenefitTypes.descriptions,
     }),
   },
   schema: {
     type: 'object',
     properties: {
-      claimantSubPage: {
-        type: 'object',
-        properties: {
-          ...claimantSubPageSchema,
-        },
-        required: ['claimantSsn', 'claimantDateOfBirth'],
-      },
       veteranSubPage: {
         type: 'object',
         properties: {
@@ -116,17 +91,22 @@ export const itfClaimantInformationPage = {
         },
         required: [
           'veteranSsn',
+          'veteranDateOfBirth',
           'address',
           'veteranFullName',
-          'veteranDateOfBirth',
         ],
       },
-      selectBenefits: checkboxGroupSchema(Object.keys(ITFVetBenefits)),
+      benefitType: radioSchema(Object.keys(ITFBenefitTypes.labels)),
     },
   },
 };
 
-itfClaimantInformationPage.propTypes = {
+/** @type {CustomPageType} */
+export function VeteranInformationPage(props) {
+  return <CustomAlertPage {...props} />;
+}
+
+itfVeteranInformationPage.propTypes = {
   name: PropTypes.string.isRequired,
   schema: PropTypes.object.isRequired,
   uiSchema: PropTypes.object.isRequired,

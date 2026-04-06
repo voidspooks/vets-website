@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import {
   addressSchema,
@@ -11,16 +10,33 @@ import {
   ssnUI,
   dateOfBirthUI,
   dateOfBirthSchema,
-  radioUI,
-  radioSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import ITFClaimantInfoViewField from '../components/ITFClaimantInfoViewField';
-import { CustomAlertPage, ITFBenefitTypes } from './helpers';
+import {
+  emptyObjectSchema,
+  claimantTitleAndDescription,
+  veteranTitleAndDescription,
+} from '../../helpers/helpers';
+import ClaimantInfoViewField from '../../components/ClaimantInfoViewField';
+
+const claimantSubPageUI = {
+  claimantFullName: firstNameLastNameNoSuffixUI(),
+  claimantSsn: ssnUI(),
+  claimantDateOfBirth: dateOfBirthUI(),
+  vaFileNumber: {
+    ...vaFileNumberUI,
+    'ui:title': 'VA file number',
+  },
+};
+
+const claimantSubPageSchema = {
+  claimantFullName: firstNameLastNameNoSuffixSchema,
+  claimantSsn: ssnSchema,
+  claimantDateOfBirth: dateOfBirthSchema,
+};
 
 const veteranSubPageUI = {
   veteranFullName: firstNameLastNameNoSuffixUI(),
   veteranSsn: ssnUI(),
-  veteranDateOfBirth: dateOfBirthUI(),
   address: addressUI({
     labels: {
       postalCode: 'Postal code',
@@ -39,16 +55,12 @@ const veteranSubPageUI = {
   vaFileNumber: {
     ...vaFileNumberUI,
     'ui:title': 'VA file number',
-    'ui:errorMessages': {
-      pattern: 'Your VA file number must be 8 or 9 digits',
-    },
   },
 };
 
 const veteranSubPageSchema = {
   veteranFullName: firstNameLastNameNoSuffixSchema,
   veteranSsn: ssnSchema,
-  veteranDateOfBirth: dateOfBirthSchema,
   address: addressSchema({
     omit: [
       'country',
@@ -58,55 +70,41 @@ const veteranSubPageSchema = {
       'street',
       'street2',
       'street3',
-      'postalCode',
     ],
   }),
   vaFileNumber: vaFileNumberSchema,
 };
 
 /** @type {PageSchema} */
-export const itfVeteranInformationPage = {
+export const claimantInformationPage = {
   uiSchema: {
-    'ui:objectViewField': ITFClaimantInfoViewField,
-    veteranSubPage: {
-      'ui:title': 'Veteran identification information',
-      ...veteranSubPageUI,
-    },
-    benefitType: radioUI({
-      title: 'Select the benefit you intend to file a claim for',
-      labelHeaderLevel: '3',
-      tile: true,
-      required: () => true,
-      labels: ITFBenefitTypes.labels,
-      descriptions: ITFBenefitTypes.descriptions,
-    }),
+    ...claimantTitleAndDescription,
+    'ui:objectViewField': ClaimantInfoViewField,
+    ...claimantSubPageUI,
+    ...veteranTitleAndDescription,
+    ...veteranSubPageUI,
   },
   schema: {
     type: 'object',
     properties: {
-      veteranSubPage: {
-        type: 'object',
-        properties: {
-          ...veteranSubPageSchema,
-        },
-        required: [
-          'veteranSsn',
-          'veteranDateOfBirth',
-          'address',
-          'veteranFullName',
-        ],
-      },
-      benefitType: radioSchema(Object.keys(ITFBenefitTypes.labels)),
+      'view:claimantTitle': emptyObjectSchema,
+      'view:claimantDescription': emptyObjectSchema,
+      ...claimantSubPageSchema,
+      'view:veteranTitle': emptyObjectSchema,
+      'view:veteranDescription': emptyObjectSchema,
+      ...veteranSubPageSchema,
     },
+    required: [
+      'claimantSsn',
+      'claimantDateOfBirth',
+      'veteranSsn',
+      'address',
+      'veteranFullName',
+    ],
   },
 };
 
-/** @type {CustomPageType} */
-export function VeteranInformationPage(props) {
-  return <CustomAlertPage {...props} />;
-}
-
-itfVeteranInformationPage.propTypes = {
+claimantInformationPage.propTypes = {
   name: PropTypes.string.isRequired,
   schema: PropTypes.object.isRequired,
   uiSchema: PropTypes.object.isRequired,

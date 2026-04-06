@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { ConfirmationPageViewITF } from '../components/ConfirmationPageViewITF';
+import { ConfirmationPageViewITF } from '../../components/ConfirmationPageViewITF';
 
 const ConfirmationPageITF = () => {
   const form = useSelector(state => state.form || {});

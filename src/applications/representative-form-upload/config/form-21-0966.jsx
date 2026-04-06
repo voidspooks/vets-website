@@ -2,18 +2,21 @@ import React from 'react';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import footerContent from '~/platform/forms/components/FormFooter';
 import manifest from '../manifest.json';
-import ConfirmationPageITF from '../containers/ConfirmationPageITF';
-import IntroductionPageITF from '../containers/IntroductionPageITF';
-import { itfClaimantInformationPage } from '../pages/itfClaimantInformation';
-import { itfVeteranInformationPage } from '../pages/itfVeteranInformation';
-import { IsVeteranPage, isVeteranPage } from '../pages/isVeteranPage';
+import ConfirmationPageITF from '../containers/form966/ConfirmationPageITF';
+import IntroductionPageITF from '../containers/form966/IntroductionPageITF';
+import { itfClaimantInformationPage } from '../containers/form966/itfClaimantInformation';
+import { itfVeteranInformationPage } from '../containers/form966/itfVeteranInformation';
+import {
+  IsVeteranPage,
+  isVeteranPage,
+} from '../containers/shared/isVeteranPage';
 import { itfTransformForSubmit } from './submit-transformer';
 import {
   getITFMockData,
   scrollAndFocusTarget,
   getFormContent,
 } from '../helpers';
-import { CustomTopContent } from '../pages/helpers';
+import { CustomTopContent } from '../helpers/helpers';
 import { getIntentsToFile } from '../helpers/intent-to-file-helper';
 import ITFSubmissionError from './ITFSubmissionError';
 import ITFStatusLoadingIndicatorPage from '../components/ITFStatusLoadingIndicatorPage';

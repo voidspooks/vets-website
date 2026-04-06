@@ -5,8 +5,8 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { expect } from 'chai';
 
-import formConfig from '../../../config/form';
-import ConfirmationPageITF from '../../../containers/ConfirmationPageITF';
+import formConfig from '../../../../config/form';
+import ConfirmationPageITF from '../../../../containers/form966/ConfirmationPageITF';
 
 const config = formConfig;
 

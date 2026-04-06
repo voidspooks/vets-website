@@ -85,3 +85,38 @@ export function itfTransformForSubmit(formConfig, form) {
     benefitType: isVeteran === 'no' ? 'survivor' : benefitType,
   });
 }
+
+export function transformForSubmit526(formConfig, form) {
+  const transformedData = JSON.parse(
+    sharedTransformForSubmit(formConfig, form),
+  );
+  const { formNumber, subTitle } = getFormContent();
+
+  const {
+    veteranSsn = {},
+    address = {},
+    veteranFullName = {},
+    veteranDateOfBirth = {},
+    vaFileNumber,
+    uploadBdd,
+    selectBddClaim,
+  } = transformedData;
+
+  const { confirmationCode } = transformedData.uploadedFile;
+
+  return JSON.stringify({
+    bddConfirmationCode: uploadBdd?.confirmationCode,
+    confirmationCode,
+    formName: subTitle,
+    supportingDocuments: transformedData.supportingDocuments,
+    formData: {
+      veteranSsn,
+      postalCode: address.postalCode,
+      veteranFullName,
+      veteranDateOfBirth,
+      formNumber,
+      vaFileNumber,
+      selectBddClaim: selectBddClaim?.BDD,
+    },
+  });
+}

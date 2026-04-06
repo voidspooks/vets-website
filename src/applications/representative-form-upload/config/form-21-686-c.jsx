@@ -1,15 +1,18 @@
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import footerContent from '~/platform/forms/components/FormFooter';
 import manifest from '../manifest.json';
-import ConfirmationPage from '../containers/ConfirmationPage';
-import IntroductionPage from '../containers/IntroductionPage';
-import { uploadPage } from '../pages/upload';
-import { claimantInformationPage } from '../pages/claimantInformation';
-import { veteranInformationPage } from '../pages/686cVeteranInformation';
-import { IsVeteranPage, isVeteranPage } from '../pages/isVeteranPage';
+import ConfirmationPage from '../containers/shared/ConfirmationPage';
+import IntroductionPage from '../containers/form686c/IntroductionPage';
+import { uploadPage } from '../containers/shared/upload';
+import { claimantInformationPage } from '../containers/shared/claimantInformation';
+import { veteranInformationPage } from '../containers/form686c/686cVeteranInformation';
+import {
+  IsVeteranPage,
+  isVeteranPage,
+} from '../containers/shared/isVeteranPage';
 import { transformForSubmit } from './submit-transformer';
 import { getMockData, scrollAndFocusTarget, getFormContent } from '../helpers';
-import { CustomTopContent } from '../pages/helpers';
+import { CustomTopContent } from '../helpers/helpers';
 import submissionError from './submissionError';
 import SubmissionErrorLink from './submissionErrorLink';
 

@@ -7,13 +7,13 @@ import {
   fileInputMultipleSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
-import { getAlert, getFormContent } from '../helpers';
+import { getAlert, getFormContent } from '../../helpers';
 import {
   emptyObjectSchema,
   uploadTitleAndDescription,
   supportingEvidenceTitleAndDescription,
-} from './helpers';
-import SupportingEvidenceViewField from '../components/SupportingEvidenceViewField';
+} from '../../helpers/helpers';
+import SupportingEvidenceViewField from '../../components/SupportingEvidenceViewField';
 
 const { formNumber, title, message } = getFormContent();
 const baseURL = `${environment.API_URL}/accredited_representative_portal/v0`;
@@ -21,6 +21,7 @@ const fileUploadUrl = `${baseURL}/representative_form_upload`;
 
 export const warningsPresent = formData => {
   if (formData.uploadedFile?.warnings?.length > 0) return true;
+  // eslint-disable-next-line sonarjs/prefer-single-boolean-return
   if (formData.supportingDocuments?.some(doc => doc.warnings?.length > 0))
     return true;
   return false;

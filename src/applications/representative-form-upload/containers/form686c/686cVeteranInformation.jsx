@@ -19,8 +19,8 @@ import {
   claimantTitleAndDescription,
   CustomAlertPage,
   BddCheckbox,
-} from './helpers';
-import ClaimantInfoViewField from '../components/ClaimantInfoViewField';
+} from '../../helpers/helpers';
+import ClaimantInfoViewField from '../../components/ClaimantInfoViewField';
 
 /** @type {PageSchema} */
 export const veteranInformationPage = {

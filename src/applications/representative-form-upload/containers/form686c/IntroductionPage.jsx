@@ -13,8 +13,8 @@ import {
   VaProcessListItem,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import recordEvent from 'platform/monitoring/record-event';
-import { getFormContent, getFormNumber } from '../helpers';
-import { SIGN_IN_URL } from '../constants';
+import { getFormContent, getFormNumber } from '../../helpers';
+import { SIGN_IN_URL } from '../../constants';
 
 const IntroductionPage = ({ route, router }) => {
   const userLoggedIn = useSelector(state => isLoggedIn(state));
@@ -44,7 +44,7 @@ const IntroductionPage = ({ route, router }) => {
         />
       );
     },
-    [route.pageList, router],
+    [route.pageList, router, formNumber],
   );
   useEffect(() => {
     focusElement('h1');
@@ -123,6 +123,8 @@ IntroductionPage.propTypes = {
     }).isRequired,
     pageList: PropTypes.arrayOf(PropTypes.object).isRequired,
   }).isRequired,
+  router: PropTypes.shape({
+    push: PropTypes.func,
+  }),
 };
-
 export default IntroductionPage;

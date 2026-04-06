@@ -10,10 +10,10 @@ import {
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import recordEvent from 'platform/monitoring/record-event';
 import FormTitle from '~/platform/forms-system/src/js/components/FormTitle';
-import { getFormContent, getFormNumber } from '../helpers';
-import { ITF_PATH } from '../constants';
+import { getFormContent, getFormNumber } from '../../helpers';
+import { ITF_PATH } from '../../constants';
 
-const IntroductionPageITF = ({ route, router }) => {
+const IntroductionPageITF = ({ router }) => {
   const userLoggedIn = useSelector(state => isLoggedIn(state));
   const formNumber = getFormNumber();
   const { subTitle } = getFormContent();
@@ -35,7 +35,7 @@ const IntroductionPageITF = ({ route, router }) => {
         />
       );
     },
-    [route.pageList, router, formNumber],
+    [router, formNumber],
   );
   useEffect(() => {
     focusElement('h1');

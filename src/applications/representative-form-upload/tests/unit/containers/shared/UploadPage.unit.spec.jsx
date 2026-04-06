@@ -1,6 +1,9 @@
 import { expect } from 'chai';
-import { uploadPage, warningsPresent } from '../../../pages/upload';
-import { createPayload, parseResponse } from '../../../helpers';
+import {
+  uploadPage,
+  warningsPresent,
+} from '../../../../containers/shared/upload';
+import { createPayload, parseResponse } from '../../../../helpers';
 
 describe('uploadPage', () => {
   const { uiSchema, schema } = uploadPage;

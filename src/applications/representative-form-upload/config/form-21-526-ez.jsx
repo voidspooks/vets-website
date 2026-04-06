@@ -1,13 +1,17 @@
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import footerContent from '~/platform/forms/components/FormFooter';
 import manifest from '../manifest.json';
-import ConfirmationPage from '../containers/ConfirmationPage';
-import IntroductionPage526 from '../containers/IntroductionPage526';
-import { uploadPage } from '../pages/upload';
-import { veteranInformationPage } from '../pages/526ezVeteranInformation';
-import { transformForSubmit } from './submit-transformer';
+import ConfirmationPage from '../containers/shared/ConfirmationPage';
+import IntroductionPage526 from '../containers/form526ez/IntroductionPage526';
+import { uploadPage } from '../containers/shared/upload';
+import {
+  bddCustomPage,
+  BddCustomPage,
+} from '../containers/form526ez/bddCustomPage';
+import { veteranInformationPage } from '../containers/form526ez/526ezVeteranInformation';
+import { transformForSubmit526 } from './submit-transformer';
 import { getMockData, scrollAndFocusTarget, getFormContent } from '../helpers';
-import { CustomTopContent } from '../pages/helpers';
+import { CustomTopContent } from '../helpers/helpers';
 import submissionError from './submissionError';
 import SubmissionErrorLink from './submissionErrorLink';
 
@@ -41,7 +45,7 @@ const form21526Ez = (pathname = null) => {
     formId,
     version: 0,
     prefillEnabled: false,
-    transformForSubmit,
+    transformForSubmit: transformForSubmit526,
     submissionError,
     submissionErrorLink: SubmissionErrorLink,
     defaultDefinitions: {},
@@ -79,6 +83,20 @@ const form21526Ez = (pathname = null) => {
             uiSchema: uploadPage.uiSchema,
             schema: uploadPage.schema,
             scrollAndFocusTarget,
+            depends: formData => {
+              return formData.selectBddClaim?.BDD !== true;
+            },
+          },
+          bddUploadPage: {
+            path: 'bdd-upload-files',
+            title: 'Upload files',
+            uiSchema: bddCustomPage.uiSchema,
+            schema: bddCustomPage.schema,
+            CustomPage: BddCustomPage,
+            scrollAndFocusTarget,
+            depends: formData => {
+              return formData.selectBddClaim?.BDD === true;
+            },
           },
         },
       },

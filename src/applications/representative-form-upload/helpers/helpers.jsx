@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormNavButtons, SchemaForm } from 'platform/forms-system/exportsFile';
 import { scrollAndFocus } from 'platform/utilities/scroll';
-import { getAlert, getFormNumber, onClickContinue } from '../helpers';
+import { getAlert, getFormNumber, onClickContinue } from '.';
 
 export const emptyObjectSchema = {
   type: 'object',
@@ -32,6 +32,22 @@ export const uploadTitleAndDescription = {
         your file, you’ll need to continue to the next screen to submit it. If
         you leave before you submit it, you’ll need to upload it again.
       </>,
+    ),
+  },
+};
+
+export const bddTitleAndDescription = {
+  'view:bddTitle': {
+    'ui:description': Object.freeze(
+      <h3>Upload Separation Health Assessment - Part A</h3>,
+    ),
+  },
+  'view:bddDescription': {
+    'ui:description': Object.freeze(
+      <p className="vads-u-margin--0">
+        If this is a Benefits Delivery at Discharge (BDD) claim, upload a
+        completed Separation Health Assessment - Part A Self-Assessment form.
+      </p>,
     ),
   },
 };

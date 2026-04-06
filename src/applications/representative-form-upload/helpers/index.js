@@ -131,6 +131,23 @@ export const onClickContinue = (props, setContinueClicked) => {
     props.onContinue();
   }
 };
+export const onClickContinueBdd = (props, setModalVisible, event) => {
+  const BddUpload = props.data?.uploadBdd?.confirmationCode;
+  const va526Form = props.data?.uploadedFile?.confirmationCode;
+
+  if (va526Form && !BddUpload) {
+    setModalVisible(true);
+    event.preventDefault();
+    return;
+  }
+
+  setModalVisible(false);
+  props.onContinue();
+};
+export const onModalNext = (props, setModalVisible) => {
+  setModalVisible(false);
+  props.onContinue();
+};
 
 export const getAlert = (props, continueClicked) => {
   const warnings = props.data?.uploadedFile?.warnings;

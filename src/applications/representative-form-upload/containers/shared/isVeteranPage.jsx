@@ -4,7 +4,7 @@ import {
   radioSchema,
   radioUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { CustomAlertPage } from './helpers';
+import { CustomAlertPage } from '../../helpers/helpers';
 
 const veteranLabels = {
   yes: 'The claimant is the Veteran',

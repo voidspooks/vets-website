@@ -49,12 +49,13 @@ const App = ({ children }) => {
         'va-file-input-multiple',
         'va-checkbox-group',
         'va-radio',
+        'va-checkbox',
         'va-text-input[name="root_veteranFullName_first"]',
         'va-text-input[name="root_claimantFullName_first"]',
       ],
-      '.usa-label{margin-top: 16px} #dateHint {display: none} .usa-form-group--month-select {width: 159px} .usa-accordion, .usa-accordion-bordered, .usa-accordion--bordered {margin: 24px 0 !important;} .usa-accordion__content.usa-prose {border:1px solid #f0f0f0;} .usa-hint {white-space: pre-line; margin-bottom: 16px} .label-header {display:none} .label-header:has([for="fileInputField"]) {display:block}.input-wrap .usa-fieldset .usa-legend h3 {display:block}',
+      '[name="root_selectBddClaim_BDD"] {margin-left: 2px} .usa-label{margin-top: 16px} #dateHint {display: none} .usa-form-group--month-select {width: 159px} .usa-accordion, .usa-accordion-bordered, .usa-accordion--bordered {margin: 24px 0 !important;} .usa-accordion__content.usa-prose {border:1px solid #f0f0f0;} .usa-hint {white-space: pre-line; margin-bottom: 16px} .label-header {display:none} .label-header:has([for="fileInputField"]) {display:block} label:contains("uploadBdd") {display:none}  .form__checkbox p {margin: 8px 0} legend {padding: 0}',
     );
-  });
+  }, []);
 
   const dispatch = useDispatch();
   useEffect(() => dispatch(fetchUser()), [dispatch]);

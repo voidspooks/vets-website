@@ -5,8 +5,8 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { expect } from 'chai';
 
-import formConfig from '../../../config/form';
-import ConfirmationPage from '../../../containers/ConfirmationPage';
+import formConfig from '../../../../config/form';
+import ConfirmationPage from '../../../../containers/shared/ConfirmationPage';
 
 const TEST_URL = 'https://dev.va.gov/form-upload/21-686c/confirmation';
 const config = formConfig;

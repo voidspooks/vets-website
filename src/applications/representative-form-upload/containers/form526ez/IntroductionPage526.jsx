@@ -13,8 +13,8 @@ import {
   VaProcessListItem,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import recordEvent from 'platform/monitoring/record-event';
-import { getFormContent, getFormNumber } from '../helpers';
-import { SIGN_IN_URL } from '../constants';
+import { getFormContent, getFormNumber } from '../../helpers';
+import { SIGN_IN_URL } from '../../constants';
 
 const IntroductionPage526 = ({ route, router }) => {
   const userLoggedIn = useSelector(state => isLoggedIn(state));
@@ -51,6 +51,7 @@ const IntroductionPage526 = ({ route, router }) => {
 
   const separationHealthAssessment =
     'https://www.benefits.va.gov/compensation/docs/SHA_DBQ_Part_A_Self-Assessment.pdf';
+
   return (
     <Toggler
       toggleName={
