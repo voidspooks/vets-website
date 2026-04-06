@@ -3,26 +3,12 @@ import { expect } from 'chai';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import sinon from 'sinon';
-import { DefinitionTester } from '@department-of-veterans-affairs/platform-testing/schemaform-utils';
-import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
+import { DefinitionTester } from 'platform/testing/unit/schemaform-utils';
 import formConfig from '../../config/form';
 
 const yesLabel = 'Yes, I have uploaded all my supporting documents';
 const noLabel =
   'No, I have some extra information that I’ll submit to VA later';
-
-const selectStandardClaimValue = (container, getByLabelText, value) => {
-  const radio = $('va-radio', container);
-
-  if (radio?.__events?.vaValueChange) {
-    radio.__events.vaValueChange({
-      detail: { value },
-    });
-    return;
-  }
-
-  userEvent.click(getByLabelText(value === 'Y' ? yesLabel : noLabel));
-};
 
 describe('Fully Developed Claim', () => {
   const {
@@ -84,9 +70,9 @@ describe('Fully Developed Claim', () => {
     });
   });
 
-  it('should display alert when selecting yes', async () => {
+  it('should display alert when selecting yes', () => {
     const onSubmit = sinon.spy();
-    const { getByText, getByLabelText, container } = render(
+    const { getByText, getByLabelText } = render(
       <DefinitionTester
         definitions={formConfig.defaultDefinitions}
         uiSchema={uiSchema}
@@ -97,21 +83,19 @@ describe('Fully Developed Claim', () => {
       />,
     );
 
-    selectStandardClaimValue(container, getByLabelText, 'Y');
-    await waitFor(() => {
-      getByText(
-        'Since you’ve uploaded all your supporting documents, your claim will be submitted as a fully developed claim.',
-        { exact: false },
-      );
-    });
+    userEvent.click(getByLabelText(yesLabel));
+    getByText(
+      'Since you’ve uploaded all your supporting documents, your claim will be submitted as a fully developed claim.',
+      { exact: false },
+    );
 
     userEvent.click(getByText('Submit'));
     expect(onSubmit.calledOnce).to.be.true;
   });
 
-  it('should display alert when selecting no', async () => {
+  it('should display alert when selecting no', () => {
     const onSubmit = sinon.spy();
-    const { getByText, getByLabelText, container } = render(
+    const { getByText, getByLabelText } = render(
       <DefinitionTester
         definitions={formConfig.defaultDefinitions}
         uiSchema={uiSchema}
@@ -122,14 +106,11 @@ describe('Fully Developed Claim', () => {
       />,
     );
 
-    selectStandardClaimValue(container, getByLabelText, 'N');
-    await waitFor(() => {
-      getByText(
-        'Since you’ll be sending in additional documents later, your application doesn’t qualify for the Fully Developed Claim program. We’ll',
-        { exact: false },
-      );
-    });
-
+    userEvent.click(getByLabelText(noLabel));
+    getByText(
+      'Since you’ll be sending in additional documents later, your application doesn’t qualify for the Fully Developed Claim program. We’ll',
+      { exact: false },
+    );
     userEvent.click(getByText('Submit'));
     expect(onSubmit.calledOnce).to.be.true;
   });
