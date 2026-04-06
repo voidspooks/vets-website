@@ -80,7 +80,7 @@ const formNameText = submission => [
   submission.packet ? ' packet' : '',
 ];
 
-const SubmissionCard = ({ submission, omitClaimantName }) => {
+const SubmissionCard = ({ submission, context }) => {
   const formattedSubmittedDate = formatDateParsedZoneLong(
     submission.submittedDate,
   );
@@ -98,7 +98,7 @@ const SubmissionCard = ({ submission, omitClaimantName }) => {
         <p className="submission__card-date">
           Submitted {formattedSubmittedDate}
         </p>
-        {omitClaimantName ? (
+        {context === 'ClaimantSubmissionHistoryPage' ? (
           <h3 className="submission__card-form-name vads-u-font-size--h3 vads-u-font-family--serif">
             {formNameText(submission)}
           </h3>
@@ -156,14 +156,21 @@ const SubmissionCard = ({ submission, omitClaimantName }) => {
           }
         >
           <Toggler.Enabled>
-            <va-link
-              active
-              class="vads-u-margin-top--2 vads-u-display--block "
-              href={`/representative/find-claimant/claimant-overview/${
-                submission.claimantId
-              }`}
-              text="Go to the claimant overview"
-            />
+            {context === 'ClaimantSubmissionHistoryPage' ? (
+              ''
+            ) : (
+              <va-link
+                active
+                class="vads-u-margin-top--2 vads-u-display--block"
+                aria-label={`Go to the claimant overview for ${
+                  submission.lastName
+                }, ${submission.firstName}`}
+                href={`/representative/find-claimant/claimant-overview/${
+                  submission.claimantId
+                }`}
+                text="Go to the claimant overview"
+              />
+            )}
           </Toggler.Enabled>
         </Toggler>
       </va-card>
@@ -172,14 +179,14 @@ const SubmissionCard = ({ submission, omitClaimantName }) => {
 };
 
 SubmissionCard.propTypes = {
+  context: PropTypes.string,
   cssClass: PropTypes.string,
   id: PropTypes.string,
-  omitClaimantName: PropTypes.bool,
   submission: PropTypes.object,
 };
 
 SubmissionCard.defaultProps = {
-  omitClaimantName: false,
+  context: null,
 };
 
 export default SubmissionCard;

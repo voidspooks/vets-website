@@ -142,7 +142,10 @@ const SubmissionsPage = title => {
             role="tabpanel"
             aria-labelledby={`tab-${searchStatus}`}
           >
-            <SubmissionsPageResults submissions={submissions} />
+            <SubmissionsPageResults
+              submissions={submissions}
+              context="SubmissionsPage"
+            />
             <Pagination meta={meta} defaults={SUBMISSION_DEFAULTS} />
           </div>
         )}

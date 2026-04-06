@@ -98,7 +98,7 @@ const ClaimantSubmissionHistoryPage = title => {
             >
               <SubmissionsPageResults
                 submissions={submissions}
-                omitClaimantName
+                context="ClaimantSubmissionHistoryPage"
               />
               <Pagination meta={meta} defaults={SUBMISSION_DEFAULTS} />
             </div>
