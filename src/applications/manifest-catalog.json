@@ -805,7 +805,7 @@
       "directoryPath": "src/applications/simple-forms/mock-form-prefill-minimal",
       "appName": "Mock Form with Prefill (Minimal Header)",
       "entryName": "mock-form-prefill-minimal",
-      "rootUrl": "/mock-form-prefill-minimal"
+      "rootUrl": "/mock-form-minimal-prefill"
     },
     {
       "directoryPath": "src/applications/simple-forms/mock-simple-forms-patterns",
