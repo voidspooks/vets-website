@@ -9,7 +9,7 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import content from '../../locales/en/content.json';
 import { not, policyDatesEnabled } from '../../utils/helpers';
-import { validateChars } from '../../utils/validation';
+import { validateChars, validateDateRange } from '../../utils/validation';
 
 const TITLE_TEXT = content['health-insurance--policy-info-title'];
 const INPUT_LABELS = {
@@ -54,6 +54,12 @@ export default {
       title: INPUT_LABELS.providerPhone,
       hideIf: policyDatesEnabled,
     }),
+    'ui:validations': [
+      validateDateRange({
+        startDateKey: 'effectiveDate',
+        endDateKey: 'expirationDate',
+      }),
+    ],
   },
   schema: {
     type: 'object',

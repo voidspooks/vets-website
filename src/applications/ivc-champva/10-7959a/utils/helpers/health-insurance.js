@@ -11,3 +11,6 @@ export const hasOhiMedicalAndMultiplePolicies = whenAll(
   hasOhiAndMedicalClaim,
   formData => (formData.policies || []).length > 1,
 );
+
+export const hasTypeOther = (formData, index) =>
+  formData?.policies?.[index]?.type === 'other';

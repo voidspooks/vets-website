@@ -8,7 +8,7 @@ import {
   formatFullName,
   makePossessive,
   replaceStrValues,
-} from './helpers';
+} from './helpers/formatting';
 
 const DEFAULT_OPTS = {
   // common template behavior

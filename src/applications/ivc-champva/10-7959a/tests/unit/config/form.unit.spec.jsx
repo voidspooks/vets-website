@@ -5,8 +5,9 @@ import formConfig from '../../../config/form';
 import { testNumberOfWebComponentFields } from '../../../../shared/tests/pages/pageTests.spec';
 
 import mockData from '../../e2e/fixtures/data/medical-claim.json';
-import { insuranceOptions } from '../../../chapters/healthInsuranceInformation';
 import NotEnrolledPage from '../../../components/FormPages/NotEnrolledPage';
+import { insuranceOptions } from '../../../chapters/healthInsurance/summary';
+import { insurancePages } from '../../../chapters/healthInsurance';
 
 describe('Certifier role page', () => {
   testNumberOfWebComponentFields(
@@ -195,8 +196,8 @@ describe('Applicant phone (role: other) page', () => {
 describe('Insurance status page', () => {
   testNumberOfWebComponentFields(
     formConfig,
-    formConfig.chapters.healthInsuranceInformation.pages.page3.schema,
-    formConfig.chapters.healthInsuranceInformation.pages.page3.uiSchema,
+    insurancePages.insuranceStatus.schema,
+    insurancePages.insuranceStatus.uiSchema,
     1,
     'Insurance status',
     { ...mockData.data },
@@ -274,17 +275,6 @@ describe('health insurance array builder options.text', () => {
     );
     expect(container.innerHTML).to.include('health insurance review');
   });
-});
-
-describe('Insurance status (role: other) page', () => {
-  testNumberOfWebComponentFields(
-    formConfig,
-    formConfig.chapters.healthInsuranceInformation.pages.page3.schema,
-    formConfig.chapters.healthInsuranceInformation.pages.page3.uiSchema,
-    1,
-    'Insurance status (role: other)',
-    { ...mockData.data, certifierRole: 'other' },
-  );
 });
 
 describe('Work related claim page', () => {

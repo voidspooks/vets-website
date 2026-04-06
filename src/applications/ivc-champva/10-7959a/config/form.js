@@ -31,10 +31,7 @@ import {
   certifierRelationshipSchema,
   certifierClaimStatusSchema,
 } from '../chapters/signerInformation';
-import {
-  insuranceStatusSchema,
-  insurancePages,
-} from '../chapters/healthInsuranceInformation';
+import { insurancePages } from '../chapters/healthInsurance';
 import {
   claimTypeSchema,
   claimWorkSchema,
@@ -249,15 +246,7 @@ const formConfig = {
     },
     healthInsuranceInformation: {
       title: 'Health insurance information',
-      pages: {
-        page3: {
-          path: 'insurance-status',
-          title: 'Beneficiary health insurance status',
-          depends: isNewClaim,
-          ...insuranceStatusSchema,
-        },
-        ...insurancePages,
-      },
+      pages: insurancePages,
     },
     claimInformation: {
       title: 'Claim information',
