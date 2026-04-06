@@ -70,10 +70,16 @@ const RecordList = props => {
     () => {
       if (records?.length) {
         paginatedRecords.current = chunk(records, perPage);
+        if (currentPage > paginatedRecords.current.length) {
+          setCurrentPage(1);
+          setCurrentRecords(paginatedRecords.current[0]);
+          history.replace(history.location.pathname);
+          return;
+        }
         setCurrentRecords(paginatedRecords.current[currentPage - 1]);
       }
     },
-    [records, perPage, currentPage],
+    [records, perPage, currentPage, history],
   );
 
   useEffect(

@@ -73,4 +73,25 @@ describe('Record list component', () => {
       });
     });
   });
+
+  it('resets to page 1 when page param exceeds available pages', async () => {
+    screen.unmount();
+    const testScreen = renderWithStoreAndRouter(
+      <RecordList records={vaccines} type={recordType.VACCINES} />,
+      {
+        initialState,
+        reducers: reducer,
+        path: '/vaccines?page=5',
+      },
+    );
+
+    await waitFor(() => {
+      // Should still display records despite page=5 being out of bounds
+      // 4 because 2 for the regular view plus 2 for the print view
+      expect(testScreen.getAllByTestId('record-list-item')).to.have.length(4);
+      // URL should be updated to strip the out-of-bounds page param
+      expect(testScreen.history.location.search).to.eq('');
+      expect(testScreen.history.location.pathname).to.eq('/vaccines');
+    });
+  });
 });
