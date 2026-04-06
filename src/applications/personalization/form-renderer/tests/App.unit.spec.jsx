@@ -88,7 +88,10 @@ describe('App Component', () => {
         apiRequestStub,
         '/digital_forms_api/submissions/12345',
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Key-Inflection': null,
+          },
           method: 'GET',
         },
       );

@@ -25,7 +25,7 @@ export default function App({ params }) {
   function getSubmission(submissionId) {
     return apiRequest(`/digital_forms_api/submissions/${submissionId}`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Key-Inflection': null },
     })
       .then(submission => setResponse(submission))
       .catch(error => {
