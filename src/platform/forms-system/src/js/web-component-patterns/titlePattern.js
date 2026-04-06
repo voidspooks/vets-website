@@ -3,6 +3,20 @@ import React, { useRef } from 'react';
 import { isReactComponent } from '~/platform/utilities/ui';
 import { isMinimalHeaderPath } from '../patterns/minimal-header';
 
+/**
+ * Page title text color used by `Title` (titleUI). Shared with array-builder summary
+ * headings so they stay visually consistent.
+ *
+ * @param {number} headerLevel
+ * @param {number} [headerStyleLevel] - Use `2` when the title uses `vads-u-font-size--h2` (minimal-header summary).
+ * @returns {'gray-dark' | 'black'}
+ */
+export function getTitleHeadingColorToken(headerLevel, headerStyleLevel) {
+  return headerStyleLevel === 3 || (!headerStyleLevel && headerLevel === 3)
+    ? 'gray-dark'
+    : 'black';
+}
+
 const useHeadingLevels = (userHeaderLevel, userHeaderStyleLevel) => {
   const isMinimalHeader = useRef(null);
   if (isMinimalHeader.current === null) {
@@ -41,10 +55,7 @@ export const Title = ({
         headerStyleLevel,
       ) + 1}`
     : '';
-  const color =
-    headerStyleLevel === 3 || (!headerStyleLevel && headerLevel === 3)
-      ? 'gray-dark'
-      : 'black';
+  const color = getTitleHeadingColorToken(headerLevel, headerStyleLevel);
   const className =
     classNames || `vads-u-color--${color} vads-u-margin-top--0${style}`;
 

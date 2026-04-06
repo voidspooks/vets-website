@@ -758,6 +758,7 @@ describe('ArrayBuilderSummaryPage', () => {
 
     const title = container.querySelector('h1');
     expect(title).to.include.text('Review your employers');
+    expect(title.className).to.include('vads-u-color--black');
     const card = container.querySelector('va-card');
     expect(card.querySelector('h2')).to.exist;
     const vaRadio = container.querySelector('va-radio');
@@ -773,6 +774,7 @@ describe('ArrayBuilderSummaryPage', () => {
 
     const title = container.querySelector('h3');
     expect(title).to.include.text('Review your employers');
+    expect(title.className).to.include('vads-u-color--gray-dark');
     const cards = container.querySelectorAll('va-card');
     expect(cards.length).to.equal(1);
     expect(cards[0].querySelector('h4')).to.exist;

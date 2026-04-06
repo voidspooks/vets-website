@@ -14,6 +14,7 @@ import FormNavButtons from '~/platform/forms-system/src/js/components/FormNavBut
 import ArrayBuilderCards from './ArrayBuilderCards';
 import ArrayBuilderSummaryReviewPage from './ArrayBuilderSummaryReviewPage';
 import ArrayBuilderSummaryNoSchemaFormPage from './ArrayBuilderSummaryNoSchemaFormPage';
+import { getTitleHeadingColorToken } from '../../web-component-patterns/titlePattern';
 import {
   arrayBuilderContextObject,
   checkIfArrayHasDuplicateData,
@@ -153,7 +154,7 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
     const maxItemsAlertRef = useRef(null);
     const dataRef = useRef(props.data);
     const { uiSchema, schema } = props;
-    const { headingLevel, headingStyle } = useHeadingLevels(
+    const { headingLevel, headerStyleLevel, headingStyle } = useHeadingLevels(
       titleHeaderLevel,
       isReviewPage,
     );
@@ -385,7 +386,14 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
 
     const Title = ({ textType }) => {
       const text = getText(textType, updatedItemData, props.data);
-      const baseClasses = ['vads-u-color--gray-dark', 'vads-u-margin-top--0'];
+      const colorToken = getTitleHeadingColorToken(
+        Number(headingLevel),
+        headerStyleLevel,
+      );
+      const baseClasses = [
+        `vads-u-color--${colorToken}`,
+        'vads-u-margin-top--0',
+      ];
       return text ? (
         <Heading
           className={classNames(baseClasses, headingStyle)}

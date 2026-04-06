@@ -536,9 +536,10 @@ export const validateIncompleteItems = ({
  *
  * @param {string|undefined} userHeaderLevel - An optional custom heading level to use (e.g., '1', '2', '3').
  * @param {boolean} isReviewPage - Whether the current page is a review page.
- * @returns {{ headingLevel: string, headingStyle: Object }}
+ * @returns {{ headingLevel: string, headerStyleLevel: number|undefined, headingStyle: Object }}
  * An object containing:
  *  - `headingLevel`: The resolved heading level as a string.
+ *  - `headerStyleLevel`: The numeric style level (e.g. `2` for minimal-header summary) or `undefined`.
  *  - `headingStyle`: A style object for applying conditional font size classes.
  */
 export const useHeadingLevels = (userHeaderLevel, isReviewPage) => {
@@ -552,11 +553,12 @@ export const useHeadingLevels = (userHeaderLevel, isReviewPage) => {
   }
 
   const headingLevel = userHeaderLevel ?? defaultLevel;
+  const headerStyleLevel = isMinimalHeader && !isReviewPage ? 2 : undefined;
   const headingStyle = {
     'vads-u-font-size--h2': isMinimalHeader && !isReviewPage,
   };
 
-  return { headingLevel, headingStyle };
+  return { headingLevel, headerStyleLevel, headingStyle };
 };
 
 /**
