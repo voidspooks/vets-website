@@ -39,7 +39,7 @@ export default function RegionalAccordion() {
           <strong>This office serves the following states:</strong> Alabama,
           Alaska, Arizona, Arkansas, California, Florida, Georgia, Hawaii,
           Idaho, Louisiana, Mississippi, New Mexico, Nevada, Oklahoma, Oregon,
-          South Carolina, Texas, Utah, and Washington.
+          Puerto Rico, South Carolina, Texas, Utah, and Washington.
         </p>
         <p>
           <strong>Additional locations served by this office:</strong> APO / FPO

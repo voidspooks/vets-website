@@ -169,7 +169,7 @@ export const ConfirmationPage = props => {
       <h2 className="vads-u-font-size--h2 vad-u-margin-top--0">
         What are my next steps?
       </h2>
-      <p>
+      <p className="vads-u-margin-bottom--4">
         After you successfully submit your form, we will review your documents.
         You should hear back within 30 days about your reimbursement.
       </p>

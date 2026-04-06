@@ -12,6 +12,30 @@
     white-space: normal;
   }
 }
+@media print{
+  @page {
+    margin: 1rem 0 0 0;
+  }
+  va-button[data-testid="print-page"] {
+    display: none;
+  }
+  h1{
+    font-size: 2rem;
+  }
+  div.form-app h2{
+    margin-top: 0.5rem;
+    font-size: 1.6rem !important;
+    margin-bottom: 0;
+  }
+
+  p{
+    font-size: 14px;
+  }
+  div:has(> va-button[text="Dev only: Simulate submission"]) {
+    display: none;
+  }
+}
+
 
 @media (max-width: $small-screen) {
   .form-22-0803-container .schemaform-buttons,
