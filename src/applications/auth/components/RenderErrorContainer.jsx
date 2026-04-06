@@ -154,7 +154,7 @@ export default function RenderErrorContainer({
           <ul>
             <li>
               <strong>Call the My HealtheVet help desk</strong>
-              <ContactCenterInformation />
+              <ContactCenterInformation startSentence />
               <p>
                 Tell the representative that you tried to sign in to VA.gov, but
                 got an error message that you have more than one My HealtheVet
