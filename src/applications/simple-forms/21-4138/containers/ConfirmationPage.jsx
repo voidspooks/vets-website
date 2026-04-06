@@ -26,7 +26,7 @@ export const ConfirmationPage = props => {
         showButtons: true,
       }}
     >
-      <ConfirmationView.SubmissionAlert actions={null} />
+      <ConfirmationView.SubmissionAlert />
       <ConfirmationView.SavePdfDownload />
       <ConfirmationView.ChapterSectionCollection />
       <ConfirmationView.PrintThisPage />
