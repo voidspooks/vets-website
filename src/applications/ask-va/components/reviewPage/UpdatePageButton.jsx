@@ -28,7 +28,7 @@ const UpdatePageButton = ({
 
 UpdatePageButton.propTypes = {
   closeSection: PropTypes.func,
-  keys: PropTypes.array,
+  keys: PropTypes.arrayOf(PropTypes.string),
   scroll: PropTypes.func,
   title: PropTypes.string,
 };

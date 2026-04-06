@@ -66,11 +66,15 @@ import {
   scrollToChapter,
 } from '../utils/reviewPageUtils';
 
+const getPageList = routes => {
+  return routes?.[routes?.length - 1]?.pageList || [];
+};
+
 const ReviewPage = props => {
   const [showAlert, setShowAlert] = useState(true);
   const [showValidationAlert, setShowValidationAlert] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [editSection, setEditSection] = useState([]);
+  const [editSections, setEditSections] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [editAttachments, setEditAttachments] = useState(false);
   const [show503Alert, setShow503Alert] = useState(false);
@@ -113,6 +117,19 @@ const ReviewPage = props => {
     setAttachments(remainingFiles);
   };
 
+  const addEditSection = section => {
+    if (!editSections.includes(section)) {
+      setEditSections([...editSections, section]);
+    }
+  };
+
+  // We'll need this later, adding now so it's here when we need it
+  // const removeEditSection = section => {
+  //   if (editSections.includes(section)) {
+  //     setEditSections(editSections.filter(s => s !== section));
+  //   }
+  // };
+
   const handleEdit = (pageKey, editing, index = null) => {
     if (pageKey === 'question' && props.formData.question.length > 10000) {
       focusElement('va-textarea');
@@ -134,23 +151,23 @@ const ReviewPage = props => {
     }
   };
 
-  const editAll = (pageKeys, title) => {
+  const editSection = (pageKeys, title) => {
     if (
       title === chapterTitles.yourContactInformation ||
       title === chapterTitles.yourInformation ||
       title === chapterTitles.yourQuestion
     ) {
-      handleEdit(pageKeys[0], true, null);
+      handleEdit(pageKeys[0], true);
     } else {
-      pageKeys.forEach(key => handleEdit(key, true, null));
+      pageKeys.forEach(key => handleEdit(key, true));
     }
-    setEditSection([...editSection, title]);
+    addEditSection(title);
   };
 
-  const closeAll = (pageKeys, title) => {
+  const closeSection = (pageKeys, title) => {
     pageKeys.forEach(key => handleEdit(key, false));
-    const updateViewedList = editSection.filter(section => section !== title);
-    setEditSection(updateViewedList);
+    const updateViewedList = editSections.filter(section => section !== title);
+    setEditSections(updateViewedList);
   };
 
   const handleSetData = (...args) => {
@@ -176,8 +193,10 @@ const ReviewPage = props => {
   };
 
   const handleSubmit = async () => {
+    const pageList = getPageList(props.routes);
+
     // RouteSaveableApp looks for the pageList in the last index, so we should do the same
-    if (!validateForm(props.routes?.[props.routes?.length - 1]?.pageList)) {
+    if (!validateForm(pageList)) {
       props.setSubmission('hasAttemptedSubmit', true);
 
       // Scroll to the top to show errors
@@ -440,12 +459,12 @@ const ReviewPage = props => {
                 return (
                   <React.Fragment key={chapter.name}>
                     <div name={`chapter${chapter.name}ScrollElement`} />
-                    {!editSection.includes(
+                    {!editSections.includes(
                       chapterTitles.veteransPersonalInformation,
                     ) ? (
                       <ReviewSectionContent
                         title={chapterTitles.veteransPersonalInformation}
-                        editSection={editAll}
+                        editSection={editSection}
                         keys={chapter.pageKeys}
                         items={[
                           {
@@ -533,7 +552,7 @@ const ReviewPage = props => {
                           hasUnviewedPages={chapter.hasUnviewedPages}
                         />
                         <UpdatePageButton
-                          closeSection={closeAll}
+                          closeSection={closeSection}
                           keys={chapter.pageKeys}
                           title={chapterTitles.veteransPersonalInformation}
                           scroll={() => scrollToChapter(chapter.name)}
@@ -591,12 +610,12 @@ const ReviewPage = props => {
                 return (
                   <React.Fragment key={chapter.name}>
                     <div name={`chapter${chapter.name}ScrollElement`} />
-                    {!editSection.includes(
+                    {!editSections.includes(
                       chapterTitles.familyMembersPersonalInformation,
                     ) ? (
                       <ReviewSectionContent
                         title={chapterTitles.familyMembersPersonalInformation}
-                        editSection={editAll}
+                        editSection={editSection}
                         keys={chapter.pageKeys}
                         items={[
                           {
@@ -664,7 +683,7 @@ const ReviewPage = props => {
                           hasUnviewedPages={chapter.hasUnviewedPages}
                         />
                         <UpdatePageButton
-                          closeSection={closeAll}
+                          closeSection={closeSection}
                           keys={chapter.pageKeys}
                           title={chapterTitles.familyMembersPersonalInformation}
                           scroll={() => scrollToChapter(chapter.name)}
@@ -719,10 +738,10 @@ const ReviewPage = props => {
               return (
                 <React.Fragment key={chapter.name}>
                   <div name={`chapter${chapter.name}ScrollElement`} />
-                  {!editSection.includes(chapterTitles.yourInformation) ? (
+                  {!editSections.includes(chapterTitles.yourInformation) ? (
                     <ReviewSectionContent
                       title={chapterTitles.yourInformation}
-                      editSection={editAll}
+                      editSection={editSection}
                       keys={chapter.pageKeys}
                       items={[
                         {
@@ -798,7 +817,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.yourInformation}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -818,10 +837,10 @@ const ReviewPage = props => {
                     name={`chapter${chapter.name}ScrollElement`}
                     key={chapter.name}
                   />
-                  {!editSection.includes(chapterTitles.yourPostalCode) ? (
+                  {!editSections.includes(chapterTitles.yourPostalCode) ? (
                     <ReviewSectionContent
                       title={chapterTitles.yourPostalCode}
-                      editSection={editAll}
+                      editSection={editSection}
                       keys={chapter.pageKeys}
                       items={[
                         {
@@ -854,7 +873,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.yourPostalCode}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -871,10 +890,12 @@ const ReviewPage = props => {
               return (
                 <React.Fragment key={chapter.name}>
                   <div name={`chapter${chapter.name}ScrollElement`} />
-                  {!editSection.includes(chapterTitles.yourVAHealthFacility) ? (
+                  {!editSections.includes(
+                    chapterTitles.yourVAHealthFacility,
+                  ) ? (
                     <ReviewSectionContent
                       title={chapterTitles.yourVAHealthFacility}
-                      editSection={editAll}
+                      editSection={editSection}
                       keys={chapter.pageKeys}
                       items={[
                         {
@@ -907,7 +928,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.yourVAHealthFacility}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -924,10 +945,10 @@ const ReviewPage = props => {
               return (
                 <React.Fragment key={chapter.name}>
                   <div name={`chapter${chapter.name}ScrollElement`} />
-                  {!editSection.includes(chapterTitles.stateOfProperty) ? (
+                  {!editSections.includes(chapterTitles.stateOfProperty) ? (
                     <ReviewSectionContent
                       title={chapterTitles.stateOfProperty}
-                      editSection={editAll}
+                      editSection={editSection}
                       keys={chapter.pageKeys}
                       items={[
                         {
@@ -960,7 +981,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.stateOfProperty}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -977,10 +998,10 @@ const ReviewPage = props => {
               return (
                 <React.Fragment key={chapter.name}>
                   <div name={`chapter${chapter.name}ScrollElement`} />
-                  {!editSection.includes(chapterTitles.yourVREInformation) ? (
+                  {!editSections.includes(chapterTitles.yourVREInformation) ? (
                     <ReviewSectionContent
                       title={chapterTitles.yourVREInformation}
-                      editSection={editAll}
+                      editSection={editSection}
                       keys={chapter.pageKeys}
                       items={[
                         {
@@ -1021,7 +1042,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.yourVREInformation}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -1038,10 +1059,10 @@ const ReviewPage = props => {
               return (
                 <React.Fragment key={chapter.name}>
                   <div name={`chapter${chapter.name}ScrollElement`} />
-                  {!editSection.includes(chapterTitles.schoolInformation) ? (
+                  {!editSections.includes(chapterTitles.schoolInformation) ? (
                     <ReviewSectionContent
                       title={chapterTitles.schoolInformation}
-                      editSection={editAll} // use pagesToMoveConfig if combining pages
+                      editSection={editSection} // use pagesToMoveConfig if combining pages
                       keys={pagesToMoveConfig.schoolInformation}
                       items={[
                         {
@@ -1099,7 +1120,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.schoolInformation}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -1119,12 +1140,12 @@ const ReviewPage = props => {
                     name={`chapter${chapter.name}ScrollElement`}
                     key={chapter.name}
                   />
-                  {!editSection.includes(
+                  {!editSections.includes(
                     chapterTitles.yourContactInformation,
                   ) ? (
                     <ReviewSectionContent
                       title={chapterTitles.yourContactInformation}
-                      editSection={editAll}
+                      editSection={editSection}
                       // use chapter.pageKeys if data is collected on one page
                       keys={chapter.pageKeys}
                       items={[
@@ -1192,7 +1213,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.yourContactInformation}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -1212,10 +1233,10 @@ const ReviewPage = props => {
                     name={`chapter${chapter.name}ScrollElement`}
                     key={chapter.name}
                   />
-                  {!editSection.includes(chapterTitles.yourMailingAddress) ? (
+                  {!editSections.includes(chapterTitles.yourMailingAddress) ? (
                     <ReviewSectionContent
                       title={chapterTitles.yourMailingAddress}
-                      editSection={editAll}
+                      editSection={editSection}
                       keys={chapter.pageKeys}
                       items={[
                         {
@@ -1293,7 +1314,7 @@ const ReviewPage = props => {
                         hasUnviewedPages={chapter.hasUnviewedPages}
                       />
                       <UpdatePageButton
-                        closeSection={closeAll}
+                        closeSection={closeSection}
                         keys={chapter.pageKeys}
                         title={chapterTitles.yourMailingAddress}
                         scroll={() => scrollToChapter(chapter.name)}
@@ -1319,9 +1340,9 @@ const ReviewPage = props => {
                 className="vads-u-margin-bottom--2"
               >
                 <div name={`chapter${chapter.name}ScrollElement`} />
-                {!editSection.includes(chapterTitles.yourQuestion) ? (
+                {!editSections.includes(chapterTitles.yourQuestion) ? (
                   <ReviewSectionContent
-                    editSection={editAll}
+                    editSection={editSection}
                     title={chapterTitles.yourQuestion}
                     keys={chapter.pageKeys}
                     items={[
@@ -1516,7 +1537,7 @@ ReviewPage.propTypes = {
   goForward: PropTypes.func,
   isUserLOA3: PropTypes.bool,
   loggedIn: PropTypes.bool,
-  routes: PropTypes.array,
+  routes: PropTypes.arrayOf(PropTypes.object),
   setData: PropTypes.func,
   setEditMode: PropTypes.func,
   setFormErrors: PropTypes.func,
