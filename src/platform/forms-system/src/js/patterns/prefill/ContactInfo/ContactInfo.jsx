@@ -77,6 +77,13 @@ export const ContactInfoBase = ({
   const baseEditPath = `${urlPrefix}${contactPath}`;
   const MISSING_ALERT_TEXT = 'Missing';
   const wrapRef = useRef(null);
+  // this is the ref that gets focus
+  const errorCardRef = useRef(null);
+  const addressErrorCardRef = useRef(null);
+  const emailErrorCardRef = useRef(null);
+  const homePhoneErrorCardRef = useRef(null);
+  const mobilePhoneErrorCardRef = useRef(null);
+
   window.sessionStorage.setItem(REVIEW_CONTACT, onReviewPage || false);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [hadError, setHadError] = useState(false);
@@ -107,14 +114,6 @@ export const ContactInfoBase = ({
 
   // Get the fieldTransactionMap from Redux store
   const { fieldTransactionMap } = useSelector(state => state.vapService) || {};
-
-  // map missing fields to path/key; used in rendering error messages after page validation
-  const errorMap = {
-    'mailing address': { path: 'edit-mailing-address', key: keys.address },
-    'home phone': { path: 'edit-home-phone', key: keys.homePhone },
-    'mobile phone': { path: 'edit-mobile-phone', key: keys.mobilePhone },
-    'email address': { path: 'edit-email-address', key: keys.email },
-  };
 
   // Unified field configuration mapping
   const fieldConfig = {
@@ -167,7 +166,9 @@ export const ContactInfoBase = ({
     },
     onGoForward: () => {
       setSubmitted(true);
-      if (missingInfo.length || validationErrors.length) {
+      if (missingInfo.length) {
+        scrollAndFocus(errorCardRef.current?.current);
+      } else if (validationErrors.length) {
         scrollAndFocus(wrapRef.current);
       } else {
         clearReturnState();
@@ -410,12 +411,21 @@ export const ContactInfoBase = ({
     return true;
   };
 
+  // attach a ref that can be used to focus a card that has missing info
+  // only attach ref if ref not applied to a preceeding card
+  const setErrorCardRef = (hasMissingInfo, ref) => {
+    if (hasMissingInfo && errorCardRef.current === null) {
+      errorCardRef.current = ref;
+    }
+  };
+
   // Extract contact section rendering
   const renderAddressSection = () => {
     if (!keys.address) return null;
     const missingRequiredAddress = hasMissingRequiredInfo(
       FIELD_NAMES.MAILING_ADDRESS,
     );
+    setErrorCardRef(missingRequiredAddress, addressErrorCardRef);
     const isAddressEmpty = isContactFieldEmpty(
       dataWrap[keys.address],
       FIELD_NAMES.MAILING_ADDRESS,
@@ -432,26 +442,28 @@ export const ContactInfoBase = ({
     );
 
     return (
-      <ContactInfoCard
-        key={FIELD_NAMES.MAILING_ADDRESS}
-        error={
-          submitted && missingRequiredAddress
-            ? 'You must add your mailing address'
-            : ''
-        }
-        contactPath={contactPath}
-        required={requiredKeys.includes(FIELD_NAMES.MAILING_ADDRESS)}
-        formKey={keys.address}
-        wrapper={keys.wrapper}
-        editPath={`${baseEditPath}/edit-mailing-address`}
-        headerLevel={headerLevel}
-        headerText={content.mailingAddress}
-        tagText={missingRequiredAddress ? MISSING_ALERT_TEXT : ''}
-        tagStatus={missingRequiredAddress ? 'error' : 'info'}
-        linkText={linkText}
-      >
-        {cardContent}
-      </ContactInfoCard>
+      <div ref={addressErrorCardRef}>
+        <ContactInfoCard
+          key={FIELD_NAMES.MAILING_ADDRESS}
+          error={
+            submitted && missingRequiredAddress
+              ? 'You must add your mailing address'
+              : ''
+          }
+          contactPath={contactPath}
+          required={requiredKeys.includes(FIELD_NAMES.MAILING_ADDRESS)}
+          formKey={keys.address}
+          wrapper={keys.wrapper}
+          editPath={`${baseEditPath}/edit-mailing-address`}
+          headerLevel={headerLevel}
+          headerText={content.mailingAddress}
+          tagText={missingRequiredAddress ? MISSING_ALERT_TEXT : ''}
+          tagStatus={missingRequiredAddress ? 'error' : 'info'}
+          linkText={linkText}
+        >
+          {cardContent}
+        </ContactInfoCard>
+      </div>
     );
   };
 
@@ -460,6 +472,7 @@ export const ContactInfoBase = ({
     const missingRequiredHomePhone = hasMissingRequiredInfo(
       FIELD_NAMES.HOME_PHONE,
     );
+    setErrorCardRef(missingRequiredHomePhone, homePhoneErrorCardRef);
     const isHomePhoneEmpty = isContactFieldEmpty(
       dataWrap[keys.homePhone],
       FIELD_NAMES.HOME_PHONE,
@@ -477,26 +490,28 @@ export const ContactInfoBase = ({
       </div>
     );
     return (
-      <ContactInfoCard
-        key={FIELD_NAMES.HOME_PHONE}
-        error={
-          submitted && missingRequiredHomePhone
-            ? 'You must add your home phone number'
-            : ''
-        }
-        contactPath={contactPath}
-        required={requiredKeys.includes(FIELD_NAMES.HOME_PHONE)}
-        formKey={keys.homePhone}
-        wrapper={keys.wrapper}
-        editPath={`${baseEditPath}/edit-home-phone`}
-        headerLevel={headerLevel}
-        headerText={content.homePhone}
-        tagText={missingRequiredHomePhone ? MISSING_ALERT_TEXT : ''}
-        tagStatus={missingRequiredHomePhone ? 'error' : 'info'}
-        linkText={linkText}
-      >
-        {cardContent}
-      </ContactInfoCard>
+      <div ref={homePhoneErrorCardRef}>
+        <ContactInfoCard
+          key={FIELD_NAMES.HOME_PHONE}
+          error={
+            submitted && missingRequiredHomePhone
+              ? 'You must add your home phone number'
+              : ''
+          }
+          contactPath={contactPath}
+          required={requiredKeys.includes(FIELD_NAMES.HOME_PHONE)}
+          formKey={keys.homePhone}
+          wrapper={keys.wrapper}
+          editPath={`${baseEditPath}/edit-home-phone`}
+          headerLevel={headerLevel}
+          headerText={content.homePhone}
+          tagText={missingRequiredHomePhone ? MISSING_ALERT_TEXT : ''}
+          tagStatus={missingRequiredHomePhone ? 'error' : 'info'}
+          linkText={linkText}
+        >
+          {cardContent}
+        </ContactInfoCard>
+      </div>
     );
   };
 
@@ -505,6 +520,7 @@ export const ContactInfoBase = ({
     const missingRequiredMobilePhone = hasMissingRequiredInfo(
       FIELD_NAMES.MOBILE_PHONE,
     );
+    setErrorCardRef(missingRequiredMobilePhone, mobilePhoneErrorCardRef);
     const isMobilePhoneEmpty = isContactFieldEmpty(
       dataWrap[keys.mobilePhone],
       FIELD_NAMES.MOBILE_PHONE,
@@ -523,32 +539,35 @@ export const ContactInfoBase = ({
     );
 
     return (
-      <ContactInfoCard
-        key={FIELD_NAMES.MOBILE_PHONE}
-        error={
-          submitted && missingRequiredMobilePhone
-            ? 'You must add your mobile phone number'
-            : ''
-        }
-        contactPath={contactPath}
-        required={requiredKeys.includes(FIELD_NAMES.MOBILE_PHONE)}
-        formKey={keys.mobilePhone}
-        wrapper={keys.wrapper}
-        editPath={`${baseEditPath}/edit-mobile-phone`}
-        headerLevel={headerLevel}
-        headerText={content.mobilePhone}
-        tagText={missingRequiredMobilePhone ? MISSING_ALERT_TEXT : ''}
-        tagStatus={missingRequiredMobilePhone ? 'error' : 'info'}
-        linkText={linkText}
-      >
-        {cardContent}
-      </ContactInfoCard>
+      <div ref={mobilePhoneErrorCardRef}>
+        <ContactInfoCard
+          key={FIELD_NAMES.MOBILE_PHONE}
+          error={
+            submitted && missingRequiredMobilePhone
+              ? 'You must add your mobile phone number'
+              : ''
+          }
+          contactPath={contactPath}
+          required={requiredKeys.includes(FIELD_NAMES.MOBILE_PHONE)}
+          formKey={keys.mobilePhone}
+          wrapper={keys.wrapper}
+          editPath={`${baseEditPath}/edit-mobile-phone`}
+          headerLevel={headerLevel}
+          headerText={content.mobilePhone}
+          tagText={missingRequiredMobilePhone ? MISSING_ALERT_TEXT : ''}
+          tagStatus={missingRequiredMobilePhone ? 'error' : 'info'}
+          linkText={linkText}
+        >
+          {cardContent}
+        </ContactInfoCard>
+      </div>
     );
   };
 
   const renderEmailSection = () => {
     if (!keys.email) return null;
     const missingRequiredEmail = hasMissingRequiredInfo(FIELD_NAMES.EMAIL);
+    setErrorCardRef(missingRequiredEmail, emailErrorCardRef);
     const isEmailEmpty = isContactFieldEmpty(
       dataWrap[keys.email],
       FIELD_NAMES.EMAIL,
@@ -569,26 +588,28 @@ export const ContactInfoBase = ({
     );
 
     return (
-      <ContactInfoCard
-        key={FIELD_NAMES.EMAIL}
-        error={
-          submitted && missingRequiredEmail
-            ? 'You must add your email address'
-            : ''
-        }
-        contactPath={contactPath}
-        required={requiredKeys.includes(FIELD_NAMES.EMAIL)}
-        formKey={keys.email}
-        wrapper={keys.wrapper}
-        editPath={`${baseEditPath}/edit-email-address`}
-        headerLevel={headerLevel}
-        headerText={content.email}
-        tagText={missingRequiredEmail ? MISSING_ALERT_TEXT : ''}
-        tagStatus={missingRequiredEmail ? 'error' : 'info'}
-        linkText={linkText}
-      >
-        {cardContent}
-      </ContactInfoCard>
+      <div ref={emailErrorCardRef}>
+        <ContactInfoCard
+          key={FIELD_NAMES.EMAIL}
+          error={
+            submitted && missingRequiredEmail
+              ? 'You must add your email address'
+              : ''
+          }
+          contactPath={contactPath}
+          required={requiredKeys.includes(FIELD_NAMES.EMAIL)}
+          formKey={keys.email}
+          wrapper={keys.wrapper}
+          editPath={`${baseEditPath}/edit-email-address`}
+          headerLevel={headerLevel}
+          headerText={content.email}
+          tagText={missingRequiredEmail ? MISSING_ALERT_TEXT : ''}
+          tagStatus={missingRequiredEmail ? 'error' : 'info'}
+          linkText={linkText}
+        >
+          {cardContent}
+        </ContactInfoCard>
+      </div>
     );
   };
 
@@ -603,42 +624,6 @@ export const ContactInfoBase = ({
                 <div className="vads-u-font-size--base">
                   {content.alertContent}
                 </div>
-              </va-alert>
-            </div>
-          )}
-        {missingInfo.length > 0 &&
-          submitted && (
-            <div className="vads-u-margin-y--3" role="alert">
-              <va-alert status="error">
-                <h3 slot="headline">
-                  This information contains {missingInfo.length} error
-                  {missingInfo.length > 1 ? 's' : ''}.
-                </h3>
-                <ul className="vads-u-font-size--base">
-                  Complete all required fields
-                  {missingInfo.map(field => {
-                    return (
-                      <li key={field}>
-                        <va-link
-                          text={`You must add your ${field}`}
-                          href={errorMap[field].path}
-                          onClick={e => {
-                            e.preventDefault();
-                            router.push({
-                              pathname: `${baseEditPath}/${
-                                errorMap[field].path
-                              }`,
-                              state: {
-                                formKey: errorMap[field].key,
-                                keys: { wrapper: keys.wrapper },
-                              },
-                            });
-                          }}
-                        />
-                      </li>
-                    );
-                  })}
-                </ul>
               </va-alert>
             </div>
           )}
