@@ -9,6 +9,7 @@ import {
   EVENT_TYPES,
   getEventContent,
   isClosed,
+  getListItemLabel,
 } from '../../utils/appeals-v2-helpers';
 
 describe('functions', () => {
@@ -1380,6 +1381,53 @@ describe('functions', () => {
         },
       };
       expect(isClosed(completedStemClaim)).to.be.true;
+    });
+  });
+
+  describe('getListItemLabel', () => {
+    it('should return In Progress for open appeals', () => {
+      const item = {
+        type: APPEAL_TYPES.appeal,
+        attributes: { active: true },
+      };
+
+      expect(getListItemLabel(item)).to.equal('In Progress');
+    });
+
+    it('should return Closed for closed appeals', () => {
+      const item = {
+        type: APPEAL_TYPES.appeal,
+        attributes: { active: false },
+      };
+
+      expect(getListItemLabel(item)).to.equal('Closed');
+    });
+
+    it('should return In Progress for open claims', () => {
+      const item = {
+        type: 'claim',
+        attributes: { status: 'INITIAL_REVIEW' },
+      };
+
+      expect(getListItemLabel(item)).to.equal('In Progress');
+    });
+
+    it('should return Closed for completed claims', () => {
+      const item = {
+        type: 'claim',
+        attributes: { status: 'COMPLETE' },
+      };
+
+      expect(getListItemLabel(item)).to.equal('Closed');
+    });
+
+    it('should return Closed for STEM claims', () => {
+      const item = {
+        type: 'claim',
+        attributes: { claimType: 'STEM', status: 'PENDING' },
+      };
+
+      expect(getListItemLabel(item)).to.equal('Closed');
     });
   });
 });

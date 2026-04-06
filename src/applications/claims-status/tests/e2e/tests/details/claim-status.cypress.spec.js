@@ -701,15 +701,17 @@ describe('Claim status', () => {
       });
     };
 
-    it('should not display open claim sections', () => {
+    it('should display Closed tag and hide open claim sections', () => {
       closedClaimSetup();
 
+      cy.findByText('Closed').should('be.visible');
+      cy.findByText('Last updated: April 1, 2025');
       cy.findByText('In Progress').should('not.exist');
       cy.findByRole('heading', {
         name: 'What you need to do',
         level: 3,
       }).should('not.exist');
-      cy.findByRole('heading', { name: 'What we’re doing', level: 3 }).should(
+      cy.findByRole('heading', { name: "What we're doing", level: 3 }).should(
         'not.exist',
       );
 

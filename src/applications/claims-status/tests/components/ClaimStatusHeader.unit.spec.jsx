@@ -58,13 +58,14 @@ describe('<ClaimStatusHeader>', () => {
           },
         },
       };
-      const { container, queryByText } = renderWithReduxAndRouter(
+      const { container, getByText, queryByText } = renderWithReduxAndRouter(
         <ClaimStatusHeader claim={claim} />,
       );
       expect($('.claim-status-header-container', container)).to.exist;
       expect(queryByText('In Progress')).not.to.exist;
-      expect($('.usa-label', container)).to.not.exist;
-      expect(queryByText('Last updated')).not.to.exist;
+      expect($('.usa-label', container)).to.exist;
+      expect(getByText('Closed')).to.exist;
+      expect(getByText('Last updated: December 12, 2023')).to.exist;
     });
   });
   context('when the claim has tracked items', () => {
@@ -134,13 +135,14 @@ describe('<ClaimStatusHeader>', () => {
           },
         },
       };
-      const { container, queryByText } = renderWithReduxAndRouter(
+      const { container, getByText, queryByText } = renderWithReduxAndRouter(
         <ClaimStatusHeader claim={claim} />,
       );
       expect($('.claim-status-header-container', container)).to.exist;
       expect(queryByText('In Progress')).not.to.exist;
-      expect($('.usa-label', container)).to.not.exist;
-      expect(queryByText('Last updated')).not.to.exist;
+      expect($('.usa-label', container)).to.exist;
+      expect(getByText('Closed')).to.exist;
+      expect(getByText('Last updated: December 12, 2023')).to.exist;
     });
   });
 });

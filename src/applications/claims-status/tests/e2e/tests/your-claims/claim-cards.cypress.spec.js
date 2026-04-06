@@ -28,7 +28,7 @@ describe('Claim cards', () => {
     setupClaimCardsTest([createBenefitsClaimListItem({ status: 'COMPLETE' })]);
 
     cy.findByRole('heading', {
-      name: 'Claim for compensation Received on January 1, 2025',
+      name: 'Closed Claim for compensation Received on January 1, 2025',
     });
 
     cy.findByText('Step 5 of 5: Closed');

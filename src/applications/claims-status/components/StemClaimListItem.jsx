@@ -6,6 +6,7 @@ import {
   buildDateFormatter,
   getFailedSubmissionsWithinLast30Days,
 } from '../utils/helpers';
+import { getListItemLabel } from '../utils/appeals-v2-helpers';
 import ClaimCard from './ClaimCard';
 import UploadType2ErrorAlertSlim from './UploadType2ErrorAlertSlim';
 
@@ -26,6 +27,9 @@ export default function StemClaimListItem({ claim }) {
     return null;
   }
 
+  // Delegates to isClosed() — currently always 'Closed' for STEM, but kept
+  // dynamic so isClosed remains the single source of truth for sort + label
+  const label = getListItemLabel(claim);
   const formattedDeniedAtDate = formatDate(deniedAt);
   const formattedReceiptDate = formatDate(submittedAt);
 
@@ -50,6 +54,7 @@ export default function StemClaimListItem({ claim }) {
   return (
     <ClaimCard
       title="Edith Nourse Rogers STEM Scholarship application"
+      label={label}
       subtitle={`Received on ${formattedReceiptDate}`}
     >
       <div className="card-status">

@@ -167,7 +167,7 @@ describe('Feature flag: cstClaimsListFilter', () => {
         // Only closed items should be visible (1 claim + 1 appeal)
         getClaimCards().should('have.length', 2);
         getClaimCards().each(card => {
-          cy.wrap(card).should('not.contain.text', 'In Progress');
+          cy.wrap(card).should('contain.text', 'Closed');
         });
 
         cy.axeCheck();

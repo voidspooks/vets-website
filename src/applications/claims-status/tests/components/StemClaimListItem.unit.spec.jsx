@@ -34,6 +34,7 @@ describe('<StemClaimListItem>', () => {
     id: 1,
     attributes: {
       automatedDenial: true,
+      claimType: 'STEM',
       deniedAt: '2021-03-02',
       submittedAt: '2021-03-01',
     },
@@ -45,6 +46,7 @@ describe('<StemClaimListItem>', () => {
         <StemClaimListItem claim={defaultClaim} />
       </Provider>,
     );
+    getByText('Closed');
     getByText('Edith Nourse Rogers STEM Scholarship application');
     getByText('Received on March 1, 2021');
     getByText('Status: Denied');

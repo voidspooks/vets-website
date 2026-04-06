@@ -54,14 +54,12 @@ export default function ClaimStatusHeader({ claim }) {
           </Toggler>
         )}
       </p>
-      {isOpen && (
-        <div className="vads-u-margin-bottom--4">
-          <span className="usa-label">In Progress</span>
-          <p className="vads-u-margin-top--1 vads-u-margin-bottom--0">
-            {getLastUpdatedDate()}
-          </p>
-        </div>
-      )}
+      <div className="vads-u-margin-bottom--4">
+        <span className="usa-label">{isOpen ? 'In Progress' : 'Closed'}</span>
+        <p className="vads-u-margin-top--1 vads-u-margin-bottom--0">
+          {getLastUpdatedDate()}
+        </p>
+      </div>
     </div>
   );
 }

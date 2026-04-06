@@ -2056,6 +2056,8 @@ export function sortByLastUpdated(item1, item2) {
  * 2. Benefits Claims API (/benefits_claims): Uses attributes.status string
  * 3. STEM Claims API (/education_benefits_claims/stem_claim_status): Has claimType: 'STEM' added
  */
+// NOTE: isClaimOpen() in helpers.js uses a stricter definition that also
+// checks closeDate. See #43735 for alignment discussion.
 export function isClosed(item) {
   if (!item || !item.attributes) {
     return false;
@@ -2074,6 +2076,15 @@ export function isClosed(item) {
 
   // Benefits Claims API: check status string
   return item.attributes.status === 'COMPLETE';
+}
+
+/**
+ * Returns the list card label text for a claim/appeal item.
+ * @param {Object} item - Claim or appeal item
+ * @returns {'Closed'|'In Progress'}
+ */
+export function getListItemLabel(item) {
+  return isClosed(item) ? 'Closed' : 'In Progress';
 }
 
 export function getVisibleRows(list, currentPage) {

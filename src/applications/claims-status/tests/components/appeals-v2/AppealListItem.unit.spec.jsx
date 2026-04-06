@@ -190,10 +190,10 @@ describe('<AppealListItem>', () => {
     wrapper.unmount();
   });
 
-  it('should not show a label when the appeal is closed', () => {
+  it('should show a Closed label when the appeal is closed', () => {
     const props = set('appeal.attributes.active', false, defaultProps);
     const wrapper = shallow(<AppealListItem {...props} />);
-    expect(wrapper.find('ClaimCard').prop('label')).to.be.null;
+    expect(wrapper.find('ClaimCard').prop('label')).to.equal('Closed');
     wrapper.unmount();
   });
 

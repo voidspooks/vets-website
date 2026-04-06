@@ -12,6 +12,7 @@ import {
   getShowEightPhases,
   getFailedSubmissionsWithinLast30Days,
 } from '../utils/helpers';
+import { getListItemLabel } from '../utils/appeals-v2-helpers';
 import ClaimCard from './ClaimCard';
 import UploadType2ErrorAlertSlim from './UploadType2ErrorAlertSlim';
 
@@ -31,8 +32,6 @@ const showPreDecisionCommunications = claim => {
 
   return !decisionLetterSent && status !== 'COMPLETE';
 };
-
-const isClaimComplete = claim => claim.attributes.status === 'COMPLETE';
 
 const CommunicationsItem = ({ children, icon }) => {
   return (
@@ -81,7 +80,7 @@ export default function ClaimsListItem({ claim }) {
       ]
     : claimStatusMeta?.whatWeAreDoing?.statusMap?.[status];
 
-  const inProgress = !isClaimComplete(claim);
+  const label = getListItemLabel(claim);
   const showPrecomms = showPreDecisionCommunications(claim);
   const formattedReceiptDate = formatDate(claimDate);
   const humanStatus =
@@ -114,7 +113,7 @@ export default function ClaimsListItem({ claim }) {
   return (
     <ClaimCard
       title={cardTitle}
-      label={inProgress ? 'In Progress' : null}
+      label={label}
       subtitle={`${receivedLabel} ${formattedReceiptDate}`}
     >
       <ul className="communications">

@@ -188,7 +188,7 @@ describe('Appeal cards', () => {
 
             const expectedHeading = active
               ? `In Progress ${appealTitle} Received on January 1, 2025`
-              : `${appealTitle} Received on January 1, 2025`;
+              : `Closed ${appealTitle} Received on January 1, 2025`;
             cy.findByRole('heading', {
               name: expectedHeading,
             });
@@ -208,7 +208,7 @@ describe('Appeal cards', () => {
 
             const expectedHeading = active
               ? `In Progress ${reviewTitle} Received on January 1, 2025`
-              : `${reviewTitle} Received on January 1, 2025`;
+              : `Closed ${reviewTitle} Received on January 1, 2025`;
 
             cy.findByRole('heading', {
               name: expectedHeading,

@@ -143,7 +143,7 @@ describe('Claim layout', () => {
   });
 
   context('when claim is closed', () => {
-    it('should display claim without In Progress label', () => {
+    it('should display claim with Closed label', () => {
       setupClaimTest({
         claim: createBenefitsClaim({
           status: 'COMPLETE',
@@ -157,6 +157,7 @@ describe('Claim layout', () => {
         level: 1,
       });
 
+      cy.findByText('Closed').should('be.visible');
       cy.findByText('In Progress').should('not.exist');
 
       cy.axeCheck();

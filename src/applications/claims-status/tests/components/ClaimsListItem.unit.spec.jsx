@@ -65,6 +65,7 @@ describe('<ClaimsListItem>', () => {
           </Provider>,
         );
         expect(queryByRole('listitem')).not.to.exist;
+        getByText('In Progress');
         getByText('Received on June 8, 2024');
         getByText('Step 1 of 8: Claim received');
         getByText('Moved to this step on June 8, 2024');
@@ -87,6 +88,7 @@ describe('<ClaimsListItem>', () => {
             <ClaimsListItem claim={claim} />
           </Provider>,
         );
+        getByText('Closed');
         getByText('Step 8 of 8: Claim decided');
       });
       it('should show the correct status when UNDER_REVIEW', () => {
