@@ -24,7 +24,7 @@ const PRODUCTION_LINKS = {
         'https://eauth.va.gov/accessva/?cspSelectFor=https%3A//www.my.va.gov/FAST&ForceAuthn=false',
     },
     {
-      text: 'Life Insurance Online Policy Access',
+      text: 'Life insurance online policy access',
       url: 'https://eauth.va.gov/accessva/?cspSelectFor=einsurance',
     },
     {
@@ -59,11 +59,11 @@ const PRODUCTION_LINKS = {
       url: 'https://dvagov-vhventures-prod-portal.powerappsportals.us/',
     },
     {
-      text: 'Veterans Identification Card (VIC)',
+      text: 'Veterans ID Card (VIC)',
       url: 'https://www.va.gov/records/get-veteran-id-cards/vic/',
     },
     {
-      text: 'Veteran Travel Claim Entry',
+      text: 'Veteran travel claim entry',
       url: 'https://www.va.gov/health-care/file-travel-pay-reimbursement/',
     },
     {
@@ -92,15 +92,15 @@ const PRODUCTION_LINKS = {
       url: 'https://www.my.va.gov/FAST',
     },
     {
-      text: 'PCS Travel / moveLINQ Approver Portal',
+      text: 'PCS Travel / moveLINQ approval portal',
       url: 'https://imove-approver.mlinqsonline.net/',
     },
     {
-      text: 'PCS Travel / moveLINQ Employee Portal',
+      text: 'PCS Travel / moveLINQ employee portal',
       url: 'https://imove-employee.mlinqsonline.net/',
     },
     {
-      text: 'PCS Travel / moveLINQ Expense Portal',
+      text: 'PCS Travel / moveLINQ expense portal',
       url: 'https://imove.mlinqsonline.net/',
     },
     { text: 'Grants4Vets', url: 'https://www.my.va.gov/nvspsegrantee' },
@@ -113,10 +113,6 @@ const PRODUCTION_LINKS = {
       url: 'https://eauth.va.gov/accessva/?cspSelectFor=iamiis',
     },
     { text: 'Kahua', url: 'https://launch.kahuafn.com/web/' },
-    {
-      text: 'ProjNet',
-      url: 'https://projnet.org/projnet/binKornHome/index.cfm',
-    },
     { text: 'Prosthetics Vendor Portal', url: 'https://www.my.va.gov/PVP' },
     {
       text: 'Puppies Assisting Wounded Service Members',
@@ -136,7 +132,7 @@ const PRODUCTION_LINKS = {
       url: 'https://eauth.va.gov/accessva/?cspSelectFor=smts',
     },
     {
-      text: 'Sports4Vets for Certifying Officials and NVGAG Volunteers',
+      text: 'Sports4Vets for certifying officials and NVGAG volunteers',
       url: 'https://www.my.va.gov/stipends4vets',
     },
     { text: 'Squares', url: 'https://www.my.vaemcc.va.gov/SQUARES' },
@@ -158,7 +154,7 @@ const PRODUCTION_LINKS = {
       url: 'https://eauth.va.gov/accessva/?cspSelectFor=bip',
     },
     {
-      text: 'Veterans Identification Card (VIC)',
+      text: 'Veterans ID Card (VIC)',
       url: 'https://www.va.gov/records/get-veteran-id-cards/vic/',
     },
     {
@@ -185,7 +181,7 @@ const STAGING_LINKS = {
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://www.my.int.va.gov/FAST',
     },
     {
-      text: 'Life Insurance Online Policy Access',
+      text: 'Life insurance online policy access',
       url: 'https://sqa.eauth.va.gov/einsurance/PolicyAccess',
     },
     {
@@ -227,11 +223,11 @@ const STAGING_LINKS = {
       url: 'https://dvagov-vhventures-test-portal.powerappsportals.us',
     },
     {
-      text: 'Veterans Identification Card (VIC)',
+      text: 'Veterans ID Card (VIC)',
       url: 'https://sqa.eauth.va.gov/VIC/accessVA',
     },
     {
-      text: 'Veteran Travel Claim Entry',
+      text: 'Veteran travel claim entry',
       url: 'https://dvagov-btsss-qa.dynamics365portals.us',
     },
     {
@@ -286,17 +282,17 @@ const STAGING_LINKS = {
       url: 'https://sqa.eauth.va.gov/IAMIIS/iam-iis-web/login.action',
     },
     {
-      text: 'PCS Travel / moveLINQ Approver Portal',
+      text: 'PCS Travel / moveLINQ approval portal',
       url:
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://vatestapproversp.mlinqs.net',
     },
     {
-      text: 'PCS Travel / moveLINQ Employee Portal',
+      text: 'PCS Travel / moveLINQ employee portal',
       url:
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://vatestemployeesp.mlinqs.net',
     },
     {
-      text: 'PCS Travel / moveLINQ Expense Portal',
+      text: 'PCS Travel / moveLINQ expense portal',
       url:
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://vatestexpensesp.mlinqs.net',
     },
@@ -306,7 +302,7 @@ const STAGING_LINKS = {
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://prodil2launchdevx.kahua.com/sso',
     },
     {
-      text: 'Life Insurance Online Policy Access',
+      text: 'Life insurance online policy access',
       url: 'https://sqa.eauth.va.gov/einsurance/PolicyAccess',
     },
     {
@@ -327,10 +323,6 @@ const STAGING_LINKS = {
     {
       text: 'Puppies Assisting Wounded Service Members',
       url: 'https://omhsp-paws-prod.powerappsportals.us/',
-    },
-    {
-      text: 'ProjNet',
-      url: 'https://sqa.eauth.va.gov/accessva/broker?PartnerId=projnet2.org',
     },
     {
       text: 'Prosthetics Vendor Portal',
@@ -357,7 +349,7 @@ const STAGING_LINKS = {
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://www.my.int.va.gov/Veterans',
     },
     {
-      text: 'Sports4Vets for Certifying Officials and NVGAG Volunteers',
+      text: 'Sports4Vets for certifying officials and NVGAG volunteers',
       url:
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://www.my.int.va.gov/stipends4vets',
     },
@@ -382,7 +374,7 @@ const STAGING_LINKS = {
         'https://sqa.eauth.va.gov/accessva/broker?PartnerId=https://test.vaedelivery.gdit.com',
     },
     {
-      text: 'Veteran Travel Claim Entry',
+      text: 'Veteran travel claim entry',
       url: 'https://dvagov-btsss-qa.dynamics365portals.us',
     },
     {
@@ -395,7 +387,7 @@ const STAGING_LINKS = {
       url: 'https://dvagov-vhventures-test-portal.powerappsportals.us',
     },
     {
-      text: 'Veterans Identification Card (VIC)',
+      text: 'Veterans ID Card (VIC)',
       url: 'https://sqa.eauth.va.gov/VIC/accessVA',
     },
     { text: 'VTA IDES', url: 'https://sqa.eauth.va.gov/VTA2' },
