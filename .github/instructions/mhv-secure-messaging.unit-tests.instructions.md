@@ -182,6 +182,58 @@ expect(screen.getByText(content, { selector: '[data-testid="alert-text"]' })).to
 expect(screen.getByText(content)).to.exist; // "Found multiple elements"
 ```
 
+## Stubbing SmApi Functions in Components
+
+**When to use:** Testing a component that calls SmApi functions directly (not via Redux actions).
+
+When a component imports SmApi functions via `import * as SmApi from '../../api/SmApi'` and calls them as `SmApi.getTooltipsList()`, Sinon stubs on the namespace object (`sandbox.stub(SmApi, 'getTooltipsList')`) will intercept the calls.
+
+However, if a component uses a **named import** (`import { getThreadList } from '../../api/SmApi'`) and calls the function directly, Sinon stubs on the SmApi namespace may not intercept it — the named import captures a direct binding at module load time.
+
+**Pattern:** Use dynamic import inside `useEffect` for functions that need to be stubbable:
+
+```javascript
+// ✅ Component — stubbable via sandbox.stub(SmApi, 'getThreadList')
+const { getThreadList } = await import('../../api/SmApi');
+const response = await getThreadList({ folderId: 0 });
+```
+
+**Anti-pattern:**
+```javascript
+// ❌ Static named import — stub may not intercept
+import { getThreadList } from '../../api/SmApi';
+const response = await getThreadList({ folderId: 0 });
+// sandbox.stub(SmApi, 'getThreadList') does NOT intercept this
+```
+
+**Why:** Discovered in #138299 — switching `getThreadList` from dynamic to static import caused the "finds and stores message ID" test to fail because the stub was not intercepted.
+
+## `createStore` initialState Pitfall
+
+**When to use:** Writing reducer unit tests with `createStore`.
+
+Passing `{}` as the `initialState` argument to `createStore` overrides the reducer's default state, causing assertions against default values to fail.
+
+**Pattern:**
+```javascript
+// ✅ Let reducer use its own defaults
+const mockStore = (initialState) => {
+  return createStore(myReducer, initialState, applyMiddleware(thunk));
+};
+const store = mockStore();        // initialState is undefined → reducer defaults used
+```
+
+**Anti-pattern:**
+```javascript
+// ❌ Empty object overrides reducer defaults
+const mockStore = (initialState = {}) => {
+  return createStore(myReducer, initialState, applyMiddleware(thunk));
+};
+const store = mockStore();        // initialState is {} → reducer defaults lost
+```
+
+**Why:** Caught in #138299 — `createStore(reducer, {})` made the reducer return `{}` instead of its `initialState` object, causing `deep.equal` assertions to fail.
+
 ## File Naming Convention
 
 - Unit tests: `ComponentName.unit.spec.jsx` or `helperName.unit.spec.js`

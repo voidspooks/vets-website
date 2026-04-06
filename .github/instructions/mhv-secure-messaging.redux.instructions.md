@@ -64,10 +64,19 @@ state.sm = {
     error: null,
     isLoading: false,
   },
+  ohSyncStatus: {
+    data: null,           // { status, syncComplete, error } or null
+    error: undefined,
+  },
   tooltip: {
     tooltipVisible: false,
     tooltipId: undefined,
     error: undefined,
+  },
+  careTeamChanges: {
+    changes: [],          // Array of { vistaTriageGroupId, vistaTriageGroupName, ohTriageGroupId, ohTriageGroupName }
+    isLoading: false,
+    error: null,
   },
 }
 ```
@@ -106,7 +115,7 @@ state.sm = {
   stationNumber: string,
   preferredTeam: boolean,
   relationshipType: string,
-  signatureRequired: boolean, // Set by regex check
+  signatureRequired: boolean, // Derived during recipient normalization in actions/recipients.js via isSignatureRequired()
   healthCareSystemName: string,
   status: 'ALLOWED' | 'BLOCKED' | 'NOT_ASSOCIATED',
 }
@@ -245,6 +254,46 @@ dispatch(setBreadcrumbs([
 ```
 
 Mobile vs desktop rendering handled by `BreadcrumbViews` constant.
+
+## Tooltip Single-Instance Limitation
+
+**When to use:** Adding a second dismissible tooltip-backed alert to a page that already has one.
+
+The `state.sm.tooltip` Redux slice tracks a **single** tooltip (`tooltipId`, `tooltipVisible`). If two components on the same page both use the Redux tooltip actions (`getTooltipByName`, `setTooltip`, `updateTooltipVisibility`), they will overwrite each other's state.
+
+**Pattern:** Use **local component state + direct SmApi calls** for the second tooltip:
+
+```javascript
+const [tooltipVisible, setTooltipVisible] = useState(false);
+const [tooltipId, setTooltipId] = useState(null);
+
+useEffect(() => {
+  const tooltips = await SmApi.getTooltipsList();
+  const existing = tooltips?.find?.(t => t.tooltipName === MY_TOOLTIP_NAME);
+  if (existing?.id) {
+    setTooltipId(existing.id);
+    setTooltipVisible(!existing.hidden);
+  } else {
+    const created = await SmApi.createTooltip(MY_TOOLTIP_NAME);
+    setTooltipId(created.id);
+    setTooltipVisible(!created.hidden);
+  }
+}, []);
+
+const handleClose = useCallback(() => {
+  setTooltipVisible(false);
+  if (tooltipId) SmApi.hideTooltip(tooltipId).catch(() => {});
+}, [tooltipId]);
+```
+
+**Anti-pattern:**
+```javascript
+// ❌ Using Redux tooltip actions when another tooltip component is on the same page
+dispatch(getTooltipByName('my_tooltip'));
+// This overwrites state.sm.tooltip, hiding the other tooltip
+```
+
+**Why:** Discovered in #138299 — `CareTeamNameChangeAlert` and `InProductionEducationAlert` (via `DismissibleAlert`) both appear on the SelectCareTeam page. Using Redux for both caused them to overwrite each other's visibility state.
 
 ## Alert Dispatch Patterns
 

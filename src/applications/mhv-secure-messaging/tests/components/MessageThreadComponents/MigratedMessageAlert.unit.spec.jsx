@@ -195,4 +195,81 @@ describe('MigratedMessageAlert', () => {
       expect(call.args[0].currentPhase).to.equal('p5');
     });
   });
+
+  describe('crosswalk name mapping', () => {
+    it('displays old and new team names when crosswalk match exists', async () => {
+      const state = {
+        ...migratedState,
+        sm: {
+          ...migratedState.sm,
+          careTeamChanges: {
+            changes: [
+              {
+                vistaTriageGroupId: 7107671,
+                vistaTriageGroupName: 'SM668 PRIMARY CARE BLUE',
+                ohTriageGroupId: 6238822,
+                ohTriageGroupName: 'VHA SPO ALS - Clinical',
+              },
+            ],
+            isLoading: false,
+            error: null,
+          },
+        },
+      };
+      const screen = setup(state);
+      await waitFor(() => {
+        expect(screen.queryByTestId('migrated-message-alert')).to.exist;
+        expect(screen.getByText('SM668 PRIMARY CARE BLUE', { exact: false })).to
+          .exist;
+        expect(screen.getByText('VHA SPO ALS - Clinical', { exact: false })).to
+          .exist;
+      });
+    });
+
+    it('does not display team names when no crosswalk match exists', async () => {
+      const state = {
+        ...migratedState,
+        sm: {
+          ...migratedState.sm,
+          careTeamChanges: {
+            changes: [
+              {
+                vistaTriageGroupId: 9999999,
+                vistaTriageGroupName: 'SOME OTHER TEAM',
+                ohTriageGroupId: 8888888,
+                ohTriageGroupName: 'VHA OTHER - Clinical',
+              },
+            ],
+            isLoading: false,
+            error: null,
+          },
+        },
+      };
+      const screen = setup(state);
+      await waitFor(() => {
+        expect(screen.queryByTestId('migrated-message-alert')).to.exist;
+      });
+      expect(screen.queryByText('SOME OTHER TEAM')).to.not.exist;
+    });
+
+    it('does not display team names when crosswalk changes is empty', async () => {
+      const state = {
+        ...migratedState,
+        sm: {
+          ...migratedState.sm,
+          careTeamChanges: {
+            changes: [],
+            isLoading: false,
+            error: null,
+          },
+        },
+      };
+      const screen = setup(state);
+      await waitFor(() => {
+        expect(screen.queryByTestId('migrated-message-alert')).to.exist;
+      });
+      expect(screen.queryByText('SM668 PRIMARY CARE BLUE')).to.not.exist;
+      expect(screen.queryByText('VHA SPO ALS - Clinical')).to.not.exist;
+    });
+  });
 });

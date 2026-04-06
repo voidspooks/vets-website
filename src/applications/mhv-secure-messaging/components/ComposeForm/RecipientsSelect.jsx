@@ -44,13 +44,11 @@ import PropTypes from 'prop-types';
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import { getVamcSystemNameFromVhaId } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/utils';
 import { selectEhrDataByVhaId } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/selectors';
-import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import { sortRecipients } from '../../util/helpers';
 import { Prompts } from '../../util/constants';
 import CantFindYourTeam from './CantFindYourTeam';
 import useFeatureToggles from '../../hooks/useFeatureToggles';
 import { updateDraftInProgress } from '../../actions/threadDetails';
-import InProductionEducationAlert from '../shared/InProductionEducationAlert';
 
 const RecipientsSelect = ({
   recipientsList,
@@ -112,21 +110,6 @@ const RecipientsSelect = ({
     [setElectronicSignature],
   );
 
-  const handleDismissIpe = useCallback(
-    () => {
-      // Move focus back to the recipient control (VaComboBox or VaSelect)
-      const comboBoxElement = comboBoxRef.current;
-      if (!comboBoxElement) {
-        return;
-      }
-
-      // Defer focus to the next frame to avoid timing issues with alert dismissal
-      window.requestAnimationFrame(() => {
-        focusElement(comboBoxElement);
-      });
-    },
-    [comboBoxRef],
-  );
   useEffect(
     () => {
       if (optGroupEnabled) {
@@ -258,9 +241,6 @@ const RecipientsSelect = ({
     ],
   );
 
-  const ipeAlertText =
-    'We updated your list of care teams. You may have different care teams in your list. And some of your care team names may have changed. To find a care team, you can still search by type of care or facility location.';
-
   const optionsValues = useMemo(
     () => {
       if (!optGroupEnabled || !mhvSecureMessagingCuratedListFlow) {
@@ -372,22 +352,6 @@ const RecipientsSelect = ({
           {optionsValues}
         </VaSelect>
       )}
-      <InProductionEducationAlert
-        tooltipName="sm_care_team_list_update_ipe"
-        id="sm-care-team-list-update-ipe-container"
-        data-testid="sm-care-team-list-update-ipe-container"
-        className="vads-u-margin-top--3 vads-u-padding--2p5"
-        aria-label="Tooltip for care team selection"
-        onDismiss={handleDismissIpe}
-        dismissButtonTestId="sm-care-team-list-update-ipe-stop-showing-hint"
-      >
-        <p
-          className="vads-u-margin--0 vads-u-padding-right--5"
-          id="sm-care-team-list-update-ipe-description"
-        >
-          {ipeAlertText}
-        </p>
-      </InProductionEducationAlert>
 
       {!mhvSecureMessagingCuratedListFlow &&
         alertDisplayed && (

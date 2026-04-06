@@ -220,6 +220,7 @@
   "mhvSecureMessagingCanReplyField": "mhv_secure_messaging_can_reply_field",
   "mhvSecureMessagingCernerPilot": "mhv_secure_messaging_cerner_pilot",
   "mhvSecureMessagingCernerPilotSystemMaintenanceBanner": "mhv_secure_messaging_cerner_pilot_system_maintenance_banner",
+  "mhvSecureMessagingEhrCrosswalk": "mhv_secure_messaging_ehr_crosswalk",
   "mhvSecureMessagingFilterAccordion": "mhv_secure_messaging_filter_accordion",
   "mhvSecureMessagingTriageGroupPlainLanguage": "mhv_secure_messaging_triage_group_plain_language",
   "mhvSecureMessagingRecipientOptGroups": "mhv_secure_messaging_recipient_opt_groups",

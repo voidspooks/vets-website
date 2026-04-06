@@ -237,6 +237,8 @@ const validateForm = () => {
 | `HorizontalRule` | Consistent divider component |
 | `AttachmentsList` | Render attachments with remove buttons (compose vs view mode) |
 | `RouterLink` / `RouterLinkAction` | Internal navigation wrappers (see above) |
+| `CareTeamNameChangeAlert` | EHR crosswalk warning — lists renamed care teams, filtered to recent recipients, tooltip-persisted dismiss (local state, not Redux) |
+| `MigratedMessageAlert` | Post-migration thread alert — shows old→new team name if crosswalk match exists for thread recipient |
 | `DismissibleAlert` | Server-persisted dismissible tooltip alert (uses tooltip Redux slice + API) |
 
 ### DismissibleAlert (Tooltip Pattern)

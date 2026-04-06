@@ -15,6 +15,7 @@ const useFeatureToggles = () => {
     mhvSecureMessagingRecentRecipients,
     mhvSecureMessagingCernerPilotSystemMaintenanceBannerFlag,
     mhvMockSessionFlag,
+    ehrCrosswalkEnabled,
   } = useSelector(
     state => {
       return {
@@ -61,6 +62,10 @@ const useFeatureToggles = () => {
               .mhvSecureMessagingCernerPilotSystemMaintenanceBanner
           ],
         mhvMockSessionFlag: state.featureToggles['mhv-mock-session'],
+        ehrCrosswalkEnabled:
+          state.featureToggles[
+            FEATURE_FLAG_NAMES.mhvSecureMessagingEhrCrosswalk
+          ],
       };
     },
     state => state.featureToggles,
@@ -82,6 +87,7 @@ const useFeatureToggles = () => {
     mhvSecureMessagingRecentRecipients,
     mhvSecureMessagingCernerPilotSystemMaintenanceBannerFlag,
     mhvMockSessionFlag,
+    ehrCrosswalkEnabled,
   };
 };
 

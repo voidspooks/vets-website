@@ -13,12 +13,28 @@ const MigratedMessageAlert = () => {
   const messages = useSelector(
     state => state.sm?.threadDetails?.messages || [],
   );
+  const crosswalkChanges = useSelector(
+    state => state.sm?.careTeamChanges?.changes || [],
+  );
 
   const userMessagePostMigration = useMemo(
     () => {
       return hasMessageMigratedToOracleHealth(messages);
     },
     [messages],
+  );
+
+  const crosswalkMatch = useMemo(
+    () => {
+      if (!userMessagePostMigration || crosswalkChanges.length === 0) {
+        return null;
+      }
+      const recipientId = messages?.[0]?.recipientId;
+      return crosswalkChanges.find(
+        change => change.vistaTriageGroupId === recipientId,
+      );
+    },
+    [userMessagePostMigration, crosswalkChanges, messages],
   );
 
   useOhMigrationAlertMetric({
@@ -39,8 +55,16 @@ const MigratedMessageAlert = () => {
       >
         <div className="vads-u-padding-bottom--1">
           <p className="vads-u-margin-bottom--1p5">
-            We’ve updated this care team’s name. If you need to contact them,
-            you can call your VA health care facility directly.
+            We’ve updated this care team’s name.
+            {crosswalkMatch && (
+              <>
+                {' '}
+                <strong>{crosswalkMatch.vistaTriageGroupName}</strong> is now{' '}
+                <strong>{crosswalkMatch.ohTriageGroupName}</strong>.
+              </>
+            )}{' '}
+            If you need to contact them, you can call your VA health care
+            facility directly.
           </p>
           <va-link
             data-testid="find-facility-link"

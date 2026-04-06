@@ -28,6 +28,7 @@ import InnerNavigation from '../InnerNavigation';
 import useFeatureToggles from '../../hooks/useFeatureToggles';
 import OracleHealthMessagingIssuesAlert from '../shared/OracleHealthMessagingIssuesAlert';
 import AlertBackgroundBox from '../shared/AlertBackgroundBox';
+import CareTeamNameChangeAlert from '../shared/CareTeamNameChangeAlert';
 
 const FolderHeader = props => {
   const { folder, searchProps, threadCount, showNoMessages } = props;
@@ -161,6 +162,8 @@ const FolderHeader = props => {
       <OracleHealthMessagingAlert />
 
       {folder.folderId === Folders.INBOX.id && <OHSyncStatusAlert />}
+
+      {folder.folderId === Folders.INBOX.id && <CareTeamNameChangeAlert />}
 
       <>
         {folder.folderId === Folders.INBOX.id &&

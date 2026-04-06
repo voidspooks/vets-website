@@ -34,6 +34,7 @@ import {
 import RecipientsSelect from '../components/ComposeForm/RecipientsSelect';
 import EmergencyNote from '../components/EmergencyNote';
 import BlockedTriageGroupAlert from '../components/shared/BlockedTriageGroupAlert';
+import CareTeamNameChangeAlert from '../components/shared/CareTeamNameChangeAlert';
 import { updateDraftInProgress } from '../actions/threadDetails';
 import RouteLeavingGuard from '../components/shared/RouteLeavingGuard';
 import { saveDraft } from '../actions/draftDetails';
@@ -588,6 +589,8 @@ const SelectCareTeam = () => {
       />
       <div>
         {renderCareSystems()}
+
+        <CareTeamNameChangeAlert />
 
         <div className="vads-u-margin-top--3">
           {careTeamsList &&

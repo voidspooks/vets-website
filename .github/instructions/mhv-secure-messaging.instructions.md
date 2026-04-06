@@ -28,7 +28,7 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 ### Redux Structure
 
 - **Root reducer**: Combined reducer at `reducers/index.js` under `sm` namespace
-- **Reducer modules**: `alerts`, `recipients`, `breadcrumbs`, `categories`, `facilities`, `folders`, `search`, `threads`, `threadDetails`, `triageTeams`, `preferences`, `prescription`, `tooltip`
+- **Reducer modules**: `alerts`, `recipients`, `breadcrumbs`, `categories`, `facilities`, `folders`, `search`, `threads`, `threadDetails`, `triageTeams`, `preferences`, `prescription`, `ohSyncStatus`, `tooltip`, `careTeamChanges`
 - **Action types**: Centralized in `util/actionTypes.js` under `Actions` object with nested namespaces (e.g., `Actions.Message.GET`, `Actions.Draft.CREATE_DRAFT`)
 - **Selectors**: Defined in `selectors.js` (e.g., `folder`, `selectSignature`, `populatedDraft`)
 - **State access pattern**: Always use `state.sm.<reducer>` to access secure messaging state
@@ -123,6 +123,7 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 - **Status types**: `ALLOWED`, `BLOCKED` (SM119, SM151), `NOT_ASSOCIATED` (SM129)
 - **Blocked**: Show `BlockedTriageGroupAlert` with `BlockedTriageAlertStyles` (INFO, WARNING, ALERT)
 - **Recent recipients**: Last 6 months from Sent folder via `getRecentRecipients()`
+  - **IMPORTANT**: `recentRecipients` from Redux (`state.sm.recipients.recentRecipients`) is filtered against `allowedRecipients`. If a team is removed from `allowedRecipients` (e.g., VISTA teams after EHR migration), it will NOT appear in `recentRecipients`. To get raw, unfiltered recipient IDs from sent messages, use `SmApi.searchFolderAdvanced(DefaultFolders.SENT.id, { fromDate, toDate })` directly.
 - **Contact list**: Curated via `updateTriageTeamRecipients()`; min 1 team required
 - **Sorting**: Always use `sortRecipients()` to alphabetize
 - **System association**: Resolve facility via `getVamcSystemNameFromVhaId()` from drupal static data
@@ -140,6 +141,21 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 - Loading: `retrieveMessageThread(messageId)` → decode HTML entities, set `cannotReply`, determine `replyToName`
 - Reply drafts: Multiple per thread, each with unique `messageId`; use `createReplyDraft()`/`updateReplyDraft()`
 - Key metadata: `messageId`, `threadId`, `folderId`, `sentDate`/`draftDate`, `body` (must decode), `hasAttachments`, `readReceipt`
+
+### EHR Crosswalk / Care Team Name Changes
+
+- **Purpose**: When VA facilities migrate from VistA to Oracle Health (OH), care team names change. The crosswalk maps old VistA triage group names to new OH triage group names so users understand their teams were renamed.
+- **Feature flag**: `ehrCrosswalkEnabled` (via `useFeatureToggles()`)
+- **API endpoint**: `GET /my_health/v1/messaging/recipients/crosswalk` (`getCareTeamCrosswalk()` in `SmApi.js`)
+- **Data flow**: `FetchCareTeamChanges` (mounted in `App.jsx`) → `getCareTeamChanges()` action → `careTeamChanges` reducer → consumed by `CareTeamNameChangeAlert` and `MigratedMessageAlert`
+- **Crosswalk entry shape**: `{ vistaTriageGroupId, vistaTriageGroupName, ohTriageGroupId, ohTriageGroupName }`
+- **Surfaces**:
+  - **Inbox / Select Care Team**: `CareTeamNameChangeAlert` — warning alert listing recent renamed teams, dismissible via tooltip API
+  - **Thread view**: `MigratedMessageAlert` — enhanced to show specific old→new team name when a crosswalk match exists for the thread's recipient
+- **Recency filtering**: `CareTeamNameChangeAlert` filters crosswalk entries against raw Sent folder recipient IDs (bypasses `allowedRecipients` filter since VISTA IDs are removed post-migration), preserving recency order
+- **Dismiss persistence**: Uses tooltip API with local component state (NOT Redux tooltip slice) to avoid conflicts with `DismissibleAlert` on the same page — see "Tooltip Single-Instance Limitation" in redux instructions
+- **Alert suppression**: `CareTeamNameChangeAlert` hides when active error/warning alerts are present (`hasActiveErrorOrWarning` check)
+- **Error behavior**: Reducer clears `changes` to `[]` on fetch error (prevents stale mappings)
 
 ### Search Functionality
 
@@ -176,7 +192,7 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 
 - Import names from `src/platform/utilities/feature-toggles/featureFlagNames.json`
 - Hook: `useFeatureToggles()` from `hooks/useFeatureToggles.js`; check `featureTogglesLoading` first
-- Common flags: `customFoldersRedesignEnabled`, `readReceiptsEnabled`, `mhvSecureMessagingRecentRecipients`, `smLargeAttachmentsEnabled`, `smExtendedAttachmentTypes`
+- Common flags: `customFoldersRedesignEnabled`, `readReceiptsEnabled`, `mhvSecureMessagingRecentRecipients`, `smLargeAttachmentsEnabled`, `smExtendedAttachmentTypes`, `ehrCrosswalkEnabled`
 
 ## Analytics & Monitoring
 

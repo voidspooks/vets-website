@@ -222,6 +222,18 @@ export const Alerts = {
       'Our file scanner found a problem with your attachment. To send your message, remove this attachment.',
     MULTIPLE_ATTACHMENTS_SCAN_FAIL:
       'Our file scanner found a problem with your attachments. To send your message, remove the attachments.',
+    CARE_TEAM_CHANGE_HEADLINE: count =>
+      count === 1
+        ? "We've updated your care team name"
+        : "We've updated your care team names",
+    CARE_TEAM_CHANGE_INTRO: count =>
+      count === 1
+        ? 'Here is the new name of one of your recent care teams:'
+        : 'Here are the new names of some of your recent care teams:',
+    CARE_TEAM_CHANGE_FOOTER_PREFIX:
+      'Go to your inbox to see your full list in a message titled ',
+    CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE: 'Your new care team names.',
+    CARE_TEAM_CHANGE_TOOLTIP_NAME: 'sm_care_team_name_change',
   },
 
   Folder: {

@@ -456,6 +456,15 @@ export const submitLaunchMessagingAal = () => {
   });
 };
 
+export const getCareTeamCrosswalk = () => {
+  return apiRequest(`${apiBasePath}/messaging/recipients/crosswalk`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Key-Inflection': 'camel',
+    },
+  });
+};
+
 export const getOHSyncStatus = () => {
   return apiRequest(`${apiBasePath}/messaging/messages/oh_sync_status`, {
     headers: {

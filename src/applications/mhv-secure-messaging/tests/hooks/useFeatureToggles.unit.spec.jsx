@@ -22,6 +22,7 @@ describe('useFeatureToggles', () => {
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow]: false,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingRecentRecipients]: false,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCernerPilotSystemMaintenanceBanner]: false,
+        [FEATURE_FLAG_NAMES.mhvSecureMessagingEhrCrosswalk]: false,
         'mhv-mock-session': false,
       },
     };
@@ -46,6 +47,7 @@ describe('useFeatureToggles', () => {
         [FEATURE_FLAG_NAMES.mhvSecureMessagingRecentRecipients]: true,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCernerPilotSystemMaintenanceBanner]: true,
         [FEATURE_FLAG_NAMES.mhvSecureMessagingCanReplyField]: true,
+        [FEATURE_FLAG_NAMES.mhvSecureMessagingEhrCrosswalk]: true,
         'mhv-mock-session': true,
       },
     };
@@ -66,6 +68,7 @@ describe('useFeatureToggles', () => {
       mhvSecureMessagingCernerPilotSystemMaintenanceBannerFlag: true,
       mhvMockSessionFlag: true,
       useCanReplyField: true,
+      ehrCrosswalkEnabled: true,
     });
   });
 });
