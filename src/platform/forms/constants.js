@@ -968,7 +968,8 @@ export const MY_VA_SIP_FORMS = [
   },
   {
     id: VA_FORM_IDS.FORM_21_2680,
-    benefit: 'benefits',
+    benefit:
+      'Examination for Housebound Status or Permanent Need for Regular Aid and Attendance',
     title:
       'Application for Examination for Housebound Status or Permanent Need for Regular Aid & Attendance',
     description: 'benefits',
@@ -983,7 +984,8 @@ export const MY_VA_SIP_FORMS = [
   },
   {
     id: VA_FORM_IDS.FORM_21_4192,
-    benefit: 'employment information',
+    benefit:
+      'Employment Information in Connection with Claim for Disability Benefits',
     title:
       'Application for Employment Information in Connection with Claim for Disability Benefits (21-4192)',
     description: 'employment information application (21-4192)',
@@ -991,7 +993,8 @@ export const MY_VA_SIP_FORMS = [
   },
   {
     id: VA_FORM_IDS.FORM_21_0779,
-    benefit: 'benefits',
+    benefit:
+      'Nursing Home Information in Connection with Claim for Aid and Attendance',
     title:
       'Application for Nursing Home Information in Connection with Claim for Aid and Attendance',
     description: 'benefits',
@@ -999,7 +1002,7 @@ export const MY_VA_SIP_FORMS = [
   },
   {
     id: VA_FORM_IDS.FORM_21P_530A,
-    benefit: 'benefits',
+    benefit: 'State or Tribal Organization Application for Interment Allowance',
     title: 'Application for Interment Allowance',
     description: 'benefits',
     trackingPrefix: '21p-530a-interment-allowance-',
