@@ -76,8 +76,7 @@ export default function DateTimeRequestOptions({
           'vads-u-background-color--white',
         );
 
-        const labelClasses = classNames(
-          'vads-u-margin--0',
+        const labelSpanClasses = classNames(
           'vads-u-font-weight--bold',
           'vads-u-color--primary',
         );
@@ -94,16 +93,19 @@ export default function DateTimeRequestOptions({
                 onChange={() => onChange(o.value)}
               />
               <label
-                className={labelClasses}
+                className="vads-u-margin--0"
                 htmlFor={`${id}_${currentlySelectedDate}_${index}`}
               >
-                <span aria-hidden="true">{o.label}</span>
+                <span className={labelSpanClasses} aria-hidden="true">
+                  {o.label}
+                </span>
                 <span className="vads-u-visibility--screen-reader">
                   {format(parseISO(currentlySelectedDate), 'EEEE, MMMM d')}{' '}
                   {o.label} appointment
                 </span>
+                <br />
+                <span>{o.secondaryLabel}</span>
               </label>
-              <span>{o.secondaryLabel}</span>
             </div>
           </div>
         );
