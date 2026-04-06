@@ -25,6 +25,7 @@ export default function prefillTransformer(pages, formData, metadata, state) {
       dateOfBirth: dateOfBirth || formData?.dateOfBirth,
       ...((formData?.veteran?.ssn || formData?.idNumber?.ssn) && {
         idNumber: { ssn: formData?.veteran?.ssn || formData?.idNumber?.ssn },
+        'view:hasPrefillSsn': true,
       }),
       veteran: {
         mailingAddress: vet360.mailingAddress || {},

@@ -364,7 +364,10 @@ const formConfig = {
           depends: formData =>
             isEligibleToSubmitStatement(formData) &&
             !isNonVeteranClaimant(formData) &&
-            !(isClaimantVeteran(formData) && formData?.idNumber?.ssn),
+            !(
+              isClaimantVeteran(formData) &&
+              (formData?.idNumber?.ssn || formData?.['view:hasPrefillSsn'])
+            ),
           path: 'identification-information',
           title: 'Identification information',
           uiSchema: identificationInformationPage.uiSchema,

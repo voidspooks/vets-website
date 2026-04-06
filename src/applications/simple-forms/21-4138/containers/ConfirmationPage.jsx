@@ -30,10 +30,7 @@ export const ConfirmationPage = props => {
       <ConfirmationView.SavePdfDownload />
       <ConfirmationView.ChapterSectionCollection />
       <ConfirmationView.PrintThisPage />
-      <ConfirmationView.WhatsNextProcessList
-        item1Actions={null}
-        item1Content={item1Content}
-      />
+      <ConfirmationView.WhatsNextProcessList item1Content={item1Content} />
       <ConfirmationView.HowToContact />
       <ConfirmationView.GoBackLink />
       <ConfirmationView.NeedHelp />
