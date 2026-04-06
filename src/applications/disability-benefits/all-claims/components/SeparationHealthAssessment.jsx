@@ -30,6 +30,7 @@ export const SeparationHealthAssessment = ({
   const [hasError, setHasError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
+  const [focusReturnTarget, setFocusReturnTarget] = useState(null);
 
   const hasEvidenceToRemove = () => getBddShaUploads(data).length > 0;
 
@@ -59,7 +60,16 @@ export const SeparationHealthAssessment = ({
       delete updatedFormData.separationHealthAssessmentUploads;
       setFormData(updatedFormData);
       setModalVisible(false);
-      setAlertVisible(true);
+
+      // Restore focus to the button that opened the modal
+      if (focusReturnTarget) {
+        // Use setTimeout to ensure focus is restored after modal is fully hidden
+        // and alert is announced by screen readers
+        setTimeout(() => {
+          setAlertVisible(true);
+          focusReturnTarget.focus();
+        }, 100);
+      }
     },
     onCancelChange: () => {
       const updatedFormData = {
@@ -67,7 +77,15 @@ export const SeparationHealthAssessment = ({
         [selectionField]: true,
       };
       setFormData(updatedFormData);
-      setModalVisible(false);
+
+      // Restore focus to the button that opened the modal
+      if (focusReturnTarget) {
+        // Use setTimeout to ensure focus is restored after modal is fully hidden
+        setTimeout(() => {
+          focusReturnTarget.focus();
+          setModalVisible(false);
+        }, 100);
+      }
     },
     onSelection: event => {
       const { value } = event?.detail || {};
@@ -87,6 +105,10 @@ export const SeparationHealthAssessment = ({
         hasSeparationHealthAssessment === false &&
         hasEvidenceToRemove()
       ) {
+        // Capture the submit button that triggered this action
+        const button = event.target.closest('button');
+        setFocusReturnTarget(button);
+
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -101,6 +123,9 @@ export const SeparationHealthAssessment = ({
         hasSeparationHealthAssessment === false &&
         hasEvidenceToRemove()
       ) {
+        // Capture the button that triggered this action
+        setFocusReturnTarget(event.currentTarget);
+
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -134,24 +159,26 @@ export const SeparationHealthAssessment = ({
           </>
         )}
       </VaModal>
-      <div className="vads-u-margin-top--2 vads-u-margin-bottom--1">
-        <VaAlert
-          closeBtnAriaLabel="Close notification"
-          closeable
-          onCloseEvent={() => setAlertVisible(false)}
-          fullWidth="false"
-          slim
-          status="success"
-          visible={alertVisible}
-          uswds
-          tabIndex="-1"
-        >
-          <p className="vads-u-margin-y--0">
-            We’ve deleted the Separation Health Assessment you uploaded
-            supporting your claim.
-          </p>
-        </VaAlert>
-      </div>
+      {alertVisible && (
+        <div className="vads-u-margin-top--2 vads-u-margin-bottom--1">
+          <VaAlert
+            closeBtnAriaLabel="Close notification"
+            closeable
+            onCloseEvent={() => setAlertVisible(false)}
+            fullWidth="false"
+            role="alert"
+            slim
+            status="success"
+            uswds
+            tabIndex="-1"
+          >
+            <p className="vads-u-margin-y--0">
+              We’ve deleted the Separation Health Assessment you uploaded
+              supporting your claim.
+            </p>
+          </VaAlert>
+        </div>
+      )}
       <form onSubmit={handlers.onSubmit}>
         <VaRadio
           label="Do you want to upload your Separation Health Assessment Part A?"

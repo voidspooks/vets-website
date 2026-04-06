@@ -93,6 +93,9 @@ const createTestConfig = () => {
         'exist',
       );
 
+      // Verify focus returns to the continue button
+      cy.focused().should('have.text', 'Continue');
+
       cy.findByText(/continue/i, { selector: 'button' }).click();
     },
 

@@ -179,7 +179,7 @@ describe('SeparationHealthAssessment', () => {
 
     await waitFor(() => {
       const alert = container.querySelector('va-alert[status="success"]');
-      expect(alert).to.have.attribute('visible', 'true');
+      expect(alert).to.exist;
       expect(alert.textContent).to.include(
         'We’ve deleted the Separation Health Assessment you uploaded supporting your claim.',
       );
@@ -235,5 +235,106 @@ describe('SeparationHealthAssessment', () => {
       );
       expect(updatePage.called).to.be.false;
     });
+  });
+
+  it('should restore focus to submit button when clicking Go back in modal', async () => {
+    const setFormData = sinon.spy();
+    const data = {
+      'view:hasSeparationHealthAssessment': false,
+      separationHealthAssessmentUploads: [{ name: 'sha-a.pdf' }],
+    };
+
+    const { container } = render(page({ data, setFormData }));
+
+    const submitButton = $('button[type="submit"]', container);
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(container.querySelector('va-modal')).to.have.attribute(
+        'visible',
+        'true',
+      );
+    });
+
+    const focusSpy = sinon.spy(submitButton, 'focus');
+
+    fireEvent(
+      container.querySelector('va-modal'),
+      new CustomEvent('secondaryButtonClick'),
+    );
+
+    await waitFor(() => {
+      expect(focusSpy.called).to.be.true;
+    });
+
+    focusSpy.restore();
+  });
+
+  it('should restore focus to submit button after confirming delete in modal', async () => {
+    const setFormData = sinon.spy();
+    const data = {
+      'view:hasSeparationHealthAssessment': false,
+      separationHealthAssessmentUploads: [{ name: 'sha-a.pdf' }],
+    };
+
+    const { container } = render(page({ data, setFormData }));
+
+    const submitButton = $('button[type="submit"]', container);
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(container.querySelector('va-modal')).to.have.attribute(
+        'visible',
+        'true',
+      );
+    });
+
+    const focusSpy = sinon.spy(submitButton, 'focus');
+
+    fireEvent(
+      container.querySelector('va-modal'),
+      new CustomEvent('primaryButtonClick'),
+    );
+
+    await waitFor(() => {
+      expect(focusSpy.called).to.be.true;
+    });
+
+    focusSpy.restore();
+  });
+
+  it('should restore focus to update button on review page after modal interaction', async () => {
+    const updatePage = sinon.spy();
+    const data = {
+      'view:hasSeparationHealthAssessment': false,
+      separationHealthAssessmentUploads: [{ name: 'sha-a.pdf' }],
+    };
+
+    const { container } = render(
+      page({ data, updatePage, onReviewPage: true }),
+    );
+
+    const updateButton = container.querySelector('button.usa-button-primary');
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(container.querySelector('va-modal')).to.have.attribute(
+        'visible',
+        'true',
+      );
+    });
+
+    const focusSpy = sinon.spy(updateButton, 'focus');
+
+    fireEvent(
+      container.querySelector('va-modal'),
+      new CustomEvent('secondaryButtonClick'),
+    );
+
+    await waitFor(() => {
+      expect(focusSpy.called).to.be.true;
+    });
+
+    focusSpy.restore();
   });
 });
