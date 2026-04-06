@@ -96,7 +96,7 @@ function IntroductionLogin({
             <p>
               <b>Need to apply now?</b> Complete a{' '}
               <va-link
-                href="https://www.vba.va.gov/pubs/forms/vba-22-1990e-are.pdf"
+                href="https://www.vba.va.gov/pubs/forms/VBA-22-5490-ARE.pdf"
                 text="paper application"
               />{' '}
               and submit through{' '}

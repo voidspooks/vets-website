@@ -95,7 +95,7 @@ export const IntroductionPage = ({ mebBlockUnder18, route, user }) => {
               <b>Note:</b> If you are under the age of 18 and applying for
               benefits for yourself, you must complete a{' '}
               <va-link
-                href="https://www.vba.va.gov/pubs/forms/vba-22-1990e-are.pdf"
+                href="https://www.vba.va.gov/pubs/forms/VBA-22-5490-ARE.pdf"
                 text="paper application"
               />{' '}
               with your parent, guardian, or custodian and submit through{' '}
