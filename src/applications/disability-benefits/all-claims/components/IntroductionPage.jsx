@@ -106,7 +106,6 @@ class IntroductionPage extends React.Component {
                 onClick={handler.startOver}
                 text="go back and answer questions again"
               />
-              .
             </p>
           )}
           <va-alert status="info">
