@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   MailDescription,
   InPersonDescription,
@@ -11,39 +12,103 @@ import {
   ANCHOR_LINKS,
 } from '../../constants';
 
-const OtherWaysToSendYourDocuments = () => {
+const renderAddress = lines => (
+  <p className="va-address-block">
+    {lines.map((line, index) => (
+      <React.Fragment key={`${line}-${index}`}>
+        {line}
+        {index < lines.length - 1 && <br />}
+      </React.Fragment>
+    ))}
+  </p>
+);
+
+const OtherWaysToSendYourDocuments = ({ claim }) => {
+  const filesMeta = claim?.attributes?.claimStatusMeta?.files;
+
+  const sectionTitle =
+    filesMeta?.sectionTitle || 'Other ways to send your documents';
+  const showSectionHeader = !filesMeta?.simpleLayout;
+
+  const introText =
+    filesMeta?.introText ||
+    'Print a copy of each document and write your Social Security number on the first page. Then resubmit by mail or in person.';
+  const showIntroText = !filesMeta?.simpleLayout;
+
+  const option1 =
+    filesMeta?.options?.mail || filesMeta?.options?.option1 || null;
+  const option2 =
+    filesMeta?.options?.inPerson ||
+    filesMeta?.options?.option2 ||
+    filesMeta?.options?.fax ||
+    null;
+  const confirmation = filesMeta?.confirmation || null;
+  const hasCustomFilesMeta = !!filesMeta;
+  const shouldShowCustomConfirmation = hasCustomFilesMeta
+    ? confirmation?.description
+    : false;
+
   return (
     <div
       id="other-ways-to-send-documents"
       className="other-ways-to-send-your-documents scroll-anchor"
       data-testid="other-ways-to-send-documents"
     >
-      <h2
-        id={ANCHOR_LINKS.otherWaysToSendDocuments}
-        className="vads-u-margin-top--0 vads-u-margin-bottom--3"
-      >
-        Other ways to send your documents
-      </h2>
-      <div>
-        <p>
-          Print a copy of each document and write your Social Security number on
-          the first page. Then resubmit by mail or in person.
-        </p>
-      </div>
+      {showSectionHeader && (
+        <h2
+          id={ANCHOR_LINKS.otherWaysToSendDocuments}
+          className="vads-u-margin-top--0 vads-u-margin-bottom--3"
+        >
+          {sectionTitle}
+        </h2>
+      )}
+      {(showIntroText || filesMeta?.noteText) && (
+        <div>
+          {showIntroText && <p>{introText}</p>}
+          {filesMeta?.noteText && (
+            <p>
+              <strong>Note:</strong> {filesMeta.noteText}
+            </p>
+          )}
+        </div>
+      )}
       <div className="other-ways-mail-section">
-        <h3>Option 1: By mail</h3>
-        <MailDescription address={MAILING_ADDRESS} />
+        <h3>{option1?.title || 'Option 1: By mail'}</h3>
+        {hasCustomFilesMeta ? (
+          <>
+            {option1?.description && <p>{option1.description}</p>}
+            {option1?.addressLines?.length > 0 &&
+              renderAddress(option1.addressLines)}
+          </>
+        ) : (
+          <MailDescription address={MAILING_ADDRESS} />
+        )}
       </div>
       <div className="other-ways-in-person-section">
-        <h3>Option 2: In person</h3>
-        <InPersonDescription findVaLocations={LINKS.findVaLocations} />
+        <h3>{option2?.title || 'Option 2: In person'}</h3>
+        {hasCustomFilesMeta ? (
+          option2?.description && <p>{option2.description}</p>
+        ) : (
+          <InPersonDescription findVaLocations={LINKS.findVaLocations} />
+        )}
       </div>
       <div className="other-ways-confirmation-section">
-        <h3>How to confirm we’ve received your documents</h3>
-        <ConfirmationDescription contactInfo={CONTACT_INFO} />
+        <h3>
+          {confirmation?.title ||
+            'How to confirm we’ve received your documents'}
+        </h3>
+        {shouldShowCustomConfirmation ? (
+          <p>{confirmation.description}</p>
+        ) : (
+          <ConfirmationDescription contactInfo={CONTACT_INFO} />
+        )}
       </div>
     </div>
   );
+};
+
+OtherWaysToSendYourDocuments.propTypes = {
+  claim: PropTypes.object,
 };
 
 export default OtherWaysToSendYourDocuments;

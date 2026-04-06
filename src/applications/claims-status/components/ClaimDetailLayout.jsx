@@ -19,6 +19,7 @@ import ClaimContentionList from './ClaimContentionList';
 import Notification from './Notification';
 import TabNav from './TabNav';
 import Type1UnknownUploadError from './Type1UnknownUploadError';
+import { withClaimStatusMetaIfEnabled } from '../utils/claimStatusMeta';
 
 const focusHeader = () => {
   setFocus('.claim-contentions-header');
@@ -29,6 +30,13 @@ export default function ClaimDetailLayout(props) {
 
   const type1UnknownErrors = useSelector(
     state => state.disability.status.notifications.type1UnknownErrors,
+  );
+  const cstChampvaCustomContentEnabled = useSelector(
+    state => state.featureToggles?.cst_champva_custom_content || false,
+  );
+  const displayClaim = withClaimStatusMetaIfEnabled(
+    claim,
+    cstChampvaCustomContentEnabled,
   );
 
   const tabs = ['Status', 'Files', 'Details', 'Overview'];
@@ -47,26 +55,32 @@ export default function ClaimDetailLayout(props) {
         message="Loading your claim information..."
       />
     );
-  } else if (claimAvailable(claim)) {
+  } else if (claimAvailable(displayClaim)) {
     breadcrumbs = [
       {
         href: '../status',
-        label: generateClaimTitle(claim, 'breadcrumb', currentTab),
+        label: generateClaimTitle(displayClaim, 'breadcrumb', currentTab),
         isRouterLink: true,
       },
     ];
-    const claimTitle = generateClaimTitle(claim, 'detail');
+    const claimTitle = generateClaimTitle(displayClaim, 'detail');
     const { claimDate, closeDate, contentions, status } =
-      claim.attributes || {};
+      displayClaim.attributes || {};
+    const detailMeta = displayClaim.attributes?.claimStatusMeta?.detail || {};
+    const detailPageTitle = detailMeta.pageTitle || claimTitle;
+    const detailSectionTitle = detailMeta.sectionTitle || 'What you’ve claimed';
+    const detailSectionGroups = detailMeta.sectionGroups || [];
 
     const isOpen = isClaimOpen(status, closeDate);
+    const showAddingDetails =
+      !isPopulatedClaim(displayClaim.attributes || {}) && isOpen;
     const formattedClaimDate = buildDateFormatter()(claimDate);
     const claimSubheader = `Received on ${formattedClaimDate}`;
 
     headingContent = (
       <>
         <h1 className="claim-title">
-          {claimTitle}
+          {detailPageTitle}
           <span className="vads-u-font-family--sans vads-u-margin-top--1">
             {claimSubheader}
           </span>
@@ -106,14 +120,31 @@ export default function ClaimDetailLayout(props) {
           )}
         <div className="claim-contentions">
           <h2 className="claim-contentions-header vads-u-font-size--h3">
-            What you’ve claimed
+            {detailSectionTitle}
           </h2>
-          <ClaimContentionList
-            contentions={contentions}
-            onClick={focusHeader}
-          />
-          {isPopulatedClaim(claim.attributes || {}) || !isOpen ? null : (
-            <AddingDetails />
+          {detailSectionGroups.length > 0 ? (
+            detailSectionGroups.map(group => (
+              <div key={group.title} className="vads-u-margin-bottom--2">
+                <h3 className="vads-u-font-size--h4 vads-u-margin-top--1 vads-u-margin-bottom--1">
+                  {group.title}
+                </h3>
+                <ul>
+                  {(group.items || []).map((item, index) => (
+                    <li key={`${group.title}-${index}`} data-dd-privacy="mask">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <>
+              <ClaimContentionList
+                contentions={contentions}
+                onClick={focusHeader}
+              />
+              {showAddingDetails ? <AddingDetails /> : null}
+            </>
           )}
         </div>
       </>
@@ -121,7 +152,7 @@ export default function ClaimDetailLayout(props) {
 
     bodyContent = (
       <div className="claim-container">
-        <TabNav id={claim.id} />
+        <TabNav id={displayClaim.id} />
         {tabs.map(tab => (
           <div key={tab} id={`tabPanel${tab}`} className="tab-panel">
             {currentTab === tab && (
@@ -162,7 +193,7 @@ export default function ClaimDetailLayout(props) {
           <ClaimsBreadcrumbs crumbs={breadcrumbs} />
           {!!headingContent && <div>{headingContent}</div>}
           <div>{bodyContent}</div>
-          <NeedHelp />
+          <NeedHelp claim={displayClaim} />
         </div>
       </div>
     </div>

@@ -19,32 +19,57 @@ const getPhaseChangeDateText = phaseChangeDate => {
 };
 
 export default function WhatWeAreDoing({
+  claim,
   claimPhaseType,
   claimTypeCode,
   currentPhaseBack,
   phaseChangeDate,
   status,
 }) {
+  const attributes = claim?.attributes || {};
+  const resolvedClaimPhaseType =
+    attributes.claimPhaseDates?.latestPhaseType || claimPhaseType;
+  const resolvedClaimTypeCode = attributes.claimTypeCode || claimTypeCode;
+  const resolvedCurrentPhaseBack =
+    attributes.claimPhaseDates?.currentPhaseBack ?? currentPhaseBack;
+  const resolvedPhaseChangeDate =
+    attributes.claimPhaseDates?.phaseChangeDate || phaseChangeDate;
+  const resolvedStatus = attributes.status || status;
+
   const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
   const cstClaimPhasesEnabled = useToggleValue(TOGGLE_NAMES.cstClaimPhases);
   const showEightPhases = getShowEightPhases(
-    claimTypeCode,
+    resolvedClaimTypeCode,
     cstClaimPhasesEnabled,
   );
 
+  const whatWeAreDoingMeta = attributes.claimStatusMeta?.whatWeAreDoing || {};
+  const configuredMap = showEightPhases
+    ? whatWeAreDoingMeta.phaseTypeMap
+    : whatWeAreDoingMeta.statusMap;
+  const configuredStep = showEightPhases
+    ? configuredMap?.[resolvedClaimPhaseType]
+    : configuredMap?.[resolvedStatus];
+
   const humanStatus = showEightPhases
-    ? getClaimPhaseTypeHeaderText(claimPhaseType)
-    : getStatusDescription(status);
+    ? configuredStep?.title ||
+      getClaimPhaseTypeHeaderText(resolvedClaimPhaseType)
+    : configuredStep?.title || getStatusDescription(resolvedStatus);
   const description = showEightPhases
-    ? getClaimPhaseTypeDescription(claimPhaseType)
-    : getClaimStatusDescription(status);
-  const linkText = showEightPhases
+    ? configuredStep?.description ||
+      getClaimPhaseTypeDescription(resolvedClaimPhaseType)
+    : configuredStep?.description || getClaimStatusDescription(resolvedStatus);
+  const defaultLinkText = showEightPhases
     ? 'Learn more about this step'
     : 'Learn more about the review process';
+  const linkText = showEightPhases
+    ? whatWeAreDoingMeta.linkText?.phaseType || defaultLinkText
+    : whatWeAreDoingMeta.linkText?.status || defaultLinkText;
+  const sectionTitle = whatWeAreDoingMeta.title || 'What we’re doing';
 
   return (
     <div className="what-were-doing-container vads-u-margin-bottom--4">
-      <h3 className="vads-u-margin-bottom--3">What we’re doing</h3>
+      <h3 className="vads-u-margin-bottom--3">{sectionTitle}</h3>
       <va-card>
         <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
           {humanStatus}
@@ -57,10 +82,10 @@ export default function WhatWeAreDoing({
         </p>
         {cstClaimPhasesEnabled && (
           <p data-cy="moved-to-date-text">
-            {getPhaseChangeDateText(phaseChangeDate)}
+            {getPhaseChangeDateText(resolvedPhaseChangeDate)}
           </p>
         )}
-        {currentPhaseBack && (
+        {resolvedCurrentPhaseBack && (
           <va-alert
             class="optional-alert vads-u-padding-bottom--1"
             status="info"
@@ -84,6 +109,7 @@ export default function WhatWeAreDoing({
 }
 
 WhatWeAreDoing.propTypes = {
+  claim: PropTypes.object,
   claimPhaseType: PropTypes.string,
   claimTypeCode: PropTypes.string,
   currentPhaseBack: PropTypes.bool,

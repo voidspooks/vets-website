@@ -6,7 +6,17 @@ import { buildDateFormatter, isClaimOpen } from '../utils/helpers';
 import * as TrackedItem from '../utils/trackedItemContent';
 
 export default function ClaimStatusHeader({ claim }) {
-  const { closeDate, status, trackedItems, claimPhaseDates } = claim.attributes;
+  const {
+    closeDate,
+    status,
+    trackedItems,
+    claimPhaseDates,
+    claimStatusMeta,
+  } = claim.attributes;
+  const headerLabel = claimStatusMeta?.statusHeader?.label || 'Claim status';
+  const introText =
+    claimStatusMeta?.statusHeader?.intro ||
+    'Here’s the latest information on your claim.';
   const getTrackedItemDates = () => {
     return trackedItems
       ? trackedItems.map(item => TrackedItem.getTrackedItemDateFromStatus(item))
@@ -25,18 +35,24 @@ export default function ClaimStatusHeader({ claim }) {
 
   return (
     <div className="claim-status-header-container">
-      <h2 className="tab-header vads-u-margin-y--0">Claim status</h2>
+      <h2 className="tab-header vads-u-margin-y--0">{headerLabel}</h2>
       <p className="vads-u-margin-top--1 vads-u-margin-bottom--3 va-introtext">
-        <Toggler
-          toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
-        >
-          <Toggler.Enabled>
-            Review the latest status of your claim.
-          </Toggler.Enabled>
-          <Toggler.Disabled>
-            Here’s the latest information on your claim.
-          </Toggler.Disabled>
-        </Toggler>
+        {claimStatusMeta?.statusHeader?.intro ? (
+          introText
+        ) : (
+          <Toggler
+            toggleName={
+              Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests
+            }
+          >
+            <Toggler.Enabled>
+              Review the latest status of your claim.
+            </Toggler.Enabled>
+            <Toggler.Disabled>
+              Here’s the latest information on your claim.
+            </Toggler.Disabled>
+          </Toggler>
+        )}
       </p>
       {isOpen && (
         <div className="vads-u-margin-bottom--4">

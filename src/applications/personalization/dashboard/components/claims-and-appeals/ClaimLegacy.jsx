@@ -7,6 +7,7 @@ import {
   getClaimStatusDescription,
   isClaimComplete,
   getClaimType,
+  getClaimDetailsHref,
 } from '../../utils/claims-helpers';
 import { replaceDashesWithSlashes as replace } from '../../utils/date-formatting/helpers';
 
@@ -43,6 +44,7 @@ const ClaimLegacy = ({ claim }) => {
   }
   const { inProgress, claimDate, status } = claimInfo(claim);
   const dateRecd = format(new Date(replace(claimDate)), 'MMMM d, yyyy');
+  const detailsHref = getClaimDetailsHref(claim);
 
   const content = (
     <>
@@ -75,7 +77,7 @@ const ClaimLegacy = ({ claim }) => {
         ariaLabel={`Review claim received ${dateRecd}`}
         className="vads-u-margin-top--2 vads-u-font-weight--bold"
         text="Review details"
-        href={`/track-claims/your-claims/${claim.id}/status`}
+        href={detailsHref}
         onClick={handleViewClaim}
         showArrow
       />

@@ -19,14 +19,20 @@ import {
   setPageFocus,
   setTabDocumentTitle,
 } from '../utils/helpers';
+import { withClaimStatusMetaIfEnabled } from '../utils/claimStatusMeta';
 import { setUpPage, isTab } from '../utils/page';
 import ClaimPhaseStepper from '../components/claim-overview-tab/ClaimPhaseStepper';
 
 // HELPERS
 const STATUSES = getStatusMap();
 
-const getPhaseFromStatus = latestStatus =>
-  [...STATUSES.keys()].indexOf(latestStatus.toUpperCase()) + 1;
+const getPhaseFromStatus = latestStatus => {
+  if (!latestStatus) return 1;
+  return [...STATUSES.keys()].indexOf(latestStatus.toUpperCase()) + 1;
+};
+
+const getCustomStepFromStatus = (status, claimStatusMeta) =>
+  claimStatusMeta?.overview?.currentStepByStatus?.[status];
 
 class OverviewPage extends React.Component {
   componentDidMount() {
@@ -59,20 +65,57 @@ class OverviewPage extends React.Component {
   }
 
   getPageContent() {
-    const { claim } = this.props;
+    const { claim, cstChampvaCustomContentEnabled } = this.props;
+    const displayClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      cstChampvaCustomContentEnabled,
+    );
 
     // Return null if the claim/ claim.attributes dont exist
-    if (!claimAvailable(claim)) {
+    if (!claimAvailable(displayClaim)) {
       return null;
     }
 
-    const { claimPhaseDates, claimDate, claimTypeCode } = claim.attributes;
-    const currentPhase = getPhaseFromStatus(claimPhaseDates.latestPhaseType);
-    const { currentPhaseBack } = claimPhaseDates;
+    const {
+      claimPhaseDates = {},
+      claimDate,
+      claimTypeCode,
+      claimStatusMeta,
+      status,
+    } = displayClaim.attributes;
+    const currentPhase =
+      getCustomStepFromStatus(status, claimStatusMeta) ||
+      getPhaseFromStatus(claimPhaseDates.latestPhaseType);
+    const { currentPhaseBack = false } = claimPhaseDates;
+    const overviewMeta = claimStatusMeta?.overview || {};
+    const overviewSteps = overviewMeta.steps || [];
+
+    if (overviewSteps.length > 0) {
+      return (
+        <div className="overview-container">
+          <ClaimOverviewHeader
+            claimTypeCode={claimTypeCode}
+            claimStatusMeta={claimStatusMeta}
+          />
+          <ClaimPhaseStepper
+            claimDate={claimDate}
+            currentClaimPhaseDate={claimPhaseDates.phaseChangeDate}
+            currentPhase={currentPhase || 1}
+            currentPhaseBack={currentPhaseBack}
+            claimTypeCode={claimTypeCode}
+            currentStepPrefix={overviewMeta.currentStepPrefix}
+            customSteps={overviewSteps}
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="overview-container">
-        <ClaimOverviewHeader claimTypeCode={claimTypeCode} />
+        <ClaimOverviewHeader
+          claimTypeCode={claimTypeCode}
+          claimStatusMeta={claimStatusMeta}
+        />
         <Toggler toggleName={Toggler.TOGGLE_NAMES.cstClaimPhases}>
           <Toggler.Enabled>
             {isDisabilityCompensationClaim(claimTypeCode) ||
@@ -85,24 +128,24 @@ class OverviewPage extends React.Component {
                 <ClaimPhaseStepper
                   claimDate={claimDate}
                   currentClaimPhaseDate={claimPhaseDates.phaseChangeDate}
-                  currentPhase={currentPhase}
+                  currentPhase={currentPhase || 1}
                   currentPhaseBack={currentPhaseBack}
                   claimTypeCode={claimTypeCode}
                 />
               </>
             ) : (
               <ClaimTimeline
-                id={claim.id}
-                phase={currentPhase}
-                currentPhaseBack={claimPhaseDates.currentPhaseBack}
+                id={displayClaim.id}
+                phase={currentPhase || 1}
+                currentPhaseBack={currentPhaseBack}
               />
             )}
           </Toggler.Enabled>
           <Toggler.Disabled>
             <ClaimTimeline
-              id={claim.id}
-              phase={currentPhase}
-              currentPhaseBack={claimPhaseDates.currentPhaseBack}
+              id={displayClaim.id}
+              phase={currentPhase || 1}
+              currentPhaseBack={currentPhaseBack}
             />
           </Toggler.Disabled>
         </Toggler>
@@ -111,7 +154,16 @@ class OverviewPage extends React.Component {
   }
 
   render() {
-    const { claim, loading, message } = this.props;
+    const {
+      claim,
+      cstChampvaCustomContentEnabled,
+      loading,
+      message,
+    } = this.props;
+    const displayClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      cstChampvaCustomContentEnabled,
+    );
 
     let content = null;
     if (!loading) {
@@ -120,7 +172,7 @@ class OverviewPage extends React.Component {
 
     return (
       <ClaimDetailLayout
-        claim={claim}
+        claim={displayClaim}
         loading={loading}
         clearNotification={this.props.clearNotification}
         currentTab="Overview"
@@ -138,6 +190,8 @@ function mapStateToProps(state) {
   return {
     loading: claimsState.claimDetail.loading,
     claim: claimsState.claimDetail.detail,
+    cstChampvaCustomContentEnabled:
+      state.featureToggles?.cst_champva_custom_content || false,
     message: claimsState.notifications.message,
     lastPage: claimsState.routing.lastPage,
   };
@@ -150,6 +204,7 @@ const mapDispatchToProps = {
 OverviewPage.propTypes = {
   claim: PropTypes.object,
   clearNotification: PropTypes.func,
+  cstChampvaCustomContentEnabled: PropTypes.bool,
   lastPage: PropTypes.string,
   loading: PropTypes.bool,
   message: PropTypes.object,

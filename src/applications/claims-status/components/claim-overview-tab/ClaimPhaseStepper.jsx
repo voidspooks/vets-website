@@ -4,33 +4,66 @@ import PropTypes from 'prop-types';
 import { buildDateFormatter, isPensionClaim } from '../../utils/helpers';
 import { getClaimPhases, getPensionClaimPhases } from '../../utils/claimPhase';
 
+const isSafeUrl = url => {
+  if (!url || typeof url !== 'string') return false;
+  if (url.startsWith('/')) return true;
+
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:';
+  } catch {
+    return false;
+  }
+};
+
 export default function ClaimPhaseStepper({
   claimDate,
   currentClaimPhaseDate,
   currentPhase,
   currentPhaseBack,
   claimTypeCode,
+  customSteps,
+  currentStepPrefix,
 }) {
   const formattedClaimDate = buildDateFormatter()(claimDate);
   const formattedCurrentClaimPhaseDate = buildDateFormatter()(
-    currentClaimPhaseDate,
+    currentClaimPhaseDate || claimDate,
   );
 
-  const claimPhases = isPensionClaim(claimTypeCode)
-    ? getPensionClaimPhases(formattedClaimDate)
-    : getClaimPhases(formattedClaimDate);
+  let claimPhases;
+  if (customSteps?.length > 0) {
+    claimPhases = customSteps.map((step, index) => ({
+      phase: step.phase || index + 1,
+      header: step.header,
+      description: step.description,
+      details: step.details,
+      linkText: step.linkText,
+      linkUrl: step.linkUrl,
+      repeatable: !!step.repeatable,
+    }));
+  } else if (isPensionClaim(claimTypeCode)) {
+    claimPhases = getPensionClaimPhases(formattedClaimDate);
+  } else {
+    claimPhases = getClaimPhases(formattedClaimDate);
+  }
+  const finalPhase = claimPhases.length;
 
   const isCurrentPhase = phase => {
     return phase === currentPhase;
   };
   const isCurrentPhaseAndNotFinalPhase = phase => {
-    return isCurrentPhase(phase) && phase !== 8;
+    return isCurrentPhase(phase) && phase !== finalPhase;
   };
   const isPhaseComplete = phase => {
-    return phase < currentPhase || (isCurrentPhase(phase) && phase === 8);
+    return (
+      phase < currentPhase || (isCurrentPhase(phase) && phase === finalPhase)
+    );
   };
-  const phaseCanRepeat = phase => {
-    return [3, 4, 5, 6].includes(phase);
+  const phaseCanRepeat = claimPhase => {
+    if (customSteps?.length > 0) {
+      return claimPhase.repeatable;
+    }
+    return claimPhase.repeatable || [3, 4, 5, 6].includes(claimPhase.phase);
   };
 
   let headerIconAttributes = {};
@@ -78,7 +111,7 @@ export default function ClaimPhaseStepper({
             )}
             {isCurrentPhase(claimPhase.phase) && (
               <strong className="current-phase">
-                Your claim is in this step as of{' '}
+                {currentStepPrefix || 'Your claim is in this step as of'}{' '}
                 {formattedCurrentClaimPhaseDate}.
               </strong>
             )}
@@ -94,13 +127,28 @@ export default function ClaimPhaseStepper({
                 </va-alert>
               )}
             {(!isCurrentPhase(claimPhase.phase) || !currentPhaseBack) &&
-              phaseCanRepeat(claimPhase.phase) && (
+              phaseCanRepeat(claimPhase) && (
                 <div className="repeat-phase">
                   <va-icon icon="autorenew" size={3} />
                   <span>Step may repeat if we need more information.</span>
                 </div>
               )}
-            <span className="vads-u-margin-y--0">{claimPhase.description}</span>
+            <p className="vads-u-margin-y--0">{claimPhase.description}</p>
+            {claimPhase.details?.map((detail, detailIndex) => (
+              <p key={detailIndex}>{detail}</p>
+            ))}
+            {claimPhase.linkText &&
+              isSafeUrl(claimPhase.linkUrl) && (
+                <p>
+                  <a
+                    href={claimPhase.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {claimPhase.linkText}
+                  </a>
+                </p>
+              )}
           </va-accordion-item>
         ))}
       </va-accordion>
@@ -110,8 +158,10 @@ export default function ClaimPhaseStepper({
 
 ClaimPhaseStepper.propTypes = {
   claimDate: PropTypes.string.isRequired,
-  currentClaimPhaseDate: PropTypes.string.isRequired,
   currentPhase: PropTypes.number.isRequired,
   claimTypeCode: PropTypes.string,
+  currentClaimPhaseDate: PropTypes.string,
   currentPhaseBack: PropTypes.bool,
+  currentStepPrefix: PropTypes.string,
+  customSteps: PropTypes.array,
 };

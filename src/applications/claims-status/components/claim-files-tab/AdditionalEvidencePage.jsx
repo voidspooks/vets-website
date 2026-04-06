@@ -96,11 +96,11 @@ class AdditionalEvidencePage extends React.Component {
               />
             </>
           )}
-          <h3 id="add-files" className="vads-u-margin-bottom--3">
-            {this.props.additionalEvidenceTitle || 'Additional evidence'}
-          </h3>
           {isOpen ? (
             <>
+              <h3 id="add-files" className="vads-u-margin-bottom--3">
+                {this.props.additionalEvidenceTitle || 'Additional evidence'}
+              </h3>
               <Toggler
                 toggleName={
                   Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests

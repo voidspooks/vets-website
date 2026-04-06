@@ -198,7 +198,7 @@ describe('Claim status', () => {
             });
 
             cy.get('[data-testid="item-123456"]').within(() => {
-              cy.findByRole('heading', { name: 'Request for evidence' });
+              cy.findByRole('heading', { name: /Request for evidence/i });
             });
 
             cy.axeCheck();
@@ -297,7 +297,7 @@ describe('Claim status', () => {
         });
 
         cy.get('va-alert[status="warning"]').within(() => {
-          cy.findByRole('heading', { name: 'Request for evidence' });
+          cy.findByRole('heading', { name: /Request for evidence/i });
         });
 
         cy.axeCheck();
@@ -721,7 +721,7 @@ describe('Claim status', () => {
         closedClaimSetup();
 
         cy.findByRole('heading', {
-          name: 'We closed your claim on January 15, 2025',
+          name: /We closed your claim on January 15, 2025/i,
         });
         cy.findByText(
           'We mailed you a decision letter. It should arrive within 10 days after the date we decided your claim. It can sometimes take longer.',
@@ -735,7 +735,7 @@ describe('Claim status', () => {
           closedClaimSetup({ decisionLetterSent: true });
 
           cy.findByRole('heading', {
-            name: 'We closed your claim on January 15, 2025',
+            name: /We closed your claim on January 15, 2025/i,
           });
           cy.findByText(
             'You can download your decision letter online now. You can also get other letters related to your claims.',

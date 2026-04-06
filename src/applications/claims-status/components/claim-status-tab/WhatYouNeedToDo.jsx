@@ -12,7 +12,13 @@ function WhatYouNeedToDo({ claim }) {
     evidenceWaiverSubmitted5103,
     trackedItems,
     evidenceSubmissions,
+    claimStatusMeta,
   } = claim.attributes;
+  const sectionTitle =
+    claimStatusMeta?.whatYouNeedToDo?.title || 'What you need to do';
+  const emptyStateText =
+    claimStatusMeta?.whatYouNeedToDo?.emptyState ||
+    'There’s nothing we need from you right now. We’ll let you know when there’s an update.';
   const filesNeeded = trackedItems
     ? // When user indicates they will not be submitting more evidence by adding a standard or automated 5103 waiver,
       // we will remove the automated 5103 request from the filesNeeded array, preventing the alert from showing.
@@ -28,17 +34,14 @@ function WhatYouNeedToDo({ claim }) {
   const hasOpenRequests = filesNeeded.length > 0;
   const nothingNeededMessage = (
     <div className="no-documents">
-      <p>
-        There’s nothing we need from you right now. We’ll let you know when
-        there’s an update.
-      </p>
+      <p>{emptyStateText}</p>
     </div>
   );
 
   return (
     <>
       <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--3">
-        What you need to do
+        {sectionTitle}
       </h3>
 
       <UploadType2ErrorAlert

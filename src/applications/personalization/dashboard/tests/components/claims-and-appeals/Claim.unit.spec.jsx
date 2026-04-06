@@ -9,6 +9,9 @@ function makeClaimObject({
   claimDate,
   dateFiled,
   updateDate,
+  claimType = 'Compensation',
+  claimTypeCode,
+  provider,
   status = 'Claim received',
   decisionLetterSent = false,
   developmentLetterSent = false,
@@ -23,7 +26,9 @@ function makeClaimObject({
       claimPhaseDates: {
         phaseChangeDate: updateDate,
       },
-      claimType: 'Compensation',
+      claimType,
+      claimTypeCode,
+      provider,
       closeDate: null,
       dateFiled: dateFiled || '2021-01-21',
       decisionLetterSent,
@@ -51,6 +56,22 @@ describe('<Claim />', () => {
       }),
     ).to.exist;
     expect(tree.getByText(/Review details/)).to.exist;
+  });
+
+  it('should include provider type in Review details href when present', () => {
+    const claim = makeClaimObject({
+      updateDate: daysAgo(15),
+      provider: 'ivc_champva',
+    });
+
+    const tree = renderWithStoreAndRouter(<ClaimLegacy claim={claim} />, {
+      initialState: {},
+    });
+
+    const link = tree.getByRole('link', { name: /review claim received/i });
+    expect(link.getAttribute('href')).to.equal(
+      '/track-claims/your-claims/600214206/status?type=ivc_champva',
+    );
   });
 
   it('should render a notification when a decision letter is sent', () => {

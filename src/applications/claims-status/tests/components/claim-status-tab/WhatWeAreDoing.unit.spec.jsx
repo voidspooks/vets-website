@@ -1100,6 +1100,48 @@ describe('<WhatWeAreDoing>', () => {
           'We moved your claim back to this step because we needed to find or review more evidence',
         );
       });
+
+      it('should use claimStatusMeta from claim attributes when provided', () => {
+        const claimWithMeta = {
+          id: '123',
+          attributes: {
+            claimTypeCode: '020NI',
+            status: 'pending',
+            claimPhaseDates: {
+              currentPhaseBack: false,
+              phaseChangeDate: '2023-02-08',
+              latestPhaseType: 'CLAIM_RECEIVED',
+            },
+            claimStatusMeta: {
+              whatWeAreDoing: {
+                title: 'Provider updates',
+                linkText: {
+                  status: 'Learn about your provider status',
+                },
+                statusMap: {
+                  pending: {
+                    title: 'Claim status: Pending review',
+                    description: 'Your provider is reviewing your claim now.',
+                  },
+                },
+              },
+            },
+          },
+        };
+
+        const { getByText, getByRole } = renderWithRouter(
+          <Provider store={getStore(false)}>
+            <WhatWeAreDoing claim={claimWithMeta} />
+          </Provider>,
+        );
+
+        getByText('Provider updates');
+        getByText('Claim status: Pending review');
+        getByText('Your provider is reviewing your claim now.');
+        expect(getByRole('link')).to.have.text(
+          'Learn about your provider status',
+        );
+      });
     });
   });
 });

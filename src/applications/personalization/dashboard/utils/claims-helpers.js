@@ -30,3 +30,33 @@ export function getClaimType(claim) {
     claim?.attributes?.claimType || 'disability compensation'
   ).toLowerCase();
 }
+
+const isIvcChampvaClaim = claim => {
+  const attrs = claim?.attributes || {};
+  const signals = [
+    attrs.claimType,
+    attrs.claimTypeCode,
+    attrs.displayTitle,
+    attrs.claimTypeBase,
+    attrs.claimStatusMeta?.detail?.pageTitle,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return signals.includes('champva') || signals.includes('10-10d');
+};
+
+export function getClaimDetailsHref(claim) {
+  const provider =
+    claim?.attributes?.provider ||
+    (isIvcChampvaClaim(claim) ? 'ivc_champva' : null);
+  const baseHref = `/track-claims/your-claims/${claim?.id}/status`;
+
+  if (!provider) {
+    return baseHref;
+  }
+
+  const query = new URLSearchParams({ type: provider }).toString();
+  return `${baseHref}?${query}`;
+}

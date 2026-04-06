@@ -18,6 +18,7 @@ import {
   setPageFocus,
   setTabDocumentTitle,
 } from '../utils/helpers';
+import { withClaimStatusMetaIfEnabled } from '../utils/claimStatusMeta';
 import { setUpPage, isTab } from '../utils/page';
 
 class ClaimStatusPage extends React.Component {
@@ -51,37 +52,27 @@ class ClaimStatusPage extends React.Component {
   }
 
   getPageContent() {
-    const { claim } = this.props;
+    const { claim, cstChampvaCustomContentEnabled } = this.props;
+    const displayClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      cstChampvaCustomContentEnabled,
+    );
 
     // Return null if the claim/ claim.attributes dont exist
-    if (!claimAvailable(claim)) {
+    if (!claimAvailable(displayClaim)) {
       return null;
     }
 
-    const {
-      claimPhaseDates,
-      claimTypeCode,
-      closeDate,
-      decisionLetterSent,
-      status,
-    } = claim.attributes;
-    const claimPhaseType = claimPhaseDates.latestPhaseType;
-    const { currentPhaseBack } = claimPhaseDates;
+    const { closeDate, decisionLetterSent, status } = displayClaim.attributes;
     const isOpen = isClaimOpen(status, closeDate);
 
     return (
       <div className="claim-status">
-        <ClaimStatusHeader claim={claim} />
+        <ClaimStatusHeader claim={displayClaim} />
         {isOpen ? (
           <>
-            <WhatYouNeedToDo claim={claim} useLighthouse />
-            <WhatWeAreDoing
-              claimPhaseType={claimPhaseType}
-              claimTypeCode={claimTypeCode}
-              currentPhaseBack={currentPhaseBack}
-              phaseChangeDate={claimPhaseDates.phaseChangeDate}
-              status={status}
-            />
+            <WhatYouNeedToDo claim={displayClaim} useLighthouse />
+            <WhatWeAreDoing claim={displayClaim} />
           </>
         ) : (
           <>
@@ -93,13 +84,22 @@ class ClaimStatusPage extends React.Component {
             <NextSteps />
           </>
         )}
-        <RecentActivity claim={claim} />
+        <RecentActivity claim={displayClaim} />
       </div>
     );
   }
 
   render() {
-    const { claim, loading, message } = this.props;
+    const {
+      claim,
+      cstChampvaCustomContentEnabled,
+      loading,
+      message,
+    } = this.props;
+    const displayClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      cstChampvaCustomContentEnabled,
+    );
 
     let content = null;
     if (!loading) {
@@ -108,7 +108,7 @@ class ClaimStatusPage extends React.Component {
 
     return (
       <ClaimDetailLayout
-        claim={claim}
+        claim={displayClaim}
         clearNotification={this.props.clearNotification}
         currentTab="Status"
         loading={loading}
@@ -125,6 +125,8 @@ function mapStateToProps(state) {
 
   return {
     claim: claimsState.claimDetail.detail,
+    cstChampvaCustomContentEnabled:
+      state.featureToggles?.cst_champva_custom_content || false,
     lastPage: claimsState.routing.lastPage,
     loading: claimsState.claimDetail.loading,
     message: claimsState.notifications.message,
@@ -138,6 +140,7 @@ const mapDispatchToProps = {
 ClaimStatusPage.propTypes = {
   claim: PropTypes.object,
   clearNotification: PropTypes.func,
+  cstChampvaCustomContentEnabled: PropTypes.bool,
   lastPage: PropTypes.string,
   loading: PropTypes.bool,
   message: PropTypes.object,

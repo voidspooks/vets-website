@@ -17,12 +17,13 @@ import UploadType2ErrorAlertSlim from './UploadType2ErrorAlertSlim';
 
 const formatDate = buildDateFormatter();
 
-const getLastUpdated = claim => {
-  const updatedOn = formatDate(
-    claim.attributes.claimPhaseDates?.phaseChangeDate,
-  );
+const getLastUpdated = (claim, listCardMeta = {}) => {
+  const phaseChangeDate = claim.attributes.claimPhaseDates?.phaseChangeDate;
+  const updatedOn = phaseChangeDate ? formatDate(phaseChangeDate) : null;
+  if (!updatedOn || updatedOn === 'Invalid date') return null;
 
-  return `Moved to this step on ${updatedOn}`;
+  const prefix = listCardMeta.lastUpdatedPrefix || 'Moved to this step on';
+  return `${prefix} ${updatedOn}`;
 };
 
 const showPreDecisionCommunications = claim => {
@@ -57,6 +58,7 @@ export default function ClaimsListItem({ claim }) {
     claimDate,
     claimPhaseDates,
     claimTypeCode,
+    claimStatusMeta,
     decisionLetterSent,
     documentsNeeded,
     status,
@@ -72,13 +74,24 @@ export default function ClaimsListItem({ claim }) {
     claimTypeCode,
     cstClaimPhasesEnabled,
   );
+  const listCardMeta = claimStatusMeta?.listCard || {};
+  const stepContent = showEightPhases
+    ? claimStatusMeta?.whatWeAreDoing?.phaseTypeMap?.[
+        claimPhaseDates?.phaseType
+      ]
+    : claimStatusMeta?.whatWeAreDoing?.statusMap?.[status];
 
   const inProgress = !isClaimComplete(claim);
   const showPrecomms = showPreDecisionCommunications(claim);
   const formattedReceiptDate = formatDate(claimDate);
-  const humanStatus = showEightPhases
-    ? getClaimPhaseTypeHeaderText(claimPhaseDates.phaseType)
-    : getStatusDescription(status);
+  const humanStatus =
+    stepContent?.title ||
+    (showEightPhases
+      ? getClaimPhaseTypeHeaderText(claimPhaseDates.phaseType)
+      : getStatusDescription(status));
+  const cardTitle = listCardMeta.title || generateClaimTitle(claim);
+  const receivedLabel = listCardMeta.receivedLabel || 'Received on';
+  const lastUpdated = getLastUpdated(claim, listCardMeta);
   const showAlert = showPrecomms && documentsNeeded;
 
   const ariaLabel = `Details for claim submitted on ${formattedReceiptDate}`;
@@ -100,9 +113,9 @@ export default function ClaimsListItem({ claim }) {
 
   return (
     <ClaimCard
-      title={generateClaimTitle(claim)}
+      title={cardTitle}
       label={inProgress ? 'In Progress' : null}
-      subtitle={`Received on ${formattedReceiptDate}`}
+      subtitle={`${receivedLabel} ${formattedReceiptDate}`}
     >
       <ul className="communications">
         {decisionLetterSent && (
@@ -113,7 +126,7 @@ export default function ClaimsListItem({ claim }) {
       </ul>
       <div className="card-status">
         {humanStatus && <p>{humanStatus}</p>}
-        <p>{getLastUpdated(claim)}</p>
+        {lastUpdated && <p>{lastUpdated}</p>}
       </div>
       <Toggler
         toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}

@@ -362,7 +362,7 @@ describe('Claim files', () => {
           it('should display the review requests warning alert', () => {
             cy.get('va-alert[status="warning"]').within(() => {
               cy.findByRole('heading', {
-                name: 'Review your requests',
+                name: /Review your requests/i,
                 level: 3,
               });
               cy.findByText(

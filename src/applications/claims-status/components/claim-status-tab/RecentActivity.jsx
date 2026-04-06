@@ -20,8 +20,9 @@ import TimezoneDiscrepancyMessage from '../TimezoneDiscrepancyMessage';
 export default function RecentActivity({ claim }) {
   const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
   const cstClaimPhasesEnabled = useToggleValue(TOGGLE_NAMES.cstClaimPhases);
+  const claimAttributes = claim?.attributes || {};
   const showEightPhases = getShowEightPhases(
-    claim.attributes.claimTypeCode,
+    claimAttributes.claimTypeCode,
     cstClaimPhasesEnabled,
   );
 
@@ -49,7 +50,7 @@ export default function RecentActivity({ claim }) {
   };
 
   const generateTrackedItems = () => {
-    const { trackedItems } = claim.attributes;
+    const { trackedItems = [] } = claimAttributes;
     const items = [];
     const addItems = (date, description, item) => {
       items.push({
@@ -119,10 +120,13 @@ export default function RecentActivity({ claim }) {
   };
 
   const generatePhaseItems = () => {
-    const {
-      currentPhaseBack,
-      previousPhases,
-    } = claim.attributes.claimPhaseDates;
+    const claimPhaseDates = claimAttributes.claimPhaseDates || {};
+    const { currentPhaseBack = false } = claimPhaseDates;
+    const previousPhases =
+      claimPhaseDates.previousPhases &&
+      typeof claimPhaseDates.previousPhases === 'object'
+        ? claimPhaseDates.previousPhases
+        : {};
     const claimPhases = [];
 
     const regex = /\d+/;
@@ -151,7 +155,7 @@ export default function RecentActivity({ claim }) {
       type: 'filed',
       phase: 1,
       description: getPhaseItemDescription(currentPhaseBack, 1),
-      date: claim.attributes.claimDate,
+      date: claimAttributes.claimDate,
     });
 
     // When cst_claim_phases is enabled and is a disability compensation claim

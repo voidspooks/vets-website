@@ -66,10 +66,11 @@ describe('VA File Input Multiple', () => {
       .should('be.visible')
       .shadow()
       .find('select')
-      .should('not.be.disabled')
       .should('be.visible')
-      .wait(100) // Small wait to ensure stability
-      .select(docTypeCode);
+      .should($select => {
+        expect($select).to.not.have.attr('disabled');
+      })
+      .select(docTypeCode, { force: true });
   };
 
   const uploadFile = (fileName, fileIndex = 0) => {

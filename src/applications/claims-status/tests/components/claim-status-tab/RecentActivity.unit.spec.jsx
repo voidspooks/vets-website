@@ -36,6 +36,19 @@ const openClaimStep1 = {
   },
 };
 
+const openClaimStep1WithNullPreviousPhases = {
+  attributes: {
+    claimDate: '2024-06-02',
+    claimPhaseDates: {
+      phaseChangeDate: '2024-06-02',
+      currentPhaseBack: false,
+      latestPhaseType: 'CLAIM_RECEIVED',
+      previousPhases: null,
+    },
+    claimTypeCode: '110LCMP7IDES',
+  },
+};
+
 const openClaimStep3PhaseBack = {
   attributes: {
     claimDate: '2024-05-02',
@@ -564,6 +577,22 @@ describe('<RecentActivity>', () => {
           ).to.equal(1);
           getByText('We received your claim in our system');
           expect($('va-pagination', container)).not.to.exist;
+        });
+      });
+      context('when claim has no phase history object', () => {
+        it('should render recent activities without crashing', () => {
+          const { container, getByText } = renderWithRouter(
+            <Provider store={getStore(true)}>
+              <RecentActivity claim={openClaimStep1WithNullPreviousPhases} />
+            </Provider>,
+          );
+          getByText('Recent activity');
+          const recentActivityList = $('ol', container);
+          expect(recentActivityList).to.exist;
+          expect(
+            within(recentActivityList).getAllByRole('listitem').length,
+          ).to.equal(1);
+          getByText('We received your claim in our system');
         });
       });
       context('when claim in phase 3 and has phased back', () => {

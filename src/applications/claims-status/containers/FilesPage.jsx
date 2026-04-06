@@ -22,6 +22,7 @@ import {
   getFailedSubmissionsWithinLast30Days,
 } from '../utils/helpers';
 import { getFilesNeeded } from '../utils/trackedItemContent';
+import { withClaimStatusMetaIfEnabled } from '../utils/claimStatusMeta';
 import {
   setUpPage,
   isTab,
@@ -96,10 +97,14 @@ class FilesPage extends React.Component {
   }
 
   getPageContent() {
-    const { claim } = this.props;
+    const { claim, cstChampvaCustomContentEnabled } = this.props;
+    const displayClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      cstChampvaCustomContentEnabled,
+    );
 
     // Return null if the claim/ claim.attributes dont exist
-    if (!claimAvailable(claim)) {
+    if (!claimAvailable(displayClaim)) {
       return null;
     }
 
@@ -109,8 +114,10 @@ class FilesPage extends React.Component {
       supportingDocuments,
       trackedItems,
       evidenceSubmissions,
-    } = claim.attributes;
+      claimStatusMeta,
+    } = displayClaim.attributes;
     const isOpen = isClaimOpen(status, closeDate);
+    const useSimpleFilesLayout = claimStatusMeta?.files?.simpleLayout;
 
     const documentsTurnedIn = trackedItems.filter(
       item => !item.status.startsWith(NEED_ITEMS_STATUS),
@@ -127,28 +134,38 @@ class FilesPage extends React.Component {
 
     return (
       <div className="claim-files">
-        <ClaimFileHeader isOpen={isOpen} />
-        <UploadType2ErrorAlert
-          failedSubmissions={failedSubmissionsWithinLast30Days}
-          isStatusPage={false}
-        />
-        <Toggler
-          toggleName={Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests}
-        >
-          <Toggler.Enabled>
-            {getFilesNeeded(trackedItems).length > 0 && <ReviewRequestsAlert />}
-          </Toggler.Enabled>
-        </Toggler>
-        <AdditionalEvidencePage additionalEvidenceTitle="Upload additional evidence" />
-        <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
-        <FileSubmissionsInProgress claim={claim} />
-        <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
-        <FilesReceived claim={claim} />
-        <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
-        <FilesWeCouldntReceiveEntryPoint
-          evidenceSubmissions={evidenceSubmissions}
-        />
-        <OtherWaysToSendYourDocuments />
+        <ClaimFileHeader claim={displayClaim} isOpen={isOpen} />
+        {useSimpleFilesLayout ? (
+          <OtherWaysToSendYourDocuments claim={displayClaim} />
+        ) : (
+          <>
+            <UploadType2ErrorAlert
+              failedSubmissions={failedSubmissionsWithinLast30Days}
+              isStatusPage={false}
+            />
+            <Toggler
+              toggleName={
+                Toggler.TOGGLE_NAMES.cstAlertImprovementsEvidenceRequests
+              }
+            >
+              <Toggler.Enabled>
+                {getFilesNeeded(trackedItems).length > 0 && (
+                  <ReviewRequestsAlert />
+                )}
+              </Toggler.Enabled>
+            </Toggler>
+            <AdditionalEvidencePage additionalEvidenceTitle="Upload additional evidence" />
+            <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
+            <FileSubmissionsInProgress claim={displayClaim} />
+            <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
+            <FilesReceived claim={displayClaim} />
+            <div className="vads-u-margin-y--6 vads-u-border--1px vads-u-border-color--gray-light" />
+            <FilesWeCouldntReceiveEntryPoint
+              evidenceSubmissions={evidenceSubmissions}
+            />
+            <OtherWaysToSendYourDocuments claim={displayClaim} />
+          </>
+        )}
       </div>
     );
   }
@@ -169,7 +186,16 @@ class FilesPage extends React.Component {
   };
 
   render() {
-    const { claim, loading, message } = this.props;
+    const {
+      claim,
+      cstChampvaCustomContentEnabled,
+      loading,
+      message,
+    } = this.props;
+    const displayClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      cstChampvaCustomContentEnabled,
+    );
 
     let content = null;
     if (!loading && claim) {
@@ -178,7 +204,7 @@ class FilesPage extends React.Component {
 
     return (
       <ClaimDetailLayout
-        claim={claim}
+        claim={displayClaim}
         loading={loading}
         clearNotification={this.props.clearNotification}
         currentTab="Files"
@@ -196,6 +222,8 @@ function mapStateToProps(state) {
   return {
     loading: claimsState.claimDetail.loading,
     claim: claimsState.claimDetail.detail,
+    cstChampvaCustomContentEnabled:
+      state.featureToggles?.cst_champva_custom_content || false,
     message: claimsState.notifications.message,
     lastPage: claimsState.routing.lastPage,
   };
@@ -208,6 +236,7 @@ const mapDispatchToProps = {
 FilesPage.propTypes = {
   claim: PropTypes.object,
   clearNotification: PropTypes.func,
+  cstChampvaCustomContentEnabled: PropTypes.bool,
   lastPage: PropTypes.string,
   loading: PropTypes.bool,
   location: PropTypes.object,

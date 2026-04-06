@@ -3,7 +3,14 @@ import PropTypes from 'prop-types';
 
 import * as TrackedItem from '../utils/trackedItemContent';
 
-export function NeedHelp({ item }) {
+export function NeedHelp({ claim, item }) {
+  const helpMeta = claim?.attributes?.claimStatusMeta?.help;
+  const phone = helpMeta?.phone || '8008271000';
+  const tty = helpMeta?.tty || '711';
+  const hours =
+    helpMeta?.hours || 'Monday through Friday, 8:00 a.m. to 9:00 p.m. ET.';
+  const intro = helpMeta?.intro || 'Call us';
+
   const alias =
     item && item.supportAliases?.length > 0
       ? item.supportAliases.map((name, index) => {
@@ -31,9 +38,8 @@ export function NeedHelp({ item }) {
     <va-need-help class="vads-u-margin-top--4">
       <div slot="content">
         <p>
-          Call us at <va-telephone contact="8008271000" />. We're here Monday
-          through Friday, 8:00 a.m. to 9:00 p.m. ET. If you have hearing loss,
-          call <va-telephone contact="711" tty="true" />.
+          {intro} at <va-telephone contact={phone} />. We're here {hours} If you
+          have hearing loss, call <va-telephone contact={tty} tty="true" />.
         </p>
         {alias && (
           <p>
@@ -50,6 +56,7 @@ export function NeedHelp({ item }) {
 }
 
 NeedHelp.propTypes = {
+  claim: PropTypes.object,
   item: PropTypes.object,
 };
 export default NeedHelp;

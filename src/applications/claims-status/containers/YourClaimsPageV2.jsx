@@ -41,6 +41,7 @@ import {
 } from '../utils/appeals-v2-helpers';
 import { setPageFocus } from '../utils/page';
 import { groupClaimsByDocsNeeded, setDocumentTitle } from '../utils/helpers';
+import { withClaimStatusMetaIfEnabled } from '../utils/claimStatusMeta';
 import ClaimsFilter from '../components/ClaimsFilter';
 import ClaimLetterSection from '../components/claim-letters/ClaimLetterSection';
 import IntentToFileSection from '../components/IntentToFileSection';
@@ -131,6 +132,11 @@ class YourClaimsPageV2 extends React.Component {
   }
 
   renderListItem(claim) {
+    const sanitizedClaim = withClaimStatusMetaIfEnabled(
+      claim,
+      this.props.cstChampvaCustomContentEnabled,
+    );
+
     if (appealTypes.includes(claim.type)) {
       const { fullName } = this.props;
 
@@ -141,7 +147,7 @@ class YourClaimsPageV2 extends React.Component {
       return <StemClaimListItem key={claim.id} claim={claim} />;
     }
 
-    return <ClaimsListItem key={claim.id} claim={claim} />;
+    return <ClaimsListItem key={sanitizedClaim.id} claim={sanitizedClaim} />;
   }
 
   renderErrorMessages() {
@@ -353,6 +359,7 @@ YourClaimsPageV2.propTypes = {
   claimsAvailable: PropTypes.string,
   claimsLoading: PropTypes.bool,
   cstClaimsListFilterEnabled: PropTypes.bool,
+  cstChampvaCustomContentEnabled: PropTypes.bool,
   fullName: PropTypes.shape({}),
   getAppealsV2: PropTypes.func,
   getClaims: PropTypes.func,
@@ -383,6 +390,9 @@ function mapStateToProps(state) {
   const cstClaimsListFilterEnabled = toggleValues(state)[
     FEATURE_FLAG_NAMES.cstClaimsListFilter
   ];
+  const cstChampvaCustomContentEnabled = toggleValues(state)[
+    FEATURE_FLAG_NAMES.cstChampvaCustomContent
+  ];
 
   const stemClaims = stemAutomatedDecision ? claimsV2Root.stemClaims : [];
 
@@ -412,6 +422,7 @@ function mapStateToProps(state) {
     canAccessClaims,
     claimsAvailable: claimsV2Root.claimsAvailability,
     claimsLoading: claimsV2Root.claimsLoading,
+    cstChampvaCustomContentEnabled,
     cstClaimsListFilterEnabled,
     fullName: state.user.profile.userFullName,
     list: groupClaimsByDocsNeeded(sortedList),

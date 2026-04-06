@@ -10,6 +10,8 @@ import Claim from '../../../components/claims-and-appeals/Claim';
 function makeClaimObject({
   claimDate = '2021-01-21',
   claimType = 'Compensation',
+  claimTypeCode,
+  provider,
   status = 'CLAIM_RECEIVED',
   decisionLetterSent = false,
   developmentLetterSent = false,
@@ -21,6 +23,8 @@ function makeClaimObject({
     attributes: {
       claimDate,
       claimType,
+      claimTypeCode,
+      provider,
       decisionLetterSent,
       developmentLetterSent,
       documentsNeeded,
@@ -84,6 +88,37 @@ describe('Claim', () => {
     expect(link).to.exist;
     expect(link.getAttribute('href')).to.equal(
       '/track-claims/your-claims/600214206/status',
+    );
+  });
+
+  it('renders Review details with provider type when provider is present', () => {
+    const claim = makeClaimObject({ provider: 'ivc_champva' });
+
+    const { container } = renderWithStoreAndRouter(<Claim claim={claim} />, {
+      initialState: {},
+    });
+
+    const link = container.querySelector('va-link[text="Review details"]');
+    expect(link).to.exist;
+    expect(link.getAttribute('href')).to.equal(
+      '/track-claims/your-claims/600214206/status?type=ivc_champva',
+    );
+  });
+
+  it('renders Review details with CHAMPVA provider fallback for 10-10D claims', () => {
+    const claim = makeClaimObject({
+      claimType: '10-10D-EXTENDED',
+      claimTypeCode: '010LCOMP',
+    });
+
+    const { container } = renderWithStoreAndRouter(<Claim claim={claim} />, {
+      initialState: {},
+    });
+
+    const link = container.querySelector('va-link[text="Review details"]');
+    expect(link).to.exist;
+    expect(link.getAttribute('href')).to.equal(
+      '/track-claims/your-claims/600214206/status?type=ivc_champva',
     );
   });
 
