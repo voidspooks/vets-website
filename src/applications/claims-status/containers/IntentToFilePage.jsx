@@ -1,30 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom-v5-compat';
 import { VaLink } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
+import { getIntentsToFile } from '../actions';
 import ClaimsBreadcrumbs from '../components/ClaimsBreadcrumbs';
-import ServerErrorContent from '../components/errors/ServerErrorContent';
+import IntentToFileCard from '../components/IntentToFileCard';
+import IntentToFileCardLoadingSkeleton from '../components/IntentToFileCardLoadingSkeleton';
+import IntentToFileErrorAlert from '../components/IntentToFileErrorAlert';
 import NeedHelp from '../components/NeedHelp';
 import { LINKS } from '../constants';
 import { setDocumentTitle } from '../utils/helpers';
 
 const EmptyState = () => (
-  <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
-    We don’t have any intents to file on record for you in our system.
-  </p>
+  <>
+    <p
+      data-testid="itf-empty-state"
+      className="vads-u-margin-top--0 vads-u-margin-bottom--2"
+    >
+      We don’t have any intents to file on record for you in our system.
+    </p>
+    <div
+      role="presentation"
+      className="vads-u-border-top--1px vads-u-border-color--gray-light vads-u-margin-top--2 vads-u-margin-bottom--0"
+    />
+  </>
 );
 
 const IntentToFilePageContent = () => {
-  // TODO: Implement API call to fetch intents to file from the backend.
-  // Replace `hasServerError` and `intentsToFile` with real API response data.
-  const [hasServerError] = useState(false);
-  const [intentsToFile] = useState([]);
+  const dispatch = useDispatch();
+  const { data: intentsToFile, loading, error } = useSelector(
+    state => state.disability.status.intentsToFile,
+  );
 
-  useEffect(() => {
-    setDocumentTitle('Your Intents To File');
-    focusElement('h1');
-  }, []);
+  useEffect(
+    () => {
+      setDocumentTitle('Your Intents To File');
+      focusElement('h1');
+      dispatch(getIntentsToFile());
+    },
+    [dispatch],
+  );
 
   return (
     <>
@@ -35,19 +52,14 @@ const IntentToFilePageContent = () => {
       </p>
 
       <h2 className="vads-u-margin-bottom--2">Intents to file on record</h2>
-      {hasServerError && (
-        <div className="vads-u-margin-bottom--2">
-          <ServerErrorContent />
-        </div>
-      )}
-      {!hasServerError && intentsToFile.length === 0 && <EmptyState />}
+      <IntentToFileCardLoadingSkeleton isLoading={loading} />
+      {!loading && error && <IntentToFileErrorAlert />}
+      {!loading && !error && intentsToFile.length === 0 && <EmptyState />}
+      {!loading &&
+        !error &&
+        intentsToFile.map(itf => <IntentToFileCard key={itf.id} itf={itf} />)}
 
-      <div
-        role="presentation"
-        className="vads-u-border-top--1px vads-u-border-color--gray-light vads-u-margin-top--2 vads-u-margin-bottom--4"
-      />
-
-      <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--1p5">
+      <h2 className="vads-u-margin-top--4 vads-u-margin-bottom--1p5">
         Start a new intent to file
       </h2>
       <p className="vads-u-margin-top--0 vads-u-margin-bottom--1p5">
@@ -134,7 +146,6 @@ export const IntentToFilePage = () => {
   const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
   const cstIntentsToFileEnabled = useToggleValue(TOGGLE_NAMES.cstIntentsToFile);
 
-  // Redirect to claims list if feature flag is disabled
   if (!cstIntentsToFileEnabled) {
     return <Navigate to="/your-claims/" replace />;
   }

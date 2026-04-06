@@ -2260,6 +2260,71 @@ const responses = {
     return res.status(200).json({ jobId: `job-${Date.now()}` });
   },
 
+  'GET /v0/intents_to_file': (() => {
+    // Configuration for testing different ITF scenarios
+    // Appropriate values:
+    // - 'multiple' : Two active ITFs (compensation not expiring, pension expiring soon)
+    // - 'single'   : One active ITF (compensation only)
+    // - 'empty'    : No active ITFs (empty state)
+    // - 'error'    : 500 server error (system alert)
+    const itfScenario = 'multiple';
+
+    const now = new Date();
+    const monthsAgo = months => {
+      const d = new Date(now);
+      d.setMonth(d.getMonth() - months);
+      return d.toISOString();
+    };
+    const monthsFromNow = months => {
+      const d = new Date(now);
+      d.setMonth(d.getMonth() + months);
+      return d.toISOString();
+    };
+    const daysFromNow = days => {
+      const d = new Date(now);
+      d.setDate(d.getDate() + days);
+      return d.toISOString();
+    };
+
+    const itfData = {
+      multiple: [
+        {
+          id: '193685',
+          type: 'compensation',
+          creationDate: monthsAgo(8),
+          expirationDate: monthsFromNow(4),
+          status: 'active',
+        },
+        {
+          id: '193686',
+          type: 'pension',
+          creationDate: monthsAgo(11),
+          expirationDate: daysFromNow(30),
+          status: 'active',
+        },
+      ],
+      single: [
+        {
+          id: '193685',
+          type: 'compensation',
+          creationDate: monthsAgo(8),
+          expirationDate: monthsFromNow(4),
+          status: 'active',
+        },
+      ],
+      empty: [],
+    };
+
+    return (_req, res) => {
+      if (itfScenario === 'error') {
+        return res.status(500).json({
+          errors: [{ title: 'Internal Server Error', status: '500' }],
+        });
+      }
+      return res.json({ data: itfData[itfScenario] || [] });
+    };
+  })(),
+
   'OPTIONS /v0/maintenance_windows': 'OK',
   'GET /v0/maintenance_windows': { data: [] },
 

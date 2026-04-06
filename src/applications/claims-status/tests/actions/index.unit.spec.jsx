@@ -18,6 +18,7 @@ import {
   getClaim,
   getClaimLetters,
   getStemClaims,
+  getIntentsToFile,
   resetUploads,
   setAdditionalEvidenceNotification,
   setLastPage,
@@ -46,6 +47,9 @@ import {
   FETCH_STEM_CLAIMS_SUCCESS,
   FETCH_STEM_CLAIMS_PENDING,
   FETCH_CLAIMS_SUCCESS,
+  FETCH_INTENTS_TO_FILE_PENDING,
+  FETCH_INTENTS_TO_FILE_SUCCESS,
+  FETCH_INTENTS_TO_FILE_ERROR,
 } from '../../actions/types';
 
 describe('Actions', () => {
@@ -524,6 +528,91 @@ describe('Actions', () => {
           );
           expect(dispatchSpy.secondCall.args[0].type).to.eql(
             FETCH_STEM_CLAIMS_ERROR,
+          );
+          done();
+        }
+      };
+
+      thunk(dispatch);
+    });
+  });
+
+  describe('getIntentsToFile', () => {
+    afterEach(() => {
+      server.resetHandlers();
+    });
+
+    it('should dispatch pending then success on a successful response', done => {
+      server.use(
+        createGetHandler('https://dev-api.va.gov/v0/intents_to_file', () => {
+          return jsonResponse({ data: [] }, { status: 200 });
+        }),
+      );
+
+      const thunk = getIntentsToFile();
+      const dispatchSpy = sinon.spy();
+      const dispatch = action => {
+        dispatchSpy(action);
+        if (dispatchSpy.callCount === 2) {
+          expect(dispatchSpy.firstCall.args[0].type).to.eql(
+            FETCH_INTENTS_TO_FILE_PENDING,
+          );
+          expect(dispatchSpy.secondCall.args[0].type).to.eql(
+            FETCH_INTENTS_TO_FILE_SUCCESS,
+          );
+          done();
+        }
+      };
+
+      thunk(dispatch);
+    });
+
+    it('should sort intents to file by creation date oldest first', done => {
+      const mockItfs = [
+        { id: '1', creationDate: '2025-06-01T12:00:00.000+00:00' },
+        { id: '2', creationDate: '2025-04-01T12:00:00.000+00:00' },
+        { id: '3', creationDate: '2025-05-01T12:00:00.000+00:00' },
+      ];
+
+      server.use(
+        createGetHandler('https://dev-api.va.gov/v0/intents_to_file', () => {
+          return jsonResponse({ data: mockItfs }, { status: 200 });
+        }),
+      );
+
+      const thunk = getIntentsToFile();
+      const dispatchSpy = sinon.spy();
+      const dispatch = action => {
+        dispatchSpy(action);
+        if (dispatchSpy.callCount === 2) {
+          const { data } = dispatchSpy.secondCall.args[0];
+          expect(data[0].id).to.eql('2');
+          expect(data[1].id).to.eql('3');
+          expect(data[2].id).to.eql('1');
+          done();
+        }
+      };
+
+      thunk(dispatch);
+    });
+
+    it('should dispatch pending then error on a failed response', done => {
+      server.use(
+        createGetHandler('https://dev-api.va.gov/v0/intents_to_file', () => {
+          return new Response(null, { status: 400 });
+        }),
+      );
+
+      const thunk = getIntentsToFile();
+      const dispatchSpy = sinon.spy();
+      const dispatch = action => {
+        dispatchSpy(action);
+        if (dispatchSpy.callCount === 2) {
+          expect(dispatchSpy.firstCall.args[0].type).to.eql(
+            FETCH_INTENTS_TO_FILE_PENDING,
+          );
+          expect(dispatchSpy.secondCall.args[0].type).to.eql(
+            FETCH_INTENTS_TO_FILE_ERROR,
           );
           done();
         }

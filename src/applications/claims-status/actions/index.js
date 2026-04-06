@@ -46,6 +46,9 @@ import {
   FETCH_FAILED_UPLOADS_ERROR,
   FETCH_FAILED_UPLOADS_PENDING,
   FETCH_FAILED_UPLOADS_SUCCESS,
+  FETCH_INTENTS_TO_FILE_ERROR,
+  FETCH_INTENTS_TO_FILE_PENDING,
+  FETCH_INTENTS_TO_FILE_SUCCESS,
   GET_CLAIM_DETAIL,
   RECORD_NOT_FOUND_ERROR,
   RESET_UPLOADS,
@@ -666,6 +669,25 @@ export function fetchFailedUploads() {
         type: FETCH_FAILED_UPLOADS_ERROR,
         error: error.message || 'Failed to fetch failed uploads',
       });
+    }
+  };
+}
+
+const sortByCreationDate = itfs =>
+  [...itfs].sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate));
+
+export function getIntentsToFile() {
+  return async dispatch => {
+    dispatch({ type: FETCH_INTENTS_TO_FILE_PENDING });
+
+    try {
+      const response = await apiRequest('/intents_to_file');
+      dispatch({
+        type: FETCH_INTENTS_TO_FILE_SUCCESS,
+        data: sortByCreationDate(response?.data || []),
+      });
+    } catch (error) {
+      dispatch({ type: FETCH_INTENTS_TO_FILE_ERROR });
     }
   };
 }

@@ -9,6 +9,7 @@ export const ENDPOINTS = {
   STEM: '/v0/education_benefits_claims/stem_claim_status',
   CLAIM_LETTERS: '/v0/claim_letters',
   CLAIM_LETTER_DOWNLOAD: '/v0/claim_letters/**',
+  INTENTS_TO_FILE: '/v0/intents_to_file',
 };
 
 /**
@@ -116,6 +117,30 @@ export const mockClaimLettersEndpoint = (letters = [], statusCode = 200) => {
         ],
       },
     }).as('claimLetters');
+  }
+};
+
+/**
+ * Stubs the intents to file endpoint.
+ *
+ * @param {Array} itfs - Array of ITF objects to return (default: empty array)
+ * @param {number} statusCode - HTTP status code to return (default: 200)
+ */
+export const mockIntentsToFileEndpoint = (itfs = [], statusCode = 200) => {
+  if (statusCode === 200) {
+    cy.intercept('GET', ENDPOINTS.INTENTS_TO_FILE, {
+      statusCode,
+      body: { data: itfs },
+    });
+  } else {
+    cy.intercept('GET', ENDPOINTS.INTENTS_TO_FILE, {
+      statusCode,
+      body: {
+        errors: [
+          { title: 'Internal Server Error', status: String(statusCode) },
+        ],
+      },
+    });
   }
 };
 
