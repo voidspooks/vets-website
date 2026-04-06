@@ -12,6 +12,7 @@ import prefillTransform from './prefillTransform';
 // Components
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
+import PresubmitInfo from '../components/PresubmitInfo';
 
 // Pages
 import {
@@ -53,6 +54,13 @@ const formConfig = {
   version: 0,
   prefillEnabled: true,
   prefillTransformer: prefillTransform,
+  preSubmitInfo: {
+    CustomComponent: PresubmitInfo,
+    required: true,
+    statementOfTruth: {
+      useProfileFullName: true,
+    },
+  },
   savedFormMessages: {
     notFound: 'Please start over.',
     noAuth: 'Please sign in again to continue your request.',
