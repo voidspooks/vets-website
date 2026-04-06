@@ -1019,6 +1019,56 @@ export const redirectWhenNoEvidence = props => {
 };
 
 /**
+ * V3 → V1 redirect map.
+ * Keys = V3 paths (va-file-input-multiple). Values = V1 counterparts (legacy FileField).
+ * Used when enhancement is ON but FileInputV3 is OFF.
+ */
+const V3_TO_V1_UPLOAD_REDIRECTS = {
+  '/supporting-evidence/private-medical-records-upload-evidence':
+    '/supporting-evidence/private-medical-records-upload-file',
+  '/supporting-evidence/additional-evidence-upload-file':
+    '/supporting-evidence/additional-evidence-upload',
+};
+
+/**
+ * V1 → V3 redirect map.
+ * Keys = V1 paths (legacy FileField). Values = V3 counterparts (va-file-input-multiple).
+ * Used when enhancement is ON and FileInputV3 is also ON.
+ */
+const V1_TO_V3_UPLOAD_REDIRECTS = {
+  '/supporting-evidence/private-medical-records-upload-file':
+    '/supporting-evidence/private-medical-records-upload-evidence',
+  '/supporting-evidence/additional-evidence-upload':
+    '/supporting-evidence/additional-evidence-upload-file',
+};
+
+/**
+ * Determines if user should be redirected from a V3 page to its V1 counterpart.
+ * Fires when enhancement is ON but FileInputV3 is OFF.
+ * @param {Object} props - { returnUrl, formData }
+ * @returns {boolean} true if redirect needed
+ */
+export const redirectV3ToV1Upload = props => {
+  const { returnUrl, formData } = props;
+  if (!isEvidenceEnhancement(formData)) return false;
+  if (formData.disability526SupportingEvidenceFileInputV3) return false;
+  return returnUrl in V3_TO_V1_UPLOAD_REDIRECTS;
+};
+
+/**
+ * Determines if user should be redirected from a V1 page to its V3 counterpart.
+ * Fires when enhancement is ON and FileInputV3 is also ON.
+ * @param {Object} props - { returnUrl, formData }
+ * @returns {boolean} true if redirect needed
+ */
+export const redirectV1ToV3Upload = props => {
+  const { returnUrl, formData } = props;
+  if (!isEvidenceEnhancement(formData)) return false;
+  if (!formData.disability526SupportingEvidenceFileInputV3) return false;
+  return returnUrl in V1_TO_V3_UPLOAD_REDIRECTS;
+};
+
+/**
  * Determines if user should be redirected from legacy evidence pages to enhancement page
  * @param {Object} props - { returnUrl, formData }
  * @returns {boolean} true if redirect needed
@@ -1136,6 +1186,8 @@ export const onFormLoaded = props => {
   const shouldRevertWhenNoEvidence = redirectWhenNoEvidence(props);
   const shouldRedirectLegacyToEnhancement = redirectLegacyToEnhancement(props);
   const shouldRedirectEnhancementToLegacy = redirectEnhancementToLegacy(props);
+  const shouldRedirectV3ToV1 = redirectV3ToV1Upload(props);
+  const shouldRedirectV1ToV3 = redirectV1ToV3Upload(props);
   const redirectUrl = legacy4142AuthURL;
 
   if (isRedirectingFromInvalidBddShaWorkflow(props)) return;
@@ -1165,6 +1217,12 @@ export const onFormLoaded = props => {
   } else if (shouldRedirectEnhancementToLegacy === true) {
     // Handle evidence enhancement flow transition: enhancement → legacy
     router.push('/supporting-evidence/evidence-types');
+  } else if (shouldRedirectV3ToV1) {
+    // V3 page saved but FileInputV3 OFF → swap to V1 counterpart
+    router.push(V3_TO_V1_UPLOAD_REDIRECTS[returnUrl]);
+  } else if (shouldRedirectV1ToV3) {
+    // V1 page saved but FileInputV3 ON → swap to V3 counterpart
+    router.push(V1_TO_V3_UPLOAD_REDIRECTS[returnUrl]);
   } else {
     // otherwise, we just redirect to the returnUrl as usual when resuming a form
     router.push(returnUrl);

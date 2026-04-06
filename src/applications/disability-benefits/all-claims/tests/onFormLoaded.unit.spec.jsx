@@ -279,7 +279,6 @@ describe('onFormLoaded', () => {
       });
     });
   });
-
   describe('edge cases', () => {
     it('handles empty formData object', () => {
       mockProps.formData = {};
@@ -293,5 +292,150 @@ describe('onFormLoaded', () => {
       onFormLoaded(mockProps);
       expect(mockRouter.push.calledWith(undefined)).to.be.true;
     });
+  });
+});
+
+describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
+  let mockRouter;
+  let mockProps;
+
+  beforeEach(() => {
+    mockRouter = {
+      push: sinon.spy(),
+    };
+
+    mockProps = {
+      returnUrl: '/some/return/url',
+      formData: {},
+      router: mockRouter,
+    };
+
+    clearSharedVariables();
+  });
+  describe('V3 to V1 redirects when FileInputV3 is disabled', () => {
+    it('redirects V3 private-medical to V1 when FileInputV3 OFF', () => {
+      mockProps.returnUrl =
+        '/supporting-evidence/private-medical-records-upload-evidence';
+      mockProps.formData = {
+        disability526SupportingEvidenceEnhancement: true,
+        disability526SupportingEvidenceFileInputV3: false,
+      };
+
+      onFormLoaded(mockProps);
+
+      expect(mockRouter.push.calledOnce).to.be.true;
+      expect(
+        mockRouter.push.calledWith(
+          '/supporting-evidence/private-medical-records-upload-file',
+        ),
+      ).to.be.true;
+    });
+
+    it('redirects V3 additional-evidence to V1 when FileInputV3 OFF', () => {
+      mockProps.returnUrl =
+        '/supporting-evidence/additional-evidence-upload-file';
+      mockProps.formData = {
+        disability526SupportingEvidenceEnhancement: true,
+        disability526SupportingEvidenceFileInputV3: false,
+      };
+
+      onFormLoaded(mockProps);
+
+      expect(mockRouter.push.calledOnce).to.be.true;
+      expect(
+        mockRouter.push.calledWith(
+          '/supporting-evidence/additional-evidence-upload',
+        ),
+      ).to.be.true;
+    });
+  });
+
+  describe('V1 to V3 redirects when FileInputV3 is enabled', () => {
+    it('redirects V1 private-medical to V3 when FileInputV3 ON', () => {
+      mockProps.returnUrl =
+        '/supporting-evidence/private-medical-records-upload-file';
+      mockProps.formData = {
+        disability526SupportingEvidenceEnhancement: true,
+        disability526SupportingEvidenceFileInputV3: true,
+      };
+
+      onFormLoaded(mockProps);
+
+      expect(mockRouter.push.calledOnce).to.be.true;
+      expect(
+        mockRouter.push.calledWith(
+          '/supporting-evidence/private-medical-records-upload-evidence',
+        ),
+      ).to.be.true;
+    });
+
+    it('redirects V1 additional-evidence to V3 when FileInputV3 ON', () => {
+      mockProps.returnUrl = '/supporting-evidence/additional-evidence-upload';
+      mockProps.formData = {
+        disability526SupportingEvidenceEnhancement: true,
+        disability526SupportingEvidenceFileInputV3: true,
+      };
+
+      onFormLoaded(mockProps);
+
+      expect(mockRouter.push.calledOnce).to.be.true;
+      expect(
+        mockRouter.push.calledWith(
+          '/supporting-evidence/additional-evidence-upload-file',
+        ),
+      ).to.be.true;
+    });
+  });
+
+  describe('no redirect when URL matches feature flag state', () => {
+    it('falls through to returnUrl when V3 page and FileInputV3 is ON', () => {
+      mockProps.returnUrl =
+        '/supporting-evidence/private-medical-records-upload-evidence';
+      mockProps.formData = {
+        disability526SupportingEvidenceEnhancement: true,
+        disability526SupportingEvidenceFileInputV3: true,
+      };
+
+      onFormLoaded(mockProps);
+
+      expect(mockRouter.push.calledOnce).to.be.true;
+      expect(
+        mockRouter.push.calledWith(
+          '/supporting-evidence/private-medical-records-upload-evidence',
+        ),
+      ).to.be.true;
+    });
+
+    it('falls through to returnUrl when V1 page and FileInputV3 is OFF', () => {
+      mockProps.returnUrl = '/supporting-evidence/additional-evidence-upload';
+      mockProps.formData = {
+        disability526SupportingEvidenceEnhancement: true,
+        disability526SupportingEvidenceFileInputV3: false,
+      };
+
+      onFormLoaded(mockProps);
+
+      expect(mockRouter.push.calledOnce).to.be.true;
+      expect(
+        mockRouter.push.calledWith(
+          '/supporting-evidence/additional-evidence-upload',
+        ),
+      ).to.be.true;
+    });
+  });
+
+  it('redirects to evidence-types when enhancement is OFF and URL is a V3 enhancement page', () => {
+    mockProps.returnUrl =
+      '/supporting-evidence/private-medical-records-upload-evidence';
+    mockProps.formData = {
+      disability526SupportingEvidenceEnhancement: false,
+      disability526SupportingEvidenceFileInputV3: false,
+    };
+
+    onFormLoaded(mockProps);
+
+    expect(mockRouter.push.calledOnce).to.be.true;
+    expect(mockRouter.push.calledWith('/supporting-evidence/evidence-types')).to
+      .be.true;
   });
 });
