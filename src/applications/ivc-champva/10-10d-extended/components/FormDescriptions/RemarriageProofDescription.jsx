@@ -1,14 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { applicantWording } from '../../../shared/utilities';
 import FileUploadDescription from './FileUploadDescription';
 
-const RemarriageProofDescription = ({ formData }) => (
+const RemarriageProofDescription = () => (
   <>
     <p>
-      If {applicantWording(formData, false)} remarried after the death of the
-      Veteran, you can help us process your application faster by submitting
-      documents showing proof of that remarriage.
+      If the applicant remarried after the death of the Veteran, you can help us
+      process your application faster by submitting documents showing proof of
+      that remarriage.
     </p>
     <p>
       <strong>Upload a copy of one of these documents:</strong>
@@ -39,16 +37,5 @@ const RemarriageProofDescription = ({ formData }) => (
     <FileUploadDescription allowMultiple />
   </>
 );
-
-RemarriageProofDescription.propTypes = {
-  formData: PropTypes.shape({
-    applicantName: PropTypes.shape({
-      first: PropTypes.string,
-      middle: PropTypes.string,
-      last: PropTypes.string,
-      suffix: PropTypes.string,
-    }),
-  }),
-};
 
 export default RemarriageProofDescription;
