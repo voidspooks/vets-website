@@ -1,6 +1,8 @@
 import { toHash } from '../../../shared/utilities';
-import { formatFullName } from './formatting';
 import content from '../../locales/en/content.json';
+import { getAgeInYears } from './applicants';
+import { formValue, indexedValue, whenAll, whenAny } from './form-config';
+import { formatFullName } from './formatting';
 
 const APPLICANT_TEXT = content['noun--applicant'];
 const NO_PARTICIPANT_TEXT = content['medicare--participant-none'];
@@ -46,10 +48,42 @@ export const generateParticipantName = (item, _, { applicants = [] } = {}) => {
  * @param {Object[]} [formData.medicare] - Medicare records; each may include `medicareParticipant` (hashed SSN).
  * @returns {Object[]|undefined} Array of applicants without Medicare, or `undefined` if no applicants list is present.
  */
-export const getEligibleApplicantsWithoutMedicare = formData =>
-  formData?.applicants?.filter(
-    a =>
-      !formData?.medicare?.some(
-        plan => toHash(a.applicantSsn) === plan?.medicareParticipant,
-      ),
+export const getEligibleApplicantsWithoutMedicare = formData => {
+  const participantHashes = new Set(
+    (formData?.medicare || []).map(plan => plan?.medicareParticipant),
   );
+  return formData?.applicants?.filter(
+    a => !participantHashes.has(toHash(a.applicantSsn)),
+  );
+};
+
+const medicareValue = path => indexedValue('medicare', path);
+
+const hasPlanType = expected => (formData, index) =>
+  medicareValue('medicarePlanType')(formData, index) === expected;
+const hasPartADenial = (formData, index) =>
+  Boolean(medicareValue('view:hasPartADenial.hasPartADenial')(formData, index));
+
+const is65OrOlder = ({ applicants, medicare }, index) => {
+  const curAppHash = medicare?.[index]?.medicareParticipant;
+  const curApp = applicants?.find(a => toHash(a.applicantSsn) === curAppHash);
+  return getAgeInYears(curApp?.applicantDob) >= 65;
+};
+
+export const hasPartsAB = hasPlanType('ab');
+export const hasPartA = hasPlanType('a');
+export const hasPartB = hasPlanType('b');
+export const hasPartC = hasPlanType('c');
+export const hasPartsABorC = whenAny(hasPartsAB, hasPartC);
+export const hasPartD = medicareValue('hasMedicarePartD');
+
+export const needsDenialProof = whenAll(hasPartB, hasPartADenial, is65OrOlder);
+
+export const hasEligibleApplicant = formData => {
+  const excluded = getEligibleApplicantsWithoutMedicare(formData) ?? [];
+  return excluded.some(a => getAgeInYears(a.applicantDob) >= 65);
+};
+
+export const needsIneligibilityProof = formValue(
+  'view:hasProofMultipleApplicants.hasProofMultipleApplicants',
+);

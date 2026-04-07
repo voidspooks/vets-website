@@ -3,6 +3,11 @@ import get from 'platform/utilities/data/get';
 export const formValue = (path, fallback = undefined) => formData =>
   get(path, formData) ?? fallback;
 
+export const indexedValue = (collection, path, fallback = undefined) => (
+  formData,
+  index,
+) => get(`${collection}.${index}.${path}`, formData) ?? fallback;
+
 /**
  * Negate a predicate, returning `true` when the predicate returns `false`.
  *

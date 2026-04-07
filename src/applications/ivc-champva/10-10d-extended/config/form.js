@@ -10,13 +10,7 @@ import FormFooter from '../components/FormFooter';
 import content from '../locales/en/content.json';
 
 import transformForSubmit from './submitTransformer';
-import ohiIntroduction from '../chapters/medicareInformation/ohiIntroduction';
-import medicareIntroduction from '../chapters/medicareInformation/medicareIntroduction';
-import {
-  medicarePages,
-  medicareStatusPage,
-  medicareProofOfIneligibilityPage,
-} from '../chapters/medicareInformation';
+import { medicarePages } from '../chapters/medicare';
 import { signerPages } from '../chapters/signer';
 import { sponsorPages } from '../chapters/sponsor';
 import { applicantPages } from '../chapters/applicant';
@@ -114,21 +108,7 @@ const formConfig = {
     },
     medicareInformation: {
       title: 'Other Health Insurance Certification: Medicare information',
-      pages: {
-        ohiIntro: {
-          path: 'medicare-and-other-health-insurance',
-          title: 'Report Medicare and other health insurance',
-          ...ohiIntroduction,
-        },
-        medicareIntro: {
-          path: 'report-medicare',
-          title: 'Report Medicare',
-          ...medicareIntroduction,
-        },
-        ...medicarePages,
-        page22: medicareStatusPage,
-        page23: medicareProofOfIneligibilityPage,
-      },
+      pages: medicarePages,
     },
     healthInsuranceInformation: {
       title:
