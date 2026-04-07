@@ -386,6 +386,7 @@ describe('formConfig', () => {
               beforeEach(() => {
                 formData.claimantType = 'self';
                 formData.idNumber = { ssn: '123456789' };
+                formData['view:hasPrefillSsn'] = true;
               });
 
               it('should not display the page', () => {
