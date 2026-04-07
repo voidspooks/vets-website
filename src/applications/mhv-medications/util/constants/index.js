@@ -74,6 +74,7 @@ export {
   FIELD_NONE_NOTED,
   FIELD_NOT_AVAILABLE,
   NO_PROVIDER_NAME,
+  UNFILLED_OH_MESSAGE_CONTENT,
   downtimeNotificationParams,
   tooltipNames,
   tooltipHintContent,

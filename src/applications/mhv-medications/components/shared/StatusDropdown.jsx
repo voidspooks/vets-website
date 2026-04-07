@@ -14,6 +14,7 @@ import {
   selectCernerPilotFlag,
   selectV2StatusMappingFlag,
   selectMhvMedicationsOracleHealthCutoverFlag,
+  selectMedicationsManagementImprovementsFlag,
 } from '../../util/selectors';
 
 const StatusDropdown = props => {
@@ -22,6 +23,9 @@ const StatusDropdown = props => {
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
   const isOracleHealthCutover = useSelector(
     selectMhvMedicationsOracleHealthCutoverFlag,
+  );
+  const isMedicationsImprovementsEnabled = useSelector(
+    selectMedicationsManagementImprovementsFlag,
   );
   const cernerFacilityIds = useSelector(selectCernerFacilityIds);
   const useV2Statuses = isCernerPilot && isV2StatusMapping;
@@ -51,6 +55,9 @@ const StatusDropdown = props => {
                   prescription={prescription}
                   showLinks={false}
                   showPhoneInline={false}
+                  isMedicationsImprovementsEnabled={
+                    isMedicationsImprovementsEnabled
+                  }
                 />
               );
             }

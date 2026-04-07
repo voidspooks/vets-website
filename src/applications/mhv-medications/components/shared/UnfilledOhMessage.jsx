@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { pharmacyPhoneNumber } from '@department-of-veterans-affairs/mhv/exports';
+import { UNFILLED_OH_MESSAGE_CONTENT } from '../../util/constants';
 import CallPharmacyPhone from './CallPharmacyPhone';
 import { pageType } from '../../util/dataDogConstants';
 
@@ -11,6 +12,7 @@ import { pageType } from '../../util/dataDogConstants';
  * @param {boolean} props.showLinks - Whether to show links (facility finder, etc.)
  * @param {boolean} props.showPhoneInline - Whether to show phone number inline (false for status dropdown)
  * @param {string} props.page - The page context (LIST or DETAILS)
+ * @param {boolean} props.isMedicationsImprovementsEnabled - Whether to show updated S3 messaging
  * @param {string} props.testId - Optional test ID override
  */
 const UnfilledOhMessage = ({
@@ -18,39 +20,36 @@ const UnfilledOhMessage = ({
   showLinks = true,
   showPhoneInline = true,
   page,
+  isMedicationsImprovementsEnabled = false,
   testId,
 }) => {
   const pharmacyPhone = pharmacyPhoneNumber(prescription);
   const shouldShowPhoneInline = showPhoneInline && page === pageType.LIST;
 
+  const messageContent = isMedicationsImprovementsEnabled
+    ? UNFILLED_OH_MESSAGE_CONTENT.MANAGEMENT_IMPROVEMENTS_ENABLED
+    : UNFILLED_OH_MESSAGE_CONTENT.MANAGEMENT_IMPROVEMENTS_DISABLED;
+
   return (
     <div className="no-print" data-testid={testId || 'active-unfilled-oh'}>
-      <p className="vads-u-margin-bottom--2">
-        You can’t refill this prescription online right now.{' '}
-      </p>
+      <p className="vads-u-margin-bottom--2">{messageContent.intro}</p>
       <p className="vads-u-margin-bottom--2">
         {pharmacyPhone ? (
           <>
             {shouldShowPhoneInline ? (
               <>
-                If you need a refill, call your VA pharmacy{' '}
+                {messageContent.withPhoneInlinePrefix}{' '}
                 <CallPharmacyPhone
                   cmopDivisionPhone={pharmacyPhone}
                   page={pageType.LIST}
                 />
               </>
             ) : (
-              <>
-                If you need a refill, call your VA pharmacy at the phone number
-                listed below.
-              </>
+              <>{messageContent.withPhoneBelow}</>
             )}
           </>
         ) : (
-          <>
-            To refill now, call your VA pharmacy’s automated refill line. The
-            number is on your prescription label, or contact your VA pharmacy.
-          </>
+          <>{messageContent.withoutPhone}</>
         )}
       </p>
       {showLinks &&
@@ -70,6 +69,7 @@ UnfilledOhMessage.propTypes = {
   page: PropTypes.string,
   showLinks: PropTypes.bool,
   showPhoneInline: PropTypes.bool,
+  isMedicationsImprovementsEnabled: PropTypes.bool,
   testId: PropTypes.string,
 };
 

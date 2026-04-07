@@ -245,7 +245,6 @@ describe('Medications List Card Extra Details', () => {
     });
   });
 
-  // REFACTORED: Consolidated V2 status tests
   describe('V2 status handling (when BOTH CernerPilot and V2StatusMapping flags enabled)', () => {
     V2_STATUS_TESTS.forEach(({ status, testId, refillRemaining }) => {
       it(`displays ${status} message`, async () => {
@@ -283,6 +282,61 @@ describe('Medications List Card Extra Details', () => {
       );
       // V2 Active with refills remaining returns null (component renders nothing)
       expect(screen.container.querySelector('.shipping-info')).to.not.exist;
+    });
+  });
+
+  describe('when mhvMedicationsManagementImprovements flag is enabled - V1 Active', () => {
+    it('displays updated V1 Active message when flag enabled for unfilled prescription with phone', async () => {
+      const screen = setup(
+        {
+          ...prescription,
+          dispStatus: dispStatusObj.active,
+          refillRemaining: 5,
+          dispensedDate: null,
+          rxRfRecords: [],
+          stationNumber: '668',
+          cmopDivisionPhone: '(509) 434-7000',
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      const el = await screen.findByTestId('active-unfilled-oh');
+      expect(el.textContent).to.include(
+        'We haven’t filled this prescription yet. Details may change.',
+      );
+      expect(el.textContent).to.include(
+        'If you need this medication now, call your VA pharmacy',
+      );
+    });
+
+    it('displays updated V1 Active message when management improvements flag is enabled for unfilled prescription without phone', async () => {
+      const screen = setup(
+        {
+          ...prescription,
+          dispStatus: dispStatusObj.active,
+          refillRemaining: 5,
+          dispensedDate: null,
+          rxRfRecords: [],
+          stationNumber: '668',
+          cmopDivisionPhone: null,
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      const el = await screen.findByTestId('active-unfilled-oh');
+      expect(el.textContent).to.include(
+        'We haven’t filled this prescription yet. Details may change.',
+      );
+      expect(el.textContent).to.include(
+        'call your VA pharmacy’s automated refill line',
+      );
+      expect(el.textContent).to.include('medication details page');
     });
   });
 

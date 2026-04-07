@@ -124,7 +124,14 @@ const ExtraDetails = ({
       case dispStatusObjV2.active:
         // Both map to "Active" in V2
         if (isUnfilledOh) {
-          return <UnfilledOhMessage prescription={rx} showLinks page={page} />;
+          return (
+            <UnfilledOhMessage
+              prescription={rx}
+              showLinks
+              page={page}
+              isMedicationsImprovementsEnabled={isMedsImprovements}
+            />
+          );
         }
         if (noRefillRemaining) {
           if (isRenewalBlocked && rx.isRenewable) {
@@ -416,7 +423,14 @@ const ExtraDetails = ({
 
       case dispStatusObj.active:
         if (isUnfilledOh) {
-          return <UnfilledOhMessage prescription={rx} showLinks page={page} />;
+          return (
+            <UnfilledOhMessage
+              prescription={rx}
+              showLinks
+              page={page}
+              isMedicationsImprovementsEnabled={isMedsImprovements}
+            />
+          );
         }
         if (noRefillRemaining) {
           if (isRenewalBlocked && rx.isRenewable) {

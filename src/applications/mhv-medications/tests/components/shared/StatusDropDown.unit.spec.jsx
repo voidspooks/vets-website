@@ -266,6 +266,8 @@ describe('component that displays Status', () => {
             flags.cernerPilot || false,
           [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]:
             flags.v2StatusMapping || false,
+          [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]:
+            flags.mhvMedicationsManagementImprovements || false,
         },
         drupalStaticData: {
           vamcEhrData: {
@@ -344,6 +346,50 @@ describe('component that displays Status', () => {
 
       expect(message.textContent).to.include('automated refill line');
       expect(message.textContent).to.include('prescription label');
+    });
+
+    describe('when mhvMedicationsManagementImprovements flag is enabled', () => {
+      it('shows updated S3 messaging when phone is available', () => {
+        const prescription = {
+          prescriptionId: 99999999,
+          dispStatus: 'Active',
+          dispensedDate: null,
+          sourceEhr: 'OH',
+          rxRfRecords: [],
+          cmopDivisionPhone: '5551234567',
+        };
+
+        const screen = renderWithPrescription(prescription, {
+          mhvMedicationsManagementImprovements: true,
+        });
+        const message = screen.getByTestId('active-unfilled-oh');
+
+        expect(message).to.exist;
+        expect(message.textContent).to.match(
+          /filled this prescription yet\. Details may change\./,
+        );
+        expect(message.textContent).to.include(
+          'If you need this medication now, call your VA pharmacy at the phone number listed below.',
+        );
+      });
+
+      it('shows updated S3 automated refill line messaging when no phone', () => {
+        const prescription = {
+          dispStatus: 'Active',
+          dispensedDate: null,
+          sourceEhr: 'OH',
+          rxRfRecords: [],
+          cmopDivisionPhone: null,
+        };
+
+        const screen = renderWithPrescription(prescription, {
+          mhvMedicationsManagementImprovements: true,
+        });
+        const message = screen.getByTestId('active-unfilled-oh');
+
+        expect(message.textContent).to.include('automated refill line');
+        expect(message.textContent).to.include('medication details page');
+      });
     });
 
     it('does not show facility finder link (showLinks=false)', () => {
