@@ -43,20 +43,14 @@ export const FILTER_OPTIONS_MAP = Object.fromEntries(
 );
 
 /**
- * Returns the correct filter URL for the given key based on API version.
- * - Both cerner_pilot + v2_status_mapping → V2 URLs
- * - Only cerner_pilot → V1 URLs but RENEWAL uses V2 URL
- * - Otherwise → V1 URLs
+ * Returns the correct filter URL for the given key.
+ * Always uses V1 (VistA/MHV) status URLs for filtering.
  * @param {string} key - Filter option key
- * @param {boolean} isCernerPilot - Whether Cerner pilot flag is enabled
- * @param {boolean} isV2StatusMapping - Whether V2 status mapping flag is enabled
  * @returns {string} The filter URL query parameter string
  */
-export const getFilterUrl = (key, isCernerPilot, isV2StatusMapping) => {
+export const getFilterUrl = (key, _isCernerPilot, _isV2StatusMapping) => {
   const option = FILTER_OPTIONS_MAP[key];
   if (!option) return '';
-  if (isCernerPilot && isV2StatusMapping) return option.urlV2;
-  if (isCernerPilot && key === 'RENEWAL') return option.urlV2;
   return option.urlV1;
 };
 

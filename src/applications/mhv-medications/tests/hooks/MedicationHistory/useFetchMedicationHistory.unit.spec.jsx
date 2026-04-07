@@ -409,7 +409,7 @@ describe('useFetchMedicationHistory', () => {
       });
     });
 
-    it('uses V2 filter URLs when both Cerner pilot and V2 status mapping flags are true', async () => {
+    it('uses V1 filter URLs even when both Cerner pilot and V2 status mapping flags are true', async () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse());
@@ -428,12 +428,12 @@ describe('useFetchMedicationHistory', () => {
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
         expect(queryParams.filterOption).to.equal(
-          getFilterUrl(ACTIVE_FILTER_KEY, true, true),
+          getFilterUrl(ACTIVE_FILTER_KEY, false, false),
         );
       });
     });
 
-    it('uses V1 filter URLs with V2 RENEWAL URL when only Cerner pilot flag is true', async () => {
+    it('uses V1 filter URLs for RENEWAL even when only Cerner pilot flag is true', async () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse());
@@ -450,9 +450,8 @@ describe('useFetchMedicationHistory', () => {
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
-        // RENEWAL with cerner_pilot only should use V2 URL
         expect(queryParams.filterOption).to.equal(
-          getFilterUrl('RENEWAL', true, false),
+          getFilterUrl('RENEWAL', false, false),
         );
       });
     });
