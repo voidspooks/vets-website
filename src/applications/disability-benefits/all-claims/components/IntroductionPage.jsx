@@ -106,6 +106,7 @@ class IntroductionPage extends React.Component {
                 onClick={handler.startOver}
                 text="go back and answer questions again"
               />
+              .
             </p>
           )}
           <va-alert status="info">
@@ -229,7 +230,6 @@ class IntroductionPage extends React.Component {
                   href="/disability/get-help-filing-claim/"
                   text="Get help filing your claim"
                 />
-                .
               </p>
             </va-process-list-item>
             <va-process-list-item>
