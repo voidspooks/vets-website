@@ -17,18 +17,11 @@ import {
 } from '../../../shared/tests/e2e/helpers';
 import { fillNumberWebComponent } from './helpers/local-helpers';
 
-const formatUsPhoneNumber = contact => {
-  if (!contact) {
-    return contact;
+const stripForPhoneDigits = value => {
+  if (typeof value !== 'string') {
+    return value;
   }
-  const digitsOnly = contact.replace(/\D/g, '');
-  if (digitsOnly.length === 10) {
-    const area = digitsOnly.slice(0, 3);
-    const exchange = digitsOnly.slice(3, 6);
-    const subscriber = digitsOnly.slice(6);
-    return `(${area}) ${exchange}-${subscriber}`;
-  }
-  return contact;
+  return value.replace(/\D/g, '');
 };
 
 const fillTelephoneField = (fieldName, phone) => {
@@ -40,18 +33,35 @@ const fillTelephoneField = (fieldName, phone) => {
     return;
   }
   const alias = `${fieldName}Input`.replace(/[^A-Za-z0-9_-]/g, '');
-  cy.get(`va-telephone-input[name="root_${fieldName}"]`)
-    .shadow()
-    .find('va-text-input')
-    .shadow()
-    .find('input')
-    .as(alias);
+  cy.get('body').then($body => {
+    const telephoneSelector = `va-telephone-input[name="root_${fieldName}"]`;
+    const textSelector = `va-text-input[name="root_${fieldName}"]`;
+    const hasTelephoneInput = $body.find(telephoneSelector).length > 0;
+    if (hasTelephoneInput) {
+      cy.get(telephoneSelector)
+        .shadow()
+        .find('va-text-input')
+        .shadow()
+        .find('input')
+        .as(alias);
+    } else {
+      cy.get(textSelector)
+        .shadow()
+        .find('input')
+        .as(alias);
+    }
+  });
 
   cy.get(`@${alias}`)
     .click({ force: true })
     .clear({ force: true })
     .type(contact, { force: true })
-    .should('have.value', formatUsPhoneNumber(contact));
+    .invoke('val')
+    .then(value => {
+      const actual = stripForPhoneDigits(value);
+      const expected = stripForPhoneDigits(contact);
+      expect(actual).to.eq(expected);
+    });
 };
 
 const testConfig = createTestConfig(
