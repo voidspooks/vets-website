@@ -320,11 +320,10 @@ export function transformPicklistToV2(data) {
     }
 
     // Get transformation function
-    // For stepchild-routed items, use stepchild transform; otherwise use reason-specific transform
+    // For stepchild-routed items, use stepchild transform; otherwise use
+    // reason-specific transform
     const transformFn =
-      isStepchild &&
-      (item.removalReason === 'childMarried' ||
-        item.removalReason === 'childNotInSchool')
+      isStepchild && item.removalReason === 'childNotInSchool'
         ? transformStepchildByFlag
         : transformFunctions[item.removalReason];
 

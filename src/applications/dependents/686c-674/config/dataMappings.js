@@ -63,10 +63,7 @@ export const V3_TRANSFORMATION_ROUTES = {
   parentDied: 'deaths',
 
   // Child married - stepchildren go to stepChildren, others to childMarriage
-  childMarried: {
-    default: 'childMarriage',
-    stepchild: 'stepChildren',
-  },
+  childMarried: 'childMarriage',
 
   // Child not in school - stepchildren go to stepChildren, others to childStoppedAttendingSchool
   childNotInSchool: {

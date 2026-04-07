@@ -500,7 +500,7 @@ describe('transformPicklistToV2', () => {
     ]);
   });
 
-  it('should add stepchild to stepChildren array only when isStepchild is Y and removalReason is childMarried', () => {
+  it('should add stepchild to childMarriage array when isStepchild is Y and removalReason is childMarried', () => {
     const data = {
       [PICKLIST_DATA]: [
         {
@@ -516,16 +516,18 @@ describe('transformPicklistToV2', () => {
     };
     const result = transformPicklistToV2(data);
 
-    // Stepchild with childMarried goes to stepChildren array (not childMarriage)
-    expect(result.stepChildren).to.be.an('array');
-    expect(result.stepChildren).to.have.lengthOf(1);
-    expect(result.stepChildren[0]).to.deep.equal({
+    // Stepchild with childMarried goes to childMarriage array (not stepChildren)
+    expect(result.childMarriage).to.be.an('array');
+    expect(result.childMarriage).to.have.lengthOf(1);
+    expect(result.childMarriage[0]).to.deep.equal({
       fullName: { first: 'STEP', last: 'CHILD' },
+      dateMarried: '2024-06-01',
+      dependentIncome: 'N',
       ssn: '123456789',
       birthDate: '2010-03-15',
     });
-    // Should NOT be in childMarriage array
-    expect(result.childMarriage).to.be.undefined;
+    // Should NOT be in stepChildren array
+    expect(result.stepChildren).to.be.undefined;
   });
 
   it('should add stepchild to deaths array only when isStepchild is Y and removalReason is childDied', () => {
