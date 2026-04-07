@@ -246,6 +246,7 @@ const responses = {
         'yyyy-MM-ddTHH:mm:ss',
       );
     }
+    const isCerner = req.body.systemType === 'cerner';
     const pending = req.body.status === 'proposed';
     const future = req.body.status === 'booked';
     let patientComments;
@@ -270,7 +271,6 @@ const responses = {
       id: `mock${currentMockId}`,
       attributes: {
         ...req.body,
-        created: new Date().toISOString(),
         kind,
         type,
         modality,
@@ -296,6 +296,10 @@ const responses = {
         pending,
       },
     };
+    if (!isCerner) {
+      submittedAppt.attributes.created = new Date().toISOString();
+    }
+
     currentMockId += 1;
     mockAppts.push(submittedAppt);
     return res.json({ data: submittedAppt });

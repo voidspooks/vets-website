@@ -46,23 +46,25 @@ export default function StatusAlert({ appointment, facility }) {
   const facilityPhone = getFacilityPhone(facility);
   const today = new Date().toISOString();
 
-  if (APPOINTMENT_STATUS.proposed === status && isValidDate) {
-    const createdDate = format(new Date(created), 'MMMM dd, yyyy');
-    const businessDays = differenceInBusinessDays(
-      new Date(today),
-      new Date(created),
-    );
-    if (businessDays >= PASS_DUE) {
-      return (
-        <InfoAlert
-          status="warning"
-          headline="We're having trouble scheduling this appointment"
-        >
-          <p>Call your facility to finish scheduling.</p>
-          <FacilityPhone contact={facilityPhone} icon />
-          <p>You requested this appointment on {createdDate}.</p>
-        </InfoAlert>
+  if (APPOINTMENT_STATUS.proposed === status) {
+    if (isValidDate) {
+      const createdDate = format(new Date(created), 'MMMM dd, yyyy');
+      const businessDays = differenceInBusinessDays(
+        new Date(today),
+        new Date(created),
       );
+      if (businessDays >= PASS_DUE) {
+        return (
+          <InfoAlert
+            status="warning"
+            headline="We're having trouble scheduling this appointment"
+          >
+            <p>Call your facility to finish scheduling.</p>
+            <FacilityPhone contact={facilityPhone} icon />
+            <p>You requested this appointment on {createdDate}.</p>
+          </InfoAlert>
+        );
+      }
     }
     const proposedMsg = (
       <p>
@@ -72,15 +74,19 @@ export default function StatusAlert({ appointment, facility }) {
     );
 
     if (!showConfirmMsg) {
-      return (
-        <>
-          {proposedMsg}
-          <p>
-            You requested this appointment on{' '}
-            <span data-dd-privacy="mask">{createdDate}</span>.
-          </p>
-        </>
-      );
+      if (isValidDate) {
+        const createdDate = format(new Date(created), 'MMMM dd, yyyy');
+        return (
+          <>
+            {proposedMsg}
+            <p>
+              You requested this appointment on{' '}
+              <span data-dd-privacy="mask">{createdDate}</span>.
+            </p>
+          </>
+        );
+      }
+      return proposedMsg;
     }
 
     return (

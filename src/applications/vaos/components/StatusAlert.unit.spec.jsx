@@ -37,6 +37,50 @@ describe('VAOS Component: StatusAlert', () => {
       event: 'vaos-view-your-appointments-button-clicked',
     });
   });
+  it('Should display confirmation alert for OH request without a created date', () => {
+    const mockAppointment = new MockAppointment();
+    mockAppointment.setKind('clinic');
+    mockAppointment.setStatus('proposed');
+    // No setCreated() call — simulates an OH request with no created date
+
+    const screen = renderWithStoreAndRouter(
+      <StatusAlert appointment={mockAppointment} facility={facilityData} />,
+      {
+        initialState,
+        path: `/${mockAppointment.id}?confirmMsg=true`,
+      },
+    );
+    expect(screen.baseElement).to.contain('va-alert');
+    expect(screen.baseElement).to.contain.text('We’ve received your request');
+    expect(screen.baseElement).to.contain.text(
+      `We’ll try to schedule your appointment in the next 2 business days.`,
+    );
+    expect(screen.queryByTestId('review-appointments-link')).to.exist;
+    expect(screen.queryByTestId('schedule-appointment-link')).to.exist;
+  });
+
+  it('Should display proposed message without date for OH request without a created date', () => {
+    const mockAppointment = new MockAppointment();
+    mockAppointment.setKind('clinic');
+    mockAppointment.setStatus('proposed');
+    // No setCreated() call — simulates an OH request with no created date
+
+    const screen = renderWithStoreAndRouter(
+      <StatusAlert appointment={mockAppointment} facility={facilityData} />,
+      {
+        initialState,
+        path: `/${mockAppointment.id}`,
+      },
+    );
+    expect(screen.baseElement).not.to.contain('va-alert');
+    expect(screen.baseElement).to.contain.text(
+      `We’ll try to schedule your appointment in the next 2 business days.`,
+    );
+    expect(screen.baseElement).not.to.contain.text(
+      'You requested this appointment on',
+    );
+  });
+
   it('Should display creation date on VA request alert', () => {
     const today = new Date();
     const mockAppointment = new MockAppointment();
