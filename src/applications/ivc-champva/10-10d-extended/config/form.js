@@ -19,7 +19,7 @@ import {
 } from '../chapters/medicareInformation';
 import { signerPages } from '../chapters/signer';
 import { sponsorPages } from '../chapters/sponsor';
-import { applicantPages } from '../chapters/applicantInformation';
+import { applicantPages } from '../chapters/applicant';
 import { healthInsurancePages } from '../chapters/healthInsurance';
 
 /** @type {FormConfig}  */
