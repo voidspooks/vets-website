@@ -20,21 +20,57 @@ Mission: Make it easier for Veterans to apply for enrollment in VA health-relate
 - [Project Documents](https://github.com/department-of-veterans-affairs/va.gov-team/tree/master/products/health-care/application/va-application)
 - [Product Outline](https://github.com/department-of-veterans-affairs/va.gov-team/blob/master/teams/vsa/teams/health-benefits/healthcare-application/product-outline.md)
 
-### Project URLS
+## Project URLS
 
 ```markdown
 /health-care/apply-for-health-care-form-10-10ez/
 ```
 
-### How to run locally
+## How to run locally
 
-Follow the standard directions to run the app. Vets API needs to be running in order to run the app locally.
+You can run the 10-10EZ application using either a mocked API (recommended for frontend development) or the real `vets-api` backend (for debugging backend behavior). Do not run both at the same time.
 
-### VA Forms
+### Option 1: Run with mock API
+
+This uses hardcoded responses and does not require `vets-api`.
+
+#### Setup
+
+1. Start the frontend:
+   `yarn watch --env entry=hca`
+
+2. Start the mock API server:
+   `yarn mock-api --responses ./src/applications/hca/tests/mock-api.js`
+
+3. In your browser console, enable a mock authenticated session:
+   `localStorage.setItem('hasSession', true)`
+
+4. Open the application:
+   `http://localhost:3001/health-care/apply/application/introduction`
+
+### Option 2: Run with `vets-api`
+
+Use this when you need to debug backend behavior.
+
+#### Setup
+
+1. Start the frontend:
+   `yarn watch --env entry=hca`
+
+2. Start `vets-api`
+
+3. Open the application:
+   `http://localhost:3001/health-care/apply-for-health-care-form-10-10ez/introduction`
+
+#### Notes
+
+- Do not run the mock API and `vets-api` at the same time.
+
+## VA Forms
 
 We are using version 1 of the forms library, Formation. This is a straight forward standard form. We are using [the vets-json-schema](https://github.com/department-of-veterans-affairs/vets-json-schema) to validate the shape of the data.
 
-### What API(s) does this use?
+## What API(s) does this use?
 
 This uses the Health Care Application API, the main controller is [here](https://github.com/department-of-veterans-affairs/vets-api/blob/master/app/controllers/v0/health_care_applications_controller.rb).
 
@@ -45,15 +81,15 @@ This uses the Health Care Application API, the main controller is [here](https:/
 - [`/v0/health_care_applications/facilities`](https://department-of-veterans-affairs.github.io/va-digital-services-platform-docs/api-reference/#/benefits_forms/getFacilities) - Retrieve a list of active healthcare facilities
 - [`/v0/health_care_applications/download_pdf`](https://department-of-veterans-affairs.github.io/va-digital-services-platform-docs/api-reference/#/benefits_forms/post_v0_health_care_applications_download_pdf) - Download a pre-filled 10-10EZ PDF form upon submission receipt.
 
-### Feature toggles
+## Feature toggles
 
 - We have a feature toggle to enable an override of enrollment status, `hca_enrollment_status_override_enabled`, to allow multiple submissions with same user.
 - We have a feature toggle to enable DataDog's browser monitoring for the application, `hca_browser_monitoring_enabled`.
 
-### How to test new features?
+## How to test new features?
 
 Each feature should have unit tests and e2e tests. We can use the Review Instances to review before merging a PR.
 
-### Useful acronym and terms
+## Useful acronym and terms
 
 - TERA - Toxic Exposure Risk Activity

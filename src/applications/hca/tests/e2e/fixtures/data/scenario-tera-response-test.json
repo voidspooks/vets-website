@@ -1,0 +1,48 @@
+{
+  "view:preferredFacility": {
+    "view:facilityState": "WA",
+    "vaMedicalFacility": "650GA"
+  },
+  "view:hasHealthInsuranceToAdd": false,
+  "isMedicaidEligible": false,
+  "view:toxicExposureDates": {
+    "toxicExposureStartDate": "1999-04-XX",
+    "toxicExposureEndDate": "2010-09-XX"
+  },
+  "otherToxicExposure": "other toxin, other toxin1",
+  "view:otherToxicExposures": {
+    "exposureToRadiation": true,
+    "exposureToOther": true
+  },
+  "exposedToAgentOrange": true,
+  "radiationCleanupEfforts": true,
+  "combatOperationService": true,
+  "view:gulfWarServiceDates": {
+    "gulfWarStartDate": "1999-01-XX",
+    "gulfWarEndDate": "2010-01-XX"
+  },
+  "gulfWarService": true,
+  "hasTeraResponse": true,
+  "vaCompensationType": "highDisability",
+  "veteranAddress": {
+    "street": "123 Main St",
+    "city": "Springfield",
+    "postalCode": "54321",
+    "country": "USA",
+    "state": "NV"
+  },
+  "view:doesMailingMatchHomeAddress": true,
+  "gender": "M",
+  "view:demographicCategories": {
+    "isSpanishHispanicLatino": false
+  },
+  "veteranHomeAddress": {
+    "country": "USA"
+  },
+  "veteranFullName": {
+    "first": "John",
+    "last": "Doe"
+  },
+  "veteranDateOfBirth": "1975-01-02",
+  "veteranSocialSecurityNumber": "111223333"
+}

@@ -1,0 +1,44 @@
+{
+  "view:preferredFacility": {
+    "view:facilityState": "OH",
+    "vaMedicalFacility": "523QB"
+  },
+  "view:hasHealthInsuranceToAdd": false,
+  "isMedicaidEligible": true,
+  "hasTeraResponse": false,
+  "vaCompensationType": "highDisability",
+  "veteranAddress": {
+    "street": "123 High St",
+    "city": "Columbus",
+    "postalCode": "45123",
+    "country": "USA",
+    "state": "OH"
+  },
+  "view:doesMailingMatchHomeAddress": true,
+  "gender": "M",
+  "view:demographicCategories": {
+    "isSpanishHispanicLatino": false
+  },
+  "veteranHomeAddress": {
+    "country": "USA"
+  },
+  "providers": [
+    {
+      "insuranceName": "Hospital A",
+      "insurancePolicyHolderName": "Tony Smark",
+      "view:policyNumberOrGroupCode": {
+        "insurancePolicyNumber": "6612351232"
+      }
+    }
+  ],
+  "view:isLoggedIn": false,
+  "view:isRegOnlyEnabled": false,
+  "view:totalDisabilityRating": 0,
+  "view:isUserInMvi": false,
+  "veteranFullName": {
+    "first": "Tony",
+    "last": "Smark"
+  },
+  "veteranDateOfBirth": "2000-02-03",
+  "veteranSocialSecurityNumber": "111223333"
+}

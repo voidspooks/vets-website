@@ -1,0 +1,75 @@
+{
+  "vaMedicalFacility": "668QE",
+  "view:preferredFacility": {
+    "view:facilityState": "MA",
+    "vaMedicalFacility": "631"
+  },
+  "maritalStatus": "Divorced",
+  "discloseFinancialInformation": true,
+  "isEnrolledMedicarePartA": false,
+  "isMedicaidEligible": true,
+  "lastServiceBranch": "air force",
+  "lastEntryDate": "2020-01-03",
+  "lastDischargeDate": "2024-02-03",
+  "dischargeType": "honorable",
+  "vaCompensationType": "lowDisability",
+  "hasTeraResponse": false,
+  "view:doesMailingMatchHomeAddress": false,
+  "veteranAddress": {
+    "street": "123 Main St",
+    "city": "Springfield",
+    "postalCode": "12345",
+    "country": "USA",
+    "state": "MA"
+  },
+  "gender": "M",
+  "isSpanishHispanicLatino": false,
+  "dependents": [
+    {
+      "disabledBefore18": false,
+      "cohabitedLastYear": true,
+      "fullName": {
+        "first": "Dependent",
+        "last": "One"
+      },
+      "dependentRelation": "Daughter",
+      "socialSecurityNumber": "561232223",
+      "dateOfBirth": "2020-01-01",
+      "becameDependent": "2020-01-01",
+      "view:dependentIncome": false
+    }
+  ],
+  "veteranFullName": {
+    "first": "Jim",
+    "last": "Doe"
+  },
+  "veteranDateOfBirth": "1988-02-03",
+  "veteranSocialSecurityNumber": "111223333",
+  "view:veteranGrossIncome": {
+    "veteranGrossIncome": 3242434
+  },
+  "view:veteranNetIncome": {
+    "veteranNetIncome": 23424
+  },
+  "view:veteranOtherIncome": {
+    "veteranOtherIncome": 23424
+  },
+  "view:deductibleMedicalExpenses": {
+    "deductibleMedicalExpenses": 234
+  },
+  "view:deductibleFuneralExpenses": {
+    "deductibleFuneralExpenses": 11
+  },
+  "view:deductibleEducationExpenses": {
+    "deductibleEducationExpenses": 0
+  },
+  "privacyAgreementAccepted": true,
+  "veteranHomeAddress": {
+    "street": "456 Maple Ave",
+    "city": "Springfield",
+    "postalCode": "12345",
+    "country": "USA",
+    "state": "MA"
+  },
+  "isCoveredByHealthInsurance": false
+}

@@ -16,7 +16,7 @@ import {
 const testConfig = createTestConfig(
   {
     dataPrefix: 'data',
-    dataSets: ['maximal-test', 'minimal-test', 'foreign-address-test'],
+    dataSets: ['minimal-test'],
     fixtures: { data: path.join(__dirname, 'fixtures/data') },
     pageHooks: {
       introduction: ({ afterHook }) => {
@@ -24,32 +24,6 @@ const testConfig = createTestConfig(
       },
       'id-form': () => {
         cy.get('@testData').then(testData => fillIdentityForm(testData));
-      },
-      'household-information/share-financial-information': ({ afterHook }) => {
-        afterHook(() => {
-          cy.selectYesNoVaRadioOption(
-            'root_discloseFinancialInformation',
-            false,
-          );
-          goToNextPage();
-        });
-      },
-      'household-information/share-financial-information-confirm': ({
-        afterHook,
-      }) => {
-        afterHook(() => goToNextPage());
-      },
-      'household-information/marital-status': ({ afterHook }) => {
-        afterHook(() => {
-          cy.selectVaSelect('root_maritalStatus', 'Never Married');
-          goToNextPage();
-        });
-      },
-      'household-information/dependents': ({ afterHook }) => {
-        afterHook(() => {
-          cy.selectYesNoVaRadioOption('root_view:reportDependents', false);
-          goToNextPage();
-        });
       },
       'insurance-information/va-facility': ({ afterHook }) => {
         afterHook(() => {
