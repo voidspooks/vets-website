@@ -5,6 +5,7 @@ import React from 'react';
  * @typedef {Object} ChatboxContainerProps
  * @property {React.ReactNode} children
  * @property {string} [title]
+ * @property {string} [bodyClassName]
  */
 
 /**
@@ -16,6 +17,7 @@ import React from 'react';
 export default function ChatboxContainer({
   children,
   title = 'VA chatbot (beta)',
+  bodyClassName = '',
 }) {
   return (
     <div
@@ -31,7 +33,9 @@ export default function ChatboxContainer({
           {title}
         </h2>
       </div>
-      <div className="vads-u-background-color--white va-chatbot-chatbox-container">
+      <div
+        className={`vads-u-background-color--white va-chatbot-chatbox-container ${bodyClassName}`.trim()}
+      >
         {children}
       </div>
     </div>
@@ -40,5 +44,6 @@ export default function ChatboxContainer({
 
 ChatboxContainer.propTypes = {
   children: PropTypes.node.isRequired,
+  bodyClassName: PropTypes.string,
   title: PropTypes.string,
 };

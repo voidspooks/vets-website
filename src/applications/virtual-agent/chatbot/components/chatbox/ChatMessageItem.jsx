@@ -22,19 +22,9 @@ const SENDER_TYPES = {
  */
 
 const buildBubbleClassNames = isUser => {
-  return classNames(
-    'va-chatbot-message-bubble vads-u-padding-y--1 vads-u-padding-x--1p5',
-    {
-      'vads-u-background-color--primary-alt-lightest vads-u-border-color--primary': !isUser,
-      'vads-u-background-color--gray-lightest vads-u-margin-left--auto': isUser,
-    },
-  );
-};
-
-const buildNubClassNames = isUser => {
-  return classNames('va-chatbot-message-nub', {
-    'va-chatbot-message-nub--user': isUser,
-    'va-chatbot-message-nub--va': !isUser,
+  return classNames('vads-u-padding-y--1 vads-u-padding-x--1p5', {
+    'vads-u-background-color--primary-alt-lightest vads-u-border-color--primary': !isUser,
+    'vads-u-background-color--gray-lightest vads-u-margin-left--auto': isUser,
   });
 };
 
@@ -59,17 +49,6 @@ export default function ChatMessageItem({ message }) {
       )}
 
       <div className={buildBubbleClassNames(isUser)}>
-        <svg
-          aria-hidden="true"
-          className={buildNubClassNames(isUser)}
-          focusable="false"
-          viewBox="0 0 10 10"
-        >
-          <path
-            className="va-chatbot-message-nub__path"
-            d="M10 0 L0 0 L10 10"
-          />
-        </svg>
         <p className="vads-u-margin--0">{message.text}</p>
       </div>
 

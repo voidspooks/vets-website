@@ -2,12 +2,6 @@
 @import "~@department-of-veterans-affairs/css-library/dist/stylesheets/formation-overrides/variables";
 @import "~@department-of-veterans-affairs/css-library/dist/stylesheets/mixins";
 
-#btnAcceptDisclaimer {
-  @include media($medium-screen) {
-    margin-left: 23px;
-  }
-}
-
 .merger {
   article {
     &.webchat__basic-transcript__activity:last-of-type {
@@ -182,37 +176,113 @@ button.webchat__send-button[disabled] {
 }
 
 // styles for new chatbot
-.va-chatbot-message-bubble {
-  border-radius: 0.25rem;
-  position: relative;
-}
-
-.va-chatbot-message-nub {
-  display: block;
-  height: 12px;
-  position: absolute;
-  top: 0;
-  width: 12px;
-}
-
-.va-chatbot-message-nub--va {
-  color: $color-primary-alt-lightest;
-  left: -8px;
-}
-
-.va-chatbot-message-nub--user {
-  color: $color-gray-lightest;
-  right: -8px;
-  transform: scaleX(-1);
-}
-
-.va-chatbot-message-nub__path {
-  fill: currentColor;
-}
-
 .va-chatbot-chatbox-container {
-  min-height: 550px;
-  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - var(--va-chatbot-viewport-offset, 20rem));
   position: relative;
   width: 100%;
+}
+
+.va-chatbot-chatbox-container--conversation {
+  height: calc(100dvh - var(--va-chatbot-viewport-offset, 12rem));
+}
+
+.va-chatbot-chatbox-container--disclaimer {
+  height: auto;
+  overflow: hidden;
+}
+
+.va-chatbot-chat-thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.va-chatbot-message-region {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.va-chatbot-disclaimer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.va-chatbot-disclaimer__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// need this fixed height so that the composer doesn't shift position
+// when the error message appears above it
+.va-chatbot-composer {
+  align-items: end;
+  min-height: 105px;
+}
+
+// custom styling needed for alignment and border/shadow removal for submit button
+.va-chatbot-composer__submit {
+  box-shadow: 0 0 0 0 transparent !important;
+}
+
+.va-chatbot-composer__input::part(label) {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  word-wrap: normal !important;
+}
+
+.va-chatbot-typing-indicator {
+  align-items: center;
+  color: var(--vads-color-base-darker);
+  display: inline-flex;
+  font-size: 0.9375rem;
+  margin: 0 1rem 1rem;
+}
+
+.va-chatbot-typing-indicator__dots {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.va-chatbot-typing-indicator__dot {
+  animation: va-chatbot-dot-pulse 1.2s ease-in-out infinite;
+  background-color: var(--vads-color-primary);
+  border-radius: 50%;
+  display: inline-block;
+  height: 0.4rem;
+  width: 0.4rem;
+}
+
+.va-chatbot-typing-indicator__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.va-chatbot-typing-indicator__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes va-chatbot-dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

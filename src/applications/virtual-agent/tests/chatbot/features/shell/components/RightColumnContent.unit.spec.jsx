@@ -32,17 +32,20 @@ describe('RightColumnContent', () => {
     expect(onAccept.calledOnce).to.be.true;
   });
 
-  it('renders the message list when accepted', () => {
+  it('renders the chat conversation when accepted', () => {
     sandbox.stub(ReactReduxModule, 'useSelector').returns(true);
 
     const { getByTestId, queryByTestId, getByText } = render(
       <RightColumnContent />,
     );
 
+    expect(getByTestId('chat-conversation')).to.exist;
     expect(getByTestId('chat-message-list')).to.exist;
     expect(queryByTestId('disclaimer')).to.equal(null);
     expect(
-      getByText("We can't load the chatbot right now. Please try again later."),
+      getByText(
+        "Welcome to the VA chatbot. I'm here to help with general questions about VA benefits and services.",
+      ),
     ).to.exist;
   });
 });

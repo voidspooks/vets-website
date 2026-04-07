@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -6,9 +7,9 @@ const baseIconStyle = {
   borderRadius: '999px',
   display: 'inline-flex',
   flexShrink: 0,
-  height: '2.25rem',
+  height: '2rem',
   justifyContent: 'center',
-  width: '2.25rem',
+  width: '2rem',
 };
 
 /**
@@ -19,13 +20,22 @@ const baseIconStyle = {
  * @returns {JSX.Element}
  */
 export default function ChatMessageIcon({ user }) {
-  const iconTextOrLabel = user ? 'You' : 'VA';
+  const spanClassNames = classNames('vads-u-font-size--sm', {
+    'vads-u-background-color--primary-darker vads-u-color--white': user,
+    'vads-u-color--primary vads-u-background-color--white': !user,
+  });
+
+  const iconTextOrLabel = user ? (
+    'You'
+  ) : (
+    <va-icon icon="account_circle" size={4} />
+  );
   const testId = user ? 'chat-icon-user' : 'chat-icon-va';
 
   return (
     <span
       aria-label={iconTextOrLabel}
-      className="vads-u-background-color--primary-darker vads-u-color--white vads-u-font-size--sm"
+      className={spanClassNames}
       data-testid={testId}
       role="img"
       style={baseIconStyle}
