@@ -51,7 +51,11 @@ describe('CDP – Copay Pages (unit)', () => {
   const initialState = {
     combinedPortal: {
       mcp: {
-        statements: [selectedCopay],
+        shouldUseLighthouseCopays: false,
+        statements: {
+          data: [selectedCopay],
+          meta: null,
+        },
         selectedStatement: selectedCopay,
         error: null,
       },

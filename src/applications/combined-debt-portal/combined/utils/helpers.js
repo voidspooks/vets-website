@@ -49,6 +49,9 @@ export const selectLoadingFeatureFlags = state =>
 export const showVHAPaymentHistory = state =>
   toggleValues(state)[FEATURE_FLAG_NAMES.showVHAPaymentHistory];
 
+export const selectUseLighthouseCopays = state =>
+  state.combinedPortal.mcp.shouldUseLighthouseCopays;
+
 /**
  * Helper function to consisently format date strings
  *

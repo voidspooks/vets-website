@@ -5,8 +5,33 @@ import { render } from '@testing-library/react';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import i18n from 'i18next';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
 import Balances from '../../components/Balances';
 import { showVHAPaymentHistory } from '../../../combined/utils/helpers';
+
+const testI18n = i18n.createInstance();
+testI18n.use(initReactI18next).init({
+  lng: 'en',
+  fallbackLng: 'en',
+  resources: {
+    en: {
+      translation: {
+        mcp: {
+          'copay-balances': {
+            'zero-balance-card': {
+              'current-balance': 'Current balance: <bold>{{amount}}</bold>',
+              'facility-city': '{{facility}} - {{city}}',
+              'no-payment-needed':
+                'No payment is needed. Your balance was updated on {{date}}.',
+            },
+          },
+        },
+      },
+    },
+  },
+  interpolation: { escapeValue: false },
+});
 
 const renderWithStore = (component, initialState) => {
   const store = createStore(
@@ -19,12 +44,13 @@ const renderWithStore = (component, initialState) => {
     }),
   );
   return render(
-    <Provider store={store}>
-      <Router>{component}</Router>
-    </Provider>,
+    <I18nextProvider i18n={testI18n}>
+      <Provider store={store}>
+        <Router>{component}</Router>
+      </Provider>
+    </I18nextProvider>,
   );
 };
-
 describe('Balances', () => {
   it('showVHAPaymentHistory is true - renders with new data structure', () => {
     const mockState = {
@@ -74,6 +100,7 @@ describe('Balances', () => {
                 lastUpdatedOn: '2025-08-29T00:00:00Z',
               },
             },
+            shouldUseLighthouseCopays: true,
             links: {
               self:
                 'http://127.0.0.1:3000/services/health-care-costs-coverage/v0/r4/Invoice?_count=3&patient=10000003&page=1',
@@ -97,7 +124,7 @@ describe('Balances', () => {
       <Balances
         statements={mockState.combinedPortal.mcp.statements.data}
         paginationText="TRUE SET"
-        showVHAPaymentHistory
+        useLighthouseCopays
       />,
       mockState,
     );
@@ -193,6 +220,7 @@ describe('Balances', () => {
                 lastUpdatedOn: '2025-08-29T00:00:00Z',
               },
             },
+            shouldUseLighthouseCopays: true,
             links: {},
           },
         },
@@ -207,7 +235,7 @@ describe('Balances', () => {
       <Balances
         statements={mockState.combinedPortal.mcp.statements.data}
         paginationText="TRUE SET"
-        showVHAPaymentHistory
+        useLighthouseCopays
       />,
       mockState,
     );
@@ -297,7 +325,7 @@ describe('Balances', () => {
       <Balances
         statements={mockState.combinedPortal.mcp.statements}
         paginationText="FALSE SET"
-        showVHAPaymentHistory={false}
+        useLighthouseCopays={false}
       />,
       mockState,
     );
@@ -381,7 +409,7 @@ describe('Balances', () => {
       <Balances
         statements={mockState.combinedPortal.mcp.statements}
         paginationText="FALSE SET"
-        showVHAPaymentHistory={false}
+        useLighthouseCopays={false}
       />,
       mockState,
     );
@@ -523,6 +551,7 @@ describe('Balances', () => {
                 lastUpdatedOn: '2025-08-29T00:00:00Z',
               },
             },
+            shouldUseLighthouseCopays: false,
             links: {
               self:
                 'http://127.0.0.1:3000/services/health-care-costs-coverage/v0/r4/Invoice?_count=3&patient=10000003&page=1',
@@ -546,7 +575,7 @@ describe('Balances', () => {
       <Balances
         statements={v1Statements}
         paginationText="TRUE SET"
-        showVHAPaymentHistory
+        useLighthouseCopays
       />,
       mockState,
     );

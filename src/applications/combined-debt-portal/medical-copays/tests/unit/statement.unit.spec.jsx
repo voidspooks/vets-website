@@ -17,6 +17,11 @@ import DownloadStatement from '../../components/DownloadStatement';
 // Helper to create a minimal Redux store for components that use useSelector
 const createMockStore = (featureToggleValue = false) => {
   return createStore(() => ({
+    combinedPortal: {
+      mcp: {
+        shouldUseLighthouseCopays: featureToggleValue,
+      },
+    },
     featureToggles: {
       loading: false,
       [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: featureToggleValue,
@@ -255,12 +260,7 @@ describe('mcp statement view', () => {
       lineItems[0].description = 'VHA charge';
       lineItems[0].priceComponents = [{ amount: 50.0 }];
 
-      const store = createStore(() => ({
-        featureToggles: {
-          loading: false,
-          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
-        },
-      }));
+      const store = createMockStore(true);
 
       const { getByText } = render(
         <Provider store={store}>

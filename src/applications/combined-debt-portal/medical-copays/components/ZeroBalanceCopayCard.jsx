@@ -33,9 +33,7 @@ ZeroBalanceContent.propTypes = {
 const ZeroBalanceCopayCard = ({ id, facility, city, updatedDate }) => {
   const { t } = useTranslation();
 
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldShowVHAPaymentHistory = useSelector(showVHAPaymentHistory);
 
   const history = useHistory();
   const dispatch = useDispatch();

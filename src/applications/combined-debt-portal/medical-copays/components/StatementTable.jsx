@@ -4,18 +4,16 @@ import PropTypes from 'prop-types';
 import {
   formatDate,
   formatISODateToMMDDYYYY,
-  showVHAPaymentHistory,
+  selectUseLighthouseCopays,
 } from '../../combined/utils/helpers';
 import Pagination from '../../combined/components/Pagination';
 import usePagination from '../../combined/hooks/usePagination';
 
 const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
   const columns = ['Date', 'Description', 'Billing Reference', 'Amount'];
 
-  const normalizedCharges = shouldShowVHAPaymentHistory
+  const normalizedCharges = shouldUseLighthouseCopays
     ? charges.map(item => ({
         date: item.datePosted,
         description: item.description,
@@ -98,7 +96,7 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   );
 
   const getDate = charge => {
-    if (shouldShowVHAPaymentHistory) {
+    if (shouldUseLighthouseCopays) {
       return formatISODateToMMDDYYYY(charge.date);
     }
 

@@ -105,20 +105,22 @@ const DebtLettersSummary = () => {
 
   const renderContent = () => {
     if (debtError) {
+      const mcpStatementCount = mcpStatements?.data?.length || 0;
       return renderAlert(
         mcpError ? ALERT_TYPES.ALL_ERROR : ALERT_TYPES.ERROR,
-        mcpStatements?.length,
+        mcpStatementCount,
       );
     }
 
     if (allDebtsEmpty) {
-      return renderAlert(ALERT_TYPES.ZERO, mcpStatements?.length);
+      const mcpStatementCount = mcpStatements?.data?.length || 0;
+      return renderAlert(ALERT_TYPES.ZERO, mcpStatementCount);
     }
 
     return (
       <article className="vads-u-padding-x--0">
         <DebtCardsList />
-        {renderOtherVA(mcpStatements?.length, mcpError)}
+        {renderOtherVA(mcpStatements?.data?.length || 0, mcpError)}
         {showDebtLetterDownload ? (
           <section>
             <h2

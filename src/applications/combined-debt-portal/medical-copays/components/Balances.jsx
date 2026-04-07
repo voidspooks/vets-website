@@ -5,9 +5,9 @@ import BalanceCard from './BalanceCard';
 import { formatISODateToMMDDYYYY } from '../../combined/utils/helpers';
 import ZeroBalanceCopayCard from './ZeroBalanceCopayCard';
 
-export const Balances = ({ statements, showVHAPaymentHistory = false }) => {
+export const Balances = ({ statements, useLighthouseCopays = false }) => {
   const getNormalizedCopayBalance = copay => {
-    return showVHAPaymentHistory
+    return useLighthouseCopays
       ? {
           facilityName:
             copay.attributes.facility ||
@@ -67,7 +67,7 @@ export const Balances = ({ statements, showVHAPaymentHistory = false }) => {
 };
 
 Balances.propTypes = {
-  showVHAPaymentHistory: PropTypes.bool,
+  useLighthouseCopays: PropTypes.bool,
   statements: PropTypes.array,
 };
 

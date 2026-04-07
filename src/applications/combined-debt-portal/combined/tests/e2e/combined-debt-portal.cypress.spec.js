@@ -172,7 +172,7 @@ describe('CDP - Overpayments and copay bills (overview)', () => {
       debtResponses.good('debtsNE');
 
       cy.visit('/manage-va-debt/summary');
-      cy.wait(['@features', '@copaysNE', '@debtsNE']);
+      cy.wait(['@features', '@copaysNE', '@debtsNE', '@debtLetters']);
 
       cy.findByTestId('overview-page-title').should('exist');
       cy.findByTestId('copay-no-health-care-alert').should('exist');
@@ -188,6 +188,7 @@ describe('CDP - Overpayments and copay bills (overview)', () => {
 
       cy.visit('/manage-va-debt/summary');
       cy.wait(['@features', '@copaysE1', '@debtsE1']);
+      cy.wait('@debtLetters');
       cy.findByTestId('overview-page-title').should('exist');
 
       cy.findByTestId('balance-card-alert-copay').should('exist');

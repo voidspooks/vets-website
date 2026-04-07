@@ -11,6 +11,7 @@ import FinancialHelp from '../components/FinancialHelp';
 import NeedHelpCopay from '../components/NeedHelpCopay';
 import {
   setPageFocus,
+  selectUseLighthouseCopays,
   showVHAPaymentHistory,
   formatISODateToMMDDYYYY,
   isAnyElementFocused,
@@ -23,9 +24,8 @@ import { getCopayDetailStatement } from '../../combined/actions/copays';
 const ResolvePage = ({ match }) => {
   const dispatch = useDispatch();
 
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
+  const shouldShowVHAPaymentHistory = useSelector(showVHAPaymentHistory);
 
   // Get the selected copay statement ID from the URL
   //  and the selected copay statement data from Redux
@@ -35,10 +35,10 @@ const ResolvePage = ({ match }) => {
     state => state.combinedPortal.mcp.isCopayDetailLoading,
   );
   const allStatements =
-    useSelector(state => state.combinedPortal.mcp.statements) || [];
+    useSelector(state => state.combinedPortal.mcp.statements?.data) || [];
 
   const selectedId = match.params.id;
-  const selectedCopay = shouldShowVHAPaymentHistory
+  const selectedCopay = shouldUseLighthouseCopays
     ? copayDetail
     : allStatements?.find(({ id }) => id === selectedId);
   const TITLE = `Resolve your copay bill`;
@@ -48,7 +48,7 @@ const ResolvePage = ({ match }) => {
       if (!selectedCopay?.id) return DEFAULT_COPAY_ATTRIBUTES;
 
       /* eslint-disable no-nested-ternary */
-      return shouldShowVHAPaymentHistory
+      return shouldUseLighthouseCopays
         ? {
             TITLE: `Copay bill for ${selectedCopay?.attributes.facility.name}`,
             FACILITY_NAME:
@@ -82,7 +82,7 @@ const ResolvePage = ({ match }) => {
           };
       /* eslint-disable no-nested-ternary */
     },
-    [selectedCopay?.id, shouldShowVHAPaymentHistory],
+    [selectedCopay?.id, shouldUseLighthouseCopays],
   );
 
   // get veteran name
@@ -170,7 +170,7 @@ const ResolvePage = ({ match }) => {
           key={selectedId}
           statementId={selectedId}
           statementDate={
-            shouldShowVHAPaymentHistory
+            shouldUseLighthouseCopays
               ? formatISODateToMMDDYYYY(copayAttributes.INVOICE_DATE)
               : selectedCopay.pSStatementDateOutput
           }

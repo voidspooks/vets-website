@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import React from 'react';
+import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router-dom';
 import PreviousStatements from '../../components/PreviousStatements';
@@ -16,7 +16,7 @@ const mountWithRouter = component =>
   mount(<MemoryRouter>{component}</MemoryRouter>);
 
 describe('PreviousStatements', () => {
-  describe('when showVHAPaymentHistory is true', () => {
+  describe('when shouldUseLighthouseCopays is true', () => {
     it('should render when recentStatements exist', () => {
       const wrapper = mountWithRouter(
         <PreviousStatements
@@ -25,7 +25,7 @@ describe('PreviousStatements', () => {
             vhaStatement('2', '2024-02-01'),
             vhaStatement('3', '2024-03-01'),
           ]}
-          isVHA
+          shouldUseLighthouseCopays
         />,
       );
 
@@ -38,7 +38,10 @@ describe('PreviousStatements', () => {
 
     it('should return null when recentStatements is empty', () => {
       const wrapper = mountWithRouter(
-        <PreviousStatements previousStatements={[]} isVHA />,
+        <PreviousStatements
+          previousStatements={[]}
+          shouldUseLighthouseCopays
+        />,
       );
 
       expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(
@@ -56,7 +59,7 @@ describe('PreviousStatements', () => {
             vhaStatement('2', '2024-02-01'),
             vhaStatement('4', '2024-04-01'),
           ]}
-          isVHA
+          shouldUseLighthouseCopays
         />,
       );
 
@@ -73,7 +76,7 @@ describe('PreviousStatements', () => {
       const wrapper = mountWithRouter(
         <PreviousStatements
           previousStatements={[vhaStatement('1', '2024-01-01')]}
-          isVHA
+          shouldUseLighthouseCopays
         />,
       );
 
@@ -85,7 +88,7 @@ describe('PreviousStatements', () => {
     });
   });
 
-  describe('when showVHAPaymentHistory is false', () => {
+  describe('when shouldUseLighthouseCopays is false', () => {
     it('should render when previous statements exist', () => {
       const wrapper = mountWithRouter(
         <PreviousStatements
@@ -121,6 +124,7 @@ describe('PreviousStatements', () => {
             legacyStatement('2', '03/01/2024'),
             legacyStatement('3', '02/01/2024'),
           ]}
+          shouldUseLighthouseCopays={false}
         />,
       );
 

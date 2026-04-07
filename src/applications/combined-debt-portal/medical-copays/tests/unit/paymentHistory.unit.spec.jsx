@@ -33,6 +33,11 @@ const mockFormatCurrency = val => `$${val.toFixed(2)}`;
 // Helper to create a minimal Redux store
 const createMockStore = (featureToggleValue = false) => {
   return createStore(() => ({
+    combinedPortal: {
+      mcp: {
+        shouldUseLighthouseCopays: featureToggleValue,
+      },
+    },
     featureToggles: {
       loading: false,
       [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: featureToggleValue,

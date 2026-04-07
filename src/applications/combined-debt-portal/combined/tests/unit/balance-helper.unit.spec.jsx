@@ -44,11 +44,11 @@ describe('combined debt portal helpers', () => {
 
   describe('getLatestBill helper: ', () => {
     it('should return latest bills', () => {
-      expect(getLatestBill(mockBill, 'v0')).to.equal('12/05/2021');
+      expect(getLatestBill(mockBill, null, 'v0')).to.equal('12/05/2021');
     });
 
     it('should return latest bills', () => {
-      expect(getLatestBill(null, 'v0')).to.equal(null);
+      expect(getLatestBill(null, null, 'v0')).to.equal(null);
     });
   });
 

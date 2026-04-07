@@ -54,7 +54,11 @@ describe('Resolve Page Tests', () => {
       mcp: {
         selectedStatement: {},
         isCopayDetailLoading: false,
-        statements: [],
+        statements: {
+          data: [],
+          meta: {},
+        },
+        shouldUseLighthouseCopays: true,
       },
       debtLetters: { debts: [], errors: [] },
     },
@@ -72,18 +76,39 @@ describe('Resolve Page Tests', () => {
   describe('ResolvePage', () => {
     const match = { params: { id: '4-1abZUKu7xIvIw6' } };
 
-    it('dispatches getCopayDetailStatement exactly once', async () => {
+    it('dispatches getCopayDetailStatement exactly once when vha_show_payment_history is enabled', async () => {
       const { dispatchSpy } = renderWithStore(
         <ResolvePage match={match} />,
         initialState,
       );
 
       await waitFor(() => {
-        // Check that dispatch was called with a thunk (function)
         const thunkCalls = dispatchSpy
           .getCalls()
           .filter(call => typeof call.args[0] === 'function');
         expect(thunkCalls.length).to.equal(1);
+      });
+    });
+
+    it('does not dispatch getCopayDetailStatement when vha_show_payment_history is disabled', async () => {
+      const stateVhaOff = {
+        ...initialState,
+        featureToggles: {
+          loading: false,
+          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: false,
+        },
+      };
+
+      const { dispatchSpy } = renderWithStore(
+        <ResolvePage match={match} />,
+        stateVhaOff,
+      );
+
+      await waitFor(() => {
+        const thunkCalls = dispatchSpy
+          .getCalls()
+          .filter(call => typeof call.args[0] === 'function');
+        expect(thunkCalls.length).to.equal(0);
       });
     });
   });

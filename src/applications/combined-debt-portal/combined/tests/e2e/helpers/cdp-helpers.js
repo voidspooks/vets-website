@@ -4,6 +4,18 @@ import mockDebtVBMS from '../../../../debt-letters/tests/e2e/fixtures/mocks/debt
 import mockCopaysv1 from '../../../../medical-copays/tests/e2e/fixtures/mocks/copays-v1.json';
 
 const mockCopayEmpty = { data: [] };
+const mockCopayEmptyV1 = {
+  data: [],
+  meta: {
+    total: 0,
+    copaySummary: {
+      totalCurrentBalance: 0,
+      copayBillCount: 0,
+      lastUpdatedOn: null,
+    },
+  },
+  isCerner: false,
+};
 const mockDebtEmpty = {
   hasDependentDebts: false,
   debts: [],
@@ -13,7 +25,16 @@ const mockVBMSEmpty = {
 };
 
 const reply404 = req => {
-  return req.reply(404, { errors: ['error'] });
+  return req.reply(404, {
+    errors: [
+      {
+        title: 'Not Found',
+        detail: 'The requested resource could not be found',
+        code: '404',
+        status: '404',
+      },
+    ],
+  });
 };
 
 export const reply403 = req => {
@@ -53,21 +74,29 @@ export const vbmsResponses = {
   },
 };
 
+// CombinedPortalApp uses v1/medical_copays when showVHAPaymentHistory is on; v0 otherwise.
+// Match both list endpoints in one intercept so whichever runs completes and mcp.pending clears.
+const medicalCopaysListUrl = /\/v[01]\/medical_copays(\?.*)?$/;
+
 export const copayResponses = {
   good: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', mockCopays).as(name);
+    cy.intercept('GET', medicalCopaysListUrl, req => {
+      req.reply(req.url.includes('/v1/') ? mockCopaysv1 : mockCopays);
+    }).as(name);
   },
   goodv1: (name = 'copaysv1') => {
     cy.intercept('GET', '/v1/medical_copays', mockCopaysv1).as(name);
   },
   bad: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', req => reply404(req)).as(name);
+    cy.intercept('GET', medicalCopaysListUrl, req => reply404(req)).as(name);
   },
   empty: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', mockCopayEmpty).as(name);
+    cy.intercept('GET', medicalCopaysListUrl, req => {
+      req.reply(req.url.includes('/v1/') ? mockCopayEmptyV1 : mockCopayEmpty);
+    }).as(name);
   },
   notEnrolled: (name = 'copays') => {
-    cy.intercept('GET', '/v0/medical_copays', req => reply403(req)).as(name);
+    cy.intercept('GET', medicalCopaysListUrl, req => reply403(req)).as(name);
   },
   detail: (id, name = 'copayDetail') => {
     cy.intercept('GET', `/v1/medical_copays/${id}`, req => {

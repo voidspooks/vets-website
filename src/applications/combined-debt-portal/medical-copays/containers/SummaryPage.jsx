@@ -8,7 +8,7 @@ import {
   sortStatementsByDate,
   ALERT_TYPES,
   APP_TYPES,
-  showVHAPaymentHistory,
+  selectUseLighthouseCopays,
 } from '../../combined/utils/helpers';
 import Balances from '../components/Balances';
 import OtherVADebts from '../../combined/components/OtherVADebts';
@@ -76,14 +76,9 @@ const OverviewPage = () => {
     ({ combinedPortal }) => combinedPortal,
   );
 
-  // feature toggle stuff for VHA payment history MVP
   const { useToggleLoadingValue } = useFeatureToggle();
-  // boolean value to represent if toggles are still loading or not
   const togglesLoading = useToggleLoadingValue();
-  // value of specific toggle
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
 
   const {
     debts,
@@ -92,13 +87,18 @@ const OverviewPage = () => {
     isProfileUpdating,
   } = debtLetters;
   const debtLoading = isDebtPending || isProfileUpdating;
-  const { statements, error: mcpError, pending: mcpLoading } = mcp;
-  const statementsEmpty = statements?.length === 0;
-  const sortedStatements = shouldShowVHAPaymentHistory
-    ? mcp.statements.data ?? []
-    : sortStatementsByDate(statements || []);
-  const statementsByUniqueFacility = shouldShowVHAPaymentHistory
-    ? uniqBy(mcp.statements.data, 'facilityId')
+  const {
+    statements: copayResponse,
+    error: mcpError,
+    pending: mcpLoading,
+  } = mcp;
+  const copays = copayResponse?.data || [];
+  const statementsEmpty = copays.length === 0;
+  const sortedStatements = shouldUseLighthouseCopays
+    ? copays
+    : sortStatementsByDate(copays || []);
+  const statementsByUniqueFacility = shouldUseLighthouseCopays
+    ? uniqBy(copays, 'attributes.facilityId')
     : uniqBy(sortedStatements, 'pSFacilityNum');
   const title = 'Copay balances';
   useHeaderPageTitle(title);
@@ -147,7 +147,7 @@ const OverviewPage = () => {
         <h2 id="balance-list" className="vads-u-margin-top--2">
           {statementsByUniqueFacility.length > 1 ? multiple : single}
         </h2>
-        {!shouldShowVHAPaymentHistory && (
+        {!shouldUseLighthouseCopays && (
           <p>
             Any payments you have made will not be reflected here until our
             systems are updated with your next monthly statement.
@@ -156,7 +156,7 @@ const OverviewPage = () => {
         {paginationText && <p>{paginationText}</p>}
         <Balances
           statements={pagination.currentItems}
-          showVHAPaymentHistory={shouldShowVHAPaymentHistory}
+          useLighthouseCopays={shouldUseLighthouseCopays}
         />
         <Pagination
           currentPage={pagination.currentPage}

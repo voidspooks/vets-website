@@ -20,10 +20,26 @@ describe('Medical Copays Reducer', () => {
     const action = {
       type: MCP_STATEMENTS_FETCH_SUCCESS,
       response: copays.data,
+      meta: { pagination: { currentPage: 2 } },
+      shouldUseLighthouseCopays: true,
     };
     const reducedState = reducer(undefined, action);
     expect(reducedState.pending).to.be.false;
-    expect(reducedState.statements).to.deep.equal(copays.data);
+    expect(reducedState.statements).to.deep.equal({
+      data: copays.data,
+      meta: { pagination: { currentPage: 2 } },
+    });
+    expect(reducedState.shouldUseLighthouseCopays).to.be.true;
+  });
+
+  it('MCP_STATEMENTS_FETCH_SUCCESS sets shouldUseLighthouseCopays to false when provided', () => {
+    const action = {
+      type: MCP_STATEMENTS_FETCH_SUCCESS,
+      response: copays.data,
+      shouldUseLighthouseCopays: false,
+    };
+    const reducedState = reducer(undefined, action);
+    expect(reducedState.shouldUseLighthouseCopays).to.be.false;
   });
 
   it('MCP_STATEMENTS_FETCH_FAILURE', () => {

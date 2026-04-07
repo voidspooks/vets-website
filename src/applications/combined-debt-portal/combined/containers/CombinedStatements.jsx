@@ -68,7 +68,7 @@ const CombinedStatements = () => {
   const dataLoading = billsLoading || debtsLoading || isPendingVBMS;
 
   const debts = debtLetters.debts || [];
-  const bills = mcp.statements || [];
+  const bills = mcp.statements?.data || [];
 
   // Pulling veteran contact information from the Redux store
   const mailingAddress = useSelector(selectVAPMailingAddress);

@@ -36,6 +36,7 @@ const mcpInitialState = {
   pending: false,
   error: null,
   statements: null,
+  shouldUseLighthouseCopays: null,
 };
 
 export const medicalCopaysReducer = (state = mcpInitialState, action) => {
@@ -54,7 +55,11 @@ export const medicalCopaysReducer = (state = mcpInitialState, action) => {
       return {
         ...state,
         pending: false,
-        statements: action.response,
+        statements: {
+          data: action.response,
+          meta: action.meta || null,
+        },
+        shouldUseLighthouseCopays: action.shouldUseLighthouseCopays,
       };
     case MCP_DETAIL_FETCH_SUCCESS:
       return {
@@ -62,6 +67,7 @@ export const medicalCopaysReducer = (state = mcpInitialState, action) => {
         pending: false,
         selectedStatement: action.response.data,
         isCopayDetailLoading: false,
+        shouldUseLighthouseCopays: action.shouldUseLighthouseCopays,
       };
     case MCP_DETAIL_FETCH_FAILURE:
       return {

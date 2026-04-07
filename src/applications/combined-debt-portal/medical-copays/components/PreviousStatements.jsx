@@ -2,7 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import HTMLStatementLink from './HTMLStatementLink';
 
-const PreviousStatements = ({ previousStatements, isVHA, copayId }) => {
+const PreviousStatements = ({
+  previousStatements,
+  shouldUseLighthouseCopays,
+  copayId,
+}) => {
   if (!previousStatements?.length) return null;
 
   return (
@@ -23,7 +27,9 @@ const PreviousStatements = ({ previousStatements, isVHA, copayId }) => {
             id={statement.id}
             copayId={copayId}
             statementDate={
-              isVHA ? statement.invoiceDate : statement.pSStatementDateOutput
+              shouldUseLighthouseCopays
+                ? statement.invoiceDate
+                : statement.pSStatementDateOutput
             }
             key={statement.id}
           />
@@ -35,8 +41,8 @@ const PreviousStatements = ({ previousStatements, isVHA, copayId }) => {
 
 PreviousStatements.propTypes = {
   copayId: PropTypes.string,
-  isVHA: PropTypes.bool,
   previousStatements: PropTypes.array,
+  shouldUseLighthouseCopays: PropTypes.bool,
 };
 
 export default PreviousStatements;

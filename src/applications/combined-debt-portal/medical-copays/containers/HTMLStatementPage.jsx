@@ -6,7 +6,7 @@ import { format, isValid } from 'date-fns';
 import { VaBreadcrumbs } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import {
   setPageFocus,
-  showVHAPaymentHistory,
+  selectUseLighthouseCopays,
 } from '../../combined/utils/helpers';
 import Modals from '../../combined/components/Modals';
 import StatementAddresses from '../components/StatementAddresses';
@@ -17,15 +17,13 @@ import NeedHelpCopay from '../components/NeedHelpCopay';
 import useHeaderPageTitle from '../../combined/hooks/useHeaderPageTitle';
 
 const HTMLStatementPage = ({ match }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
 
   const location = useLocation();
   const selectedId = match.params.id;
   const copayId = location.state?.copayId || selectedId;
   const combinedPortalData = useSelector(state => state.combinedPortal);
-  const statements = combinedPortalData.mcp.statements ?? [];
+  const statements = combinedPortalData.mcp.statements?.data ?? [];
   const userFullName = useSelector(({ user }) => user.profile.userFullName);
 
   // TODO: Refactor selectedCopay to selectedStatement and update all references in the codebase
@@ -102,7 +100,7 @@ const HTMLStatementPage = ({ match }) => {
           previousBalance={selectedCopay.pHPrevBal}
           statementDate={statementDate}
         />
-        {shouldShowVHAPaymentHistory && (
+        {shouldUseLighthouseCopays && (
           <StatementTable
             charges={charges}
             formatCurrency={formatCurrency}

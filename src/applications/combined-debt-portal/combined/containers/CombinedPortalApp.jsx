@@ -43,17 +43,14 @@ const CombinedPortalApp = ({ children }) => {
   const { isPending, isPendingVBMS, isProfileUpdating } = debtLetters;
   const isDebtLoading = isPending || isPendingVBMS || isProfileUpdating;
 
-  const shouldUseLightHouseCopayData = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
-
+  const shouldShowVHAPaymentHistory = useSelector(showVHAPaymentHistory);
   useEffect(
     () => {
       if (!profileLoading && userLoggedIn) {
         fetchDebtLetters(dispatch, debtLettersActive);
 
-        if (shouldUseLightHouseCopayData) {
-          getCopaySummaryStatements(dispatch);
+        if (shouldShowVHAPaymentHistory) {
+          dispatch(getCopaySummaryStatements());
         } else {
           getAllCopayStatements(dispatch);
         }
@@ -64,7 +61,7 @@ const CombinedPortalApp = ({ children }) => {
       dispatch,
       profileLoading,
       userLoggedIn,
-      shouldUseLightHouseCopayData,
+      shouldShowVHAPaymentHistory,
     ],
   );
 

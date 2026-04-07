@@ -11,24 +11,25 @@ import {
   getLatestDebt,
   calculateTotalBills,
 } from '../utils/balance-helpers';
-import { APP_TYPES, showVHAPaymentHistory } from '../utils/helpers';
+import { APP_TYPES, selectUseLighthouseCopays } from '../utils/helpers';
 import CopayAlertContainer from '../../medical-copays/components/CopayAlertContainer';
 
 // Some terminology that could be helpful:
 // debt(s) = debtLetters
 // bill(s) = copays = mcp (medical-copays)
 
-const getVersionedCopayData = (rawCopays, shouldShowVHAPaymentHistory) => {
-  const version = shouldShowVHAPaymentHistory ? 'v1' : 'v0';
+const getVersionedCopayData = (statements, shouldUseLighthouseCopays) => {
+  const rawCopays = statements?.data;
+  const version = shouldUseLighthouseCopays ? 'v1' : 'v0';
   const uniqueFacilities =
     version === 'v1'
-      ? uniqBy(rawCopays.data || [], 'attributes.facilityId')
+      ? uniqBy(rawCopays || [], 'attributes.facilityId')
       : uniqBy(rawCopays || [], 'pSFacilityNum');
 
   return {
     copayBillCount: uniqueFacilities?.length,
     copayTotal: calculateTotalBills(uniqueFacilities, version),
-    latestBillDate: getLatestBill(rawCopays, version),
+    latestBillDate: getLatestBill(rawCopays, statements?.meta, version),
   };
 };
 
@@ -38,9 +39,7 @@ const Balances = () => {
     ({ combinedPortal }) => combinedPortal,
   );
 
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
 
   // Single out errors
   const billError = mcp.error;
@@ -55,7 +54,7 @@ const Balances = () => {
   // get Copay info
   const { copayBillCount, copayTotal, latestBillDate } = getVersionedCopayData(
     mcp.statements,
-    shouldShowVHAPaymentHistory,
+    shouldUseLighthouseCopays,
   );
 
   // Sort two valid BalancCards by date

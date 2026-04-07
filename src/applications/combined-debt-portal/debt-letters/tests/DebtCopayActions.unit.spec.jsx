@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { mockApiRequest } from 'platform/testing/unit/helpers';
+import * as medicalCentersModule from 'platform/utilities/medical-centers/medical-centers';
 import {
   fetchDebtLetters,
   DEBTS_FETCH_INITIATED,
@@ -92,9 +93,17 @@ describe('Debt Portal Actions', () => {
 
 describe('Copay Actions', () => {
   let dispatch;
+  let getMedicalCenterNameByIDStub;
 
   beforeEach(() => {
     dispatch = sinon.spy();
+    getMedicalCenterNameByIDStub = sinon
+      .stub(medicalCentersModule, 'getMedicalCenterNameByID')
+      .returns('Test Medical Center');
+  });
+
+  afterEach(() => {
+    getMedicalCenterNameByIDStub.restore();
   });
 
   it('should handle successful copay statements fetch', () => {
@@ -118,10 +127,19 @@ describe('Copay Actions', () => {
         type: MCP_STATEMENTS_FETCH_INIT,
       });
 
-      // Last call to MCP_STATEMENTS_FETCH_SUCCESS with response data
+      // Last call to MCP_STATEMENTS_FETCH_SUCCESS with transformed response data
       expect(allCalls[allCalls.length - 1]).to.eql({
         type: MCP_STATEMENTS_FETCH_SUCCESS,
-        response: mockResponse.data,
+        response: [
+          {
+            station: {
+              facilitYNum: '123',
+              city: 'Washington',
+              facilityName: 'Test Medical Center',
+            },
+          },
+        ],
+        shouldUseLighthouseCopays: false,
       });
     });
   });

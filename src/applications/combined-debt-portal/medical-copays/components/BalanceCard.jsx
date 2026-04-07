@@ -43,9 +43,7 @@ PastDueContent.propTypes = {
 };
 
 const BalanceCard = ({ id, amount, facility, city, date }) => {
-  const shouldShowVHAPaymentHistory = showVHAPaymentHistory(
-    useSelector(state => state),
-  );
+  const shouldShowVHAPaymentHistory = useSelector(showVHAPaymentHistory);
 
   const history = useHistory();
   const dispatch = useDispatch();

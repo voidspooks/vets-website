@@ -38,10 +38,10 @@ export const calculateTotalBills = (bills, version) => {
     : 0;
 };
 
-export const getLatestBill = (bills, version) => {
+export const getLatestBill = (bills, meta = null, version) => {
   // Check for v1 API date first
   if (version === 'v1') {
-    const v1Date = bills?.meta?.copaySummary?.lastUpdatedOn;
+    const v1Date = meta?.copaySummary?.lastUpdatedOn;
     return v1Date ? new Date(v1Date) : null;
   }
 

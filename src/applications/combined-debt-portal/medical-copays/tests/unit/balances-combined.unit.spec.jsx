@@ -48,6 +48,7 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: null,
+          shouldUseLighthouseCopays: true,
           statements: {
             data: [
               {
@@ -140,17 +141,21 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: null,
-          statements: [
-            {
-              id: '1',
-              pSStatementDateOutput: '2025-01-05',
-              pHAmtDue: 150.25,
-              station: {
-                facilityName: 'Test VAMC',
-                city: 'Test City',
+          shouldUseLighthouseCopays: false,
+          statements: {
+            data: [
+              {
+                id: '1',
+                pSStatementDateOutput: '2025-01-05',
+                pHAmtDue: 150.25,
+                station: {
+                  facilityName: 'Test VAMC',
+                  city: 'Test City',
+                },
               },
-            },
-          ],
+            ],
+            meta: null,
+          },
         },
       },
       featureToggles: {
@@ -202,7 +207,10 @@ describe('Balances', () => {
         mcp: {
           pending: false,
           error: { code: '403' },
-          statements: [],
+          statements: {
+            data: [],
+            meta: null,
+          },
         },
       },
       featureToggles: {

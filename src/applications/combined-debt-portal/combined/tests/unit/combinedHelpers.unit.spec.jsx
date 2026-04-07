@@ -638,6 +638,7 @@ describe('Helper Functions', () => {
           mcp: {
             pending: false,
             error: null,
+            shouldUseLighthouseCopays: true,
             statements: {
               data: [
                 {
@@ -709,20 +710,23 @@ describe('Helper Functions', () => {
           mcp: {
             pending: false,
             error: null,
-            statements: [
-              {
-                id: '1',
-                pSStatementDateOutput: '2023-01-01',
-                pSFacilityNum: '789',
-                pHAmtDue: 100,
-              },
-              {
-                id: '2',
-                pSStatementDateOutput: '2023-03-01',
-                pSFacilityNum: '456',
-                pHAmtDue: 200,
-              },
-            ],
+            statements: {
+              data: [
+                {
+                  id: '1',
+                  pSStatementDateOutput: '2023-01-01',
+                  pSFacilityNum: '789',
+                  pHAmtDue: 100,
+                },
+                {
+                  id: '2',
+                  pSStatementDateOutput: '2023-03-01',
+                  pSFacilityNum: '456',
+                  pHAmtDue: 200,
+                },
+              ],
+              shouldUseLighthouseCopays: false,
+            },
           },
         },
         featureToggles: {
@@ -764,8 +768,8 @@ describe('Helper Functions', () => {
   });
 
   describe('sortedStatements logic', () => {
-    it('should use mcp.statements.data when showVHAPaymentHistory is true', () => {
-      const shouldShowVHAPaymentHistory = true;
+    it('should use mcp.statements.data when shouldUseLighthouseCopays is true', () => {
+      const shouldUseLighthouseCopays = true;
       const statements = [
         { pSStatementDateOutput: '2023-01-01' },
         { pSStatementDateOutput: '2023-03-01' },
@@ -779,7 +783,7 @@ describe('Helper Functions', () => {
         },
       };
 
-      const sortedStatements = shouldShowVHAPaymentHistory
+      const sortedStatements = shouldUseLighthouseCopays
         ? mcp.statements.data ?? []
         : sortStatementsByDate(statements || []);
 
@@ -788,8 +792,8 @@ describe('Helper Functions', () => {
       expect(sortedStatements[0].id).to.equal('1');
     });
 
-    it('should use sortStatementsByDate when showVHAPaymentHistory is false', () => {
-      const shouldShowVHAPaymentHistory = false;
+    it('should use sortStatementsByDate when shouldUseLighthouseCopays is false', () => {
+      const shouldUseLighthouseCopays = false;
       const statements = [
         { pSStatementDateOutput: '2023-01-01' },
         { pSStatementDateOutput: '2023-03-01' },
@@ -801,7 +805,7 @@ describe('Helper Functions', () => {
         },
       };
 
-      const sortedStatements = shouldShowVHAPaymentHistory
+      const sortedStatements = shouldUseLighthouseCopays
         ? mcp.statements.data ?? []
         : sortStatementsByDate(statements || []);
 
@@ -810,8 +814,8 @@ describe('Helper Functions', () => {
       expect(sortedStatements[2].pSStatementDateOutput).to.equal('2023-01-01');
     });
 
-    it('should handle null statements when showVHAPaymentHistory is false', () => {
-      const shouldShowVHAPaymentHistory = false;
+    it('should handle null statements when shouldUseLighthouseCopays is false', () => {
+      const shouldUseLighthouseCopays = false;
       const statements = null;
       const mcp = {
         statements: {
@@ -819,15 +823,15 @@ describe('Helper Functions', () => {
         },
       };
 
-      const sortedStatements = shouldShowVHAPaymentHistory
+      const sortedStatements = shouldUseLighthouseCopays
         ? mcp.statements.data ?? []
         : sortStatementsByDate(statements || []);
 
       expect(sortedStatements).to.deep.equal([]);
     });
 
-    it('should use empty array fallback when mcp.statements.data is null and flag is true', () => {
-      const shouldShowVHAPaymentHistory = true;
+    it('should use empty array fallback when mcp.statements.data is null and shouldUseLighthouseCopays is true', () => {
+      const shouldUseLighthouseCopays = true;
       const statements = [{ pSStatementDateOutput: '2023-01-01' }];
       const mcp = {
         statements: {
@@ -835,7 +839,7 @@ describe('Helper Functions', () => {
         },
       };
 
-      const sortedStatements = shouldShowVHAPaymentHistory
+      const sortedStatements = shouldUseLighthouseCopays
         ? mcp.statements.data ?? []
         : sortStatementsByDate(statements || []);
 
@@ -844,30 +848,34 @@ describe('Helper Functions', () => {
   });
 
   describe('statementsByUniqueFacility logic', () => {
-    it('should use facilityId with uniqBy when showVHAPaymentHistory is true', () => {
-      const shouldShowVHAPaymentHistory = true;
+    it('should use attributes.facilityId with uniqBy when shouldUseLighthouseCopays is true', () => {
+      const shouldUseLighthouseCopays = true;
       const mcpStatements = [
-        { id: '1', facilityId: 'FAC123', name: 'First' },
-        { id: '2', facilityId: 'FAC123', name: 'Duplicate' },
-        { id: '3', facilityId: 'FAC456', name: 'Second' },
+        { id: '1', attributes: { facilityId: 'FAC123' }, name: 'First' },
+        { id: '2', attributes: { facilityId: 'FAC123' }, name: 'Duplicate' },
+        { id: '3', attributes: { facilityId: 'FAC456' }, name: 'Second' },
       ];
       const sortedStatements = [
         { id: '1', pSFacilityNum: '789' },
         { id: '2', pSFacilityNum: '789' },
       ];
 
-      const statementsByUniqueFacility = shouldShowVHAPaymentHistory
-        ? uniqBy(mcpStatements, 'facilityId')
+      const statementsByUniqueFacility = shouldUseLighthouseCopays
+        ? uniqBy(mcpStatements, 'attributes.facilityId')
         : uniqBy(sortedStatements, 'pSFacilityNum');
 
       expect(statementsByUniqueFacility.length).to.equal(2);
-      expect(statementsByUniqueFacility[0].facilityId).to.equal('FAC123');
-      expect(statementsByUniqueFacility[1].facilityId).to.equal('FAC456');
+      expect(statementsByUniqueFacility[0].attributes.facilityId).to.equal(
+        'FAC123',
+      );
+      expect(statementsByUniqueFacility[1].attributes.facilityId).to.equal(
+        'FAC456',
+      );
       expect(statementsByUniqueFacility[0].name).to.equal('First');
     });
 
-    it('should use pSFacilityNum with uniqBy when showVHAPaymentHistory is false', () => {
-      const shouldShowVHAPaymentHistory = false;
+    it('should use pSFacilityNum with uniqBy when shouldUseLighthouseCopays is false', () => {
+      const shouldUseLighthouseCopays = false;
       const mcpStatements = [
         { id: '1', facilityId: 'FAC123' },
         { id: '2', facilityId: 'FAC456' },
@@ -878,8 +886,8 @@ describe('Helper Functions', () => {
         { id: '3', pSFacilityNum: '456', city: 'Boston' },
       ];
 
-      const statementsByUniqueFacility = shouldShowVHAPaymentHistory
-        ? uniqBy(mcpStatements, 'facilityId')
+      const statementsByUniqueFacility = shouldUseLighthouseCopays
+        ? uniqBy(mcpStatements, 'attributes.facilityId')
         : uniqBy(sortedStatements, 'pSFacilityNum');
 
       expect(statementsByUniqueFacility.length).to.equal(2);
@@ -889,35 +897,35 @@ describe('Helper Functions', () => {
     });
 
     it('should handle empty arrays', () => {
-      const shouldShowVHAPaymentHistory = true;
+      const shouldUseLighthouseCopays = true;
       const mcpStatements = [];
       const sortedStatements = [];
 
-      const statementsByUniqueFacility = shouldShowVHAPaymentHistory
-        ? uniqBy(mcpStatements, 'facilityId')
+      const statementsByUniqueFacility = shouldUseLighthouseCopays
+        ? uniqBy(mcpStatements, 'attributes.facilityId')
         : uniqBy(sortedStatements, 'pSFacilityNum');
 
       expect(statementsByUniqueFacility).to.deep.equal([]);
     });
 
-    it('should handle all unique facilities when flag is true', () => {
-      const shouldShowVHAPaymentHistory = true;
+    it('should handle all unique facilities when shouldUseLighthouseCopays is true', () => {
+      const shouldUseLighthouseCopays = true;
       const mcpStatements = [
-        { id: '1', facilityId: 'FAC111' },
-        { id: '2', facilityId: 'FAC222' },
-        { id: '3', facilityId: 'FAC333' },
+        { id: '1', attributes: { facilityId: 'FAC111' } },
+        { id: '2', attributes: { facilityId: 'FAC222' } },
+        { id: '3', attributes: { facilityId: 'FAC333' } },
       ];
       const sortedStatements = [];
 
-      const statementsByUniqueFacility = shouldShowVHAPaymentHistory
-        ? uniqBy(mcpStatements, 'facilityId')
+      const statementsByUniqueFacility = shouldUseLighthouseCopays
+        ? uniqBy(mcpStatements, 'attributes.facilityId')
         : uniqBy(sortedStatements, 'pSFacilityNum');
 
       expect(statementsByUniqueFacility.length).to.equal(3);
     });
 
-    it('should handle all unique facilities when flag is false', () => {
-      const shouldShowVHAPaymentHistory = false;
+    it('should handle all unique facilities when shouldUseLighthouseCopays is false', () => {
+      const shouldUseLighthouseCopays = false;
       const mcpStatements = [];
       const sortedStatements = [
         { id: '1', pSFacilityNum: '111' },
@@ -925,8 +933,8 @@ describe('Helper Functions', () => {
         { id: '3', pSFacilityNum: '333' },
       ];
 
-      const statementsByUniqueFacility = shouldShowVHAPaymentHistory
-        ? uniqBy(mcpStatements, 'facilityId')
+      const statementsByUniqueFacility = shouldUseLighthouseCopays
+        ? uniqBy(mcpStatements, 'attributes.facilityId')
         : uniqBy(sortedStatements, 'pSFacilityNum');
 
       expect(statementsByUniqueFacility.length).to.equal(3);
