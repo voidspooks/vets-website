@@ -84,7 +84,7 @@ export const SearchResultsHeader = ({
       return 'Showing 1 result';
     }
     if (totalEntries < 11) {
-      return `Showing 1 - ${totalEntries} results`;
+      return `Showing 1-${totalEntries} results`;
     }
 
     if (totalEntries > 10) {
@@ -92,7 +92,7 @@ export const SearchResultsHeader = ({
       const endResultNum =
         currentPage !== totalPages ? 10 * currentPage : totalEntries;
 
-      return `Showing ${startResultNum} - ${endResultNum} of ${totalEntries} results`;
+      return `Showing ${startResultNum}-${endResultNum} of ${totalEntries} results`;
     }
     return 'Results';
   };
@@ -127,7 +127,6 @@ export const SearchResultsHeader = ({
       <h2
         id="search-results-subheader"
         className="vads-u-font-family--sans vads-u-font-weight--normal vads-u-font-size--base vads-u-padding--0p5 vads-u-margin-y--1"
-        tabIndex="-1"
       >
         {`${resultsPrefix}`}
         <b>{`"${facilityTypes[facilityType] || ''}"`}</b>

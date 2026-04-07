@@ -22,8 +22,6 @@ const NoResultsMessage = ({ isMobileListView, resultRef }) => {
       data-testid="no-results-message"
       className="search-result-title vads-u-margin-y--3 mobile-lg:vads-u-margin-y--0"
       ref={resultRef}
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={0}
     >
       <p className="vads-u-margin-top--0">
         Try searching for something else. Or try searching in a different area.
