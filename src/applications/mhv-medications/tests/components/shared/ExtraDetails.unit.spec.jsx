@@ -208,41 +208,6 @@ describe('Medications List Card Extra Details', () => {
       expect(screen.queryByTestId('send-renewal-request-message-link')).to.not
         .exist;
     });
-
-    it('displays fallback text for onHold prescription (not renewable per spec Gate 1)', async () => {
-      const screen = setup({
-        ...prescription,
-        dispStatus: dispStatusObj.onHold,
-      });
-      const el = await screen.findByTestId('active-onHold');
-      expect(el).to.exist;
-      expect(el.textContent).to.include(
-        'Contact your VA provider if you need more of this medication.',
-      );
-      expect(screen.queryByTestId('send-renewal-request-message-link')).to.not
-        .exist;
-    });
-
-    it('displays updated text for onHold when management improvements flag is enabled', async () => {
-      const screen = setup(
-        {
-          ...prescription,
-          dispStatus: dispStatusObj.onHold,
-        },
-        {
-          featureToggles: {
-            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
-          },
-        },
-      );
-      const el = await screen.findByTestId('active-onHold');
-      expect(el.textContent).to.include(
-        'You can’t refill this prescription online right now.',
-      );
-      expect(el.textContent).to.include(
-        'If you need a refill, call your VA pharmacy',
-      );
-    });
   });
 
   describe('V2 status handling (when BOTH CernerPilot and V2StatusMapping flags enabled)', () => {
@@ -285,10 +250,19 @@ describe('Medications List Card Extra Details', () => {
     });
   });
 
-  describe('when mhvMedicationsManagementImprovements flag is enabled - V1 Active', () => {
-    it('displays updated V1 Active message when flag enabled for unfilled prescription with phone', async () => {
-      const screen = setup(
-        {
+  describe('when mhvMedicationsManagementImprovements flag is enabled', () => {
+    const setupWithMedsImprovementsFlag = (rx, additionalFlags = {}) => {
+      return setup(rx, {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          ...additionalFlags,
+        },
+      });
+    };
+
+    describe('V1 Active unfilled prescriptions', () => {
+      it('displays updated message for unfilled prescription with phone', async () => {
+        const screen = setupWithMedsImprovementsFlag({
           ...prescription,
           dispStatus: dispStatusObj.active,
           refillRemaining: 5,
@@ -296,25 +270,18 @@ describe('Medications List Card Extra Details', () => {
           rxRfRecords: [],
           stationNumber: '668',
           cmopDivisionPhone: '(509) 434-7000',
-        },
-        {
-          featureToggles: {
-            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
-          },
-        },
-      );
-      const el = await screen.findByTestId('active-unfilled-oh');
-      expect(el.textContent).to.include(
-        'We haven’t filled this prescription yet. Details may change.',
-      );
-      expect(el.textContent).to.include(
-        'If you need this medication now, call your VA pharmacy',
-      );
-    });
+        });
+        const el = await screen.findByTestId('active-unfilled-oh');
+        expect(el.textContent).to.include(
+          'We haven’t filled this prescription yet. Details may change.',
+        );
+        expect(el.textContent).to.include(
+          'If you need this medication now, call your VA pharmacy',
+        );
+      });
 
-    it('displays updated V1 Active message when management improvements flag is enabled for unfilled prescription without phone', async () => {
-      const screen = setup(
-        {
+      it('displays updated message for unfilled prescription without phone', async () => {
+        const screen = setupWithMedsImprovementsFlag({
           ...prescription,
           dispStatus: dispStatusObj.active,
           refillRemaining: 5,
@@ -322,21 +289,78 @@ describe('Medications List Card Extra Details', () => {
           rxRfRecords: [],
           stationNumber: '668',
           cmopDivisionPhone: null,
+        });
+        const el = await screen.findByTestId('active-unfilled-oh');
+        expect(el.textContent).to.include(
+          'We haven’t filled this prescription yet. Details may change.',
+        );
+        expect(el.textContent).to.include(
+          'call your VA pharmacy’s automated refill line',
+        );
+        expect(el.textContent).to.include('medication details page');
+      });
+    });
+
+    describe('onHold status', () => {
+      it('displays no-phone fallback text when phone number is not available', async () => {
+        const screen = setupWithMedsImprovementsFlag({
+          ...prescription,
+          dispStatus: dispStatusObj.onHold,
+          cmopDivisionPhone: null,
+          dialCmopDivisionPhone: null,
+          rxRfRecords: [],
+        });
+        const el = await screen.findByTestId('active-onHold');
+        expect(el.textContent).to.include(
+          'You can’t refill this prescription online right now.',
+        );
+        expect(el.textContent).to.include(
+          'If you need a refill, call your VA pharmacy’s automated refill line.',
+        );
+        expect(el.textContent).to.include(
+          'The phone number is on your prescription label or in your medication details page.',
+        );
+      });
+
+      it('displays phone number when phone is available', async () => {
+        const screen = setupWithMedsImprovementsFlag({
+          ...prescription,
+          dispStatus: dispStatusObj.onHold,
+          cmopDivisionPhone: '(509) 434-7000',
+        });
+        const el = await screen.findByTestId('active-onHold');
+        expect(el.textContent).to.include(
+          'You can’t refill this prescription online right now.',
+        );
+        expect(el.textContent).to.include(
+          'If you need a refill, call your VA pharmacy',
+        );
+        expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
+      });
+    });
+  });
+
+  describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
+    it('displays legacy message with phone number for onHold prescription', async () => {
+      const screen = setup(
+        {
+          ...prescription,
+          dispStatus: dispStatusObj.onHold,
+          cmopDivisionPhone: '(509) 434-7000',
         },
         {
           featureToggles: {
-            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
           },
         },
       );
-      const el = await screen.findByTestId('active-unfilled-oh');
+      const el = await screen.findByTestId('active-onHold');
+      expect(el).to.exist;
+      expect(el.textContent).to.include('You can’t refill this prescription.');
       expect(el.textContent).to.include(
-        'We haven’t filled this prescription yet. Details may change.',
+        'Contact your VA provider if you need more of this medication.',
       );
-      expect(el.textContent).to.include(
-        'call your VA pharmacy’s automated refill line',
-      );
-      expect(el.textContent).to.include('medication details page');
+      expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
     });
   });
 

@@ -738,7 +738,7 @@ class MedicationsListPage {
 
   verifyPharmacyPhoneNumberOnListPage = phoneNumber => {
     cy.get(
-      '[data-testid="active-onHold"] > [data-testid="pharmacy-phone-number"]',
+      '[data-testid="active-onHold"] [data-testid="pharmacy-phone-number"]',
     )
       .shadow()
       .find('[href="tel:+19832720905"]')

@@ -407,18 +407,42 @@ const ExtraDetails = ({
 
       case dispStatusObj.onHold:
         return (
-          <p
+          <div
             className="vads-u-margin-y--0 no-print"
             data-testid="active-onHold"
           >
-            {isMedsImprovements
-              ? 'You can’t refill this prescription online right now. If you need a refill, call your VA pharmacy'
-              : 'You can’t refill this prescription. Contact your VA provider if you need more of this medication.'}
-            <CallPharmacyPhone
-              cmopDivisionPhone={pharmacyPhone}
-              page={pageType.DETAILS}
-            />
-          </p>
+            {isMedsImprovements ? (
+              <>
+                <p>You can’t refill this prescription online right now.</p>
+                <p className="vads-u-margin-y--0">
+                  {pharmacyPhone ? (
+                    <>
+                      If you need a refill, call your VA pharmacy
+                      <CallPharmacyPhone
+                        cmopDivisionPhone={pharmacyPhone}
+                        page={pageType.DETAILS}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      If you need a refill, call your VA pharmacy’s automated
+                      refill line. The phone number is on your prescription
+                      label or in your medication details page.
+                    </>
+                  )}
+                </p>
+              </>
+            ) : (
+              <p className="vads-u-margin-y--0">
+                You can’t refill this prescription. Contact your VA provider if
+                you need more of this medication.
+                <CallPharmacyPhone
+                  cmopDivisionPhone={pharmacyPhone}
+                  page={pageType.DETAILS}
+                />
+              </p>
+            )}
+          </div>
         );
 
       case dispStatusObj.active:
