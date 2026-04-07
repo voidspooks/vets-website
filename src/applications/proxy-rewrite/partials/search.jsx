@@ -64,7 +64,7 @@ const Search = ({ isDesktop, searchIsOpen }) => {
         <div className="search-dropdown-component vads-u-display--flex vads-u-width--full full-width-suggestions vads-u-padding-x--0p5">
           <div className="search-dropdown-container vads-u-width--full vads-u-flex-direction--column full-width-suggestions vads-u-padding-top--1p5 vads-u-padding-left--1p5 vads-u-padding-right--0 vads-u-padding-bottom--3 vads-u-margin--0 search-input-container">
             <input
-              type="text"
+              type="search"
               aria-label="Search"
               autoComplete="off"
               className="vads-u-width--full search-dropdown-input-field"
@@ -108,10 +108,10 @@ const Search = ({ isDesktop, searchIsOpen }) => {
       <div className="search-dropdown-container vads-u-width--full vads-u-flex-direction--column vads-u-padding-y--1 vads-u-padding-left--1 vads-u-padding-right--0">
         <input
           aria-autocomplete="none"
-          type="text"
+          type="search"
           aria-label="Search"
           autoComplete="off"
-          className="vads-u-width--full search-dropdown-input-field"
+          className="vads-u-width--full search-dropdown-input-field vads-u-margin-top--0"
           id="search-header-dropdown-input-field"
           value={inputValue}
           onChange={handleInputChange}
