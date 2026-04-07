@@ -173,7 +173,7 @@ const LandingPage = title => {
               <va-link-action
                 class="hp__link"
                 type="reverse"
-                href="https://docs.google.com/forms/d/1VvExHYQWsNgSho5zu9nCgF_l7AYFyun-B6-2EHOr8MA/edit?ts=6759c5e9"
+                href="https://dvagov.sharepoint.com/sites/vaabdvro/_layouts/15/listforms.aspx?cid=N2M4OWRiNmMtOWY3Mi00Y2Y2LThkMTMtMGMzZjU5NWI2NjY0&nav=NTU0MDI2NmYtNjE4ZC00MTQ4LTkwYmQtNGUyMTVlN2YwNzdi"
                 text="Sign up to be invited to feedback sessions"
               />
             </div>

@@ -28,6 +28,21 @@ describe('LandingPage', () => {
         'What you can do in the portal',
       );
     });
+
+    it('renders feedback sessions sign-up link pointing to the Microsoft Form', () => {
+      const { container } = renderTestApp(<LandingPage />);
+      const signUpLink = Array.from(
+        container.querySelectorAll('va-link-action'),
+      ).find(
+        el =>
+          el.getAttribute('text') ===
+          'Sign up to be invited to feedback sessions',
+      );
+      expect(signUpLink).to.exist;
+      expect(signUpLink.getAttribute('href')).to.eq(
+        'https://dvagov.sharepoint.com/sites/vaabdvro/_layouts/15/listforms.aspx?cid=N2M4OWRiNmMtOWY3Mi00Y2Y2LThkMTMtMGMzZjU5NWI2NjY0&nav=NTU0MDI2NmYtNjE4ZC00MTQ4LTkwYmQtNGUyMTVlN2YwNzdi',
+      );
+    });
   });
 
   // Can't get tests to work wtih data loading seemingly. Works without a loader
