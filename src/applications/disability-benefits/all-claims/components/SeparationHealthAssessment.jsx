@@ -77,13 +77,13 @@ export const SeparationHealthAssessment = ({
         [selectionField]: true,
       };
       setFormData(updatedFormData);
+      setModalVisible(false);
 
       // Restore focus to the button that opened the modal
       if (focusReturnTarget) {
         // Use setTimeout to ensure focus is restored after modal is fully hidden
         setTimeout(() => {
           focusReturnTarget.focus();
-          setModalVisible(false);
         }, 100);
       }
     },
