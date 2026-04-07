@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
@@ -29,6 +29,7 @@ import {
   getImagingStudyDicomZip,
 } from '../../actions/labsAndTests';
 import { fetchBbmiNotificationStatus } from '../../actions/images';
+import { addAlert } from '../../actions/alerts';
 import useAlerts from '../../hooks/use-alerts';
 
 const UnifiedRadiologyDetails = props => {
@@ -48,7 +49,10 @@ const UnifiedRadiologyDetails = props => {
   const INITIAL_POLL_INTERVAL = 2000;
   const BACKOFF_FACTOR = 1.05;
   const MAX_POLL_INTERVAL = 30000;
+  const MAX_POLL_DURATION = 60000;
   const [pollInterval, setPollInterval] = useState(INITIAL_POLL_INTERVAL);
+  const pollStartTime = useRef(null);
+  const hasTimedOut = useRef(false);
 
   const hasLoadedThumbnails = scdfImageThumbnails?.length > 0;
   const hasImageError = activeAlert?.type === ALERT_TYPE_IMAGE_THUMBNAIL_ERROR;
@@ -81,6 +85,8 @@ const UnifiedRadiologyDetails = props => {
     () => {
       if (record?.imagingStudyId) {
         setPollInterval(INITIAL_POLL_INTERVAL);
+        pollStartTime.current = null;
+        hasTimedOut.current = false;
         dispatch(getImagingStudyThumbnails(record.imagingStudyId));
         dispatch(getImagingStudyDicomZip(record.imagingStudyId));
       }
@@ -88,10 +94,27 @@ const UnifiedRadiologyDetails = props => {
     [dispatch, record?.imagingStudyId],
   );
 
-  // Poll thumbnails with exponential backoff until URLs arrive or error
+  // Poll thumbnails with exponential backoff until URLs arrive, error, or timeout
   useEffect(
     () => {
       if (hasLoadedThumbnails || hasImageError || !record?.imagingStudyId) {
+        return undefined;
+      }
+
+      if (!pollStartTime.current) {
+        pollStartTime.current = Date.now();
+      }
+
+      if (Date.now() - pollStartTime.current >= MAX_POLL_DURATION) {
+        if (!hasTimedOut.current) {
+          hasTimedOut.current = true;
+          dispatch(
+            addAlert(
+              ALERT_TYPE_IMAGE_THUMBNAIL_ERROR,
+              new Error('Thumbnail polling timed out'),
+            ),
+          );
+        }
         return undefined;
       }
 
@@ -110,6 +133,7 @@ const UnifiedRadiologyDetails = props => {
       pollInterval,
       pollThumbnails,
       record?.imagingStudyId,
+      dispatch,
     ],
   );
 

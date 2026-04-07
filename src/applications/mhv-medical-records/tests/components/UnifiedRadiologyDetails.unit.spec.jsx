@@ -1,8 +1,9 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 import React from 'react';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import { beforeEach } from 'mocha';
-import { waitFor } from '@testing-library/react';
+import { waitFor, act } from '@testing-library/react';
 import reducer from '../../reducers';
 import UnifiedRadiologyDetails from '../../components/LabsAndTests/UnifiedRadiologyDetails';
 
@@ -262,6 +263,15 @@ describe('UnifiedRadiologyDetails component', () => {
   });
 
   describe('polling behavior', () => {
+    let clock;
+
+    afterEach(() => {
+      if (clock) {
+        clock.restore();
+        clock = null;
+      }
+    });
+
     it('does not show spinner when thumbnails have already loaded', async () => {
       const screen = setup({
         labsAndTests: {
@@ -271,6 +281,33 @@ describe('UnifiedRadiologyDetails component', () => {
       await waitFor(() => {
         expect(screen.queryByTestId('radiology-images-loading')).to.not.exist;
       });
+    });
+
+    it('dispatches error alert and shows error after 60 seconds of polling without thumbnails', async () => {
+      clock = sinon.useFakeTimers({
+        now: Date.now(),
+        toFake: ['setTimeout', 'clearTimeout', 'Date'],
+      });
+
+      const screen = setup();
+
+      // Thumbnails should be loading initially
+      expect(screen.getByTestId('radiology-images-loading')).to.exist;
+
+      // Advance past the 60-second timeout in increments,
+      // flushing React updates between each tick.
+      // Due to exponential backoff (1.05x), the poll that crosses
+      // the 60s mark doesn't fire until 60-65s of clock time. Adding a
+      // buffer to ensure we trigger the timeout condition.
+      const tickAndFlush = () => act(() => clock.tick(2000));
+      /* eslint-disable no-await-in-loop */
+      for (let elapsed = 0; elapsed < 65000; elapsed += 2000) {
+        await tickAndFlush();
+      }
+      /* eslint-enable no-await-in-loop */
+
+      expect(screen.getByTestId('image-request-error-alert')).to.exist;
+      expect(screen.queryByTestId('radiology-images-loading')).to.not.exist;
     });
   });
 });
