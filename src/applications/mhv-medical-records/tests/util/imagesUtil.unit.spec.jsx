@@ -324,6 +324,21 @@ describe('convertScdfImagingStudy', () => {
     const result = convertScdfImagingStudy(record);
     expect(result.results).to.equal(EMPTY_FIELD);
   });
+
+  it('extracts eventId from attributes', () => {
+    const record = {
+      id: 'study-event',
+      attributes: { eventId: '8721358' },
+    };
+    const result = convertScdfImagingStudy(record);
+    expect(result.eventId).to.equal('8721358');
+  });
+
+  it('defaults eventId to null when not provided', () => {
+    const record = { id: 'no-event', attributes: {} };
+    const result = convertScdfImagingStudy(record);
+    expect(result.eventId).to.be.null;
+  });
 });
 
 describe('mergeImagingStudiesIntoLabs', () => {
@@ -396,32 +411,187 @@ describe('mergeImagingStudiesIntoLabs', () => {
       { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:32:00Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
   });
 
-  it('matches at exactly 30 seconds apart', () => {
+  it('matches at exactly 31 minutes apart', () => {
     const labs = [
       { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:00:30Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:31:00Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0].imagingStudyId).to.equal('study-1');
   });
 
-  it('does not match at 31 seconds apart', () => {
+  it('does not match at 31 minutes and 1 second apart', () => {
     const labs = [
       { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
     ];
     const studies = [
-      { id: 'study-1', rawDate: '2025-01-10T09:00:31Z', status: 'available' },
+      { id: 'study-1', rawDate: '2025-01-10T09:31:01Z', status: 'available' },
     ];
     const result = mergeImagingStudiesIntoLabs(labs, studies);
     expect(result[0]).to.not.have.property('imagingStudyId');
+  });
+
+  // --- Stage 1: eventId matching ---
+
+  it('matches by eventId when study.eventId === lab.id (stage 1)', () => {
+    const labs = [
+      { id: 'lab-abc', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-06-15T12:00:00Z',
+        status: 'available',
+        imageCount: 4,
+        eventId: 'lab-abc',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    expect(result[0].imagingStudyId).to.equal('study-1');
+    expect(result[0].imageCount).to.equal(4);
+  });
+
+  it('eventId match takes priority over timestamp match (stage 1 > stage 3)', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+      { id: 'lab-2', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T09:00:00Z',
+        status: 'available',
+        imageCount: 2,
+        eventId: 'lab-2',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    // Should match lab-2 via eventId, not lab-1 via timestamp
+    expect(result[0]).to.not.have.property('imagingStudyId');
+    expect(result[1].imagingStudyId).to.equal('study-1');
+  });
+
+  it('does not match when eventId does not match any lab id', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-06-15T12:00:00Z',
+        status: 'available',
+        eventId: 'nonexistent-lab',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    expect(result[0]).to.not.have.property('imagingStudyId');
+  });
+
+  // --- Stage 2: same day + name matching ---
+
+  it('matches by same day + normalized name when no eventId (stage 2)', () => {
+    const labs = [
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+        name: 'CHEST 2 VIEWS PA&LAT',
+      },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T18:00:00Z',
+        status: 'available',
+        imageCount: 2,
+        name: 'CHEST 2 VIEWS PA&LAT',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    expect(result[0].imagingStudyId).to.equal('study-1');
+  });
+
+  it('does not match by name when days differ (stage 2)', () => {
+    const labs = [
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+        name: 'CHEST XRAY',
+      },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-11T09:00:00Z',
+        status: 'available',
+        name: 'CHEST XRAY',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    expect(result[0]).to.not.have.property('imagingStudyId');
+  });
+
+  it('does not match by same day when names differ (stage 2)', () => {
+    const labs = [
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+        name: 'CHEST XRAY',
+      },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T18:00:00Z',
+        status: 'available',
+        name: 'CT ABDOMEN',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    expect(result[0]).to.not.have.property('imagingStudyId');
+  });
+
+  // --- Stage priority ---
+
+  it('stage 1 match prevents stage 2 from re-matching the same study', () => {
+    const labs = [
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+        name: 'CHEST XRAY',
+      },
+      {
+        id: 'lab-2',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T14:00:00Z',
+        name: 'CHEST XRAY',
+      },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T12:00:00Z',
+        status: 'available',
+        imageCount: 3,
+        eventId: 'lab-2',
+        name: 'CHEST XRAY',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    // lab-2 matched via eventId (stage 1), lab-1 has no match
+    expect(result[0]).to.not.have.property('imagingStudyId');
+    expect(result[1].imagingStudyId).to.equal('study-1');
   });
 
   it('uses each imaging study at most once (1:1 matching)', () => {
@@ -512,6 +682,116 @@ describe('mergeImagingStudiesIntoLabs', () => {
     expect(result[2].imagingStudyStatus).to.equal('complete');
   });
 
+  it('stage 2 match prevents stage 3 from re-matching the same study', () => {
+    const labs = [
+      {
+        id: 'lab-1',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+        name: 'KNEE AP/LAT',
+      },
+      {
+        id: 'lab-2',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T18:00:10Z',
+        name: 'SOMETHING ELSE',
+      },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-01-10T18:00:00Z',
+        status: 'available',
+        imageCount: 1,
+        name: 'KNEE AP/LAT',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    // lab-1 matched via day+name (stage 2), lab-2 would be 10s away but study already consumed
+    expect(result[0].imagingStudyId).to.equal('study-1');
+    expect(result[1]).to.not.have.property('imagingStudyId');
+  });
+
+  it('stage 3 skips lab when multiple studies fall within tolerance (ambiguous)', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      { id: 'study-a', rawDate: '2025-01-10T09:05:00Z', status: 'available' },
+      { id: 'study-b', rawDate: '2025-01-10T09:10:00Z', status: 'available' },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    // Two candidates within tolerance — stage 3 should bail
+    expect(result[0]).to.not.have.property('imagingStudyId');
+  });
+
+  it('stage 3 still matches when only one study is within tolerance', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      { id: 'study-a', rawDate: '2025-01-10T09:10:00Z', status: 'available' },
+      { id: 'study-b', rawDate: '2025-01-10T12:00:00Z', status: 'available' },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    // Only study-a is within tolerance — should match
+    expect(result[0].imagingStudyId).to.equal('study-a');
+  });
+
+  it('produces matches from all 3 stages in a single call', () => {
+    const labs = [
+      {
+        id: 'lab-eventid',
+        type: RAD_TYPE,
+        sortDate: '2025-01-10T09:00:00Z',
+        name: 'CT HEAD',
+      },
+      {
+        id: 'lab-dayname',
+        type: RAD_TYPE,
+        sortDate: '2025-01-11T10:00:00Z',
+        name: 'XRAY CHEST',
+      },
+      {
+        id: 'lab-time',
+        type: RAD_TYPE,
+        sortDate: '2025-01-12T14:00:00Z',
+        name: 'MRI BRAIN',
+      },
+    ];
+    const studies = [
+      {
+        id: 'study-1',
+        rawDate: '2025-06-01T00:00:00Z',
+        status: 'available',
+        imageCount: 1,
+        eventId: 'lab-eventid',
+        name: 'DIFFERENT NAME',
+      },
+      {
+        id: 'study-2',
+        rawDate: '2025-01-11T22:00:00Z',
+        status: 'available',
+        imageCount: 2,
+        name: 'XRAY CHEST',
+      },
+      {
+        id: 'study-3',
+        rawDate: '2025-01-12T14:00:15Z',
+        status: 'complete',
+        imageCount: 3,
+        name: 'SOMETHING UNRELATED',
+      },
+    ];
+    const result = mergeImagingStudiesIntoLabs(labs, studies);
+    // Stage 1: eventId
+    expect(result[0].imagingStudyId).to.equal('study-1');
+    // Stage 2: day+name
+    expect(result[1].imagingStudyId).to.equal('study-2');
+    // Stage 3: 15s tolerance
+    expect(result[2].imagingStudyId).to.equal('study-3');
+  });
+
   it('does not mutate the original labs array', () => {
     const labs = [
       { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
@@ -548,7 +828,10 @@ describe('mergeImagingStudiesIntoLabs', () => {
     expect(stats.unmatchedStudies).to.equal(0);
     expect(stats.maxClosestDistanceMs).to.equal(20000);
     expect(stats.minClosestDistanceMs).to.equal(20000);
-    expect(stats.toleranceMs).to.equal(30000);
+    expect(stats.toleranceMs).to.equal(1860000);
+    expect(stats.matchedByTimeTolerance).to.equal(1);
+    expect(stats.matchedByEventId).to.equal(0);
+    expect(stats.matchedByDayAndName).to.equal(0);
   });
 
   it('emits stats with zero studies when only radiology reports exist', () => {
@@ -593,7 +876,7 @@ describe('computeMergeStats', () => {
     // study-1 closest is lab-1 at 20s, study-2 closest is lab-3 at 22h
     expect(stats.minClosestDistanceMs).to.equal(20000);
     expect(stats.maxClosestDistanceMs).to.be.greaterThan(20000);
-    expect(stats.toleranceMs).to.equal(30000);
+    expect(stats.toleranceMs).to.equal(1860000);
   });
 
   it('returns null distances when there are no reports', () => {
@@ -609,26 +892,26 @@ describe('computeMergeStats', () => {
   });
 
   it('counts near misses within 2x tolerance', () => {
-    // Lab at 09:00:00, unmatched study at 09:00:45 (45s away, within 60s = 2x30s)
+    // Lab at 09:00:00, unmatched study at 09:45:00 (45min away, within 62min = 2x31min)
     const labs = [
       { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
     ];
-    const studies = [{ id: 'study-1', rawDate: '2025-01-10T09:00:45Z' }];
+    const studies = [{ id: 'study-1', rawDate: '2025-01-10T09:45:00Z' }];
     const matchedIds = new Set();
 
     const stats = computeMergeStats(labs, studies, matchedIds);
 
     expect(stats.nearMissCount).to.equal(1);
     expect(stats.unmatchedStudies).to.equal(1);
-    expect(stats.minClosestDistanceMs).to.equal(45000);
+    expect(stats.minClosestDistanceMs).to.equal(2700000);
   });
 
   it('does not count distant unmatched studies as near misses', () => {
-    // Lab at 09:00:00, unmatched study at 10:00:00 (3600s away, well outside 60s)
+    // Lab at 09:00:00, unmatched study at 12:00:00 (3h away, well outside 62min)
     const labs = [
       { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
     ];
-    const studies = [{ id: 'study-1', rawDate: '2025-01-10T10:00:00Z' }];
+    const studies = [{ id: 'study-1', rawDate: '2025-01-10T12:00:00Z' }];
     const matchedIds = new Set();
 
     const stats = computeMergeStats(labs, studies, matchedIds);
@@ -680,5 +963,50 @@ describe('computeMergeStats', () => {
     const stats = computeMergeStats(labs, studies, matchedIds);
 
     expect(stats.reportCount).to.equal(1);
+  });
+
+  it('includes per-stage match counts when stageCounts provided', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', eventId: 'lab-1' },
+    ];
+    const matchedIds = new Set(['study-1']);
+    const stageCounts = { stage1: 1, stage2: 0, stage3: 0 };
+
+    const stats = computeMergeStats(labs, studies, matchedIds, stageCounts);
+
+    expect(stats.matchedByEventId).to.equal(1);
+    expect(stats.matchedByDayAndName).to.equal(0);
+    expect(stats.matchedByTimeTolerance).to.equal(0);
+  });
+
+  it('defaults per-stage counts to 0 when stageCounts omitted', () => {
+    const labs = [];
+    const studies = [];
+    const matchedIds = new Set();
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.matchedByEventId).to.equal(0);
+    expect(stats.matchedByDayAndName).to.equal(0);
+    expect(stats.matchedByTimeTolerance).to.equal(0);
+  });
+
+  it('counts studies with eventId', () => {
+    const labs = [
+      { id: 'lab-1', type: RAD_TYPE, sortDate: '2025-01-10T09:00:00Z' },
+    ];
+    const studies = [
+      { id: 'study-1', rawDate: '2025-01-10T09:00:10Z', eventId: 'lab-1' },
+      { id: 'study-2', rawDate: '2025-01-10T10:00:00Z' },
+      { id: 'study-3', rawDate: '2025-01-10T11:00:00Z', eventId: 'lab-x' },
+    ];
+    const matchedIds = new Set(['study-1']);
+
+    const stats = computeMergeStats(labs, studies, matchedIds);
+
+    expect(stats.studiesWithEventId).to.equal(2);
   });
 });

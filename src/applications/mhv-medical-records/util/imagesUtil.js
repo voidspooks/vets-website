@@ -29,6 +29,7 @@ export const convertScdfImagingStudy = record => {
     studyId: attrs.identifier || record.id,
     series: attrs.series || [],
     status: attrs.status || null,
+    eventId: attrs.eventId || null,
   };
 };
 
@@ -36,7 +37,7 @@ export const convertScdfImagingStudy = record => {
  * Maximum allowed difference (in milliseconds) between a lab record's date
  * and an imaging study's date for them to be considered the same study.
  */
-const IMAGING_MATCH_TOLERANCE_MS = 30 * 1000; // 30 seconds
+const IMAGING_MATCH_TOLERANCE_MS = 31 * 60 * 1000; // 31 minutes
 const NEAR_MISS_TOLERANCE_MS = IMAGING_MATCH_TOLERANCE_MS * 2;
 
 /** Only UHD radiology records are eligible for SCDF imaging study merge. */
@@ -48,11 +49,13 @@ const MERGE_ELIGIBLE_TYPE = loincCodes.UHD_RADIOLOGY;
  * @param {Array} labsList - The original labs list (pre-merge)
  * @param {Array} imagingStudies - The imaging studies list
  * @param {Set} matchedImagingIds - IDs of studies that were successfully matched
+ * @param {Object} stageCounts - Per-stage match counts { stage1, stage2, stage3 }
  */
 export const computeMergeStats = (
   labsList,
   imagingStudies,
   matchedImagingIds,
+  stageCounts = {},
 ) => {
   const reportCount = labsList.filter(
     lab =>
@@ -64,6 +67,9 @@ export const computeMergeStats = (
   const matchedCount = matchedImagingIds.size;
   const unmatchedReports = reportCount - matchedCount;
   const unmatchedStudies = studyCount - matchedCount;
+
+  // How many studies arrived with an eventId from the API
+  const studiesWithEventId = imagingStudies.filter(s => s.eventId).length;
 
   // For each study, find the distance to the closest radiology report.
   // Track min/max inline to avoid spread-operator argument-length limits.
@@ -108,6 +114,10 @@ export const computeMergeStats = (
     matchedCount,
     unmatchedReports,
     unmatchedStudies,
+    matchedByEventId: stageCounts.stage1 || 0,
+    matchedByDayAndName: stageCounts.stage2 || 0,
+    matchedByTimeTolerance: stageCounts.stage3 || 0,
+    studiesWithEventId,
     nearMissCount,
     minClosestDistanceMs,
     maxClosestDistanceMs,
@@ -116,12 +126,87 @@ export const computeMergeStats = (
 };
 
 /**
- * Merge SCDF imaging study metadata into a labs-and-tests list by matching
- * records whose dates fall within a tolerance window.
+ * Check if two dates are on the same calendar day.
+ * @param {string} date1 - First date string
+ * @param {string} date2 - Second date string (can be ISO string or timestamp)
+ * @returns {boolean} - True if dates are on the same day
+ */
+const areDatesOnSameDay = (date1, date2) => {
+  const parseDate = input => {
+    if (!input) return null;
+    if (/^\d+$/.test(input)) {
+      return new Date(Number(input));
+    }
+    return new Date(input);
+  };
+
+  const d1 = parseDate(date1);
+  const d2 = parseDate(date2);
+
+  if (!d1 || !d2 || Number.isNaN(d1.getTime()) || Number.isNaN(d2.getTime())) {
+    return false;
+  }
+
+  return (
+    d1.getUTCFullYear() === d2.getUTCFullYear() &&
+    d1.getUTCMonth() === d2.getUTCMonth() &&
+    d1.getUTCDate() === d2.getUTCDate()
+  );
+};
+
+/**
+ * Run a single matching pass over labs and imaging studies using the provided
+ * predicate. Returns a Map of lab.id → study for each new match found.
+ * Already-matched IDs (in matchedLabIds / matchedImagingIds) are skipped.
  *
- * For each imaging study, find the first unmatched lab record whose sortDate
- * is within IMAGING_MATCH_TOLERANCE_MS of the imaging study's rawDate.
- * When matched, copy relevant fields onto the lab record.
+ * When `requireUniqueMatch` is true, a lab is only matched if exactly one
+ * unmatched study satisfies the predicate. If multiple studies qualify the
+ * lab is skipped (ambiguous match).
+ */
+const runImagingMatchingPass = (
+  labsList,
+  imagingStudies,
+  matchedLabIds,
+  matchedImagingIds,
+  predicate,
+  { requireUniqueMatch = false } = {},
+) => {
+  const newMatches = new Map();
+  labsList.forEach(lab => {
+    if (matchedLabIds.has(lab.id) || lab.type !== MERGE_ELIGIBLE_TYPE) return;
+    if (requireUniqueMatch) {
+      const candidates = imagingStudies.filter(
+        study => !matchedImagingIds.has(study.id) && predicate(lab, study),
+      );
+      if (candidates.length === 1) {
+        newMatches.set(lab.id, candidates[0]);
+        matchedLabIds.add(lab.id);
+        matchedImagingIds.add(candidates[0].id);
+      }
+    } else {
+      for (const study of imagingStudies) {
+        if (!matchedImagingIds.has(study.id) && predicate(lab, study)) {
+          newMatches.set(lab.id, study);
+          matchedLabIds.add(lab.id);
+          matchedImagingIds.add(study.id);
+          break;
+        }
+      }
+    }
+  });
+  return newMatches;
+};
+
+/**
+ * Merge SCDF imaging study metadata into a labs-and-tests list using a
+ * multi-stage matching algorithm. Each stage only considers records not yet
+ * matched by an earlier stage, and each match is 1:1.
+ *
+ * Stages (evaluated in order of specificity):
+ *   1. study.eventId === lab.id  (direct API link)
+ *   2. Same calendar day + study.name matches lab.name (normalized)
+ *   3. Timestamp within tolerance — only when exactly one study matches
+ *      (ambiguous multi-match is skipped)
  *
  * @param {Array} labsList  - Converted labs-and-tests records (each has `sortDate`)
  * @param {Array} imagingStudies - Converted SCDF imaging studies (each has `rawDate`)
@@ -131,38 +216,90 @@ export const mergeImagingStudiesIntoLabs = (
   labsList = [],
   imagingStudies = [],
 ) => {
-  // Track which imaging studies have already been matched so each is used at most once
+  if (!imagingStudies.length) {
+    const stats = computeMergeStats(labsList, imagingStudies, new Set());
+    if (stats.reportCount > 0 || stats.studyCount > 0) {
+      datadogRum.addAction(rumActions.MERGE_IMAGING_STUDIES, stats);
+    }
+    return labsList;
+  }
+
+  const matchedLabIds = new Set();
   const matchedImagingIds = new Set();
+  const allMatches = new Map();
 
-  const mergedList = imagingStudies.length
-    ? labsList.map(lab => {
-        if (lab.type !== MERGE_ELIGIBLE_TYPE) return lab;
-        if (!lab.sortDate) return lab;
-        const labTime = new Date(lab.sortDate).getTime();
-        if (Number.isNaN(labTime)) return lab;
+  // Stage 1: eventId === lab.id (most specific)
+  const stage1 = runImagingMatchingPass(
+    labsList,
+    imagingStudies,
+    matchedLabIds,
+    matchedImagingIds,
+    (lab, study) => study.eventId && study.eventId === lab.id,
+  );
+  stage1.forEach((v, k) => allMatches.set(k, v));
 
-        const match = imagingStudies.find(study => {
-          if (matchedImagingIds.has(study.id)) return false;
-          if (!study.rawDate) return false;
-          const studyTime = new Date(study.rawDate).getTime();
-          if (Number.isNaN(studyTime)) return false;
-          return Math.abs(labTime - studyTime) <= IMAGING_MATCH_TOLERANCE_MS;
-        });
+  // Stage 2: same calendar day + normalized name match
+  const stage2 = runImagingMatchingPass(
+    labsList,
+    imagingStudies,
+    matchedLabIds,
+    matchedImagingIds,
+    (lab, study) => {
+      if (!lab.sortDate || !study.rawDate) return false;
+      const labName = normalizeProcedureName(lab.name);
+      const studyName = normalizeProcedureName(study.name);
+      return (
+        labName &&
+        studyName &&
+        labName === studyName &&
+        areDatesOnSameDay(lab.sortDate, study.rawDate)
+      );
+    },
+  );
+  stage2.forEach((v, k) => allMatches.set(k, v));
 
-        if (match) {
-          matchedImagingIds.add(match.id);
-          return {
-            ...lab,
-            imagingStudyId: match.id,
-            imagingStudyStatus: match.status,
-            imageCount: match.imageCount || 0,
-          };
-        }
-        return lab;
-      })
-    : labsList;
+  // Stage 3: timestamp tolerance (loosest) — skip if multiple studies match
+  const stage3 = runImagingMatchingPass(
+    labsList,
+    imagingStudies,
+    matchedLabIds,
+    matchedImagingIds,
+    (lab, study) => {
+      if (!lab.sortDate || !study.rawDate) return false;
+      const labTime = new Date(lab.sortDate).getTime();
+      const studyTime = new Date(study.rawDate).getTime();
+      if (Number.isNaN(labTime) || Number.isNaN(studyTime)) return false;
+      return Math.abs(labTime - studyTime) <= IMAGING_MATCH_TOLERANCE_MS;
+    },
+    { requireUniqueMatch: true },
+  );
+  stage3.forEach((v, k) => allMatches.set(k, v));
 
-  const stats = computeMergeStats(labsList, imagingStudies, matchedImagingIds);
+  // Apply matches to labs
+  const mergedList = labsList.map(lab => {
+    const match = allMatches.get(lab.id);
+    if (match) {
+      return {
+        ...lab,
+        imagingStudyId: match.id,
+        imagingStudyStatus: match.status,
+        imageCount: match.imageCount || 0,
+      };
+    }
+    return lab;
+  });
+
+  const stageCounts = {
+    stage1: stage1.size,
+    stage2: stage2.size,
+    stage3: stage3.size,
+  };
+  const stats = computeMergeStats(
+    labsList,
+    imagingStudies,
+    matchedImagingIds,
+    stageCounts,
+  );
   if (stats.reportCount > 0 || stats.studyCount > 0) {
     datadogRum.addAction(rumActions.MERGE_IMAGING_STUDIES, stats);
   }
@@ -232,35 +369,6 @@ const mergeRadiologyRecords = (phrRecord, cvixRecord) => {
     };
   }
   return phrRecord || cvixRecord || null;
-};
-
-/**
- * Check if two dates are on the same calendar day.
- * @param {string} date1 - First date string
- * @param {string} date2 - Second date string (can be ISO string or timestamp)
- * @returns {boolean} - True if dates are on the same day
- */
-const areDatesOnSameDay = (date1, date2) => {
-  const parseDate = input => {
-    if (!input) return null;
-    if (/^\d+$/.test(input)) {
-      return new Date(Number(input));
-    }
-    return new Date(input);
-  };
-
-  const d1 = parseDate(date1);
-  const d2 = parseDate(date2);
-
-  if (!d1 || !d2 || Number.isNaN(d1.getTime()) || Number.isNaN(d2.getTime())) {
-    return false;
-  }
-
-  return (
-    d1.getUTCFullYear() === d2.getUTCFullYear() &&
-    d1.getUTCMonth() === d2.getUTCMonth() &&
-    d1.getUTCDate() === d2.getUTCDate()
-  );
 };
 
 /**
