@@ -207,7 +207,7 @@ describe('<IntroductionPage/>', () => {
     const subwayTitle = wrapper.find('#main-content');
 
     expect(subwayTitle.text()).to.equal(
-      'File a claim for a new or secondary condition or for increased disability compensation.',
+      'Follow the steps on this page to file a claim for a new or secondary condition or for increased disability compensation.',
     );
     wrapper.unmount();
   });
@@ -216,7 +216,9 @@ describe('<IntroductionPage/>', () => {
     const wrapper = shallow(<IntroductionPage {...defaultProps} isBDDForm />);
     const subwayTitle = wrapper.find('#main-content');
 
-    expect(subwayTitle.text()).to.equal('File a BDD claim.');
+    expect(subwayTitle.text()).to.equal(
+      'Follow the steps on this page to file a BDD claim.',
+    );
     wrapper.unmount();
   });
 });
