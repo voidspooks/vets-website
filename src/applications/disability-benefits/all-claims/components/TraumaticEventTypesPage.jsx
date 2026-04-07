@@ -203,7 +203,9 @@ const TraumaticEventTypesPage = ({
         </VaAlert>
       </div>
 
-      {titleWithTag(eventTypesPageTitle, form0781HeadingTag)}
+      <div id="root__title" className="schemaform-block-title">
+        {titleWithTag(eventTypesPageTitle, form0781HeadingTag)}
+      </div>
 
       <p>{eventTypesDescription}</p>
 

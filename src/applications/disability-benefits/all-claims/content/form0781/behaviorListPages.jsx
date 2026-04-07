@@ -233,7 +233,7 @@ export const unlistedDescriptionPageDescription =
   'Describe the other behavioral changes you experienced that were not in the list of behavioral change types provided. (Optional)';
 
 // behavior summary page
-export const behaviorSummaryPageTitle = 'Summary of behavioral changes';
+export const behaviorSummaryPageTitle = 'Review your behavioral changes';
 
 function getDescriptionForBehavior(selectedBehaviors, behaviorDetails) {
   const allBehaviorDescriptions = ALL_BEHAVIOR_CHANGE_DESCRIPTIONS;

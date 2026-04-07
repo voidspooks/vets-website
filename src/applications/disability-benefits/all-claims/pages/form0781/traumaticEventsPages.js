@@ -16,7 +16,6 @@ import { eventDetailsPageTitle } from '../../content/traumaticEventDetails';
 import { officialReportPageTitle } from '../../content/officialReport';
 import { policeReportLocationPageTitle } from '../../content/policeReportLocation';
 import {
-  titleWithTag,
   form0781HeadingTag,
   mentalHealthSupportAlert,
 } from '../../content/form0781';
@@ -41,9 +40,15 @@ const summaryDescriptionUI = (
     isReviewAndSubmitPage() ? reviewAndSubmitDescription : description();
 };
 
-export const summaryPageTitleWithTag = titleWithTag(
-  eventsListPageTitle,
-  form0781HeadingTag,
+export const summaryPageTitleWithTag = (
+  <>
+    <span className="vads-u-display--block vads-u-font-family--sans vads-u-font-size--base vads-u-font-weight--normal">
+      {form0781HeadingTag}
+    </span>
+    <span className="vads-u-display--block vads-u-font-size--h3 vads-u-color--base">
+      {eventsListPageTitle}
+    </span>
+  </>
 );
 
 /** @type {ArrayBuilderOptions} */

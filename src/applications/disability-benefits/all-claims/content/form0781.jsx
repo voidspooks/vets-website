@@ -223,34 +223,27 @@ export const mentalHealthSupportAlert = () => {
 };
 
 /**
- * Generates a combined heading inside a <legend> element for use in a page title.
- * This groups a heading tag (like a form identifier) and a page-specific title
- * into a single semantic block, styled appropriately.
+ * Generates reusable title content with a form eyebrow and h3 heading.
+ *
+ * This helper intentionally does not render a <legend>. Pages that need
+ * fieldset semantics should add <fieldset>/<legend> wrappers at the call site.
  *
  * @param {string} title - The main title for the page, typically describing the form section
  * @param {string} headingTag - A label or identifier that appears above the title
- * @returns {JSX.Element} A <legend> element containing a single <h3> with two styled <span> blocks
- *
- * Example rendered structure:
- * <legend>
- *   <h3 class="vads-u-margin--0">
- *     <span class="...">VA FORM 21-0781</span>
- *     <span class="...">Mental health support</span>
- *   </h3>
- * </legend>
+ * @returns {JSX.Element} Reusable title markup
  */
 export function titleWithTag(title, headingTag) {
   return (
-    <legend>
+    <>
+      <span className="vads-u-display--block vads-u-font-family--sans vads-u-font-size--base vads-u-font-weight--normal">
+        {headingTag}
+      </span>
       <h3 className="vads-u-margin--0">
-        <span className="vads-u-display--block vads-u-font-family--sans vads-u-font-size--base vads-u-font-weight--normal">
-          {`${headingTag}`}{' '}
-        </span>
         <span className="vads-u-display--block vads-u-font-size--h3 vads-u-color--base">
           {title}
         </span>
       </h3>
-    </legend>
+    </>
   );
 }
 

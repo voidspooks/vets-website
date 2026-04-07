@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const consentPageTitle =
-  'Option to add indicator of certain upcoming claim and appeal events to your VA medical record';
+  'Option to add upcoming claim and appeal events to your VA medical record';
 
 export const consentPageDescription = (
   <>

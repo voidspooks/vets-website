@@ -31,6 +31,7 @@ import {
 import {
   form0781HeadingTag,
   mentalHealthSupportAlert,
+  titleWithTag,
 } from '../content/form0781';
 
 const BehaviorListPage = ({
@@ -318,14 +319,9 @@ const BehaviorListPage = ({
 
   return (
     <div className="vads-u-margin-y--2">
-      <>
-        <h3 className="vads-u-font-family--sans vads-u-font-size--base vads-u-font-weight--normal vads-u-margin--0">
-          {form0781HeadingTag}
-        </h3>
-        <h3 className="vads-u-font-size--h3 vads-u-color--base vads-u-margin--0">
-          {behaviorListPageTitle}
-        </h3>
-      </>
+      <div id="root__title" className="schemaform-block-title">
+        {titleWithTag(behaviorListPageTitle, form0781HeadingTag)}
+      </div>
       {behaviorListDescription}
 
       {data &&

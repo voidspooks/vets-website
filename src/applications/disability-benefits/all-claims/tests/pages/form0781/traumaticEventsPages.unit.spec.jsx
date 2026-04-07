@@ -76,9 +76,12 @@ describe('Traumatic Events Pages', () => {
   it('should render the correct summary title UI', () => {
     window.history.pushState({}, '', '/events-summary');
     const { container } = render(<div>{summaryTitle()}</div>);
-    expect(container.textContent.trim()).to.equal(
-      `${form0781HeadingTag} ${eventsListPageTitle}`,
-    );
+    const headingText = container.textContent.trim();
+    const tagIndex = headingText.indexOf(form0781HeadingTag);
+    const titleIndex = headingText.indexOf(eventsListPageTitle);
+    expect(tagIndex).to.be.at.least(0);
+    expect(titleIndex).to.be.at.least(0);
+    expect(tagIndex).to.be.lessThan(titleIndex);
   });
 
   it('should return the correct card item name', () => {

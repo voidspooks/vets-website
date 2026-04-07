@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const eventsListPageTitle =
-  'Traumatic events from your military service';
+  'Review traumatic events related to your military service';
 
 export const eventsListDescription = () => {
   return (

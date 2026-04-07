@@ -197,7 +197,9 @@ const BehaviorIntroCombatPage = ({
         </VaAlert>
       </div>
 
-      {titleWithTag(behaviorPageTitle, form0781HeadingTag)}
+      <div id="root__title" className="schemaform-block-title">
+        {titleWithTag(behaviorPageTitle, form0781HeadingTag)}
+      </div>
 
       <p>{combatIntroDescription}</p>
 

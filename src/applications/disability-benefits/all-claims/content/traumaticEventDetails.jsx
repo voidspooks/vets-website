@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const eventDetailsPageTitle = 'Details about your traumatic event';
+export const eventDetailsPageTitle = 'Traumatic event details';
 export const eventDetailsPrompt =
   'Briefly describe what happened during your traumatic event in the military.';
 export const eventDetailsHint =
