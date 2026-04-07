@@ -2,8 +2,38 @@ const fs = require('fs');
 const { claimsStore } = require('../mockStore');
 
 /**
+ * Extracts filename and mimetype from a raw multipart/form-data Buffer.
+ *
+ * mocker-api is configured (via _proxy.bodyParserConf) to read multipart
+ * requests as raw Buffers, so req.body is a Buffer here — no stream listeners
+ * needed and no async handler required.
+ *
+ * @param {Buffer|*} body - req.body provided by bodyParser.raw()
+ * @returns {{ filename: string, mimetype: string } | null}
+ */
+function parseMultipartBody(body) {
+  if (!Buffer.isBuffer(body)) return null;
+  // latin1 round-trips binary bytes through a JS string without corruption
+  const raw = body.toString('latin1');
+  const filenameMatch = raw.match(
+    /Content-Disposition:[^\r\n]*filename="([^"]+)"/i,
+  );
+  const mimeMatch = raw.match(
+    /Content-Disposition:[^\r\n]*\r\nContent-Type:\s*([^\r\n]+)/i,
+  );
+  return {
+    filename: filenameMatch ? filenameMatch[1] : 'upload',
+    mimetype: mimeMatch ? mimeMatch[1].trim() : 'application/octet-stream',
+  };
+}
+
+/**
  * Upload a document to a claim (e.g. proof of attendance)
  * POST /travel_pay/v0/claims/:claimId/documents
+ *
+ * Accepts multipart/form-data with the file under the key "document".
+ * req.body is a Buffer (mocker-api is configured with bodyParserConf:
+ * { 'multipart/form-data': 'raw' }).
  */
 function uploadDocumentHandler() {
   return (req, res) => {
@@ -20,13 +50,22 @@ function uploadDocumentHandler() {
       };
     }
 
+    // req.body is a Buffer for multipart; an object for JSON (legacy/tests)
+    const multipart = parseMultipartBody(req.body);
+    const filename = multipart
+      ? multipart.filename
+      : (req.body || {}).fileName || 'proof-of-attendance.pdf';
+    const mimetype = multipart
+      ? multipart.mimetype
+      : (req.body || {}).contentType || 'application/pdf';
+
     const newDocument = {
       documentId: `mock-doc-${Date.now()}`,
       claimId,
-      filename: req.body.fileName || 'proof-of-attendance.pdf',
-      mimetype: req.body.contentType || 'application/pdf',
-      // Store the raw base64 so downloadDocumentHandler can return the real file
-      fileData: req.body.fileData || null,
+      filename,
+      mimetype,
+      // Binary data not stored; downloads fall back to the sample file.
+      fileData: null,
     };
 
     if (!claimsStore[claimId].documents) {

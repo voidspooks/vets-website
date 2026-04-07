@@ -606,6 +606,84 @@ describe('ChooseExpenseType', () => {
       });
     });
 
+    it('navigates back to proof-of-attendance when backDestination is proof-of-attendance', async () => {
+      const LocationDisplay = () => {
+        const location = useLocation();
+        return <div data-testid="location-display">{location.pathname}</div>;
+      };
+
+      const poaBackState = {
+        travelPay: {
+          appointment: {
+            data: { id: '12345', isCC: true },
+            isLoading: false,
+            error: null,
+          },
+          complexClaim: {
+            claim: {
+              data: {
+                claimId: 'claim123',
+                expenses: [],
+                documents: [
+                  { filename: 'proof-of-attendance.pdf', expenseId: null },
+                ],
+              },
+              fetch: { isLoading: false, error: null },
+              creation: { isLoading: false, error: null },
+              submission: {
+                id: '',
+                isSubmitting: false,
+                error: null,
+                data: null,
+              },
+            },
+            expenses: {
+              data: [],
+              creation: { isLoading: false, error: null },
+              update: { id: '', isLoading: false, error: null },
+              delete: { id: '', isLoading: false, error: null },
+            },
+            expenseBackDestination: 'proof-of-attendance',
+            proofOfAttendance: { isLoading: false, error: null },
+            unsavedChangesModal: { visible: false, source: null },
+            reviewPageAlert: null,
+          },
+          downtimeWindow: { startTime: null, endTime: null },
+          reviewPageAlert: null,
+        },
+      };
+
+      const store = createStore(
+        combineReducers({ ...commonReducer, ...reducer }),
+        poaBackState,
+        applyMiddleware(thunk),
+      );
+
+      const { getByTestId } = renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={['/file-new-claim/12345/claim123/choose-expense']}
+        >
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId/:claimId/choose-expense"
+              element={<ChooseExpenseType />}
+            />
+          </Routes>
+          <LocationDisplay />
+        </MemoryRouter>,
+        { store },
+      );
+
+      const buttonPair = $('va-button-pair');
+      fireEvent(buttonPair, new CustomEvent('secondaryClick', { detail: {} }));
+
+      await waitFor(() => {
+        expect(getByTestId('location-display').textContent).to.equal(
+          '/file-new-claim/12345/claim123/proof-of-attendance',
+        );
+      });
+    });
+
     it('dispatches setExpenseBackDestination with "choose-expense" when continue is clicked with selected expense', async () => {
       // Component to verify Redux state
       const BackDestinationDisplay = () => {

@@ -258,7 +258,9 @@ function buildCCAppointment(daysOffset = -1, id = 'cc-appt-001') {
       station: '534',
       location: {
         id: '534',
-        name: 'Cheyenne VA Medical Center',
+        attributes: {
+          name: 'Cheyenne VA Medical Center',
+        },
       },
       communityCareProvider: {
         providerName: 'Community Care Provider',

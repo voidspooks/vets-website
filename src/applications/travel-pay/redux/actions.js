@@ -811,7 +811,7 @@ export function clearReviewPageAlert() {
 }
 
 // Proof of attendance document upload
-export function uploadProofOfAttendance(claimId, fileData) {
+export function uploadProofOfAttendance(claimId, file) {
   return async dispatch => {
     dispatch({ type: UPLOAD_POA_STARTED });
     recordEvent({
@@ -821,12 +821,14 @@ export function uploadProofOfAttendance(claimId, fileData) {
     });
 
     try {
+      const formData = new FormData();
+      formData.append('document', file);
+
       const response = await apiRequest(
         `${environment.API_URL}/travel_pay/v0/claims/${claimId}/documents`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(fileData),
+          body: formData,
         },
       );
       recordEvent({

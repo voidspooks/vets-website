@@ -96,6 +96,12 @@ const ChooseExpenseType = () => {
   const handleBack = () => {
     if (backDestination === 'review') {
       navigate(`/file-new-claim/${apptId}/${claimId}/review`);
+    } else if (backDestination === 'proof-of-attendance') {
+      // POA page set this destination when navigating forward; pass
+      // fromChooseExpense so the POA page stays in add-flow mode.
+      navigate(`/file-new-claim/${apptId}/${claimId}/proof-of-attendance`, {
+        state: { fromChooseExpense: true },
+      });
     } else {
       navigate(`/file-new-claim/${apptId}`, { state: { skipRedirect: true } });
     }

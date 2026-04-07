@@ -61,6 +61,13 @@ const featureTogglesResponse = {
 };
 
 const responses = {
+  // Tell mocker-api to buffer multipart/form-data requests as raw Buffers so
+  // uploadDocumentHandler can parse the filename synchronously (no stream listeners).
+  _proxy: {
+    bodyParserConf: { 'multipart/form-data': 'raw' },
+    bodyParserRaw: { type: 'multipart/form-data', limit: '10mb' },
+  },
+
   'OPTIONS /v0/maintenance_windows': 'OK',
   'GET /v0/maintenance_windows': maintenanceWindows.none,
   'GET /v0/user': user.withAddress,

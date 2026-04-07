@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams, Navigate } from 'react-router-dom-v5-compat';
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  Navigate,
+} from 'react-router-dom-v5-compat';
 import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/api';
@@ -13,13 +18,13 @@ import {
   uploadProofOfAttendance,
   getComplexClaimDetails,
   deleteDocument,
+  setExpenseBackDestination,
 } from '../../../redux/actions';
 import {
   selectAppointment,
   selectHasProofOfAttendance,
   selectPOADocument,
 } from '../../../redux/selectors';
-import { toBase64 } from './ExpensePage';
 import { PROOF_OF_ATTENDANCE_FILENAME } from '../../../constants';
 import { getAcceptedFileTypes } from '../../../util/complex-claims-helper';
 
@@ -35,6 +40,11 @@ const ProofOfAttendancePage = () => {
   const heicConversionEnabled = useToggleValue(
     TOGGLE_NAMES.travelPayEnableHeicConversion,
   );
+
+  const location = useLocation();
+  // True when arriving via Back from choose-expense; overrides edit-mode
+  // navigation so Continue/Back use add-flow destinations.
+  const fromChooseExpense = location.state?.fromChooseExpense ?? false;
 
   const { data: appointment } = useSelector(selectAppointment);
   const hasProofOfAttendance = useSelector(selectHasProofOfAttendance);
@@ -58,11 +68,12 @@ const ProofOfAttendancePage = () => {
   useSetPageTitle(title);
   useSetFocus();
 
-  // In edit mode, fetch the existing POA document so VaFileInput shows it pre-populated.
+  // Fetch the existing POA document so VaFileInput shows it pre-populated whenever
+  // one exists — whether the user is editing from the review page or navigating
+  // back from choose-expense after having already uploaded.
   useEffect(
     () => {
-      if (!isEditMode || !poaDocument?.documentId || loadedFile)
-        return undefined;
+      if (!poaDocument?.documentId || loadedFile) return undefined;
 
       let isMounted = true;
 
@@ -97,7 +108,7 @@ const ProofOfAttendancePage = () => {
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isEditMode, poaDocument?.documentId, poaDocument?.filename, claimId],
+    [poaDocument?.documentId, poaDocument?.filename, claimId],
   );
 
   // Only show this page for community care appointments with the flag enabled
@@ -155,22 +166,15 @@ const ProofOfAttendancePage = () => {
         if (isEditMode && poaDocument?.documentId) {
           await dispatch(deleteDocument(claimId, poaDocument.documentId));
         }
-        const fileData = await toBase64(selectedFile);
-        await dispatch(
-          uploadProofOfAttendance(claimId, {
-            contentType: selectedFile.type,
-            fileName: selectedFile.name,
-            length: selectedFile.size,
-            fileData,
-          }),
-        );
+        await dispatch(uploadProofOfAttendance(claimId, selectedFile));
         // Refresh claim details so the updated document lands in state
         await dispatch(getComplexClaimDetails(claimId));
       }
 
-      if (isEditMode) {
+      if (isEditMode && !fromChooseExpense) {
         navigate(`/file-new-claim/${apptId}/${claimId}/review`);
       } else {
+        dispatch(setExpenseBackDestination('proof-of-attendance'));
         navigate(`/file-new-claim/${apptId}/${claimId}/choose-expense`);
       }
     } catch {
@@ -180,7 +184,7 @@ const ProofOfAttendancePage = () => {
   };
 
   const handleBack = () => {
-    if (isEditMode) {
+    if (isEditMode && !fromChooseExpense) {
       navigate(`/file-new-claim/${apptId}/${claimId}/review`);
     } else {
       navigate(`/file-new-claim/${apptId}`, { state: { skipRedirect: true } });
@@ -249,8 +253,10 @@ const ProofOfAttendancePage = () => {
         />
       )}
       <TravelPayButtonPair
-        continueText={isEditMode ? 'Save and continue' : 'Continue'}
-        backText={isEditMode ? 'Cancel' : 'Back'}
+        continueText={
+          isEditMode && !fromChooseExpense ? 'Save and continue' : 'Continue'
+        }
+        backText={isEditMode && !fromChooseExpense ? 'Cancel' : 'Back'}
         onContinue={handleContinue}
         onBack={handleBack}
         loading={isLoading}

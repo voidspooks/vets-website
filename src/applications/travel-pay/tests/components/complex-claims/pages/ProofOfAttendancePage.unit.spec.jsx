@@ -379,8 +379,11 @@ describe('Travel Pay – ProofOfAttendancePage', () => {
           .getCalls()
           .find(call => call.args[0].includes('/documents'));
         expect(uploadCall).to.exist;
-        const requestBody = JSON.parse(uploadCall.args[1].body);
-        expect(requestBody.fileName).to.equal('proof-of-attendance.pdf');
+        const requestBody = uploadCall.args[1].body;
+        expect(requestBody).to.be.instanceOf(FormData);
+        expect(requestBody.get('document').name).to.equal(
+          'proof-of-attendance.pdf',
+        );
       });
     });
 
@@ -416,8 +419,11 @@ describe('Travel Pay – ProofOfAttendancePage', () => {
           .getCalls()
           .find(call => call.args[0].includes('/documents'));
         expect(uploadCall).to.exist;
-        const requestBody = JSON.parse(uploadCall.args[1].body);
-        expect(requestBody.fileName).to.equal('proof-of-attendance.jpg');
+        const requestBody = uploadCall.args[1].body;
+        expect(requestBody).to.be.instanceOf(FormData);
+        expect(requestBody.get('document').name).to.equal(
+          'proof-of-attendance.jpg',
+        );
       });
     });
   });
@@ -794,13 +800,15 @@ describe('Travel Pay – ProofOfAttendancePage', () => {
         expect(deleteCalls).to.have.lengthOf(1);
         expect(deleteCalls[0].args[0]).to.include('existing-poa-doc-001');
 
-        // POST should have been called to upload the new document
+        // POST should have been called to upload the new document as multipart
         const postCalls = apiStub
           .getCalls()
           .filter(c => (c.args[1]?.method || '').toUpperCase() === 'POST');
         expect(postCalls).to.have.lengthOf(1);
-        const uploadBody = JSON.parse(postCalls[0].args[1].body);
-        expect(uploadBody.fileName).to.equal('proof-of-attendance.png');
+        const uploadBody = postCalls[0].args[1].body;
+        expect(uploadBody).to.be.instanceOf(FormData);
+        const uploadedFile = uploadBody.get('document');
+        expect(uploadedFile.name).to.equal('proof-of-attendance.png');
 
         // Should navigate to review
         expect(getByTestId('location-display').textContent).to.equal(
