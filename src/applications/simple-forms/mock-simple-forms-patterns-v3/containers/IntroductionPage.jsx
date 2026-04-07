@@ -307,7 +307,7 @@ const childContent = (
         <a
           target="_blank"
           rel="noreferrer"
-          href="https://staging.va.gov/mock-form-prefill-minimal/introduction"
+          href="https://staging.va.gov/mock-form-minimal-prefill/introduction"
         >
           Mock form prefill with Minimal Header
         </a>
