@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { subMonths } from 'date-fns';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import * as SmApi from '../../api/SmApi';
-import { Alerts, DefaultFolders } from '../../util/constants';
+import { Alerts, DefaultFolders, Paths } from '../../util/constants';
+import { findCareTeamChangeMessage } from '../../actions/careTeamChanges';
+import RouterLink from './RouterLink';
 
 const TOOLTIP_NAME = Alerts.Message.CARE_TEAM_CHANGE_TOOLTIP_NAME;
 
 const CareTeamNameChangeAlert = () => {
-  const { changes, isLoading } = useSelector(state => state.sm.careTeamChanges);
+  const dispatch = useDispatch();
+  const { changes, isLoading, messageId } = useSelector(
+    state => state.sm.careTeamChanges,
+  );
   const { alertVisible, alertList } = useSelector(state => state.sm.alerts);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -107,6 +112,16 @@ const CareTeamNameChangeAlert = () => {
     [filteredChanges],
   );
 
+  // Search inbox for the "Your new care team names" system message
+  useEffect(
+    () => {
+      if (filteredChanges?.length > 0 && messageId === null) {
+        dispatch(findCareTeamChangeMessage());
+      }
+    },
+    [filteredChanges, messageId, dispatch],
+  );
+
   const handleClose = useCallback(
     () => {
       setTooltipVisible(false);
@@ -153,6 +168,14 @@ const CareTeamNameChangeAlert = () => {
         {Alerts.Message.CARE_TEAM_CHANGE_FOOTER_PREFIX}
         <strong>{Alerts.Message.CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE}</strong>
       </p>
+      {messageId !== null && (
+        <RouterLink
+          href={`${Paths.MESSAGE_THREAD}${messageId}/`}
+          text={Alerts.Message.CARE_TEAM_CHANGE_LINK_TEXT}
+          data-testid="care-team-change-message-link"
+          data-dd-action-name="Read care team change message link"
+        />
+      )}
     </VaAlert>
   );
 };

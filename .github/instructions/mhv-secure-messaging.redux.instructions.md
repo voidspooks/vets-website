@@ -77,6 +77,7 @@ state.sm = {
     changes: [],          // Array of { vistaTriageGroupId, vistaTriageGroupName, ohTriageGroupId, ohTriageGroupName }
     isLoading: false,
     error: null,
+    messageId: null,      // ID of the "Your new care team names" inbox system message (found via searchFolderAdvanced)
   },
 }
 ```

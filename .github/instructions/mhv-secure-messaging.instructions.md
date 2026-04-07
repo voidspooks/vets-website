@@ -148,6 +148,7 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 - **Feature flag**: `ehrCrosswalkEnabled` (via `useFeatureToggles()`)
 - **API endpoint**: `GET /my_health/v1/messaging/recipients/crosswalk` (`getCareTeamCrosswalk()` in `SmApi.js`)
 - **Data flow**: `FetchCareTeamChanges` (mounted in `App.jsx`) → `getCareTeamChanges()` action → `careTeamChanges` reducer → consumed by `CareTeamNameChangeAlert` and `MigratedMessageAlert`
+- **System message link**: `CareTeamNameChangeAlert` dispatches `findCareTeamChangeMessage()` to search Inbox for the system message titled "Your new care team names", stores `messageId` in reducer, renders a `RouterLink` to `/thread/{messageId}/`
 - **Crosswalk entry shape**: `{ vistaTriageGroupId, vistaTriageGroupName, ohTriageGroupId, ohTriageGroupName }`
 - **Surfaces**:
   - **Inbox / Select Care Team**: `CareTeamNameChangeAlert` — warning alert listing recent renamed teams, dismissible via tooltip API

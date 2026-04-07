@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import { expect } from 'chai';
 import { getCareTeamChanges } from '../../actions/careTeamChanges';
 import { careTeamChangesReducer } from '../../reducers/careTeamChanges';
+import { Actions } from '../../util/actionTypes';
 
 describe('careTeamChanges reducer', () => {
   const mockStore = initialState => {
@@ -68,6 +69,16 @@ describe('careTeamChanges reducer', () => {
       changes: [],
       isLoading: false,
       error: null,
+      messageId: null,
     });
+  });
+
+  it('should handle SET_MESSAGE_ID', () => {
+    const store = mockStore();
+    store.dispatch({
+      type: Actions.CareTeamChanges.SET_MESSAGE_ID,
+      payload: 12345,
+    });
+    expect(store.getState().messageId).to.equal(12345);
   });
 });

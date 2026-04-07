@@ -233,6 +233,7 @@ export const Alerts = {
     CARE_TEAM_CHANGE_FOOTER_PREFIX:
       'Go to your inbox to see your full list in a message titled ',
     CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE: 'Your new care team names.',
+    CARE_TEAM_CHANGE_LINK_TEXT: 'Read the message now',
     CARE_TEAM_CHANGE_TOOLTIP_NAME: 'sm_care_team_name_change',
   },
 

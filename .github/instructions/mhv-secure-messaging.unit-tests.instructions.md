@@ -198,6 +198,85 @@ const { getThreadList } = await import('../../api/SmApi');
 const response = await getThreadList({ folderId: 0 });
 ```
 
+### Thunks Dispatched from Component Effects
+
+**When to use:** A component's `useEffect` dispatches a Redux thunk that internally uses named SmApi imports.
+
+The same named-import bypass applies to thunks. If an action creator uses `import { searchFolderAdvanced } from '../api/SmApi'` and a component effect dispatches it, `sandbox.stub(SmApi, 'searchFolderAdvanced')` in the component test will NOT intercept the thunk's call — the thunk captured the direct binding at import time.
+
+**Pattern:** For component tests, pre-set the Redux state that the thunk would produce rather than relying on the effect to dispatch and resolve:
+
+```javascript
+// ✅ CORRECT — pre-set state to test the component's rendering, not the thunk
+const stateWithMessageId = {
+  ...baseState,
+  sm: {
+    ...baseState.sm,
+    careTeamChanges: {
+      ...baseState.sm.careTeamChanges,
+      messageId: 12345,  // Pre-set, don't rely on thunk dispatch
+    },
+  },
+};
+const { container } = renderComponent(stateWithMessageId);
+```
+
+```javascript
+// ❌ BROKEN — thunk fires from effect, but its named import bypasses SmApi stub
+// causing unintercepted fetch calls that break test isolation
+const { container } = renderComponent(baseState); // messageId: null triggers effect
+// effect dispatches findCareTeamChangeMessage() → named import → unintercepted fetch
+```
+
+For **action tests** (testing the thunk in isolation), use `mockApiRequest` from platform testing — it intercepts at the `fetch` level, bypassing the named import issue entirely:
+
+```javascript
+// ✅ CORRECT — action tests use fetch-level mocking
+import { mockApiRequest } from '@department-of-veterans-affairs/platform-testing/helpers';
+mockApiRequest({ data: [{ attributes: { messageId: 12345, subject: 'Your new care team names' } }] });
+await store.dispatch(findCareTeamChangeMessage());
+```
+
+**Why:** Named `import { fn } from 'module'` captures a direct reference to the function at module load time. Sinon's `sandbox.stub(module, 'fn')` replaces the property on the module namespace object, but the thunk's captured reference still points to the original. This creates a split: component tests see the stub, but the thunk running inside the component does not.
+
+## Test State Must Match Reducer Initial State
+
+**When to use:** Writing `baseState` / `initialState` for component tests that read from Redux.
+
+When a component's effect uses a strict equality guard like `value === null`, the test's `baseState` must set that field to `null` explicitly — not leave it `undefined` (by omitting it). Otherwise the guard never matches and the effect never fires, but the test may still pass by accident.
+
+**Pattern:**
+```javascript
+// ✅ CORRECT — matches reducer's initialState exactly
+const baseState = {
+  sm: {
+    careTeamChanges: {
+      changes: mockChanges,
+      isLoading: false,
+      error: null,
+      messageId: null,  // Must be null, not omitted (undefined)
+    },
+  },
+};
+```
+
+**Anti-pattern:**
+```javascript
+// ❌ BROKEN — messageId is undefined, so `messageId === null` is false
+const baseState = {
+  sm: {
+    careTeamChanges: {
+      changes: mockChanges,
+      isLoading: false,
+      error: null,
+      // messageId omitted → undefined !== null → effect guard fails silently
+    },
+  },
+};
+```
+
+**Why:** `undefined !== null` in strict equality. Effects guarded by `=== null` or `!== null` will silently skip when the test provides the wrong initial type. Always mirror the reducer's `initialState` object exactly.
+
 **Anti-pattern:**
 ```javascript
 // ❌ Static named import — stub may not intercept

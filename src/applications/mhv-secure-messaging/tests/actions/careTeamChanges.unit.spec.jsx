@@ -3,7 +3,10 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { expect } from 'chai';
 import { Actions } from '../../util/actionTypes';
-import { getCareTeamChanges } from '../../actions/careTeamChanges';
+import {
+  getCareTeamChanges,
+  findCareTeamChangeMessage,
+} from '../../actions/careTeamChanges';
 
 describe('careTeamChanges actions', () => {
   const middlewares = [thunk];
@@ -59,5 +62,58 @@ describe('careTeamChanges actions', () => {
       type: Actions.CareTeamChanges.GET_SUCCESS,
       response: [],
     });
+  });
+});
+
+describe('findCareTeamChangeMessage action', () => {
+  const middlewares = [thunk];
+  const mockStore = configureMockStore(middlewares);
+
+  it('should dispatch SET_MESSAGE_ID with messageId when message found', async () => {
+    const store = mockStore();
+    mockApiRequest({
+      data: [
+        {
+          attributes: {
+            messageId: 12345,
+            subject: 'Your new care team names',
+          },
+        },
+      ],
+    });
+    await store.dispatch(findCareTeamChangeMessage());
+    const actions = store.getActions();
+    expect(actions[0]).to.deep.equal({
+      type: Actions.CareTeamChanges.SET_MESSAGE_ID,
+      payload: 12345,
+    });
+  });
+
+  it('should dispatch SET_MESSAGE_ID with null when no matching message', async () => {
+    const store = mockStore();
+    mockApiRequest({
+      data: [
+        {
+          attributes: {
+            messageId: 99999,
+            subject: 'Unrelated message subject',
+          },
+        },
+      ],
+    });
+    await store.dispatch(findCareTeamChangeMessage());
+    const actions = store.getActions();
+    expect(actions[0]).to.deep.equal({
+      type: Actions.CareTeamChanges.SET_MESSAGE_ID,
+      payload: null,
+    });
+  });
+
+  it('should return null when search fails', async () => {
+    const store = mockStore();
+    mockApiRequest({}, false);
+    const result = await store.dispatch(findCareTeamChangeMessage());
+    expect(result).to.be.null;
+    expect(store.getActions()).to.have.lengthOf(0);
   });
 });

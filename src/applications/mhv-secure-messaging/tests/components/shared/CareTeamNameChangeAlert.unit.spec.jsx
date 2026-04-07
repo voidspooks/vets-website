@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import reducer from '../../../reducers';
 import CareTeamNameChangeAlert from '../../../components/shared/CareTeamNameChangeAlert';
 import * as SmApi from '../../../api/SmApi';
-import { Alerts } from '../../../util/constants';
+import { Alerts, Paths } from '../../../util/constants';
 
 describe('CareTeamNameChangeAlert', () => {
   let sandbox;
@@ -40,6 +40,7 @@ describe('CareTeamNameChangeAlert', () => {
         changes: mockChanges,
         isLoading: false,
         error: null,
+        messageId: null,
       },
       alerts: {
         alertVisible: false,
@@ -477,5 +478,62 @@ describe('CareTeamNameChangeAlert', () => {
       const listItems = container.querySelectorAll('va-alert li');
       expect(listItems).to.have.lengthOf(4);
     });
+  });
+
+  it('renders "Read the message now" link when messageId is in state', async () => {
+    const stateWithMessageId = {
+      ...baseState,
+      sm: {
+        ...baseState.sm,
+        careTeamChanges: {
+          ...baseState.sm.careTeamChanges,
+          messageId: 12345,
+        },
+      },
+    };
+
+    const { getByTestId } = renderComponent(stateWithMessageId);
+
+    await waitFor(() => {
+      const link = getByTestId('care-team-change-message-link');
+      expect(link).to.exist;
+      expect(link.getAttribute('text')).to.equal(
+        Alerts.Message.CARE_TEAM_CHANGE_LINK_TEXT,
+      );
+    });
+  });
+
+  it('link has correct href to thread page', async () => {
+    const stateWithMessageId = {
+      ...baseState,
+      sm: {
+        ...baseState.sm,
+        careTeamChanges: {
+          ...baseState.sm.careTeamChanges,
+          messageId: 12345,
+        },
+      },
+    };
+
+    const { getByTestId } = renderComponent(stateWithMessageId);
+
+    await waitFor(() => {
+      const link = getByTestId('care-team-change-message-link');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.include(
+        `${Paths.MESSAGE_THREAD}12345/`,
+      );
+    });
+  });
+
+  it('does not render link when messageId is not available', async () => {
+    const { container, queryByTestId } = renderComponent();
+
+    await waitFor(() => {
+      const alert = container.querySelector('va-alert');
+      expect(alert).to.exist;
+    });
+
+    expect(queryByTestId('care-team-change-message-link')).to.not.exist;
   });
 });
