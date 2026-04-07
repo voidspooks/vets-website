@@ -16,7 +16,7 @@ function handleClick({ history, dispatch, data, provider, pageKey }) {
   return e => {
     // Stop default behavior for anchor tag since we are using React routing.
     e.preventDefault();
-    dispatch(startDirectScheduleFlow({ isRecordEvent: false }));
+    dispatch(startDirectScheduleFlow({ isRecordEvent: false, ehr: 'cerner' }));
     dispatch(routeToNextAppointmentPage(history, pageKey, data));
     dispatch(updateSelectedProvider(provider));
   };

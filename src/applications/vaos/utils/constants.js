@@ -540,6 +540,7 @@ export const APPOINTMENT_SYSTEM = {
   vista: 'vista',
   cerner: 'cerner',
   hsrm: 'hsrm',
+  eps: 'eps',
 };
 
 // AVS error message constants

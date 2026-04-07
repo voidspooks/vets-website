@@ -9,6 +9,7 @@ import { formatInTimeZone } from 'date-fns-tz';
 import { getProviderName } from '../../utils/appointment';
 import {
   APPOINTMENT_STATUS,
+  APPOINTMENT_SYSTEM,
   APPOINTMENT_TYPES,
   GA_PREFIX,
 } from '../../utils/constants';
@@ -448,6 +449,37 @@ export async function createAppointment({ appointment }) {
 const eventPrefix = `${GA_PREFIX}-cancel-appointment-submission`;
 
 /**
+ * Derives the system type from appointment data.
+ *
+ * @param {Object} apiData The raw API appointment data
+ * @returns {string|null} The system type: 'cerner', 'vista', 'hsrm', 'eps', or null
+ */
+function getSystemType(apiData) {
+  const { type, isCerner, modality } = apiData || {};
+
+  if (modality === 'communityCareEps') {
+    return APPOINTMENT_SYSTEM.eps;
+  }
+
+  if (
+    type === 'COMMUNITY_CARE_APPOINTMENT' ||
+    type === 'COMMUNITY_CARE_REQUEST'
+  ) {
+    return APPOINTMENT_SYSTEM.hsrm;
+  }
+
+  if (isCerner === true) {
+    return APPOINTMENT_SYSTEM.cerner;
+  }
+
+  if (type === 'VA' || type === 'REQUEST') {
+    return APPOINTMENT_SYSTEM.vista;
+  }
+
+  return null;
+}
+
+/**
  * Cancels an appointment or request
  *
  * @export
@@ -470,9 +502,19 @@ export async function cancelAppointment({ appointment }) {
   });
 
   try {
-    const updatedAppointment = await putAppointment(appointment.id, {
+    const { apiData } = appointment.vaos || {};
+    const systemType = getSystemType(apiData);
+    const appointmentType =
+      appointment.status === APPOINTMENT_STATUS.proposed ? 'request' : 'booked';
+    const cancelBody = {
       status: APPOINTMENT_STATUS.cancelled,
-    });
+      ...(apiData?.kind && { kind: apiData.kind }),
+      ...(systemType && { systemType }),
+      ...(apiData?.serviceType && { serviceType: apiData.serviceType }),
+      ...(apiData?.locationId && { facilityId: apiData.locationId }),
+      type: appointmentType,
+    };
+    const updatedAppointment = await putAppointment(appointment.id, cancelBody);
 
     recordEvent({
       event: `${eventPrefix}-successful`,

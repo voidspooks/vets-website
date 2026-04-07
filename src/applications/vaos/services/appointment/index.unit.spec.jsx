@@ -13,12 +13,14 @@ import {
   getVAAppointmentLocationId,
   isValidPastAppointment,
   getLink,
+  cancelAppointment,
 } from '.';
 import MockAppointmentResponse from '../../tests/fixtures/MockAppointmentResponse';
 import {
   getDateRanges,
   mockAppointmentApi,
   mockAppointmentsApi,
+  mockAppointmentUpdateApi,
 } from '../../tests/mocks/mockApis';
 import { APPOINTMENT_TYPES, VIDEO_TYPES } from '../../utils/constants';
 
@@ -496,6 +498,194 @@ describe('VAOS Services: Appointment ', () => {
         modality: 'vaInPerson',
       };
       expect(getLink({ appointment })).to.equal('/123');
+    });
+  });
+
+  describe('cancelAppointment', () => {
+    beforeEach(() => mockFetch());
+    afterEach(() => resetFetch());
+
+    function createAppointment(apiDataOverrides = {}, statusOverride) {
+      const apiData = {
+        id: '123',
+        kind: 'clinic',
+        type: 'VA',
+        serviceType: 'primaryCare',
+        locationId: '983',
+        isCerner: false,
+        modality: 'vaInPerson',
+        status: 'booked',
+        ...apiDataOverrides,
+      };
+      return {
+        id: apiData.id,
+        status: statusOverride || apiData.status,
+        vaos: {
+          apiData,
+          isCommunityCare: apiData.kind === 'cc',
+        },
+      };
+    }
+
+    function getSubmitBody() {
+      const putCall = global.fetch
+        .getCalls()
+        .find(call => call.args[1]?.method === 'PUT');
+      return JSON.parse(putCall.args[1].body);
+    }
+
+    it('should send systemType as vista for a VA booked appointment', async () => {
+      const appointment = createAppointment({ type: 'VA', isCerner: false });
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('vista');
+      expect(body.type).to.equal('booked');
+      expect(body.kind).to.equal('clinic');
+      expect(body.serviceType).to.equal('primaryCare');
+      expect(body.facilityId).to.equal('983');
+      expect(body.status).to.equal('cancelled');
+    });
+
+    it('should send systemType as vista for a VA request', async () => {
+      const appointment = createAppointment(
+        { type: 'REQUEST', isCerner: false },
+        'proposed',
+      );
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('vista');
+      expect(body.type).to.equal('request');
+    });
+
+    it('should send systemType as cerner when isCerner is true', async () => {
+      const appointment = createAppointment({
+        type: 'VA',
+        isCerner: true,
+      });
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('cerner');
+      expect(body.type).to.equal('booked');
+    });
+
+    it('should send systemType as cerner for a cerner request', async () => {
+      const appointment = createAppointment(
+        { type: 'REQUEST', isCerner: true },
+        'proposed',
+      );
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('cerner');
+      expect(body.type).to.equal('request');
+    });
+
+    it('should send systemType as hsrm for a community care appointment', async () => {
+      const appointment = createAppointment({
+        type: 'COMMUNITY_CARE_APPOINTMENT',
+        kind: 'cc',
+        isCerner: false,
+        modality: 'communityCare',
+      });
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('hsrm');
+      expect(body.type).to.equal('booked');
+      expect(body.kind).to.equal('cc');
+    });
+
+    it('should send systemType as hsrm for a community care request', async () => {
+      const appointment = createAppointment(
+        {
+          type: 'COMMUNITY_CARE_REQUEST',
+          kind: 'cc',
+          isCerner: false,
+        },
+        'proposed',
+      );
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('hsrm');
+      expect(body.type).to.equal('request');
+    });
+
+    it('should send systemType as eps for a communityCareEps appointment', async () => {
+      const appointment = createAppointment({
+        type: 'COMMUNITY_CARE_APPOINTMENT',
+        kind: 'cc',
+        isCerner: false,
+        modality: 'communityCareEps',
+      });
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('eps');
+      expect(body.type).to.equal('booked');
+    });
+
+    it('should omit optional fields when apiData is missing them', async () => {
+      const appointment = createAppointment({
+        kind: undefined,
+        serviceType: undefined,
+        locationId: undefined,
+        type: undefined,
+        isCerner: undefined,
+        modality: undefined,
+      });
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.status).to.equal('cancelled');
+      expect(body.type).to.equal('booked');
+      expect(body).to.not.have.property('kind');
+      expect(body).to.not.have.property('systemType');
+      expect(body).to.not.have.property('serviceType');
+      expect(body).to.not.have.property('facilityId');
     });
   });
 });
