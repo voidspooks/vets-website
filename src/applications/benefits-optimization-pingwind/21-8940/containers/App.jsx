@@ -1,7 +1,6 @@
 import React from 'react';
 
 import PropTypes from 'prop-types';
-
 import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import { useFormFeatureToggleSync } from 'platform/utilities/feature-toggles';
 import {
@@ -12,7 +11,7 @@ import formConfig from '../config/form';
 
 function App({ location, children }) {
   useFormFeatureToggleSync(['form218940DateValidation']);
-  useFormFeatureToggleSync(['form218940AddressAndPhoneValidation']);
+
   return (
     <RoutedSavableApp formConfig={formConfig} currentLocation={location}>
       <DowntimeNotification
