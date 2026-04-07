@@ -98,10 +98,10 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid={mockGuid} veteranName={mockVeteranName} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     expect(link).to.exist;
     expect(link.getAttribute('text')).to.equal(
-      'Download a copy of your VA Form 21-2680 (PDF)',
+      'Download the form 21-2680 you just filled out',
     );
   });
 
@@ -116,7 +116,7 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid={mockGuid} veteranName={mockVeteranName} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -133,7 +133,7 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid={mockGuid} veteranName={mockVeteranName} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -153,7 +153,7 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid={mockGuid} veteranName={mockVeteranName} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -175,7 +175,7 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid={mockGuid} veteranName={mockVeteranName} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -208,7 +208,7 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid="" veteranName={mockVeteranName} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -222,7 +222,7 @@ describe('DownloadFormPDF', () => {
   it('should use default veteran name when not provided', async () => {
     const { container } = renderWithStore(<DownloadFormPDF guid={mockGuid} />);
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -243,7 +243,7 @@ describe('DownloadFormPDF', () => {
       <DownloadFormPDF guid={mockGuid} veteranName={specialNameVeteran} />,
     );
 
-    const link = container.querySelector('va-link');
+    const link = container.querySelector('va-link-action');
     fireEvent.click(link);
 
     await waitFor(() => {
@@ -263,7 +263,7 @@ describe('DownloadFormPDF', () => {
         { loggedIn: false },
       );
 
-      const link = container.querySelector('va-link');
+      const link = container.querySelector('va-link-action');
       fireEvent.click(link);
 
       await waitFor(() => {
@@ -278,7 +278,7 @@ describe('DownloadFormPDF', () => {
         { loggedIn: false },
       );
 
-      const link = container.querySelector('va-link');
+      const link = container.querySelector('va-link-action');
       fireEvent.click(link);
 
       await waitFor(() => {
@@ -295,7 +295,7 @@ describe('DownloadFormPDF', () => {
         { loggedIn: false },
       );
 
-      const link = container.querySelector('va-link');
+      const link = container.querySelector('va-link-action');
       fireEvent.click(link);
 
       await waitFor(() => {
@@ -328,7 +328,7 @@ describe('DownloadFormPDF', () => {
         { loggedIn: true },
       );
 
-      const link = container.querySelector('va-link');
+      const link = container.querySelector('va-link-action');
       fireEvent.click(link);
 
       await waitFor(() => {
@@ -347,7 +347,7 @@ describe('DownloadFormPDF', () => {
         { loggedIn: true },
       );
 
-      const link = container.querySelector('va-link');
+      const link = container.querySelector('va-link-action');
       fireEvent.click(link);
 
       await waitFor(() => {
@@ -370,7 +370,7 @@ describe('DownloadFormPDF', () => {
       );
 
       // Trigger the proactive session expired state
-      const link = container.querySelector('va-link');
+      const link = container.querySelector('va-link-action');
       fireEvent.click(link);
 
       await waitFor(() => {
@@ -382,10 +382,10 @@ describe('DownloadFormPDF', () => {
 
       // Session expired alert should clear and download link should reappear
       await waitFor(() => {
-        const downloadLink = container.querySelector('va-link');
+        const downloadLink = container.querySelector('va-link-action');
         expect(downloadLink).to.exist;
         expect(downloadLink.getAttribute('text')).to.equal(
-          'Download a copy of your VA Form 21-2680 (PDF)',
+          'Download the form 21-2680 you just filled out',
         );
       });
     });

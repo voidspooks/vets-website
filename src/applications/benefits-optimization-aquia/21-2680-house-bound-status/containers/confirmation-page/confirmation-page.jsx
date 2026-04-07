@@ -20,12 +20,13 @@ const CustomSubmissionAlert = () => {
       status="warning"
       className="confirmation-submission-alert-section vads-u-margin-bottom--4"
     >
-      <h2 slot="headline" tabIndex="-1">
-        Additional steps are needed
+      <h2 slot="headline" tabIndex="-1" className="vads-u-font-size--h3">
+        You have completed half of form 21-2680. Additional steps are needed
+        from a medical provider.
       </h2>
-      <p>
-        You completed your part of this application. But to process it, we need
-        you to complete a few additional steps.
+      <p className="vads-u-margin-bottom--0">
+        You completed half of this form. The application is NOT submitted yet. A
+        medical provider must complete the remaining sections of the form.
       </p>
     </va-alert>
   );
@@ -39,22 +40,33 @@ const WhatsNextSection = ({ guid, veteranName }) => {
   return (
     <div className="confirmation-whats-next-section">
       <h2>What you need to do next</h2>
-      <p>Follow these steps to complete your application:</p>
+      <p>Follow these steps to complete the application:</p>
       <va-process-list uswds>
-        <va-process-list-item header="Download a PDF version of the Form you filled out.">
+        <va-process-list-item header="Send this form to a medical provider">
+          <p>Download the form you just filled out. You can either:</p>
+          <ul className="vads-u-margin-bottom--0">
+            <li>
+              send this form to a medical provider via a secure messaging
+              platform, like myHealtheVet or a private provider’s medical portal
+              OR
+            </li>
+            <li>
+              print the form and bring it to the medical provider in person
+            </li>
+          </ul>
           {guid && <DownloadFormPDF guid={guid} veteranName={veteranName} />}
         </va-process-list-item>
-        <va-process-list-item header="Have an examiner complete the remaining sections.">
+        <va-process-list-item header="Have a medical provider complete the remaining sections">
           <p>
-            The examiner must be a Medical Doctor (MD) or Doctor of Osteopathic
-            (DO) medicine, physician assistant or advanced practice registered
-            nurse.
+            The medical provider must be a Medical Doctor (MD) or Doctor of
+            Osteopathic (DO) medicine, physician assistant or advanced practice
+            registered nurse.
           </p>
         </va-process-list-item>
 
-        <va-process-list-item header="Once the examiner has completed their part of the form and signed it, they'll return it to you." />
+        <va-process-list-item header="Once the medical provider has completed their part of the form and signed it, they'll return it to you" />
 
-        <va-process-list-item header="Upload your fully completed form.">
+        <va-process-list-item header="Upload your fully completed form">
           <p>
             <va-link-action
               href="/forms/upload/21-2680/introduction"
@@ -118,9 +130,9 @@ export const ConfirmationPage = ({ route }) => {
       <div data-dd-privacy="mask" data-dd-action-name="confirmation summary">
         <ConfirmationView.ChapterSectionCollection />
       </div>
-      <ConfirmationView.PrintThisPage />
       <WhatsNextSection guid={guid} veteranName={veteranName} />
       <ConfirmationView.HowToContact />
+      <ConfirmationView.PrintThisPage />
       <ConfirmationView.GoBackLink />
       <ConfirmationView.NeedHelp />
     </ConfirmationView>

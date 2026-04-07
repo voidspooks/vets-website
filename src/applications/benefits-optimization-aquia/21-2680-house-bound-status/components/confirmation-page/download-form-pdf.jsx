@@ -170,10 +170,10 @@ export const DownloadFormPDF = ({ guid, veteranName }) => {
 
   // Render download link
   return (
-    <div className="vads-u-margin-y--4">
+    <div>
       <p>
-        <va-link
-          text="Download a copy of your VA Form 21-2680 (PDF)"
+        <va-link-action
+          text="Download the form 21-2680 you just filled out"
           onClick={handleDownload}
           download
         />

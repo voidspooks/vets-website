@@ -32,19 +32,16 @@ const OMB_EXP_DATE = '02/28/2026';
 const ProcessList = () => {
   return (
     <va-process-list>
-      <va-process-list-item header="Check our eligibility requirements before you apply">
+      <va-process-list-item header="Check eligibility requirements before you apply">
         <p>
-          If you think you may be eligible, but you’re not sure, we encourage
-          you to apply.
-        </p>
-        <p>
-          You may be eligible for either Special Monthly Compensation (SMC) or
-          Special Monthly Pension (SMP) benefits if you:
+          If you think you (or someone you provide care for) may be eligible,
+          but you’re not sure, we encourage you to apply. Special Monthly
+          Compensation (SMC) or Special Monthly Pension (SMP) benefits are
+          granted if the person applying:
         </p>
         <ul>
-          <li>Are a Veteran or the surviving spouse or parent of a Veteran</li>
           <li>
-            Require help with everyday tasks, such as:
+            Requires help with everyday tasks, such as:
             <ul>
               <li>Bathing</li>
               <li>Feeding</li>
@@ -52,18 +49,26 @@ const ProcessList = () => {
               <li>Using the restroom</li>
               <li>Adjusting prosthetic devices</li>
               <li>
-                Protecting yourself from the hazards of the daily environment
+                Protecting themself from the hazards of the daily environment
               </li>
             </ul>
           </li>
-          <li>Are housebound (because of permanent disability)</li>
+          <li>Is housebound (because of permanent disability)</li>
+        </ul>
+        <p>To receive Special Monthly Compensation the person applying must:</p>
+        <ul>
+          <li>Be a Veteran, with a service related disability OR</li>
           <li>
-            Are a Veteran, and your spouse is in need of regular aid and
-            attendance
+            Be the surviving spouse or parent of a Veteran who receives VA
+            compensation
           </li>
         </ul>
+        <p>To receive Special Monthly Pension, the person applying must:</p>
+        <ul>
+          <li>Be eligible for Veteran’s pension or Survivor’s benefits </li>
+        </ul>
       </va-process-list-item>
-      <va-process-list-item header="Gather your information">
+      <va-process-list-item header="Gather information">
         <p>You’ll need this information about the person applying:</p>
         <ul>
           <li>Their name</li>
@@ -77,31 +82,47 @@ const ProcessList = () => {
           know the name of the hospital and the date they were admitted.
         </p>
       </va-process-list-item>
-      <va-process-list-item header="Fill out the form">
-        <p>Fill out the form and sign it digitally.</p>
+      <va-process-list-item header="Fill out your half of form 21-2680">
+        <p>There are two options to fill out form 21-2680:</p>
+        <ul>
+          <li>
+            Log in to your myVA account below and fill out the form digitally OR
+          </li>
+          <li>
+            <a href="https://www.vba.va.gov/pubs/forms/vba-21-2680-are.pdf">
+              Download a PDF of form 21-2680
+            </a>{' '}
+            and fill it out{' '}
+          </li>
+        </ul>
       </va-process-list-item>
-      <va-process-list-item header="Have an examiner complete the remaining sections">
+      <va-process-list-item header="Have a medical provider to fill out the second half of form 21-2680">
+        <p>After you have completed your half of the form, you can either:</p>
+        <ul>
+          <li>
+            send the form to a medical provider via a secure messaging platform,
+            like myHealtheVet or
+          </li>
+          <li>print the form and bring it to a medical provider in person.</li>
+        </ul>
         <p>
-          Download a PDF version of the form after you finish it. Then send it
-          to an examiner so they can fill out their portion with medical
-          information about the person applying.
+          The medical provider must be a Medical Doctor (MD) or Doctor of
+          Osteopathic (DO) medicine, physician assistant or advanced practice
+          registered nurse.
         </p>
         <p>
-          The examiner must be a Medical Doctor (MD) or Doctor of Osteopathic
-          (DO) medicine, physician assistant or advanced practice registered
-          nurse.
-        </p>
-        <p>
-          Once the medical examiner has completed their part of the form and
+          Once the medical provider has completed their part of the form and
           signed it, they’ll return it to you.
         </p>
       </va-process-list-item>
-      <va-process-list-item header="Upload your fully completed form.">
+      <va-process-list-item header="Submit your completed form">
         <p>
-          <va-link-action
-            href="/forms/upload/21-2680/introduction"
-            text="Upload your completed VA form 21-2680"
-          />
+          Upload the completed form with both your half and the medical
+          provider’s half to VA.gov. You can access{' '}
+          <a href="/forms/upload/21-2680/introduction">
+            the upload page on VA.gov
+          </a>
+          .
         </p>
       </va-process-list-item>
     </va-process-list>
@@ -129,10 +150,24 @@ export const IntroductionPage = ({ route }) => {
       <FormTitle title={TITLE} subTitle={SUBTITLE} />
 
       <p className="vads-u-font-size--lg vads-u-font-family--serif vads-u-font-weight--normal vads-u-line-height--4">
-        Use this form to begin your application for Aid and Attendance or
-        Housebound allowance benefits. If you’re eligible, we’ll add these
-        benefits to your monthly compensation or pension benefits.
+        You can begin an application for Aid and Attendance or Housebound
+        allowance benefits here. If you’re eligible, we’ll add these benefits as
+        an additional payment to your monthly compensation or pension benefits.
       </p>
+
+      <va-alert status="info" class="vads-u-margin-bottom--4" uswds>
+        <h2 slot="headline" className="vads-u-font-size--h3">
+          This form has two parts
+        </h2>
+        <ul>
+          <li>You will fill out the first half</li>
+          <li>A medical provider will fill out the second half</li>
+        </ul>
+        <p className="vads-u-margin-bottom--0">
+          You’ll be asked at the end of the form to download what you’ve filled
+          out and send it to a medical provider.
+        </p>
+      </va-alert>
 
       <h2 className="vads-u-font-size--h3 vads-u-margin-top--0">
         Follow these steps to get started

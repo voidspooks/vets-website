@@ -49,9 +49,9 @@ describe('ConfirmationPage', () => {
     const { container } = initConfirmationPage();
     const alert = container.querySelector('va-alert');
     expect(alert).to.have.attribute('status', 'warning');
-    expect(container).to.contain.text('Additional steps are needed');
     expect(container).to.contain.text(
-      'You completed your part of this application',
+      'You have completed half of form 21-2680',
     );
+    expect(container).to.contain.text('You completed half of this form');
   });
 });
