@@ -11,25 +11,41 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { isClaimantVeteran } from '../utils';
 
+const getFullName = formData => {
+  let fullName = '';
+  if (isClaimantVeteran(formData)) {
+    const firstName =
+      formData?.veteranInformation?.veteranFullName?.first || '';
+    const lastName = formData?.veteranInformation?.veteranFullName?.last || '';
+    fullName = `${firstName} ${lastName}`.trim();
+  } else {
+    const firstName =
+      formData?.claimantInformation?.claimantFullName?.first || '';
+    const lastName =
+      formData?.claimantInformation?.claimantFullName?.last || '';
+    fullName = `${firstName} ${lastName}`.trim();
+  }
+  return fullName;
+};
+
 /**
  * Generate radio button title based on claimant relationship
  */
 const getRadioTitle = formData => {
-  if (isClaimantVeteran(formData)) {
-    return 'Select which benefit you are applying for ';
-  }
-
-  // Get claimant's actual name
-  const firstName =
-    formData?.claimantInformation?.claimantFullName?.first || '';
-  const lastName = formData?.claimantInformation?.claimantFullName?.last || '';
-  const fullName = `${firstName} ${lastName}`.trim();
-
-  // If we have a name, use it; otherwise fallback to "you are"
+  const fullName = getFullName(formData);
   if (fullName) {
-    return `Select which benefit ${fullName} is applying for`;
+    return `What benefit is ${fullName} applying for?`;
   }
-  return 'Select which benefit you are applying for ';
+  return 'What benefit are you applying for?';
+};
+
+const getBenefitTypeTitle = formData => {
+  const fullName = getFullName(formData);
+
+  if (fullName) {
+    return `What benefit should ${fullName} apply for?`;
+  }
+  return 'What benefit should you apply for?';
 };
 
 /**
@@ -103,8 +119,9 @@ export const benefitTypeUiSchema = {
   'ui:options': {
     updateUiSchema: (formData, fullData) => {
       const radioTitle = getRadioTitle(formData || fullData);
-
+      const benefitTypeTitle = getBenefitTypeTitle(formData || fullData);
       return {
+        'ui:title': benefitTypeTitle,
         benefitType: {
           'ui:options': {
             classNames: 'dd-privacy-mask',
