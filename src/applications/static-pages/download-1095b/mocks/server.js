@@ -6,26 +6,6 @@ const { delaySingleResponse } = require('./script/utils');
 // const error500 = require('../tests/fixtures/500.json');
 
 const responses = {
-  'GET /v0/feature_toggles': (req, res) => {
-    // Use FORM_1095B_MULTIPLE_YEARS to set a default for mocks.
-    const envValue = process?.env?.FORM_1095B_MULTIPLE_YEARS;
-    const isForm1095bMultipleYears = envValue === 'true';
-
-    return res.json({
-      data: {
-        type: 'feature_toggles',
-        features: [
-          {
-            name: 'form1095b_multiple_years',
-            value: isForm1095bMultipleYears,
-          },
-        ],
-      },
-    });
-  },
-  'GET /v0/mock_session': (_req, res) => {
-    return res.json({ hasSession: true });
-  },
   'GET /data/cms/vamc-ehr.json': (_req, res) => {
     return res.json({});
   },

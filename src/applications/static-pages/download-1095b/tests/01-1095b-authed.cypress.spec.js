@@ -5,17 +5,6 @@ import mockUsers from '../mocks/endpoints/user';
 describe('Authed 1095-B Form Download PDF', () => {
   beforeEach(() => {
     cy.intercept('GET', 'v0/form1095_bs/available_forms', form).as('form');
-    cy.intercept('GET', '/v0/feature_toggles*', {
-      data: {
-        type: 'feature_toggles',
-        features: [
-          {
-            name: 'form1095b_multiple_years',
-            value: false,
-          },
-        ],
-      },
-    }).as('featureToggles');
     cy.intercept('GET', 'v0/form1095_bs/download_pdf/*', {
       fixture:
         'applications/static-pages/download-1095b/tests/e2e/fixtures/1095BTestFixture.pdf',
@@ -70,21 +59,10 @@ describe('Authed 1095-B Form Download PDF', () => {
     );
   });
 
-  it('shows newest 3 years when feature flag enabled', () => {
+  it('shows newest 3 years', () => {
     cy.intercept('GET', 'v0/form1095_bs/available_forms', multiYearForms).as(
       'form',
     );
-    cy.intercept('GET', '/v0/feature_toggles*', {
-      data: {
-        type: 'feature_toggles',
-        features: [
-          {
-            name: 'form1095b_multiple_years',
-            value: true,
-          },
-        ],
-      },
-    }).as('featureToggles');
 
     cy.visit('/health-care/download-1095b/');
 

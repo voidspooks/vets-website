@@ -2,7 +2,6 @@
 import { apiRequest } from 'platform/utilities/api';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
-import { initializeProfile as initializeProfileAction } from 'platform/user/profile/actions';
 import { connect, useSelector } from 'react-redux';
 // Relative imports.
 import {
@@ -21,7 +20,6 @@ import {
 import { CSP_IDS } from '~/platform/user/authentication/constants';
 import { signInServiceName } from '~/platform/user/authentication/selectors';
 import '../../sass/download-1095b.scss';
-import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import { selectAuthStatus } from '../../selectors/auth-status';
 import {
   downloadErrorComponent,
@@ -31,8 +29,7 @@ import {
   systemErrorComponent,
 } from './utils';
 
-export const App = ({ toggleLoginModal, initializeProfile }) => {
-  const [year, updateYear] = useState(0);
+export const App = ({ toggleLoginModal }) => {
   const [availableForms, setAvailableForms] = useState([]);
   const [formError, updateFormError] = useState({
     error: false,
@@ -42,30 +39,20 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
   const cspId = useSelector(signInServiceName);
   const [verifyAlertVariant, setverifyAlertVariant] = useState(null);
   const profile = useSelector(state => selectAuthStatus(state));
-  const [hasLoadedMostRecentYear, setHasLoadedMostRecentYear] = useState(false);
-  const {
-    TOGGLE_NAMES,
-    useToggleLoadingValue,
-    useToggleValue,
-  } = useFeatureToggle();
-  const togglesLoading = useToggleLoadingValue();
-  const isForm1095bMultipleYears = useToggleValue(
-    TOGGLE_NAMES.form1095bMultipleYears,
-  );
+  const [availableYearsRequested, setAvailableYearsRequested] = useState(false);
 
   const isAppLoading = useMemo(
     () => {
       return (
         profile.isLoadingProfile ||
-        togglesLoading ||
-        (profile.isUserLOA3 && hasLoadedMostRecentYear === false)
+        (profile.isUserLOA3 && availableYearsRequested === false)
       );
     },
-    [hasLoadedMostRecentYear, profile, togglesLoading],
+    [availableYearsRequested, profile],
   );
   useEffect(
     () => {
-      if (profile.isUserLOA3 !== true || togglesLoading) {
+      if (profile.isUserLOA3 !== true) {
         return;
       }
 
@@ -80,14 +67,7 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
             });
           } else {
             recordEvent({ event: '1095b-available-forms-found' });
-            if (isForm1095bMultipleYears) {
-              setAvailableForms(response.availableForms);
-            } else {
-              const mostRecentYearData = response.availableForms[0];
-              if (mostRecentYearData.year) {
-                updateYear(mostRecentYearData.year);
-              }
-            }
+            setAvailableForms(response.availableForms);
           }
         })
         .catch(() => {
@@ -99,10 +79,10 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
           });
         })
         .finally(() => {
-          setHasLoadedMostRecentYear(true);
+          setAvailableYearsRequested(true);
         });
     },
-    [profile.isUserLOA3, isForm1095bMultipleYears, togglesLoading],
+    [profile.isUserLOA3],
   );
 
   useEffect(
@@ -168,19 +148,6 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
     [cspId, profile.isUserLOA1],
   );
 
-  useEffect(() => {
-    if (!environment.isLocalhost()) return;
-
-    apiRequest('/mock_session')
-      .then(response => {
-        if (!response?.hasSession) return;
-
-        localStorage.setItem('hasSession', true);
-        initializeProfile();
-      })
-      .catch(() => {});
-  }, []);
-
   const showSignInModal = () => {
     toggleLoginModal(true, 'ask-va', true);
   };
@@ -209,11 +176,6 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
     return (
       <va-card key={taxYear}>
         <div>
-          {!isForm1095bMultipleYears && (
-            <h3 className="vads-u-margin-bottom--0 vads-u-margin-top--0 vads-u-font-size--h4">
-              1095-B Proof of VA health coverage
-            </h3>
-          )}
           <span>
             <b>Tax year:</b> {taxYear}
           </span>
@@ -261,12 +223,10 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
 
   const downloadForm = (
     <>
-      {isForm1095bMultipleYears
-        ? [...availableForms]
-            .sort((a, b) => b.year - a.year)
-            .slice(0, 3)
-            .map(form => renderDownloadCard(form.year))
-        : renderDownloadCard(year)}
+      {[...availableForms]
+        .sort((a, b) => b.year - a.year)
+        .slice(0, 3)
+        .map(form => renderDownloadCard(form.year))}
       <PdfHelp />
     </>
   );
@@ -313,13 +273,11 @@ export const App = ({ toggleLoginModal, initializeProfile }) => {
 };
 
 App.propTypes = {
-  initializeProfile: PropTypes.func.isRequired,
   toggleLoginModal: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
   toggleLoginModal: open => dispatch(toggleLoginModalAction(open)),
-  initializeProfile: () => dispatch(initializeProfileAction()),
 });
 
 export default connect(
