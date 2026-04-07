@@ -25,7 +25,7 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is Anakin Skywalker receiving hospital care?',
+        'Is Anakin Skywalker hospitalized?',
       );
     });
 
@@ -42,7 +42,7 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is Padmé Amidala receiving hospital care?',
+        'Is Padmé Amidala hospitalized?',
       );
     });
 
@@ -56,7 +56,7 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is the Veteran receiving hospital care?',
+        'Is the Veteran hospitalized?',
       );
     });
 
@@ -70,7 +70,7 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is the claimant receiving hospital care?',
+        'Is the claimant hospitalized?',
       );
     });
 
@@ -87,7 +87,7 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is Luke Skywalker receiving hospital care?',
+        'Is Luke Skywalker hospitalized?',
       );
     });
 
@@ -104,14 +104,14 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is Shmi Skywalker receiving hospital care?',
+        'Is Shmi Skywalker hospitalized?',
       );
     });
 
     it('should handle missing relationship', () => {
       const formData = {};
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is the claimant receiving hospital care?',
+        'Is the claimant hospitalized?',
       );
     });
 
@@ -128,7 +128,7 @@ describe('dynamicTitleHelpers', () => {
         },
       };
       expect(getHospitalizationStatusTitle(formData)).to.equal(
-        'Is Yoda receiving hospital care?',
+        'Is Yoda hospitalized?',
       );
     });
   });

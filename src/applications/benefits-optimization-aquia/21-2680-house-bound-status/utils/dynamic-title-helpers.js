@@ -19,12 +19,12 @@ export const getHospitalizationStatusTitle = formData => {
     : getClaimantName(formData, '');
 
   if (name) {
-    return `Is ${name} receiving hospital care?`;
+    return `Is ${name} hospitalized?`;
   }
 
   return isVeteran
-    ? 'Is the Veteran receiving hospital care?'
-    : 'Is the claimant receiving hospital care?';
+    ? 'Is the Veteran hospitalized?'
+    : 'Is the claimant hospitalized?';
 };
 
 /**
