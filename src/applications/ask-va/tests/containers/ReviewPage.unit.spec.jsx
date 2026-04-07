@@ -472,4 +472,205 @@ describe('<ReviewPage /> container', () => {
       expect(scrollToChapterStub.calledWith(chapterKey)).to.be.true;
     });
   });
+
+  describe('closeSection validation/locking behavior', () => {
+    const chapterKey = 'veteransPersonalInformation';
+    const chapterTitle = "Veteran's personal information";
+    const pageKey = 'aboutTheVeteran_aboutmyselfrelationshipfamilymember';
+
+    const setupEditModeTest = ({ isValid = true } = {}) => {
+      stubReviewCollapsibleChapter();
+      stubFileUpload();
+      stubStorageAdapter();
+
+      sandbox.stub(validation, 'isValidForm').returns({
+        isValid,
+        errors: isValid
+          ? []
+          : [{ name: 'required', property: 'test', message: 'Test error' }],
+      });
+
+      sandbox.stub(formUtils, 'scrollToChapter');
+
+      let capturedEditSection = null;
+      let capturedKeys = null;
+
+      sandbox.stub(ReviewSectionContent, 'default').callsFake(props => {
+        if (props.title === chapterTitle) {
+          capturedEditSection = props.editSection;
+          capturedKeys = props.keys;
+        }
+        return (
+          <div data-testid={`review-section-${props.title}`}>
+            Mock review section content for {props.title}
+          </div>
+        );
+      });
+
+      const capturedUpdateProps = [];
+      sandbox.stub(UpdatePageButton, 'default').callsFake(props => {
+        capturedUpdateProps.push(props);
+        return (
+          // eslint-disable-next-line @department-of-veterans-affairs/prefer-button-component
+          <button
+            type="button"
+            data-testid={`update-btn-${props.title}`}
+            onClick={() => {
+              props.closeSection(props.keys, props.title);
+              props.scroll();
+            }}
+          >
+            Update page
+          </button>
+        );
+      });
+
+      const store = createMockStore({
+        openChapters: [chapterKey],
+        viewedPages: new Set([pageKey]),
+        formData: mockData.data,
+        form: {
+          data: mockData.data,
+          pages: {
+            /* eslint-disable-next-line camelcase */
+            [pageKey]: {
+              showPagePerItem: false,
+              editMode: false,
+            },
+          },
+          reviewPageView: {
+            openChapters: [chapterKey],
+            viewedPages: new Set([pageKey]),
+          },
+        },
+      });
+
+      return {
+        store,
+        getCapturedEditSection: () => capturedEditSection,
+        getCapturedKeys: () => capturedKeys,
+        capturedUpdateProps,
+      };
+    };
+
+    it('should keep section in edit mode when validation fails', async () => {
+      const {
+        store,
+        getCapturedEditSection,
+        getCapturedKeys,
+        capturedUpdateProps,
+      } = setupEditModeTest({ isValid: false });
+
+      const { getByTestId, queryByTestId } = render(
+        <Provider store={store}>
+          <ReviewPage />
+        </Provider>,
+      );
+
+      // Wait for the section to render and capture the editSection callback
+      await waitFor(() => {
+        expect(getCapturedEditSection()).to.exist;
+      });
+
+      // Enter edit mode
+      getCapturedEditSection()(getCapturedKeys(), chapterTitle);
+
+      // Wait for the component to re-render in edit mode and show UpdatePageButton
+      await waitFor(() => {
+        expect(capturedUpdateProps.length).to.be.at.least(1);
+      });
+
+      const updateBtn = getByTestId(`update-btn-${chapterTitle}`);
+      expect(updateBtn).to.exist;
+
+      // Click Update page — validation will fail
+      fireEvent.click(updateBtn);
+
+      // Section should remain in edit mode — UpdatePageButton should still be visible
+      await waitFor(() => {
+        expect(getByTestId(`update-btn-${chapterTitle}`)).to.exist;
+      });
+
+      // The read-only ReviewSectionContent for this section should NOT be showing
+      expect(queryByTestId(`review-section-${chapterTitle}`)).to.not.exist;
+    });
+
+    it('should exit edit mode when validation passes', async () => {
+      const {
+        store,
+        getCapturedEditSection,
+        getCapturedKeys,
+        capturedUpdateProps,
+      } = setupEditModeTest({ isValid: true });
+
+      const { getByTestId, queryByTestId } = render(
+        <Provider store={store}>
+          <ReviewPage />
+        </Provider>,
+      );
+
+      // Wait for the section to render and capture the editSection callback
+      await waitFor(() => {
+        expect(getCapturedEditSection()).to.exist;
+      });
+
+      // Enter edit mode
+      getCapturedEditSection()(getCapturedKeys(), chapterTitle);
+
+      // Wait for the component to re-render in edit mode and show UpdatePageButton
+      await waitFor(() => {
+        expect(capturedUpdateProps.length).to.be.at.least(1);
+      });
+
+      const updateBtn = getByTestId(`update-btn-${chapterTitle}`);
+      fireEvent.click(updateBtn);
+
+      // Section should exit edit mode — ReviewSectionContent should be back
+      await waitFor(() => {
+        expect(getByTestId(`review-section-${chapterTitle}`)).to.exist;
+      });
+
+      // UpdatePageButton should no longer be visible
+      expect(queryByTestId(`update-btn-${chapterTitle}`)).to.not.exist;
+    });
+
+    it('should dispatch form errors when validation fails on closeSection', async () => {
+      const {
+        store,
+        getCapturedEditSection,
+        getCapturedKeys,
+        capturedUpdateProps,
+      } = setupEditModeTest({ isValid: false });
+
+      render(
+        <Provider store={store}>
+          <ReviewPage />
+        </Provider>,
+      );
+
+      await waitFor(() => {
+        expect(getCapturedEditSection()).to.exist;
+      });
+
+      // Enter edit mode
+      getCapturedEditSection()(getCapturedKeys(), chapterTitle);
+
+      await waitFor(() => {
+        expect(capturedUpdateProps.length).to.be.at.least(1);
+      });
+
+      // Click Update page — triggers closeSection with invalid form
+      const updateBtnProps = capturedUpdateProps.find(
+        p => p.title === chapterTitle,
+      );
+      updateBtnProps.closeSection(updateBtnProps.keys, updateBtnProps.title);
+
+      // Verify form errors were dispatched to the store
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.form.formErrors).to.exist;
+        expect(state.form.formErrors.rawErrors).to.exist;
+      });
+    });
+  });
 });

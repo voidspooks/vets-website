@@ -67,6 +67,7 @@ import {
 } from '../utils/reviewPageUtils';
 
 const getPageList = routes => {
+  // RouteSaveableApp looks for the pageList at the last index, so we should do the same
   return routes?.[routes?.length - 1]?.pageList || [];
 };
 
@@ -118,37 +119,67 @@ const ReviewPage = props => {
   };
 
   const addEditSection = section => {
-    if (!editSections.includes(section)) {
-      setEditSections([...editSections, section]);
+    setEditSections(
+      prev => (prev.includes(section) ? prev : [...prev, section]),
+    );
+  };
+
+  const removeEditSection = section => {
+    setEditSections(prev => prev.filter(s => s !== section));
+  };
+
+  const handleEdit = (pageKey, editing, index = null) => {
+    if (pageKey === 'question') {
+      setEditAttachments(editing);
+      getUploadedFiles();
+    }
+
+    const fullPageKey = `${pageKey}${index === null ? '' : index}`;
+    if (editing) {
+      props.setViewedPages([fullPageKey]);
+      dispatch(setUpdatedInReview(''));
+    }
+    props.setEditMode(pageKey, editing, index);
+    if (!editing) {
+      dispatch(setUpdatedInReview(pageKey));
     }
   };
 
-  // We'll need this later, adding now so it's here when we need it
-  // const removeEditSection = section => {
-  //   if (editSections.includes(section)) {
-  //     setEditSections(editSections.filter(s => s !== section));
-  //   }
-  // };
+  const validateForm = (pageList = []) => {
+    // Validate the form before submitting
+    const { isValid, errors } = isValidForm(props.form, pageList);
 
-  const handleEdit = (pageKey, editing, index = null) => {
-    if (pageKey === 'question' && props.formData.question.length > 10000) {
-      focusElement('va-textarea');
-    } else {
-      if (pageKey === 'question') {
-        setEditAttachments(editing);
-        getUploadedFiles();
-      }
+    // Set form errors to display validation messages (if there are any)
+    const processedErrors = reduceErrors(
+      errors,
+      pageList,
+      formConfig.reviewErrors,
+    );
 
-      const fullPageKey = `${pageKey}${index === null ? '' : index}`;
-      if (editing) {
-        props.setViewedPages([fullPageKey]);
-        dispatch(setUpdatedInReview(''));
-      }
-      props.setEditMode(pageKey, editing, index);
-      if (!editing) {
-        dispatch(setUpdatedInReview(pageKey));
-      }
-    }
+    props.setFormErrors({
+      rawErrors: errors,
+      errors: processedErrors,
+    });
+
+    return isValid;
+  };
+
+  const validateSection = pageKeys => {
+    const pageList = getPageList(props.routes);
+
+    // We only care about validating pages that are part of this section.
+    // `getPageKeys` can return indexed keys for `showPagePerItem` pages
+    // (for example, `somePage0`), while the router pageList stores the base
+    // page key (`somePage`). Match both exact keys and indexed variants so
+    // section validation includes the correct pages.
+    const filteredPageList = pageList.filter(page =>
+      pageKeys.some(
+        key =>
+          key === page.pageKey || new RegExp(`^${page.pageKey}\\d+$`).test(key),
+      ),
+    );
+
+    return validateForm(filteredPageList);
   };
 
   const editSection = (pageKeys, title) => {
@@ -165,31 +196,18 @@ const ReviewPage = props => {
   };
 
   const closeSection = (pageKeys, title) => {
-    pageKeys.forEach(key => handleEdit(key, false));
-    const updateViewedList = editSections.filter(section => section !== title);
-    setEditSections(updateViewedList);
+    const isValid = validateSection(pageKeys);
+
+    // If the section is valid, then toggle it back to non-edit mode and remove it
+    // from the editSection array which controls whether the UpdatePageButton is shown
+    if (isValid) {
+      pageKeys.forEach(key => handleEdit(key, false));
+      removeEditSection(title);
+    }
   };
 
   const handleSetData = (...args) => {
     handleDataUpdate(props.setData, args, props.onSetData);
-  };
-
-  const validateForm = (pageList = []) => {
-    // Validate the form before submitting
-    const { isValid, errors } = isValidForm(props.form, pageList);
-
-    // Set form errors to display validation messages (if there are any)
-    const processedErrors = reduceErrors(
-      errors,
-      pageList,
-      formConfig.reviewErrors,
-    );
-    props.setFormErrors({
-      rawErrors: errors,
-      errors: processedErrors,
-    });
-
-    return isValid;
   };
 
   const handleSubmit = async () => {
