@@ -375,6 +375,14 @@ function transformStudentBenefitRadioToCheckbox(data) {
         ch35: value === 'ch35',
         fry: value === 'fry',
         feca: value === 'feca',
+        none: value === 'none' || value === 'other',
+      };
+    } else {
+      const { other, ...rest } = student.typeOfProgramOrBenefit;
+      // eslint-disable-next-line no-param-reassign
+      student.typeOfProgramOrBenefit = {
+        ...rest,
+        none: other || rest.none || false,
       };
     }
   });
@@ -405,10 +413,11 @@ function stripStaleBenefitFields(data) {
     const benefit = student.typeOfProgramOrBenefit;
 
     // After transformStudentBenefitRadioToCheckbox, benefit is always an object
-    // (new format) or was already an object (old cached data). Guard for edge cases.
+    // (new format) or was already an object (old cached data). Guard for edge
+    // cases. Skip checking "none" if true
     const hasActiveBenefit =
       benefit && typeof benefit === 'object'
-        ? Object.values(benefit).some(Boolean)
+        ? ['ch35', 'fry', 'feca'].some(key => benefit[key] === true)
         : ['ch35', 'fry', 'feca'].includes(benefit);
 
     const hasGovFunding = student.tuitionIsPaidByGovAgency === true;

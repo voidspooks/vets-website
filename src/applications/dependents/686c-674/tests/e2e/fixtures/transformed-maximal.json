@@ -208,7 +208,8 @@
       "typeOfProgramOrBenefit": {
         "ch35": true,
         "fry": false,
-        "feca": false
+        "feca": false,
+        "none": false
       },
       "tuitionIsPaidByGovAgency": false,
       "view:programExamples": {},

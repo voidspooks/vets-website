@@ -735,7 +735,43 @@ describe('stale student benefit field cleanup (regression for inactive page filt
     // Old code stored typeOfProgramOrBenefit as a checkbox object; new depends functions
     // check for a string value so the page is always inactive for old-format data.
     const form = createForm674({
-      typeOfProgramOrBenefit: { ch35: false, fry: false, feca: false }, // old object format
+      typeOfProgramOrBenefit: {
+        ch35: false,
+        fry: false,
+        feca: false,
+        other: false,
+      }, // old object format
+      tuitionIsPaidByGovAgency: false,
+      benefitPaymentDate: '2022-01-01', // stale from old session
+    });
+
+    const result = customTransformForSubmit(formConfig, form);
+    const submittedData = JSON.parse(result.body);
+    const data = submittedData.studentInformation[0];
+
+    expect(
+      data.benefitPaymentDate,
+      'stale benefitPaymentDate from old object-format session should be absent',
+    ).to.be.undefined;
+    expect(data.typeOfProgramOrBenefit).to.deep.equal({
+      ch35: false,
+      fry: false,
+      feca: false,
+      none: false,
+    });
+  });
+
+  it('should remove stale benefitPaymentDate when typeOfProgramOrBenefit is old object format (cache scenario)', () => {
+    // Simulates a user who filled the form before the radio migration (commit 58faab9).
+    // Old code stored typeOfProgramOrBenefit as a checkbox object; new depends functions
+    // check for a string value so the page is always inactive for old-format data.
+    const form = createForm674({
+      typeOfProgramOrBenefit: {
+        ch35: false,
+        fry: false,
+        feca: false,
+        other: true,
+      }, // old object format
       tuitionIsPaidByGovAgency: false,
       benefitPaymentDate: '2022-01-01', // stale from old session
     });
@@ -743,10 +779,17 @@ describe('stale student benefit field cleanup (regression for inactive page filt
     const result = customTransformForSubmit(formConfig, form);
     const submittedData = JSON.parse(result.body);
 
+    const data = submittedData.studentInformation[0];
     expect(
-      submittedData.studentInformation[0].benefitPaymentDate,
+      data.benefitPaymentDate,
       'stale benefitPaymentDate from old object-format session should be absent',
     ).to.be.undefined;
+    expect(data.typeOfProgramOrBenefit).to.deep.equal({
+      ch35: false,
+      fry: false,
+      feca: false,
+      none: true,
+    });
   });
 
   it('should preserve benefitPaymentDate when a benefit program is selected', () => {
