@@ -71,14 +71,46 @@ export function getActivePages(pages, data) {
 }
 
 /**
- * Returns property keys for a page based on its schema and array context.
+ * Recursively flattens schema properties into dot-delimited paths.
+ *
+ * Nested object properties are flattened into leaf paths.
+ * Array properties are kept at the parent key so the resulting paths stay
+ * valid against real form data and allow whole nested arrays to be removed.
+ *
+ * Examples:
+ * - { firstName, lastName } -> ['firstName', 'lastName']
+ * - { schoolInformation: { properties: { name, city } } }
+ *   -> ['schoolInformation.name', 'schoolInformation.city']
+ * - { medicarePartBFrontCard: { items: { properties: { confirmationCode, name } } } }
+ *   -> ['medicarePartBFrontCard']
+ *
+ * @param {Record<string, object>} properties - Schema properties to flatten.
+ * @param {string} [prefix=''] - Existing path prefix to prepend.
+ * @returns {string[]} Flattened property paths.
+ */
+function getSchemaPropertyPaths(properties, prefix = '') {
+  return Object.entries(properties).flatMap(([key, schema]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+
+    if (schema?.properties) {
+      return getSchemaPropertyPaths(schema.properties, path);
+    }
+
+    return [path];
+  });
+}
+
+/**
+ * Returns property paths for a page based on its schema and array context.
  *
  * - If no schema properties exist, returns an empty array.
- * - For array pages, returns keys prefixed with `"arrayPath.index."`.
- * - Otherwise, returns the top-level schema property keys.
+ * - For array pages, prefixes paths with `"arrayPath.index."` and flattens
+ *   nested object properties into leaf paths.
+ * - Nested arrays within those items remain at their parent key so they can be
+ *   removed as whole arrays.
  *
  * @param {FormConfigPage} page - Page definition with schema and optional array context.
- * @returns {string[]} Property keys (e.g., ["name"] or ["addresses.0.city"]).
+ * @returns {string[]} Property paths.
  */
 export function getPageProperties(page) {
   if (!page?.schema?.properties) return [];
@@ -90,12 +122,13 @@ export function getPageProperties(page) {
 
   if (isArrayPage) {
     const { properties } = page.schema.properties[page.arrayPath].items;
-    return Object.keys(properties).map(
-      key => `${page.arrayPath}.${page.index}.${key}`,
+    return getSchemaPropertyPaths(
+      properties,
+      `${page.arrayPath}.${page.index}`,
     );
   }
 
-  return Object.keys(page.schema.properties);
+  return getSchemaPropertyPaths(page.schema.properties);
 }
 
 /**
@@ -378,15 +411,59 @@ function hasActiveDescendant(prop, activeSet) {
 }
 
 /**
+ * Recursively prunes structurally empty containers after inactive field removal.
+ *
+ * Rules:
+ * - Removes object keys whose values become empty objects or empty arrays
+ * - Removes array items that become empty objects or empty arrays
+ * - Preserves meaningful primitive values such as false, 0, '', and null
+ *
+ * Examples:
+ * - [{ schoolInformation: {} }] -> []
+ * - [{ 'view:schoolInformation': { information: {} }, dob: '1990-01-01' }]
+ *   -> [{ dob: '1990-01-01' }]
+ *
+ * @param {*} value
+ * @returns {*}
+ */
+function pruneEmptyContainers(value) {
+  if (Array.isArray(value)) {
+    return value.map(pruneEmptyContainers).filter(item => {
+      if (Array.isArray(item)) return item.length > 0;
+      if (item && typeof item === 'object') return Object.keys(item).length > 0;
+      return true;
+    });
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.entries(value).reduce((acc, [key, nestedValue]) => {
+      const prunedValue = pruneEmptyContainers(nestedValue);
+      if (Array.isArray(prunedValue) && prunedValue.length === 0) return acc;
+      if (
+        prunedValue &&
+        typeof prunedValue === 'object' &&
+        !Array.isArray(prunedValue) &&
+        Object.keys(prunedValue).length === 0
+      ) {
+        return acc;
+      }
+      acc[key] = prunedValue;
+      return acc;
+    }, {});
+  }
+
+  return value;
+}
+
+/**
  * Removes inactive page data from a form while preserving active fields and ancestors.
  *
  * Rules:
- * - Active properties come from {@link getActiveProperties}.
+ * - Active properties come from {@link getActivePageProperties}.
  * - A property is protected from deletion if it is active *or* has an active ancestor
- *   (e.g., "dependents" protects "dependents.0.name").
- * - Array items:
- *   - If multiple fields within the same item are active, all siblings are preserved.
- *   - If only one field is active, inactive siblings are removed.
+ *   (e.g., "dependents" protects "dependents.0.name") *or* has active descendants.
+ * - Inactive fields are removed regardless of how many sibling fields are active.
+ * - Parent arrays are protected if any descendant field is active.
  *
  * @param {FormConfigPage[]} inactivePages - Pages considered inactive; their properties may be removed.
  * @param {FormConfigPage[]} activePages - Pages considered active; determine what to keep.
@@ -396,22 +473,15 @@ function hasActiveDescendant(prop, activeSet) {
 export function filterInactiveNestedPageData(inactivePages, activePages, form) {
   const activeProps = getActivePageProperties(activePages);
   const activePropsSet = new Set(activeProps);
-  const formData = cloneDeep(form.data); // don't mutate inputs
-
-  // count how many active nested fields exist per array item: "<root>.<index>"
-  const activeItemCounts = activeProps.reduce((map, p) => {
-    const parts = p.split('.');
-    const isArrayChild = parts.length > 2 && /^\d+$/.test(parts[1]);
-    if (isArrayChild) {
-      const key = `${parts[0]}.${parts[1]}`;
-      map.set(key, (map.get(key) || 0) + 1);
-    }
-    return map;
-  }, new Map());
+  const formData = cloneDeep(form.data);
 
   inactivePages.forEach(page => {
-    getPageProperties(page).forEach(prop => {
-      // protected if exact active match, has an active ancestor, OR has active descendants
+    const inactiveProps =
+      typeof page.arrayPath === 'string' && page.arrayPath.length
+        ? getPageProperties(page)
+        : Object.keys(page?.schema?.properties || {});
+
+    inactiveProps.forEach(prop => {
       if (
         activePropsSet.has(prop) ||
         hasActiveAncestor(prop, activePropsSet) ||
@@ -420,25 +490,11 @@ export function filterInactiveNestedPageData(inactivePages, activePages, form) {
         return;
       }
 
-      const parts = prop.split('.');
-      const isArrayChild =
-        parts.length > 2 &&
-        /^\d+$/.test(parts[1]) &&
-        Array.isArray(formData?.[parts[0]]);
-      const itemPrefix = isArrayChild ? `${parts[0]}.${parts[1]}` : null;
-
-      // Keep siblings ONLY if that array item has MULTIPLE active fields
-      // (e.g., events.0 has details + location active). If there's just one
-      // active field (e.g., dependents.0.ssn), allow deletion of inactive siblings.
-      if (isArrayChild && (activeItemCounts.get(itemPrefix) || 0) >= 2) {
-        return;
-      }
-
       deleteNestedProperty(formData, prop);
     });
   });
 
-  return formData;
+  return pruneEmptyContainers(formData);
 }
 
 // TODO: remove when functionality from `filterInactiveNestedPages` is validated

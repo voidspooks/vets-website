@@ -65,8 +65,7 @@ describe('10-10d extended Submit Transformer - Medicare document filtering', () 
       exclude: ['part-b-front-123', 'part-ab-front-123'],
     },
     {
-      title:
-        'only includes Part B cards and denial proof when plan type is "b"',
+      title: 'only includes Part B cards when plan type is "b"',
       data: baseData(
         [makeApplicant(APPLICANT_SSN)],
         [
@@ -74,17 +73,13 @@ describe('10-10d extended Submit Transformer - Medicare document filtering', () 
             medicarePlanType: 'b',
             medicarePartBFrontCard: doc('part-b-front-456'),
             medicarePartBBackCard: doc('part-b-back-456'),
-            medicarePartADenialProof: doc(
-              'denial-proof-456',
-              'denial-letter.pdf',
-            ),
             // filtered out
             medicarePartAFrontCard: doc('part-a-front-456'),
             medicarePartAPartBFrontCard: doc('part-ab-front-456'),
           }),
         ],
       ),
-      include: ['part-b-front-456', 'part-b-back-456', 'denial-proof-456'],
+      include: ['part-b-front-456', 'part-b-back-456'],
       exclude: ['part-a-front-456', 'part-ab-front-456'],
     },
     {

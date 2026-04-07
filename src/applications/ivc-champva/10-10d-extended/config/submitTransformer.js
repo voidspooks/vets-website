@@ -161,53 +161,6 @@ function mapHealthInsuranceToApplicants(
 }
 
 /**
- * Filters Medicare documents to only include those valid for the current plan type
- * @param {Object} medicareItem - A single Medicare item from the medicare array
- * @returns {Object} Medicare item with only valid document properties
- */
-const filterMedicareDocumentsByPlanType = item => {
-  const planType = item?.medicarePlanType;
-  const hasMedicarePartD = item?.hasMedicarePartD;
-
-  const validPropertiesByPlanType = {
-    ab: ['medicarePartAPartBFrontCard', 'medicarePartAPartBBackCard'],
-    a: ['medicarePartAFrontCard', 'medicarePartABackCard'],
-    b: [
-      'medicarePartBFrontCard',
-      'medicarePartBBackCard',
-      'medicarePartADenialProof',
-    ],
-    c: [
-      'medicarePartAPartBFrontCard',
-      'medicarePartAPartBBackCard',
-      'medicarePartCFrontCard',
-      'medicarePartCBackCard',
-    ],
-  };
-  const partDProperties = ['medicarePartDFrontCard', 'medicarePartDBackCard'];
-
-  const validProperties = validPropertiesByPlanType[planType] || [];
-  const allValidProperties = hasMedicarePartD
-    ? [...validProperties, ...partDProperties]
-    : validProperties;
-
-  const allDocumentProperties = [
-    ...new Set([
-      ...Object.values(validPropertiesByPlanType).flat(),
-      ...partDProperties,
-    ]),
-  ];
-
-  return Object.fromEntries(
-    Object.entries(item).filter(
-      ([key]) =>
-        !allDocumentProperties.includes(key) ||
-        allValidProperties.includes(key),
-    ),
-  );
-};
-
-/**
  * Collects all supporting documents across applicants and policies
  * @param {Object} data - Form data
  * @returns {Array} Array of supporting documents
@@ -219,10 +172,9 @@ const collectSupportingDocuments = data => {
     getObjectsWithAttachmentId(item, 'confirmationCode'),
   );
 
-  const medicareDocs = (data.medicare ?? []).flatMap(item => {
-    const filtered = filterMedicareDocumentsByPlanType(item);
-    return getObjectsWithAttachmentId(filtered, 'confirmationCode');
-  });
+  const medicareDocs = (data.medicare ?? []).flatMap(item =>
+    getObjectsWithAttachmentId(item, 'confirmationCode'),
+  );
 
   const applicantDocs = (data.applicants ?? []).flatMap(applicant =>
     (applicant.applicantSupportingDocuments ?? []).filter(Boolean).map(doc => ({
