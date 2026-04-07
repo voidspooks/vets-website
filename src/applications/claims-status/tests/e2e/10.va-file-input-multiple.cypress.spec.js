@@ -545,20 +545,19 @@ describe('VA File Input Multiple', () => {
       cy.axeCheck();
     });
 
-    // Error alert for invalid password
-    it('should show error when submitting PDF with invalid password', () => {
+    // Error alert for incorrect password
+    it('should show error when submitting PDF with incorrect password', () => {
       setupComponentTest();
 
-      const errorMessage =
-        'We couldn’t unlock your PDF. Save the PDF without a password and try again.';
       const fileName = 'encrypted-document.pdf';
-      // Mock a server error response for invalid password
+      // Mock a server error response for incorrect password
       cy.intercept('POST', `/v0/benefits_claims/189685/benefits_documents`, {
         statusCode: 422,
         body: {
           errors: [
             {
-              title: errorMessage,
+              title: 'Unprocessable Entity',
+              detail: 'DOC_UPLOAD_INCORRECT_PASSWORD',
             },
           ],
         },
@@ -585,7 +584,11 @@ describe('VA File Input Multiple', () => {
       cy.get('va-alert[status="error"]').should('be.visible');
       cy.get('va-alert[status="error"] h2').should(
         'contain.text',
-        `We need you to submit files by mail or in person`,
+        'We couldn’t unlock your PDF',
+      );
+      cy.get('va-alert[status="error"] div').should(
+        'contain.text',
+        'Enter the correct password to upload this file.',
       );
 
       cy.axeCheck();

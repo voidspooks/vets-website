@@ -1399,6 +1399,13 @@ export const getUploadErrorMessage = (error, claimId) => {
       type: 'error',
     };
   }
+  if (error?.errors?.[0]?.detail === 'DOC_UPLOAD_INCORRECT_PASSWORD') {
+    return {
+      title: 'We couldn’t unlock your PDF',
+      body: 'Enter the correct password to upload this file.',
+      type: 'error',
+    };
+  }
   if (error?.errors?.[0]?.detail === 'DOC_UPLOAD_INVALID_CLAIMANT') {
     return {
       title: `You can’t upload files for this claim here`,

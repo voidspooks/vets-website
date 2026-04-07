@@ -2375,6 +2375,18 @@ const responses = {
           },
         ],
       },
+      incorrectPassword: {
+        status: 422,
+        errors: [
+          {
+            title: 'Unprocessable Entity',
+            detail: 'DOC_UPLOAD_INCORRECT_PASSWORD',
+            code: '422',
+            status: '422',
+            source: 'BenefitsDocuments::Service',
+          },
+        ],
+      },
       unknown: {
         status: 500,
         errors: [
@@ -2391,6 +2403,7 @@ const responses = {
     // Appropriate values:
     // - 'duplicate',
     // - 'invalidClaimant',
+    // - 'incorrectPassword',
     // - 'unknown'
     // - null for success only
     const errorPattern = ['unknown'];

@@ -1693,6 +1693,25 @@ describe('Disability benefits helpers: ', () => {
         );
       });
     });
+    context('when error is due to an incorrect password', () => {
+      it('should return an incorrect password error message', () => {
+        const error = {
+          fileName: 'encrypted-document.pdf',
+          errors: [
+            {
+              detail: 'DOC_UPLOAD_INCORRECT_PASSWORD',
+            },
+          ],
+        };
+
+        const result = getUploadErrorMessage(error);
+        expect(result.title).to.equal('We couldn’t unlock your PDF');
+        expect(result.body).to.equal(
+          'Enter the correct password to upload this file.',
+        );
+        expect(result.type).to.equal('error');
+      });
+    });
     context('when error is a non-duplicate upload failure', () => {
       it('should return a generic upload error with file name and title', () => {
         const error = {

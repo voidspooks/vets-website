@@ -95,6 +95,12 @@ export function setType1UnknownErrors(errorFiles) {
   };
 }
 
+const KNOWN_UPLOAD_ERROR_CODES = [
+  'DOC_UPLOAD_DUPLICATE',
+  'DOC_UPLOAD_INCORRECT_PASSWORD',
+  'DOC_UPLOAD_INVALID_CLAIMANT',
+];
+
 // Helper function to handle Type 1 error classification and dispatching
 function handleType1Errors(dispatch, errorFiles, hasError, claimId) {
   if (errorFiles.length === 0) {
@@ -104,16 +110,11 @@ function handleType1Errors(dispatch, errorFiles, hasError, claimId) {
   }
 
   // Separate known vs unknown errors
-  const unknownErrors = errorFiles.filter(
-    err =>
-      err?.errors?.[0]?.detail !== 'DOC_UPLOAD_DUPLICATE' &&
-      err?.errors?.[0]?.detail !== 'DOC_UPLOAD_INVALID_CLAIMANT',
+  const knownErrors = errorFiles.filter(err =>
+    KNOWN_UPLOAD_ERROR_CODES.includes(err?.errors?.[0]?.detail),
   );
-
-  const knownErrors = errorFiles.filter(
-    err =>
-      err?.errors?.[0]?.detail === 'DOC_UPLOAD_DUPLICATE' ||
-      err?.errors?.[0]?.detail === 'DOC_UPLOAD_INVALID_CLAIMANT',
+  const unknownErrors = errorFiles.filter(
+    err => !KNOWN_UPLOAD_ERROR_CODES.includes(err?.errors?.[0]?.detail),
   );
 
   // If there are unknown errors, store them separately
