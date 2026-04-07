@@ -16,7 +16,9 @@ import {
 export const claimantRelationshipUiSchema = {
   claimantRelationship: {
     relationship: radioUI({
-      title: "What is the claimant's relationship to the Veteran?",
+      title: 'Who is the claim for?',
+      hint:
+        'This is the person who is in need of aid and attendance or housebound allowance.',
       labels: {
         veteran: 'Veteran',
         spouse: "Veteran's spouse",
