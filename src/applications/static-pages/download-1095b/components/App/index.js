@@ -2,6 +2,7 @@
 import { apiRequest } from 'platform/utilities/api';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
+import { initializeProfile as initializeProfileAction } from 'platform/user/profile/actions';
 import { connect, useSelector } from 'react-redux';
 // Relative imports.
 import {
@@ -30,7 +31,7 @@ import {
   systemErrorComponent,
 } from './utils';
 
-export const App = ({ toggleLoginModal }) => {
+export const App = ({ toggleLoginModal, initializeProfile }) => {
   const [year, updateYear] = useState(0);
   const [availableForms, setAvailableForms] = useState([]);
   const [formError, updateFormError] = useState({
@@ -167,6 +168,19 @@ export const App = ({ toggleLoginModal }) => {
     [cspId, profile.isUserLOA1],
   );
 
+  useEffect(() => {
+    if (!environment.isLocalhost()) return;
+
+    apiRequest('/mock_session')
+      .then(response => {
+        if (!response?.hasSession) return;
+
+        localStorage.setItem('hasSession', true);
+        initializeProfile();
+      })
+      .catch(() => {});
+  }, []);
+
   const showSignInModal = () => {
     toggleLoginModal(true, 'ask-va', true);
   };
@@ -299,11 +313,13 @@ export const App = ({ toggleLoginModal }) => {
 };
 
 App.propTypes = {
+  initializeProfile: PropTypes.func.isRequired,
   toggleLoginModal: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
   toggleLoginModal: open => dispatch(toggleLoginModalAction(open)),
+  initializeProfile: () => dispatch(initializeProfileAction()),
 });
 
 export default connect(
