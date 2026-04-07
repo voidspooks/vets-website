@@ -6,6 +6,7 @@ import {
   arrayBuilderPages,
   assignGetItemName,
   getPageAfterPageKey,
+  getFirstActivePagePath,
 } from '../arrayBuilder';
 import {
   arrayBuilderItemFirstPageTitleUI,
@@ -1284,5 +1285,77 @@ describe('depends navigations', () => {
         },
       ],
     });
+  });
+});
+
+describe('getFirstActivePagePath', () => {
+  it('returns the page whose useForArrayFirstPage function returns true', () => {
+    const activePages = [
+      { path: 'conditions/:index/new-condition' },
+      {
+        path: 'conditions/:index/new-condition-date',
+        useForArrayFirstPage: (formData, index, context) =>
+          context?.edit && context?.review,
+      },
+      { path: 'conditions/:index/cause' },
+    ];
+
+    expect(
+      getFirstActivePagePath(activePages, {}, 0, {
+        edit: true,
+        review: true,
+      }),
+    ).to.equal('conditions/:index/new-condition-date');
+  });
+
+  it('falls back to the first page when no useForArrayFirstPage function returns true', () => {
+    const activePages = [
+      {
+        path: 'conditions/:index/rated-disability-date',
+        useForArrayFirstPage: () => false,
+      },
+      { path: 'conditions/:index/rated-disability' },
+    ];
+
+    expect(
+      getFirstActivePagePath(activePages, {}, 0, {
+        edit: true,
+        review: true,
+      }),
+    ).to.equal('conditions/:index/rated-disability-date');
+  });
+
+  it('falls back to the first page when no page defines useForArrayFirstPage', () => {
+    const activePages = [
+      { path: 'conditions/:index/rated-disability-date' },
+      { path: 'conditions/:index/rated-disability' },
+    ];
+
+    expect(getFirstActivePagePath(activePages, {}, 0, {})).to.equal(
+      'conditions/:index/rated-disability-date',
+    );
+  });
+
+  it('returns the page when useForArrayFirstPage is true', () => {
+    const activePages = [
+      { path: 'conditions/:index/new-condition' },
+      {
+        path: 'conditions/:index/new-condition-date',
+        useForArrayFirstPage: true,
+      },
+      { path: 'conditions/:index/cause' },
+    ];
+
+    expect(getFirstActivePagePath(activePages, {}, 0, {})).to.equal(
+      'conditions/:index/new-condition-date',
+    );
+  });
+
+  it('returns undefined for empty pages', () => {
+    expect(getFirstActivePagePath([], {}, 0, {})).to.equal(undefined);
+  });
+
+  it('returns undefined for undefined input', () => {
+    expect(getFirstActivePagePath()).to.equal(undefined);
   });
 });

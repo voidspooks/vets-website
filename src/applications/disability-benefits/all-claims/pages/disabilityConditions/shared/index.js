@@ -81,6 +81,8 @@ export const remainingSharedPages = (pageBuilder, helpers) => ({
   NewConditionDate: pageBuilder.itemPage({
     title: 'Approximate start date of new condition',
     path: `conditions/:index/new-condition-date`,
+    useForArrayFirstPage: (formData, index, context) =>
+      context?.edit && context?.review,
     depends: (formData, index) => isNewCondition(formData, index),
     uiSchema: newConditionDatePage.uiSchema,
     schema: newConditionDatePage.schema,

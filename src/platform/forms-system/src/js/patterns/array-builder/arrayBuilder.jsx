@@ -324,6 +324,25 @@ export function assignGetItemName(options) {
   return DEFAULT_ARRAY_BUILDER_TEXT.getItemName;
 }
 
+export const getFirstActivePagePath = (
+  activePages,
+  formData,
+  index,
+  context = null,
+) => {
+  if (!activePages?.length) return undefined;
+
+  const matchedPage = activePages.find(page => {
+    if (typeof page.useForArrayFirstPage === 'function') {
+      return page.useForArrayFirstPage(formData, index, context);
+    }
+
+    return page.useForArrayFirstPage === true;
+  });
+
+  return matchedPage?.path || activePages[0]?.path;
+};
+
 /**
  * README: {@link https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/array-builder/README.md|Array Builder Usage/Guidance/Examples}
  *
@@ -492,7 +511,8 @@ export function arrayBuilderPages(options, pageBuilderCallback) {
   };
 
   const getFirstItemPagePath = (formData, index, context = null) => {
-    return getActiveItemPages(formData, index, context)?.[0]?.path;
+    const activePages = getActiveItemPages(formData, index, context);
+    return getFirstActivePagePath(activePages, formData, index, context);
   };
 
   const getLastItemPagePath = (formData, index, context = null) => {
