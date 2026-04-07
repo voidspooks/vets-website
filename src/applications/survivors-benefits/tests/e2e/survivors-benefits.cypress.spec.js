@@ -404,6 +404,75 @@ const testConfig = createTestConfig(
           });
         });
       },
+      'financial-information/add-income-source': ({ afterHook }) => {
+        afterHook(() => {
+          cy.get('@testData').then(data => {
+            const totalEntries = data.incomeEntries?.length ?? 0;
+            cy.get('@incomeSourceCount').then(count => {
+              if (count < totalEntries) {
+                cy.wrap(count + 1).as('incomeSourceCount');
+                cy.selectYesNoVaRadioOption(
+                  'root_view:hasMonthlyIncomeSource',
+                  true,
+                );
+              } else {
+                cy.selectYesNoVaRadioOption(
+                  'root_view:hasMonthlyIncomeSource',
+                  false,
+                );
+              }
+              cy.clickFormContinue();
+            });
+          });
+        });
+      },
+      'financial-information/:index/monthly-income-details': ({
+        afterHook,
+        index,
+      }) => {
+        afterHook(() => {
+          cy.get('@testData').then(data => {
+            const entry = data.incomeEntries[index];
+
+            cy.selectVaRadioOption('root_recipient', entry.recipient);
+
+            if (entry.recipientName) {
+              cy.fillVaTextInput('root_recipientName', entry.recipientName);
+            }
+
+            cy.selectVaRadioOption('root_incomeType', entry.incomeType);
+
+            if (entry.incomeType === 'SOCIAL_SECURITY') {
+              // Payer field should not be rendered when Social Security is
+              // selected — verify the field is absent so the form passes
+              // validation without a payer name
+              cy.get('va-text-input[name="root_incomePayer"]').should(
+                'not.exist',
+              );
+              cy.fillVaTextInput(
+                'root_monthlyIncome',
+                String(entry.monthlyIncome),
+              );
+            } else {
+              // For other income types the payer is required — attempt to
+              // continue without it, assert the validation error, then fill
+              // the payer name and continue successfully
+              cy.fillVaTextInput(
+                'root_monthlyIncome',
+                String(entry.monthlyIncome),
+              );
+              cy.clickFormContinue();
+              cy.get('va-text-input[name="root_incomePayer"]').should(
+                'have.attr',
+                'error',
+              );
+              cy.fillVaTextInput('root_incomePayer', entry.incomePayer);
+            }
+
+            cy.clickFormContinue();
+          });
+        });
+      },
       'claim-information/dic/:index/dates': ({ afterHook, index }) => {
         afterHook(() => {
           cy.get('@testData').then(data => {
@@ -449,6 +518,7 @@ const testConfig = createTestConfig(
       cy.intercept('/v0/feature_toggles*', mockFeatureToggles);
       cy.intercept('POST', formConfig.submitUrl, mockSubmit);
       cy.login(mockUser);
+      cy.wrap(0).as('incomeSourceCount');
     },
 
     // Skip tests in CI until the form is released.

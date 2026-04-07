@@ -10,7 +10,6 @@ import {
   arrayBuilderYesNoUI,
   arrayBuilderYesNoSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { VaTextInputField } from 'platform/forms-system/src/js/web-component-fields';
 import {
   typeOfIncomeLabels,
   incomeRecipientTypeLabels,
@@ -196,7 +195,7 @@ export const grossMonthlyIncomePages = arrayBuilderPages(
           title: 'What type of income?',
           labels: typeOfIncomeLabels,
         }),
-        incomeTypeOther: textUI({
+        otherIncomeType: textUI({
           title: 'Tell us the type of income',
           expandUnder: 'incomeType',
           expandUnderCondition: field => field === 'OTHER',
@@ -206,25 +205,19 @@ export const grossMonthlyIncomePages = arrayBuilderPages(
             return item?.incomeType === 'OTHER';
           },
         }),
-        incomePayer: {
-          'ui:title': 'Who pays this income?',
-          'ui:webComponentField': VaTextInputField,
-          'ui:options': {
-            hint:
-              'Enter the name of a government agency, a company, or another organization.',
-            classNames: 'vads-u-margin-bottom--2',
-            updateSchema: (formData, _schema, _uiSchema, index) => {
-              const items = formData?.incomeEntries;
-              const item = items?.[index];
-              if (item?.incomeType === 'SOCIAL_SECURITY') {
-                item.incomePayer = 'Social Security Administration';
-              } else if (item?.incomePayer) {
-                item.incomePayer = '';
-              }
-              return { type: 'string' };
-            },
+        incomePayer: textUI({
+          title: 'Who pays this income?',
+          classNames: 'vads-u-margin-bottom--2',
+          hint:
+            'Enter the name of a government agency, a company, or another orgranization.',
+          expandUnder: 'incomeType',
+          expandUnderCondition: field => field !== 'SOCIAL_SECURITY' && field,
+          required: (formData, index, fullData) => {
+            const items = formData?.incomeEntries ?? fullData?.incomeEntries;
+            const item = items?.[index];
+            return !!item?.incomeType && item?.incomeType !== 'SOCIAL_SECURITY';
           },
-        },
+        }),
         monthlyIncome: currencyUI({
           title: 'How much is the monthly income?',
           max: 999999999,
@@ -237,8 +230,8 @@ export const grossMonthlyIncomePages = arrayBuilderPages(
           recipient: radioSchema(Object.keys(incomeRecipientTypeLabels)),
           recipientName: { type: 'string' },
           incomeType: radioSchema(Object.keys(typeOfIncomeLabels)),
+          otherIncomeType: { type: 'string' },
           incomePayer: { type: 'string' },
-          incomeTypeOther: { type: 'string' },
           monthlyIncome: currencySchema,
         },
       },
@@ -270,7 +263,7 @@ export const grossMonthlyIncomePages = arrayBuilderPages(
           title: 'What type of income?',
           labels: typeOfIncomeLabels,
         }),
-        incomeTypeOther: textUI({
+        otherIncomeType: textUI({
           title: 'Tell us the type of income',
           expandUnder: 'incomeType',
           expandUnderCondition: field => field === 'OTHER',
@@ -280,25 +273,19 @@ export const grossMonthlyIncomePages = arrayBuilderPages(
             return item?.incomeType === 'OTHER';
           },
         }),
-        incomePayer: {
-          'ui:title': 'Who pays this income?',
-          'ui:webComponentField': VaTextInputField,
-          'ui:options': {
-            hint:
-              'Enter the name of a government agency, a company, or another organization.',
-            classNames: 'vads-u-margin-bottom--2',
-            updateSchema: (formData, _schema, _uiSchema, index) => {
-              const items = formData?.incomeEntries;
-              const item = items?.[index];
-              if (item?.incomeType === 'SOCIAL_SECURITY') {
-                item.incomePayer = 'Social Security Administration';
-              } else if (item?.incomePayer) {
-                item.incomePayer = '';
-              }
-              return { type: 'string' };
-            },
+        incomePayer: textUI({
+          title: 'Who pays this income?',
+          expandUnder: 'incomeType',
+          classNames: 'vads-u-margin-bottom--2',
+          hint:
+            'Enter the name of a government agency, a company, or another orgranization.',
+          expandUnderCondition: field => field !== 'SOCIAL_SECURITY' && field,
+          required: (formData, index, fullData) => {
+            const items = formData?.incomeEntries ?? fullData?.incomeEntries;
+            const item = items?.[index];
+            return !!item?.incomeType && item?.incomeType !== 'SOCIAL_SECURITY';
           },
-        },
+        }),
         monthlyIncome: currencyUI({
           title: 'How much is the monthly income?',
           max: 999999999,
@@ -311,8 +298,8 @@ export const grossMonthlyIncomePages = arrayBuilderPages(
           recipient: radioSchema(Object.keys(incomeRecipientTypeLabels2025)),
           recipientName: { type: 'string' },
           incomeType: radioSchema(Object.keys(typeOfIncomeLabels)),
+          otherIncomeType: { type: 'string' },
           incomePayer: { type: 'string' },
-          incomeTypeOther: { type: 'string' },
           monthlyIncome: currencySchema,
         },
       },

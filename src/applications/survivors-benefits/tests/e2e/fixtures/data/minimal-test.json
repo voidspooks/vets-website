@@ -88,7 +88,20 @@
     "landMarketable": true,
     "moreThanFourIncomeSources": false,
     "otherIncome": false,
-    "view:hasMonthlyIncomeSource": false,
+    "view:hasMonthlyIncomeSource": true,
+    "incomeEntries": [
+      {
+        "recipient": "SURVIVING_SPOUSE",
+        "incomeType": "SOCIAL_SECURITY",
+        "monthlyIncome": 500
+      },
+      {
+        "recipient": "SURVIVING_SPOUSE",
+        "incomeType": "INTEREST_DIVIDENDS",
+        "incomePayer": "Some Bank",
+        "monthlyIncome": 300
+      }
+    ],
     "view:careExpensesList": false,
     "view:medicalExpensesList": false,
     "hasBankAccount": true,

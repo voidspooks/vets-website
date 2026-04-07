@@ -1,4 +1,6 @@
+export * from './addPayerNameForSocialSecurity';
 export * from './buildUnitAddress';
+export * from './renameOtherIncomeType';
 export * from './calculateSeparationDuration';
 export * from './chapter4Transform';
 export * from './checkForHowMarriageEnded';

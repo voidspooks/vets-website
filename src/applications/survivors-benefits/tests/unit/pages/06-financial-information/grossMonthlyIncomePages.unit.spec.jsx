@@ -251,6 +251,138 @@ describe('Gross Monthly Income Pages', () => {
     expect(text.cardDescription(itemWithoutAmount)).to.equal('Monthly amount');
   });
 
+  describe('monthlyIncomeDetails incomePayer visibility', () => {
+    let formDOM;
+    let incomeTypeRadio;
+    const incomePayerSelector = 'va-text-input[label*="Who pays this income?"]';
+    const otherIncomeTypeSelector =
+      'va-text-input[label*="Tell us the type of income"]';
+
+    beforeEach(() => {
+      const { monthlyIncomeDetails } = grossMonthlyIncomePages;
+      const form = render(
+        <Provider store={createMockStore(false)}>
+          <DefinitionTester
+            schema={monthlyIncomeDetails.schema}
+            uiSchema={monthlyIncomeDetails.uiSchema}
+            data={{ [arrayPath]: [{}] }}
+            pagePerItemIndex={0}
+            arrayPath={arrayPath}
+          />
+        </Provider>,
+      );
+      formDOM = getFormDOM(form.container);
+      incomeTypeRadio = $('va-radio[label*="What type of income?"]', formDOM);
+    });
+
+    it('does not show incomePayer before any incomeType is selected', () => {
+      expect($(incomePayerSelector, formDOM)).to.not.exist;
+    });
+
+    it('does not show incomePayer when SOCIAL_SECURITY is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'SOCIAL_SECURITY' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.not.exist;
+    });
+
+    it('shows incomePayer and otherIncomeType when OTHER is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({ detail: { value: 'OTHER' } });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.exist;
+    });
+
+    it('shows incomePayer but not otherIncomeType when INTEREST_DIVIDENDS is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'INTEREST_DIVIDENDS' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.not.exist;
+    });
+
+    it('shows incomePayer but not otherIncomeType when CIVIL_SERVICE is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'CIVIL_SERVICE' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.not.exist;
+    });
+
+    it('shows incomePayer but not otherIncomeType when PENSION_RETIREMENT is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'PENSION_RETIREMENT' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.not.exist;
+    });
+  });
+
+  describe('monthlyIncomeDetails2025 incomePayer visibility', () => {
+    let formDOM;
+    let incomeTypeRadio;
+    const incomePayerSelector = 'va-text-input[label*="Who pays this income?"]';
+    const otherIncomeTypeSelector =
+      'va-text-input[label*="Tell us the type of income"]';
+
+    beforeEach(() => {
+      const { monthlyIncomeDetails2025 } = grossMonthlyIncomePages;
+      const form = render(
+        <Provider store={createMockStore(true)}>
+          <DefinitionTester
+            schema={monthlyIncomeDetails2025.schema}
+            uiSchema={monthlyIncomeDetails2025.uiSchema}
+            data={{ [arrayPath]: [{}] }}
+            pagePerItemIndex={0}
+            arrayPath={arrayPath}
+          />
+        </Provider>,
+      );
+      formDOM = getFormDOM(form.container);
+      incomeTypeRadio = $('va-radio[label*="What type of income?"]', formDOM);
+    });
+
+    it('does not show incomePayer before any incomeType is selected', () => {
+      expect($(incomePayerSelector, formDOM)).to.not.exist;
+    });
+
+    it('does not show incomePayer when SOCIAL_SECURITY is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'SOCIAL_SECURITY' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.not.exist;
+    });
+
+    it('shows incomePayer and otherIncomeType when OTHER is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({ detail: { value: 'OTHER' } });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.exist;
+    });
+
+    it('shows incomePayer but not otherIncomeType when INTEREST_DIVIDENDS is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'INTEREST_DIVIDENDS' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.not.exist;
+    });
+
+    it('shows incomePayer but not otherIncomeType when CIVIL_SERVICE is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'CIVIL_SERVICE' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.not.exist;
+    });
+
+    it('shows incomePayer but not otherIncomeType when PENSION_RETIREMENT is selected', () => {
+      incomeTypeRadio.__events.vaValueChange({
+        detail: { value: 'PENSION_RETIREMENT' },
+      });
+      expect($(incomePayerSelector, formDOM)).to.exist;
+      expect($(otherIncomeTypeSelector, formDOM)).to.not.exist;
+    });
+  });
+
   it('should show alertMaxItems alert with correct content and link when maxItems is reached', () => {
     const { text, maxItems } = options;
     expect(maxItems).to.equal(4);
@@ -284,56 +416,5 @@ describe('Gross Monthly Income Pages', () => {
     expect(link.getAttribute('text')).to.equal(
       'Get VA Form 21P-0969 to download',
     );
-  });
-
-  describe('incomePayer updateSchema', () => {
-    const {
-      updateSchema,
-    } = grossMonthlyIncomePages.monthlyIncomeDetails.uiSchema[
-      arrayPath
-    ].items.incomePayer['ui:options'];
-
-    it('should auto-fill incomePayer when incomeType is SOCIAL_SECURITY', () => {
-      const formData = {
-        incomeEntries: [{ incomeType: 'SOCIAL_SECURITY', incomePayer: '' }],
-      };
-      updateSchema(formData, {}, {}, 0);
-      expect(formData.incomeEntries[0].incomePayer).to.equal(
-        'Social Security Administration',
-      );
-    });
-
-    it('should overwrite existing incomePayer when incomeType is SOCIAL_SECURITY', () => {
-      const formData = {
-        incomeEntries: [
-          { incomeType: 'SOCIAL_SECURITY', incomePayer: 'Some Other Payer' },
-        ],
-      };
-      updateSchema(formData, {}, {}, 0);
-      expect(formData.incomeEntries[0].incomePayer).to.equal(
-        'Social Security Administration',
-      );
-    });
-
-    it('should clear incomePayer when a non-Social Security income type is selected', () => {
-      const formData = {
-        incomeEntries: [
-          {
-            incomeType: 'CIVIL_SERVICE',
-            incomePayer: 'Social Security Administration',
-          },
-        ],
-      };
-      updateSchema(formData, {}, {}, 0);
-      expect(formData.incomeEntries[0].incomePayer).to.equal('');
-    });
-
-    it('should not modify incomePayer when it is already empty for non-Social Security type', () => {
-      const formData = {
-        incomeEntries: [{ incomeType: 'OTHER', incomePayer: '' }],
-      };
-      updateSchema(formData, {}, {}, 0);
-      expect(formData.incomeEntries[0].incomePayer).to.equal('');
-    });
   });
 });

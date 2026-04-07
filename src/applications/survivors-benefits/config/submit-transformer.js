@@ -15,6 +15,8 @@ import {
   transformClaim,
   autoPopulateMarriageEndDate,
   transformPreviousMarriages,
+  addPayerNameForSocialSecurity,
+  renameOtherIncomeType,
 } from '../utils/transformers';
 
 export const transform = (formConfig, form) => {
@@ -26,6 +28,8 @@ export const transform = (formConfig, form) => {
   transformedData = splitVaSsnField(transformedData);
   transformedData = switchToInternationalPhone(transformedData);
   transformedData = updateBankValues(transformedData);
+  transformedData = renameOtherIncomeType(transformedData);
+  transformedData = addPayerNameForSocialSecurity(transformedData);
   transformedData = transformCareExpenses(transformedData);
   transformedData = combineTreatmentFacility(transformedData);
   transformedData = updateFullNames(transformedData);
