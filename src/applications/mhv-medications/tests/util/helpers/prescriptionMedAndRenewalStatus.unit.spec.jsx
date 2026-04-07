@@ -4,6 +4,7 @@ import {
   medStatusDisplayTypes,
   RX_SOURCE,
   DISPENSE_STATUS,
+  pdfDefaultPendingMedDefinition,
 } from '../../../util/constants';
 
 describe('prescriptionMedAndRenewalStatus helper', () => {
@@ -76,6 +77,37 @@ describe('prescriptionMedAndRenewalStatus helper', () => {
       // Result should be a React element with pending renewal text
       expect(result).to.not.be.null;
       expect(result.props['data-testid']).to.equal('pending-renewal-status');
+    });
+  });
+
+  describe('management improvements flag enabled', () => {
+    it('should return StatusDropdown for pending medications when management improvements is enabled', () => {
+      const result = prescriptionMedAndRenewalStatus(
+        mockPendingMed,
+        medStatusDisplayTypes.VA_PRESCRIPTION,
+        false,
+        false,
+        true,
+      );
+
+      expect(result).to.not.be.null;
+      expect(result.type.name).to.equal('StatusDropdown');
+    });
+  });
+
+  describe('management improvements flag disabled', () => {
+    it('should return legacy pending text when management improvements flag is disabled', () => {
+      const result = prescriptionMedAndRenewalStatus(
+        mockPendingMed,
+        medStatusDisplayTypes.VA_PRESCRIPTION,
+        false,
+        false,
+        false,
+      );
+
+      expect(result).to.not.be.null;
+      expect(result.type).to.equal('p');
+      expect(result.props.children).to.equal(pdfDefaultPendingMedDefinition);
     });
   });
 

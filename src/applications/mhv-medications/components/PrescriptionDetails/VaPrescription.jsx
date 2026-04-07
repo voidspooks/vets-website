@@ -34,6 +34,7 @@ import SendRxRenewalMessage from '../shared/SendRxRenewalMessage';
 import MedicationDescription from '../shared/MedicationDescription';
 import {
   selectCernerPilotFlag,
+  selectMedicationsManagementImprovementsFlag,
   selectMhvMedicationsOracleHealthCutoverFlag,
   selectPartialFillContentFlag,
   selectV2StatusMappingFlag,
@@ -52,6 +53,9 @@ const VaPrescription = prescription => {
   const showPartialFillContent = useSelector(selectPartialFillContentFlag);
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
+  const isMedsImprovements = useSelector(
+    selectMedicationsManagementImprovementsFlag,
+  );
   const cernerFacilityIds = useSelector(selectCernerFacilityIds);
   const isOracleHealthCutoverEnabled = useSelector(
     selectMhvMedicationsOracleHealthCutoverFlag,
@@ -300,6 +304,7 @@ const VaPrescription = prescription => {
               medStatusDisplayTypes.VA_PRESCRIPTION,
               isCernerPilot,
               isV2StatusMapping,
+              isMedsImprovements,
             )}
             <h3 className="vads-u-font-size--source-sans-normalized vads-u-font-family--sans">
               Refills left

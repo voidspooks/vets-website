@@ -5,6 +5,7 @@ import { selectCernerFacilityIds } from 'platform/site-wide/drupal-static-data/s
 import { isUnfilledOhPrescription } from '../../util/helpers/isUnfilledOhPrescription';
 import {
   ACTIVE_NON_VA,
+  DISPENSE_STATUS,
   dispStatusObj,
   dispStatusObjV2,
 } from '../../util/constants';
@@ -321,6 +322,32 @@ const StatusDropdown = props => {
             </>
           );
         }
+        case DISPENSE_STATUS.NEW_ORDER: {
+          const dropdownContent = () => {
+            return (
+              <p data-testid="pending-status-definition">
+                This is a new prescription from your provider. Your VA pharmacy
+                is reviewing it now. Details may change.
+              </p>
+            );
+          };
+
+          return (
+            <>
+              {displayStatus('Pending')}
+              <va-additional-info
+                uswds
+                trigger="What does this status mean?"
+                data-testid="status-dropdown"
+                data-dd-action-name={
+                  dataDogActionNames.detailsPage.STATUS_INFO_DROPDOWN
+                }
+              >
+                {dropdownContent()}
+              </va-additional-info>
+            </>
+          );
+        }
         case statusObj.expired: {
           const dropdownContent = () => {
             return (
@@ -404,6 +431,7 @@ const StatusDropdown = props => {
               </div>
             );
           };
+
           return (
             <>
               {displayStatus('Unknown')}

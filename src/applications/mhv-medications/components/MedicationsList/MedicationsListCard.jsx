@@ -84,6 +84,8 @@ const MedicationsListCard = ({ rx }) => {
       ? rx?.dispStatus === dispStatusObjV2.inprogress &&
         rx?.refillStatus?.toLowerCase() === 'renew'
       : rx?.dispStatus === DISPENSE_STATUS.RENEW);
+  const showPendingCardImprovements =
+    isMedsImprovements && (pendingMed || pendingRenewal);
   const latestTrackingStatus = rx?.trackingList?.[0];
   const isRecentlyShipped =
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_SHIPPED &&
@@ -151,28 +153,23 @@ const MedicationsListCard = ({ rx }) => {
   );
 
   const renderPendingCard = () => (
-    <div className="vads-u-display--flex vads-u-margin-top--2">
-      <span className="vads-u-flex--auto vads-u-padding-top--1">
-        <va-icon icon="info" size={3} aria-hidden="true" />
-      </span>
-      <p
-        className="vads-u-margin-left--2 vads-u-flex--1"
-        data-testid="pending-renewal-rx"
-        id={`pending-med-content-${rx.prescriptionId}`}
-      >
-        {pendingRenewal ? (
-          <>
-            This is a renewal you requested. Your VA pharmacy is reviewing it
-            now. Details may change.
-          </>
-        ) : (
-          <>
-            This is a new prescription from your provider. Your VA pharmacy is
-            reviewing it now. Details may change.
-          </>
-        )}
-      </p>
-    </div>
+    <p
+      className="vads-u-margin-top--2 vads-u-margin-bottom--0"
+      data-testid="pending-renewal-rx"
+      id={`pending-med-content-${rx.prescriptionId}`}
+    >
+      {pendingRenewal ? (
+        <>
+          This is a renewal you requested. Your VA pharmacy is reviewing it now.
+          Details may change.
+        </>
+      ) : (
+        <>
+          This is a new prescription from your provider. Your VA pharmacy is
+          reviewing it now. Details may change.
+        </>
+      )}
+    </p>
   );
 
   const renderTransferredCard = () => (
@@ -242,7 +239,7 @@ const MedicationsListCard = ({ rx }) => {
       );
     if (isMedsImprovements && isExpiredNoRenewalFlow)
       return renderExpiredCard();
-    if (pendingRenewal || pendingMed) return renderPendingCard();
+    if (showPendingCardImprovements) return renderPendingCard();
 
     return (
       <>
@@ -393,7 +390,7 @@ const MedicationsListCard = ({ rx }) => {
           : undefined
       }
       class={`no-print rx-card-container ${
-        pendingMed || pendingRenewal ? 'pending-med-or-renewal' : ''
+        showPendingCardImprovements ? 'pending-med-or-renewal' : ''
       }${
         displayGrayBackground
           ? ' vads-u-border--1px vads-u-border-color--gray-medium'
@@ -416,8 +413,6 @@ const MedicationsListCard = ({ rx }) => {
           </span>
         </Link>
         {!isMedsImprovements &&
-          !pendingMed &&
-          !pendingRenewal &&
           rxStatus !== 'Unknown' &&
           !isNonVaPrescription && (
             <p

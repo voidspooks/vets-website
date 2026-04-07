@@ -44,6 +44,7 @@ import { usePrefetch } from '../api/prescriptionsApi';
 import { selectUserDob, selectUserFullName } from '../selectors/selectUser';
 import {
   selectCernerPilotFlag,
+  selectMedicationsManagementImprovementsFlag,
   selectV2StatusMappingFlag,
 } from '../util/selectors';
 import {
@@ -65,6 +66,9 @@ const PrescriptionDetails = () => {
   const currentPage = useSelector(selectPageNumber);
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
+  const isMedsImprovements = useSelector(
+    selectMedicationsManagementImprovementsFlag,
+  );
 
   // Redirect to medications list if v2 API is enabled but station_number is missing
   // This handles edge cases like old bookmarks or direct URL access without station_number
@@ -222,6 +226,11 @@ const PrescriptionDetails = () => {
 
   const canPrint = prescription && !prescriptionApiError && !allergiesError;
 
+  // Show legacy pending med alert only when improvements flag is OFF
+  const shouldShowLegacyPendingAlert =
+    prescription?.prescriptionSource === RX_SOURCE.PENDING_DISPENSE &&
+    !isMedsImprovements;
+
   const pendingMedAlert = () => {
     const { orderedDate, pendingMed } = prescription;
     const isOverdue = (() => {
@@ -318,8 +327,7 @@ const PrescriptionDetails = () => {
                     {filledEnteredDate()}
                   </p>
                 )}
-                {prescription.prescriptionSource ===
-                  RX_SOURCE.PENDING_DISPENSE && pendingMedAlert()}
+                {shouldShowLegacyPendingAlert && pendingMedAlert()}
                 {hasExportError && (
                   <ApiErrorNotification
                     errorType={getErrorTypeFromFormat(errorFormat)}

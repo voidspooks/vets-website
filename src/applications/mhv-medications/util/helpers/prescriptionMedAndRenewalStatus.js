@@ -80,6 +80,7 @@ const determineStatus = (
   prescription,
   isCernerPilot = false,
   isV2StatusMapping = false,
+  isMedsImprovements = false,
 ) => {
   switch (displayType) {
     case medStatusDisplayTypes.VA_PRESCRIPTION:
@@ -90,7 +91,7 @@ const determineStatus = (
           </p>
         );
       }
-      if (pendingMed) {
+      if (pendingMed && !isMedsImprovements) {
         return <p>{pdfDefaultPendingMedDefinition}</p>;
       }
       return (
@@ -151,12 +152,14 @@ const determineStatus = (
  * @param {string} displayType - Flag to indicate how this status is being displayed
  * @param {boolean} isCernerPilot - Whether Cerner pilot is enabled
  * @param {boolean} isV2StatusMapping - Whether V2 status mapping is enabled
+ * @param {boolean} isMedsImprovements - When true, pending NEW_ORDER renders StatusDropdown; when false, it renders legacy pending med copy
  */
 export const prescriptionMedAndRenewalStatus = (
   prescription,
   displayType,
   isCernerPilot = false,
   isV2StatusMapping = false,
+  isMedsImprovements = false,
 ) => {
   if (!prescription) {
     return null;
@@ -175,5 +178,6 @@ export const prescriptionMedAndRenewalStatus = (
     prescription,
     isCernerPilot,
     isV2StatusMapping,
+    isMedsImprovements,
   );
 };

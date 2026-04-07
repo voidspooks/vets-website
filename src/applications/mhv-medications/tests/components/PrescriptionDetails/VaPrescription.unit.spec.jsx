@@ -326,6 +326,27 @@ describe('vaPrescription details container', () => {
     expect(refillSubHeader).to.not.exist;
   });
 
+  it('displays Pending status dropdown when management improvements flag is enabled for NewOrder', () => {
+    const screen = setup(
+      {
+        ...prescription,
+        prescriptionSource: RX_SOURCE.PENDING_DISPENSE,
+        dispStatus: 'NewOrder',
+      },
+      {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+        },
+      },
+    );
+
+    const statusElement = screen.getByTestId('status');
+    const pendingDefinition = screen.getByTestId('pending-status-definition');
+
+    expect(statusElement).to.have.text('Pending');
+    expect(pendingDefinition).to.exist;
+  });
+
   it('displays pending renewal med content if prescription source is PD and dispStatus is Renew', () => {
     const screen = setup({
       ...prescription,

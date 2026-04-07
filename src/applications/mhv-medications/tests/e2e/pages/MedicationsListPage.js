@@ -868,6 +868,26 @@ class MedicationsListPage {
     cy.visit(medicationsUrls.MEDICATIONS_URL);
   };
 
+  visitMedicationHistoryPageURL = medication => {
+    cy.intercept('GET', `${Paths.DELAY_ALERT}`, medication).as(
+      'delayAlertRxList',
+    );
+    cy.intercept('GET', '/my_health/v1/prescriptions?*', medication).as(
+      'medicationsHistoryList',
+    );
+    cy.intercept(
+      'GET',
+      '/my_health/v1/medical_records/allergies',
+      allergies,
+    ).as('allergies');
+    cy.intercept('GET', '/my_health/v1/tooltips', tooltip).as('tooltips');
+    cy.intercept('POST', '/my_health/v1/tooltips', tooltipVisible).as(
+      'tooltipsVisible',
+    );
+    cy.visit(medicationsUrls.MEDICATIONS_HISTORY);
+    cy.wait('@medicationsHistoryList');
+  };
+
   verifyEmptyMedicationsListAlertOnListPage = text => {
     cy.get('[data-testid="empty-medList-alert"]').should('have.text', text);
   };
@@ -908,10 +928,8 @@ class MedicationsListPage {
     prescriptionNumber,
     cardNumber,
   ) => {
-    cy.get(
-      `.landing-page-content > [data-testid="medication-list"] > :nth-child(${cardNumber})`,
-    )
-      .first()
+    cy.get('.rx-card-container')
+      .eq(cardNumber - 1)
       .should('not.contain', prescriptionNumber);
   };
 

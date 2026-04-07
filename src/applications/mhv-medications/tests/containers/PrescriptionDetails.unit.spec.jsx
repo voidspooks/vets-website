@@ -350,6 +350,25 @@ describe('Prescription details container', () => {
     });
   });
 
+  it('should not display alert for PD prescriptions when management improvements flag is enabled', async () => {
+    sandbox.restore();
+    stubAllergiesApi({ sandbox });
+    stubPrescriptionsApiCache({ sandbox });
+    const data = JSON.parse(JSON.stringify(singlePrescription));
+    data.prescriptionSource = 'PD';
+    stubPrescriptionIdApi({ sandbox, data });
+    stubUsePrefetch({ sandbox });
+    const screen = setup({
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('pending-med-alert')).to.not.exist;
+    });
+  });
+
   it('should prefetch the prescription documentation when there is an NDC number', async () => {
     sandbox.restore();
     stubAllergiesApi({ sandbox });

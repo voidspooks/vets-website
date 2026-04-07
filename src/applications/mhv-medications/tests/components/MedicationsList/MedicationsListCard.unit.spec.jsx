@@ -67,13 +67,17 @@ describe('Medication card component', () => {
 
   const setupWithFlags = (
     rx = prescriptionsListItem,
-    isCernerPilot = false,
-    isV2StatusMapping = false,
+    {
+      cernerPilot = false,
+      v2StatusMapping = false,
+      medsImprovements = false,
+    } = {},
   ) => {
     const initialState = {
       featureToggles: {
-        [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: isCernerPilot,
-        [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]: isV2StatusMapping,
+        [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: cernerPilot,
+        [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]: v2StatusMapping,
+        [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: medsImprovements,
       },
     };
     return renderWithStoreAndRouterV6(<MedicationsListCard rx={rx} />, {
@@ -848,30 +852,46 @@ describe('Medication card component', () => {
     );
   });
 
-  it('shows pending med text inside card body when the rx prescription source is PD and dispStatus is NewOrder', () => {
-    const screen = setup({
-      ...prescriptionsListItem,
-      prescriptionSource: 'PD',
-      dispStatus: 'NewOrder',
+  describe('when management improvements flag is enabled for pending prescriptions', () => {
+    it('shows pending med text inside card body when the rx prescription source is PD and dispStatus is NewOrder', () => {
+      const screen = setup(
+        {
+          ...prescriptionsListItem,
+          prescriptionSource: 'PD',
+          dispStatus: 'NewOrder',
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      expect(
+        screen.getByText(
+          'This is a new prescription from your provider. Your VA pharmacy is reviewing it now. Details may change.',
+        ),
+      );
     });
-    expect(
-      screen.getByText(
-        'This is a new prescription from your provider. Your VA pharmacy is reviewing it now. Details may change.',
-      ),
-    );
-  });
 
-  it('shows pending renewal text inside card body when the rx prescription source is PD and the disp status is Renew', () => {
-    const screen = setup({
-      ...prescriptionsListItem,
-      prescriptionSource: 'PD',
-      dispStatus: 'Renew',
+    it('shows pending renewal text inside card body when the rx prescription source is PD and the disp status is Renew', () => {
+      const screen = setup(
+        {
+          ...prescriptionsListItem,
+          prescriptionSource: 'PD',
+          dispStatus: 'Renew',
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      expect(
+        screen.getByText(
+          'This is a renewal you requested. Your VA pharmacy is reviewing it now. Details may change.',
+        ),
+      );
     });
-    expect(
-      screen.getByText(
-        'This is a renewal you requested. Your VA pharmacy is reviewing it now. Details may change.',
-      ),
-    );
   });
 
   it('renders a Non-VA Prescription with an orderedDate', () => {
@@ -933,7 +953,10 @@ describe('Medication card component', () => {
           // When both flags enabled, API returns V2 status; otherwise V1
           const dispStatus = useV2 ? 'Inactive' : 'Expired';
           const rx = { ...prescriptionsListItem, dispStatus };
-          const screen = setupWithFlags(rx, cernerPilot, v2StatusMapping);
+          const screen = setupWithFlags(rx, {
+            cernerPilot,
+            v2StatusMapping,
+          });
           expect(screen.getByText(dispStatus)).to.exist;
         });
       },
@@ -990,7 +1013,10 @@ describe('Medication card component', () => {
         ({ cernerPilot, v2StatusMapping, desc: flagDesc }) => {
           it(`handles ${desc} when ${flagDesc}`, () => {
             const rx = { ...prescriptionsListItem, dispStatus };
-            const screen = setupWithFlags(rx, cernerPilot, v2StatusMapping);
+            const screen = setupWithFlags(rx, {
+              cernerPilot,
+              v2StatusMapping,
+            });
             expect(screen).to.exist;
           });
         },
@@ -1005,7 +1031,10 @@ describe('Medication card component', () => {
           dispStatus: 'Active: Non-VA',
           prescriptionSource: 'NV',
         };
-        const screen = setupWithFlags(rx, cernerPilot, v2StatusMapping);
+        const screen = setupWithFlags(rx, {
+          cernerPilot,
+          v2StatusMapping,
+        });
         expect(screen.getByText('Active: Non-VA')).to.exist;
       });
     });
@@ -1031,7 +1060,11 @@ describe('Medication card component', () => {
             prescriptionSource: 'PD',
             dispStatus,
           };
-          const screen = setupWithFlags(rx, cernerPilot, v2StatusMapping);
+          const screen = setupWithFlags(rx, {
+            cernerPilot,
+            v2StatusMapping,
+            medsImprovements: true,
+          });
           expect(screen.getByText(expectedText)).to.exist;
         });
       });
@@ -1046,7 +1079,11 @@ describe('Medication card component', () => {
         dispStatus: 'In progress',
         refillStatus: 'neworder',
       };
-      const screen = setupWithFlags(rx, true, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       expect(screen.getByText(/new prescription from your provider/)).to.exist;
     });
 
@@ -1057,7 +1094,11 @@ describe('Medication card component', () => {
         dispStatus: 'In progress',
         refillStatus: 'renew',
       };
-      const screen = setupWithFlags(rx, true, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       expect(screen.getByText(/renewal you requested/)).to.exist;
     });
 
@@ -1068,7 +1109,11 @@ describe('Medication card component', () => {
         dispStatus: 'In progress',
         refillStatus: 'NewOrder',
       };
-      const screen = setupWithFlags(rx, true, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       expect(screen.getByText(/new prescription from your provider/)).to.exist;
     });
 
@@ -1079,7 +1124,11 @@ describe('Medication card component', () => {
         dispStatus: 'In progress',
         refillStatus: 'neworder',
       };
-      const screen = setupWithFlags(rx, true, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       expect(screen.queryByTestId('pending-renewal-rx')).to.not.exist;
     });
 
@@ -1090,7 +1139,11 @@ describe('Medication card component', () => {
         dispStatus: 'Active',
         refillStatus: 'neworder',
       };
-      const screen = setupWithFlags(rx, true, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       expect(screen.queryByTestId('pending-renewal-rx')).to.not.exist;
     });
 
@@ -1100,7 +1153,11 @@ describe('Medication card component', () => {
         prescriptionSource: 'PD',
         dispStatus: 'In progress',
       };
-      const screen = setupWithFlags(rx, true, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       expect(screen.queryByTestId('pending-renewal-rx')).to.not.exist;
     });
 
@@ -1111,7 +1168,11 @@ describe('Medication card component', () => {
         dispStatus: 'In progress',
         refillStatus: 'neworder',
       };
-      const screen = setupWithFlags(rx, true, false);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: true,
+        v2StatusMapping: false,
+        medsImprovements: true,
+      });
       // V2 status mapping requires both flags; with only cernerPilot, 'In progress' is not recognized
       expect(screen.queryByTestId('pending-renewal-rx')).to.not.exist;
     });
@@ -1123,7 +1184,11 @@ describe('Medication card component', () => {
         dispStatus: 'In progress',
         refillStatus: 'neworder',
       };
-      const screen = setupWithFlags(rx, false, true);
+      const screen = setupWithFlags(rx, {
+        cernerPilot: false,
+        v2StatusMapping: true,
+        medsImprovements: true,
+      });
       // V2 status mapping requires both flags
       expect(screen.queryByTestId('pending-renewal-rx')).to.not.exist;
     });
@@ -1133,7 +1198,10 @@ describe('Medication card component', () => {
     V2_STATUSES.forEach(({ status, desc }) => {
       it(`displays ${desc} correctly when returned by API`, () => {
         const rx = { ...prescriptionsListItem, dispStatus: status };
-        const screen = setupWithFlags(rx, true, true);
+        const screen = setupWithFlags(rx, {
+          cernerPilot: true,
+          v2StatusMapping: true,
+        });
         expect(screen.getByText(status)).to.exist;
       });
     });
@@ -1143,7 +1211,10 @@ describe('Medication card component', () => {
     V1_STATUSES.forEach(status => {
       it(`displays ${status} correctly when returned by API`, () => {
         const rx = { ...prescriptionsListItem, dispStatus: status };
-        const screen = setupWithFlags(rx, false, false);
+        const screen = setupWithFlags(rx, {
+          cernerPilot: false,
+          v2StatusMapping: false,
+        });
         expect(screen.getByText(status)).to.exist;
       });
     });
