@@ -19,7 +19,11 @@ const ConfirmationFAQ = () => (
         If you have any questions about your form, you can call us at{' '}
         <va-telephone contact={CHAMPVA_PHONE_NUMBER} /> (
         <va-telephone contact={CONTACTS['711']} tty />
-        ). We’re here Monday through Friday, 8:05 a.m. to 7:30 p.m. ET.
+        ). We’re here Monday through Friday, 8:00 a.m. to 7:30 p.m.{' '}
+        <dfn>
+          <abbr title="Eastern Time">ET</abbr>
+        </dfn>
+        .
       </p>
       <p>You can also contact us online through our Ask VA tool.</p>
       <p>

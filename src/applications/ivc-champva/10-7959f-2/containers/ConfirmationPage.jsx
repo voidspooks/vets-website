@@ -122,7 +122,11 @@ export class ConfirmationPage extends React.Component {
         <p>
           If you have any questions about your claim, call us at{' '}
           <va-telephone contact="8339300816" /> (TTY: 711). We’re here Monday
-          through Friday, 8:05am to 6:45pm. ET.
+          through Friday, 8:00 a.m. to 7:30 p.m.{' '}
+          <dfn>
+            <abbr title="Eastern Time">ET</abbr>
+          </dfn>
+          .
         </p>
         <va-link
           href="https://www.va.gov/health-care/file-foreign-medical-program-claim/#how-to-contact-us-about-fmp-cl"

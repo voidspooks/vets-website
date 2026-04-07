@@ -87,7 +87,11 @@ export class ConfirmationPage extends React.Component {
             If you have questions about your registration or an FMP claim, call
             the FMP office at <va-telephone contact="8339300816" /> (
             <va-telephone tty contact="711" />
-            ). We're here Monday through Friday, 8:05 a.m. to 6:45 p.m. ET.
+            ). We're here Monday through Friday, 8:00 a.m. to 7:30 p.m.{' '}
+            <dfn>
+              <abbr title="Eastern Time">ET</abbr>
+            </dfn>
+            .
           </p>
           <p>You can also contact us online through our Ask VA tool.</p>
           <a href="https://ask.va.gov/">Go to Ask VA</a>

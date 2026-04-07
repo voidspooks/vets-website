@@ -6,7 +6,7 @@ const ContactHelpText = idType => (
     If you can’t find the {idType}, call us at{' '}
     <va-telephone contact={CHAMPVA_PHONE_NUMBER} /> (
     <va-telephone contact="711" tty />){'. '}
-    We’re here Monday through Friday, 8:05 a.m. to 7:30 p.m.{' '}
+    We’re here Monday through Friday, 8:00 a.m. to 7:30 p.m.{' '}
     <dfn>
       <abbr title="Eastern Time">ET</abbr>
     </dfn>
