@@ -14,6 +14,7 @@ export const ATTACHMENT_IDS = Object.freeze({
   ohiCardBack: 'Back of health insurance card',
   schoolCertificationForm: 'School enrollment certification form',
   schoolEnrollmentLetter: 'Enrollment letter',
+  ssaLetter: 'Letter from the SSA',
 });
 
 export const FILE_SIZE_MAX = '20MB';
