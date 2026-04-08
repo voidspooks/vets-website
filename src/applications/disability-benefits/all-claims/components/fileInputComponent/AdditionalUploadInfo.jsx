@@ -14,11 +14,11 @@ export const additionalInfo = (
     <ul>
       <li>
         On a computer connected to a scanner, scan each document and save the
-        file as a PDF.
+        file as a PDF
       </li>
       <li>
         On a smartphone, take a photo of the document or use a scanning app to
-        save it as a PDF.
+        save it as a PDF
       </li>
     </ul>
   </VaAdditionalInfo>

@@ -28,13 +28,13 @@ describe('AdditionalUploadInfo', () => {
 
     expect(
       getByText(
-        'On a computer connected to a scanner, scan each document and save the file as a PDF.',
+        'On a computer connected to a scanner, scan each document and save the file as a PDF',
       ),
     ).to.exist;
 
     expect(
       getByText(
-        'On a smartphone, take a photo of the document or use a scanning app to save it as a PDF.',
+        'On a smartphone, take a photo of the document or use a scanning app to save it as a PDF',
       ),
     ).to.exist;
 

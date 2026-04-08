@@ -1,5 +1,5 @@
 import React from 'react';
-import { uploadAdditionalInfo } from './uploadAdditionalInfo';
+import { additionalInfo } from '../../../components/fileInputComponent/AdditionalUploadInfo';
 
 export const pmrTitle = 'Upload copies of private medical records';
 
@@ -12,7 +12,7 @@ const pmrBody = (
 export const pmrDescription = (
   <>
     {pmrBody}
-    {uploadAdditionalInfo}
+    {additionalInfo}
   </>
 );
 
@@ -25,7 +25,7 @@ export const pmrDescription = (
 export const pmrDescriptionV1 = (
   <>
     {pmrBody}
-    {uploadAdditionalInfo}
+    {additionalInfo}
     <p className="vads-u-font-weight--normal vads-u-margin-bottom--0">
       Select a file to upload
       <span className="schemaform-required-span vads-u-font-family--sans vads-u-font-size--base vads-u-font-weight--normal">
