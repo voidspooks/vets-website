@@ -22,10 +22,17 @@ const uiSchema = {
         <p>
           <strong>Your responses: </strong>
         </p>
-        <p className="vads-u-display--flex">
+        <span id="false-prefix" className="vads-u-visibility--screen-reader">
+          The following statement is false.
+        </span>
+        <p
+          className="vads-u-display--flex"
+          aria-describedby="false-prefix responses-label"
+          data-testid="eligibility-responses"
+        >
           <va-icon icon="close" size="3" class="vads-u-margin-right--1p5" />
-          You have not previously applied and been found eligible for the VA
-          education benefit you want to use
+          Have previously applied and been found eligible for the VA education
+          benefit you want to use
         </p>
       </va-card>
       <p>
