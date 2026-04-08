@@ -92,6 +92,13 @@ class MockReferralListResponse {
         onlineSchedule: false,
       }),
       MockReferralListResponse.createReferral({
+        id: 'online-schedule-false',
+        categoryOfCare: 'OPTOMETRY',
+        referralNumber: 'VA0000007789',
+        expirationDate: format(addMonths(today, 4), formatStr),
+        onlineSchedule: false,
+      }),
+      MockReferralListResponse.createReferral({
         id: 'appointment-submit-error',
         categoryOfCare: 'OPTOMETRY',
         referralNumber: 'appointment-submit-error',

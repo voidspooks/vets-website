@@ -68,8 +68,10 @@ export default function ScheduleReferral(props) {
         )}
 
         <p data-testid="subtitle">
-          We’ve approved your referral for community care. You can schedule your
-          first appointment now.
+          We’ve approved your referral for community care.
+          {canScheduleAppointment
+            ? ' You can schedule your first appointment now.'
+            : ''}
         </p>
         {canScheduleAppointment && (
           <va-link-action

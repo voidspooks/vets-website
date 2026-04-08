@@ -49,6 +49,7 @@ The following referral UUIDs are configured to test specific error conditions:
 | `referral-without-provider-error` | Tests referrals that don't have an assigned provider | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=referral-without-provider-error) |
 | `eps-error-appointment-id` | Tests EPS (appointment system) error handling | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=eps-error-appointment-id) |
 | `out-of-pilot-station` | Tests referrals from stations not in the pilot program (Station ID: 123) | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=out-of-pilot-station) |
+| `online-schedule-false` | Tests behavior when online scheduling is disabled for the referral | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=online-schedule-false) |
 
 Error responses can be found in the mock responses file: [`src/applications/vaos/services/mocks/index.js`](../services/mocks/index.js)
 

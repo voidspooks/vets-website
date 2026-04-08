@@ -650,6 +650,16 @@ const responses = {
       );
     }
 
+    if (req.params.referralId === 'online-schedule-false') {
+      return res.json(
+        new MockReferralDetailResponse({
+          id: req.params.referralId,
+          referralNumber: req.params.referralId,
+          onlineSchedule: false,
+        }),
+      );
+    }
+
     return res.json(
       new MockReferralDetailResponse({
         id: req.params.referralId,

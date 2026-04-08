@@ -14,6 +14,7 @@ class MockReferralDetailResponse {
       notFound: false,
       serverError: false,
       referralNumber: 'VA0000005681',
+      onlineSchedule: true,
       provider: {
         name: 'Dr. Moreen S. Rafa',
         npi: '1346206547',
