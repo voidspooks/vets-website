@@ -226,7 +226,7 @@ const StatusDropdown = props => {
         case statusObj.refillinprocess: {
           const dropdownContent = () => {
             return (
-              <p>
+              <p data-testid="refillinprocess-status-definition">
                 We’re processing a fill or refill for this prescription. We’ll
                 update the status here when we ship your prescription.
               </p>
@@ -293,6 +293,14 @@ const StatusDropdown = props => {
         }
         case statusObj.submitted: {
           const dropdownContent = () => {
+            if (isMedicationsImprovementsEnabled) {
+              return (
+                <p data-testid="submitted-status-definition">
+                  You submitted a fill or refill request. We’re reviewing your
+                  request.
+                </p>
+              );
+            }
             return (
               <>
                 <p data-testid="submitted-status-definition">

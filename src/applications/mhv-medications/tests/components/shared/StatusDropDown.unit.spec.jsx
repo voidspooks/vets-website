@@ -406,4 +406,49 @@ describe('component that displays Status', () => {
       expect(screen.queryByText('Find your VA facility')).to.not.exist;
     });
   });
+
+  describe('when mhvMedicationsManagementImprovements flag is enabled', () => {
+    const initialState = {
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+      },
+    };
+
+    it('shows updated submitted status definition', () => {
+      const screen = renderWithStoreAndRouter(
+        <StatusDropdown status="Active: Submitted" />,
+        { initialState, reducers: reducer },
+      );
+      const definition = screen.getByTestId('submitted-status-definition');
+
+      expect(definition).to.exist;
+      expect(definition.textContent).to.include(
+        'You submitted a fill or refill request.',
+      );
+      expect(definition.textContent).to.include('reviewing your request');
+      expect(screen.queryByText(/Check back for updates/)).to.not.exist;
+    });
+  });
+
+  describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
+    const initialState = {
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
+      },
+    };
+
+    it('shows original submitted status definition', () => {
+      const screen = renderWithStoreAndRouter(
+        <StatusDropdown status="Active: Submitted" />,
+        { initialState, reducers: reducer },
+      );
+      const definition = screen.getByTestId('submitted-status-definition');
+
+      expect(definition).to.exist;
+      expect(definition.textContent).to.include(
+        'We got your request to fill or refill this prescription',
+      );
+      expect(screen.getByText(/Check back for updates/)).to.exist;
+    });
+  });
 });
