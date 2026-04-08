@@ -10,22 +10,36 @@ import {
 } from '../../shared/utilities';
 import { concatStreets, getAgeInYears } from '../utils/helpers';
 
+const NON_APPLICANT_ROLE_PREFIX = Object.freeze({
+  sponsor: 'sponsor',
+  other: 'certifier',
+});
+
+const getCurrentDate = () => new Date().toISOString().split('T')[0];
+
+const getRolePrefix = role =>
+  role === 'applicant' ? null : NON_APPLICANT_ROLE_PREFIX[role] || 'certifier';
+
+const getRoleValue = (data = {}, role, suffix) => {
+  const prefix = getRolePrefix(role);
+  return prefix ? data?.[`${prefix}${suffix}`] : undefined;
+};
+
+const getTrueKeys = (obj = {}) =>
+  Object.keys(obj).filter(key => obj[key] === true);
+
+const getRelationship = relationship =>
+  getTrueKeys(relationship?.relationshipToVeteran).join('; ');
+
 /**
  * Formats a date string from YYYY-MM-DD to MM-DD-YYYY
  * @param {string} date - Date string in format YYYY-MM-DD
  * @returns {string} Date in format MM-DD-YYYY or original input if invalid
  */
 function formatDate(date) {
-  return date?.length === 10 ? `${date.slice(5)}-${date.slice(0, 4)}` : date;
-}
-
-/**
- * Returns array of keys from an object where the value is true
- * @param {Object} obj - Object to filter
- * @returns {Array} Array of keys with truthy values
- */
-function getTrueKeys(obj = {}) {
-  return Object.keys(obj).filter(key => obj[key] === true);
+  if (typeof date !== 'string') return date;
+  const [year, month, day] = date.split('-');
+  return year && month && day ? `${month}-${day}-${year}` : date;
 }
 
 /**
@@ -145,11 +159,8 @@ function mapHealthInsuranceToApplicants(
       });
   });
 
-  // Add current date
-  // eslint-disable-next-line prefer-destructuring
-  result.certificationDate = new Date().toISOString().split('T')[0];
+  result.certificationDate = getCurrentDate();
 
-  // Ensure veteran object is preserved in the result
   return {
     ...result,
     veteran: data.veteran,
@@ -187,22 +198,47 @@ const collectSupportingDocuments = data => {
   ];
 };
 
+const buildCertificationData = (data = {}) => {
+  const { certifierRole } = data;
+  const date = formatDate(getCurrentDate()) || '';
+
+  if (certifierRole === 'applicant') return { date };
+
+  const name = getRoleValue(data, certifierRole, 'Name') || {};
+  const address = getRoleValue(data, certifierRole, 'Address') || {};
+
+  return {
+    date,
+    firstName: name.first || '',
+    middleInitial: name.middle || '',
+    lastName: name.last || '',
+    phoneNumber: getRoleValue(data, certifierRole, 'Phone') || '',
+    streetAddress: address.streetCombined || '',
+    city: address.city || '',
+    state: address.state || '',
+    postalCode: address.postalCode || '',
+    relationship: getRelationship(
+      getRoleValue(data, certifierRole, 'Relationship'),
+    ),
+  };
+};
+
 const buildPrimaryContactInfo = (data = {}) => {
-  if (data.certifierRole === 'applicant') {
-    const a = data?.applicants?.[0] || {};
+  const { certifierRole } = data;
+
+  if (certifierRole === 'applicant') {
+    const applicant = data?.applicants?.[0] || {};
     return {
-      name: a.applicantName,
-      email: a.applicantEmailAddress,
-      phone: a.applicantPhone,
+      name: applicant.applicantName,
+      email: applicant.applicantEmailAddress,
+      phone: applicant.applicantPhone,
     };
   }
 
-  const prefix = data.certifierRole === 'sponsor' ? 'sponsor' : 'certifier';
-
   return {
-    name: data?.[`${prefix}Name`],
-    email: data?.[`${prefix}Email`],
-    phone: data?.[`${prefix}Phone`],
+    name: getRoleValue(data, certifierRole, 'Name'),
+    email: getRoleValue(data, certifierRole, 'Email'),
+    phone: getRoleValue(data, certifierRole, 'Phone'),
   };
 };
 
@@ -246,37 +282,12 @@ export default function transformForSubmit(formConfig, form) {
     ),
   };
 
-  const currentDate = formatDate(new Date().toISOString().split('T')[0]) || '';
-
-  // Create certification data based on certifier role
-  const certificationData =
-    withConcatAddresses.certifierRole === 'applicant'
-      ? { date: currentDate }
-      : {
-          date: currentDate,
-          lastName: withConcatAddresses.certifierName?.last || '',
-          middleInitial: withConcatAddresses.certifierName?.middle || '',
-          firstName: withConcatAddresses.certifierName?.first || '',
-          phoneNumber: withConcatAddresses.certifierPhone || '',
-          relationship: getTrueKeys(
-            withConcatAddresses.certifierRelationship?.relationshipToVeteran ||
-              {},
-          ).join('; '),
-          streetAddress:
-            withConcatAddresses.certifierAddress?.streetCombined || '',
-          city: withConcatAddresses.certifierAddress?.city || '',
-          state: withConcatAddresses.certifierAddress?.state || '',
-          postalCode: withConcatAddresses.certifierAddress?.postalCode || '',
-        };
-
-  // Find spouse's marriage date if exists
   const marriageDate = withConcatAddresses.applicants?.find(
     applicant =>
       applicant?.applicantRelationshipToSponsor?.relationshipToVeteran ===
         'spouse' && applicant?.dateOfMarriageToSponsor,
   )?.dateOfMarriageToSponsor;
 
-  // Create veteran data
   const veteranData = {
     fullName: withConcatAddresses.sponsorName || {},
     ssnOrTin: withConcatAddresses.sponsorSsn || '',
@@ -290,17 +301,15 @@ export default function transformForSubmit(formConfig, form) {
     isActiveServiceDeath: withConcatAddresses.sponsorDeathConditions,
   };
 
-  // Construct initial data for OHI transformation
   const initialData = {
     veteran: veteranData,
+    certification: buildCertificationData(withConcatAddresses),
     applicants: transformApplicants(withConcatAddresses.applicants || []),
     healthInsurance: withConcatAddresses.healthInsurance || [],
     medicare: withConcatAddresses.medicare || [],
-    certification: certificationData,
     supportingDocs: [],
   };
 
-  // Apply OHI transformation and collect supporting documents
   const advantageParticipants = new Set(
     (form?.data?.medicare || [])
       .filter(
@@ -318,23 +327,19 @@ export default function transformForSubmit(formConfig, form) {
   );
   transformedData.supportingDocs = collectSupportingDocuments(transformedData);
 
-  // Check if any applicants are over 65
   transformedData.hasApplicantOver65 = transformedData.applicants.some(a => {
     const age = getAgeInYears(a.applicantDob);
     return Number.isFinite(age) && age >= 65;
   });
 
-  // Add certifier data
   transformedData.certifierRole = withConcatAddresses.certifierRole;
   transformedData.statementOfTruthSignature =
     withConcatAddresses.statementOfTruthSignature;
 
-  // Add primary contact info for backend notifications
   transformedData.primaryContactInfo = buildPrimaryContactInfo(
     withConcatAddresses,
   );
 
-  // Return JSON string with form number
   return JSON.stringify({
     ...transformedData,
     formNumber: formConfig.formId,

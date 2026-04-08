@@ -129,7 +129,6 @@ describe('10-10d-extended transform for submit', () => {
     };
     const transformed = JSON.parse(transformForSubmit(formConfig, testData));
 
-    // Check sponsor date of birth formatting
     expect(transformed.veteran.dateOfBirth).to.equal('01-01-1958');
   });
 
@@ -157,7 +156,6 @@ describe('10-10d-extended transform for submit', () => {
 
     const transformed = JSON.parse(transformForSubmit(formConfig, testData));
 
-    // First applicant should have medicare plan attached
     expect(transformed.applicants[0].medicare).to.be.an('array');
     expect(transformed.applicants[0].medicare.length).to.equal(1);
   });
@@ -187,7 +185,6 @@ describe('10-10d-extended transform for submit', () => {
 
     const transformed = JSON.parse(transformForSubmit(formConfig, testData));
 
-    // First applicant should have health insurance policy attached
     expect(transformed.applicants[0].healthInsurance).to.be.an('array');
     expect(transformed.applicants[0].healthInsurance.length).to.equal(1);
     expect(transformed.applicants[0].healthInsurance[0].provider).to.equal(
@@ -279,7 +276,6 @@ describe('10-10d-extended transform for submit', () => {
 
     const transformed = JSON.parse(transformForSubmit(formConfig, testData));
 
-    // When certifier is an applicant, certification should only have date
     expect(transformed.certification).to.have.property('date');
     expect(transformed.certification).to.not.have.property('lastName');
   });
@@ -299,7 +295,6 @@ describe('10-10d-extended transform for submit', () => {
 
     const transformed = JSON.parse(transformForSubmit(formConfig, testData));
 
-    // When certifier is not an applicant, certification should have all fields
     expect(transformed.certification).to.have.property('date');
     expect(transformed.certification).to.have.property('lastName');
     expect(transformed.certification).to.have.property('firstName');
@@ -529,6 +524,192 @@ describe('10-10d-extended transform for submit', () => {
       };
       const transformed = JSON.parse(transformForSubmit(formConfig, testData));
       expect(transformed.applicants[0].applicantAddress).to.be.undefined;
+    });
+  });
+
+  context('certification role mapping', () => {
+    const getCertification = data =>
+      JSON.parse(transformForSubmit(formConfig, { data })).certification;
+
+    const buildRoleData = ({
+      first,
+      middle,
+      last,
+      phone,
+      street,
+      city,
+      state,
+      postalCode,
+      relationship,
+    }) => ({
+      name: { first, middle, last },
+      phone,
+      address: {
+        street,
+        city,
+        state,
+        postalCode,
+        country: 'USA',
+      },
+      relationship: relationship
+        ? { relationshipToVeteran: { [relationship]: true } }
+        : undefined,
+    });
+
+    const buildFormData = ({ certifierRole, sponsor, certifier }) => ({
+      certifierRole,
+      sponsorName: sponsor?.name,
+      sponsorPhone: sponsor?.phone,
+      sponsorAddress: sponsor?.address,
+      sponsorRelationship: sponsor?.relationship,
+      certifierName: certifier?.name,
+      certifierPhone: certifier?.phone,
+      certifierAddress: certifier?.address,
+      certifierRelationship: certifier?.relationship,
+    });
+
+    const expectCertificationFields = (
+      certification,
+      {
+        firstName,
+        middleInitial = '',
+        lastName,
+        phoneNumber,
+        streetAddress,
+        city,
+        state,
+        postalCode,
+        relationship,
+      },
+    ) => {
+      expect(certification.firstName).to.equal(firstName);
+      expect(certification.middleInitial).to.equal(middleInitial);
+      expect(certification.lastName).to.equal(lastName);
+      expect(certification.phoneNumber).to.equal(phoneNumber);
+      expect(certification.streetAddress).to.contain(streetAddress);
+      expect(certification.city).to.equal(city);
+      expect(certification.state).to.equal(state);
+      expect(certification.postalCode).to.equal(postalCode);
+      expect(certification).to.have.property('relationship', relationship);
+    };
+
+    it('should map sponsor role certification fields from sponsor data and leave relationship empty', () => {
+      const certification = getCertification(
+        buildFormData({
+          certifierRole: 'sponsor',
+          sponsor: buildRoleData({
+            first: 'Sam',
+            middle: 'T',
+            last: 'Veteran',
+            phone: '5551112222',
+            street: '100 Sponsor Way',
+            city: 'Anytown',
+            state: 'MD',
+            postalCode: '21200',
+          }),
+          certifier: buildRoleData({
+            first: 'Wrong',
+            last: 'Person',
+            phone: '0000000000',
+            street: '999 Wrong St',
+            city: 'Elsewhere',
+            state: 'VA',
+            postalCode: '00000',
+            relationship: 'parent',
+          }),
+        }),
+      );
+
+      expectCertificationFields(certification, {
+        firstName: 'Sam',
+        middleInitial: 'T',
+        lastName: 'Veteran',
+        phoneNumber: '5551112222',
+        streetAddress: '100 Sponsor Way',
+        city: 'Anytown',
+        state: 'MD',
+        postalCode: '21200',
+        relationship: '',
+      });
+    });
+
+    it('should isolate role sources for sponsor and other roles', () => {
+      const sponsor = buildRoleData({
+        first: 'Sponsor',
+        last: 'Source',
+        phone: '5553334444',
+        street: '101 Sponsor Way',
+        city: 'Sponsor City',
+        state: 'MD',
+        postalCode: '21201',
+      });
+
+      const certifier = buildRoleData({
+        first: 'Certifier',
+        last: 'Source',
+        phone: '5557778888',
+        street: '202 Certifier Ave',
+        city: 'Certifier City',
+        state: 'DC',
+        postalCode: '20001',
+        relationship: 'spouse',
+      });
+
+      const sponsorCertification = getCertification(
+        buildFormData({
+          certifierRole: 'sponsor',
+          sponsor,
+          certifier,
+        }),
+      );
+
+      const otherCertification = getCertification(
+        buildFormData({
+          certifierRole: 'other',
+          sponsor,
+          certifier,
+        }),
+      );
+
+      expectCertificationFields(sponsorCertification, {
+        firstName: 'Sponsor',
+        lastName: 'Source',
+        phoneNumber: '5553334444',
+        streetAddress: '101 Sponsor Way',
+        city: 'Sponsor City',
+        state: 'MD',
+        postalCode: '21201',
+        relationship: '',
+      });
+
+      expectCertificationFields(otherCertification, {
+        firstName: 'Certifier',
+        lastName: 'Source',
+        phoneNumber: '5557778888',
+        streetAddress: '202 Certifier Ave',
+        city: 'Certifier City',
+        state: 'DC',
+        postalCode: '20001',
+        relationship: 'spouse',
+      });
+    });
+
+    it('should return date-only certification shape for applicant role', () => {
+      const certification = getCertification({
+        certifierRole: 'applicant',
+        certifierName: { first: 'Should', last: 'NotAppear' },
+        certifierPhone: '5559990000',
+        certifierAddress: {
+          street: '404 Hidden St',
+          city: 'Nowhere',
+          state: 'MD',
+          postalCode: '21202',
+          country: 'USA',
+        },
+      });
+
+      expect(certification).to.have.keys(['date']);
+      expect(certification.date).to.match(/^\d{2}-\d{2}-\d{4}$/);
     });
   });
 });
