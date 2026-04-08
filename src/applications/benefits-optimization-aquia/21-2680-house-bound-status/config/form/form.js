@@ -92,6 +92,7 @@ const formConfig = {
   submit: customSubmit,
   trackingPrefix: '21-2680-house-bound-status-',
   v3SegmentedProgressBar: true,
+  stepLabels: `Veteran's Information;Claimant's Information;Claim Information;Hospitalization;Review`,
   introduction: IntroductionPage,
   confirmation: ConfirmationPage,
   footerContent,
