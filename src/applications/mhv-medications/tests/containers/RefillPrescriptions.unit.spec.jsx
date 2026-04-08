@@ -272,6 +272,28 @@ describe('Refill Prescriptions Component', () => {
       .that.does.not.include('Not filled yet');
   });
 
+  it('shows "Not available" when prescriptionNumber is null', async () => {
+    sandbox.restore();
+    const rxWithNullNumber = {
+      ...refillablePrescriptions[0],
+      prescriptionNumber: null,
+    };
+    initMockApis({
+      sinonSandbox: sandbox,
+      prescriptions: [rxWithNullNumber],
+    });
+    const screen = setup();
+    const checkbox = await screen.findByTestId(
+      'refill-prescription-checkbox-0',
+    );
+    expect(checkbox)
+      .to.have.property('checkbox-description')
+      .that.includes('Prescription number: Not available');
+    expect(checkbox)
+      .to.have.property('checkbox-description')
+      .that.does.not.include('Prescription number: null');
+  });
+
   it('Checks the checkbox for first prescription', async () => {
     const screen = setup();
     const checkbox = await screen.findByTestId(

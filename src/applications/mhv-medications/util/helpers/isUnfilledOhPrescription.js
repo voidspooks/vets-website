@@ -13,13 +13,16 @@ import { isOracleHealthPrescription } from './isOracleHealthPrescription';
  */
 export const isUnfilledOhPrescription = (rx, cernerFacilityIds = []) => {
   if (!rx) return false;
+  if (rx.isRefillable) return false;
   if (!isOracleHealthPrescription(rx, cernerFacilityIds)) return false;
   if (rx.dispStatus !== 'Active') return false;
 
-  const hasOriginalDispense = !!rx.dispensedDate;
+  const hasOriginalDispense = !!rx.dispensedDate || !!rx.sortedDispensedDate;
   const hasRefillDispense =
     Array.isArray(rx.rxRfRecords) &&
-    rx.rxRfRecords.some(record => record.dispensedDate);
+    rx.rxRfRecords.some(
+      record => record.dispensedDate || record.whenHandedOver,
+    );
 
   return !hasOriginalDispense && !hasRefillDispense;
 };
