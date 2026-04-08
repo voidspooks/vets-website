@@ -36,6 +36,7 @@ const mcpInitialState = {
   pending: false,
   error: null,
   statements: null,
+  selectedStatement: null,
   shouldUseLighthouseCopays: null,
 };
 
@@ -44,6 +45,7 @@ export const medicalCopaysReducer = (state = mcpInitialState, action) => {
     case MCP_DETAIL_FETCH_INIT:
       return {
         ...state,
+        selectedStatement: null,
         isCopayDetailLoading: true,
       };
     case MCP_STATEMENTS_FETCH_INIT:
