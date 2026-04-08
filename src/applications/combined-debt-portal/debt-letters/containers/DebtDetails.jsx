@@ -3,13 +3,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import last from 'lodash/last';
 import { VaBreadcrumbs } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { head } from 'lodash';
 import HistoryTable from '../components/HistoryTable';
 import {
   setPageFocus,
   debtLettersShowLettersVBMS,
   showPaymentHistory,
   formatDate,
+  sortByDate,
 } from '../../combined/utils/helpers';
 import { getCurrentDebt, currency } from '../utils/page';
 import {
@@ -29,14 +29,26 @@ const DebtDetails = () => {
   const approvedLetterCodes = ['100', '101', '102', '109', '117', '123', '130'];
   const location = useLocation();
   const currentDebt = getCurrentDebt(selectedDebt, debts, location);
-
   const whyContent = renderWhyMightIHaveThisDebt(currentDebt.deductionCode);
-  const dateUpdated =
-    head(currentDebt.fiscalTransactionData)?.transactionDate ||
-    last(currentDebt.debtHistory)?.date;
 
-  const filteredHistory = currentDebt.debtHistory
-    ?.filter(history => approvedLetterCodes.includes(history.letterCode))
+  // Extract defaults to avoid repetition
+  const { fiscalTransactionData = [], debtHistory = [] } = currentDebt;
+
+  const sortedFiscalData = sortByDate(
+    fiscalTransactionData,
+    'transactionDate',
+    'desc',
+  );
+  const sortedDebtHistory = sortByDate(debtHistory, 'date');
+  const dateUpdated =
+    sortedFiscalData[0]?.transactionDate || last(sortedDebtHistory)?.date;
+  const latestPaymentDate = () => {
+    if (sortedFiscalData[0]?.transactionDate === '') return 'N/A';
+    return sortedFiscalData[0]?.transactionDate;
+  };
+
+  const filteredHistory = debtHistory
+    .filter(history => approvedLetterCodes.includes(history.letterCode))
     .reverse();
   const hasFilteredHistory = filteredHistory && filteredHistory.length > 0;
 
@@ -48,14 +60,6 @@ const DebtDetails = () => {
   );
 
   const formatCurrency = amount => currency.format(parseFloat(amount));
-
-  const getLatestPaymentDateFromCurrentDebt = debt => {
-    const mostRecentDate = head(debt.fiscalTransactionData)?.transactionDate;
-
-    if (mostRecentDate === '') return 'N/A';
-
-    return mostRecentDate;
-  };
 
   useEffect(() => {
     setPageFocus('h1');
@@ -136,8 +140,7 @@ const DebtDetails = () => {
             <div>
               <h3 className="vads-u-margin-y--0">
                 <span className="vads-u-display--block vads-u-font-size--base vads-u-font-weight--normal">
-                  Current balance as of{' '}
-                  {formatDate(getLatestPaymentDateFromCurrentDebt(currentDebt))}
+                  Current balance as of {formatDate(latestPaymentDate())}
                 </span>
                 <span className="vads-u-margin-y--0 medium-screen:vads-u-font-size--h3">
                   {formatCurrency(currentDebt.currentAr)}
@@ -156,7 +159,11 @@ const DebtDetails = () => {
             </div>
           </div>
           {shouldShowPaymentHistory && (
-            <PaymentHistoryTable currentDebt={currentDebt} />
+            <PaymentHistoryTable
+              sortedFiscal={sortedFiscalData}
+              sortedHistory={sortedDebtHistory}
+              currentDebt={currentDebt}
+            />
           )}
         </div>
         {hasFilteredHistory && (

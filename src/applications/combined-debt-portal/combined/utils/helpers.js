@@ -124,6 +124,22 @@ export const sortStatementsByDate = statements => {
   );
 };
 
+/**
+ * Generic Date sorter, and could replace sortStatementsByDate eventually
+ *
+ * @param {Array<Object>} items - The items to sort.
+ * @param {string} sortOn - The field name containing the date string.
+ * @param {"asc"|"desc"} [order="asc"] - Sort direction. Asc = oldest to newest, desc = newest to oldest.
+ * @returns {Array<Object>} A new sorted array.
+ */
+export const sortByDate = (items, sortOn, order = 'asc') => {
+  return [...items].sort((a, b) => {
+    const dateA = new Date(a[sortOn]);
+    const dateB = new Date(b[sortOn]);
+    return order === 'asc' ? dateA - dateB : dateB - dateA;
+  });
+};
+
 export const transform = data => {
   return data.map(statement => {
     const { station } = statement;
