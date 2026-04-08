@@ -29,7 +29,7 @@ const ScdfImagesReadyAlert = ({ records }) => {
           return (
             <li key={record.id} className={liClass}>
               <Link
-                to={`/labs-and-tests/${record.id}/images`}
+                to={`/labs-and-tests/${record.id}`}
                 data-testid="scdf-radiology-view-images"
                 data-dd-privacy="mask"
                 data-dd-action-name="[images ready alert - view images]"

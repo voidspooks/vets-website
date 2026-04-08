@@ -130,7 +130,7 @@ describe('ScdfRadiologyImagesList container', () => {
     expect(screen.getByTestId('loading-indicator')).to.exist;
   });
 
-  it('shows loading indicator when thumbnails are not yet loaded', () => {
+  it('shows inline images spinner when thumbnails are not yet loaded', () => {
     const noThumbsState = {
       ...initialState,
       mr: {
@@ -142,7 +142,7 @@ describe('ScdfRadiologyImagesList container', () => {
       },
     };
     const screen = setup(noThumbsState);
-    expect(screen.getByTestId('loading-indicator')).to.exist;
+    expect(screen.getByTestId('loading-images-indicator')).to.exist;
   });
 
   it('uses singular "image" when there is only 1 thumbnail', () => {
@@ -162,7 +162,7 @@ describe('ScdfRadiologyImagesList container', () => {
     expect(summary.textContent).to.not.include('images');
   });
 
-  it('does not render image gallery when thumbnails is empty array', () => {
+  it('shows inline images spinner when thumbnails is empty array', () => {
     const emptyThumbsState = {
       ...initialState,
       mr: {
@@ -175,9 +175,7 @@ describe('ScdfRadiologyImagesList container', () => {
     };
     const screen = setup(emptyThumbsState);
     expect(screen.queryByTestId('image-div')).to.not.exist;
-    // Should still show the name without "Images:" prefix
-    expect(screen.getByText(radiologyDetails.name, { selector: 'h1' })).to
-      .exist;
+    expect(screen.getByTestId('loading-images-indicator')).to.exist;
   });
 
   it('redirects to details page when record has no imagingStudyId', async () => {

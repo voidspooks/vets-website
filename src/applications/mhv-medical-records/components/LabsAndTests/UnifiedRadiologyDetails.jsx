@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
@@ -21,16 +21,10 @@ import { generateTextFile, sendDataDogAction } from '../../util/helpers';
 import {
   pageTitles,
   LABS_AND_TESTS_DISPLAY_LABELS,
-  ALERT_TYPE_IMAGE_THUMBNAIL_ERROR,
 } from '../../util/constants';
 import { pdfPrinter, txtPrinter } from '../../util/printHelper';
-import {
-  getImagingStudyThumbnails,
-  getImagingStudyDicomZip,
-} from '../../actions/labsAndTests';
 import { fetchBbmiNotificationStatus } from '../../actions/images';
-import { addAlert } from '../../actions/alerts';
-import useAlerts from '../../hooks/use-alerts';
+import useThumbnailPolling from '../../hooks/useThumbnailPolling';
 
 const UnifiedRadiologyDetails = props => {
   const { record, user, runningUnitTest = false } = props;
@@ -41,30 +35,12 @@ const UnifiedRadiologyDetails = props => {
     state => state.mr.labsAndTests.scdfImageThumbnails,
   );
   const { notificationStatus } = useSelector(state => state.mr.images);
-  const activeAlert = useAlerts(dispatch);
+
+  const { hasLoadedThumbnails, hasImageError } = useThumbnailPolling(
+    record?.imagingStudyId,
+  );
 
   const emptyField = 'None noted';
-
-  // Polling state for thumbnail backoff retry
-  const INITIAL_POLL_INTERVAL = 2000;
-  const BACKOFF_FACTOR = 1.05;
-  const MAX_POLL_INTERVAL = 30000;
-  const MAX_POLL_DURATION = 60000;
-  const [pollInterval, setPollInterval] = useState(INITIAL_POLL_INTERVAL);
-  const pollStartTime = useRef(null);
-  const hasTimedOut = useRef(false);
-
-  const hasLoadedThumbnails = scdfImageThumbnails?.length > 0;
-  const hasImageError = activeAlert?.type === ALERT_TYPE_IMAGE_THUMBNAIL_ERROR;
-
-  const pollThumbnails = useCallback(
-    () => {
-      if (record?.imagingStudyId) {
-        dispatch(getImagingStudyThumbnails(record.imagingStudyId));
-      }
-    },
-    [dispatch, record?.imagingStudyId],
-  );
 
   useEffect(
     () => {
@@ -78,63 +54,6 @@ const UnifiedRadiologyDetails = props => {
       dispatch(fetchBbmiNotificationStatus());
     },
     [dispatch],
-  );
-
-  // Initial fetch for thumbnails and DICOM
-  useEffect(
-    () => {
-      if (record?.imagingStudyId) {
-        setPollInterval(INITIAL_POLL_INTERVAL);
-        pollStartTime.current = null;
-        hasTimedOut.current = false;
-        dispatch(getImagingStudyThumbnails(record.imagingStudyId));
-        dispatch(getImagingStudyDicomZip(record.imagingStudyId));
-      }
-    },
-    [dispatch, record?.imagingStudyId],
-  );
-
-  // Poll thumbnails with exponential backoff until URLs arrive, error, or timeout
-  useEffect(
-    () => {
-      if (hasLoadedThumbnails || hasImageError || !record?.imagingStudyId) {
-        return undefined;
-      }
-
-      if (!pollStartTime.current) {
-        pollStartTime.current = Date.now();
-      }
-
-      if (Date.now() - pollStartTime.current >= MAX_POLL_DURATION) {
-        if (!hasTimedOut.current) {
-          hasTimedOut.current = true;
-          dispatch(
-            addAlert(
-              ALERT_TYPE_IMAGE_THUMBNAIL_ERROR,
-              new Error('Thumbnail polling timed out'),
-            ),
-          );
-        }
-        return undefined;
-      }
-
-      const timeoutId = setTimeout(() => {
-        pollThumbnails();
-        setPollInterval(prev =>
-          Math.min(prev * BACKOFF_FACTOR, MAX_POLL_INTERVAL),
-        );
-      }, pollInterval);
-
-      return () => clearTimeout(timeoutId);
-    },
-    [
-      hasLoadedThumbnails,
-      hasImageError,
-      pollInterval,
-      pollThumbnails,
-      record?.imagingStudyId,
-      dispatch,
-    ],
   );
 
   usePrintTitle(
@@ -323,7 +242,7 @@ const UnifiedRadiologyDetails = props => {
           <>
             <div className="test-results-container">
               <HeaderSection header="Images" className="test-results-header">
-                {activeAlert?.type === ALERT_TYPE_IMAGE_THUMBNAIL_ERROR
+                {hasImageError && !hasLoadedThumbnails
                   ? renderImagesError()
                   : renderImagesLink()}
                 {notificationStatus ? (

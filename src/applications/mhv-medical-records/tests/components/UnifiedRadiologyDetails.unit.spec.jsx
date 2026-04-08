@@ -193,7 +193,7 @@ describe('UnifiedRadiologyDetails component', () => {
       });
     });
 
-    it('does not show the view images link when error alert is active', async () => {
+    it('shows view images link even when error alert is active if thumbnails loaded', async () => {
       const screen = setup({
         alertList: [
           {
@@ -207,7 +207,7 @@ describe('UnifiedRadiologyDetails component', () => {
         },
       });
       await waitFor(() => {
-        expect(screen.queryByTestId('radiology-view-all-images')).to.not.exist;
+        expect(screen.getByTestId('radiology-view-all-images')).to.exist;
       });
     });
   });

@@ -6,20 +6,15 @@ import { updatePageTitle } from '@department-of-veterans-affairs/mhv/exports';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import {
   getLabsAndTestsDetails,
-  getImagingStudyThumbnails,
-  getImagingStudyDicomZip,
   clearLabsAndTestDetails,
 } from '../actions/labsAndTests';
 import { buildThumbnailProxyUrl } from '../api/MrApi';
 import PrintHeader from '../components/shared/PrintHeader';
 import DateSubheading from '../components/shared/DateSubheading';
 import ImageGallery from '../components/shared/ImageGallery';
-import {
-  pageTitles,
-  ALERT_TYPE_IMAGE_THUMBNAIL_ERROR,
-} from '../util/constants';
+import { pageTitles } from '../util/constants';
 import { sendDataDogAction } from '../util/helpers';
-import useAlerts from '../hooks/use-alerts';
+import useThumbnailPolling from '../hooks/useThumbnailPolling';
 
 const ScdfRadiologyImagesList = ({ isTesting }) => {
   const history = useHistory();
@@ -36,11 +31,16 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
     state => state.mr.labsAndTests.scdfImageThumbnails,
   );
   const scdfDicom = useSelector(state => state.mr.labsAndTests.scdfDicom);
-  const activeAlert = useAlerts(dispatch);
-  const hasImageError = activeAlert?.type === ALERT_TYPE_IMAGE_THUMBNAIL_ERROR;
 
   const [isDetailsLoaded, setDetailsLoaded] = useState(isTesting || false);
   const [dicomDownloadStarted, setDicomDownloadStarted] = useState(false);
+
+  const imagingStudyId = isDetailsLoaded
+    ? labAndTestDetails?.imagingStudyId
+    : null;
+  const { hasLoadedThumbnails, hasImageError } = useThumbnailPolling(
+    imagingStudyId,
+  );
 
   // Convert thumbnail URL strings into { index, thumbnailUrl } objects for ImageGallery.
   const imageList = useMemo(
@@ -77,27 +77,6 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
     [labId, labAndTestList, dispatch],
   );
 
-  // Once details are loaded, fetch thumbnails and DICOM if not already present.
-  useEffect(
-    () => {
-      if (isDetailsLoaded && labAndTestDetails?.imagingStudyId) {
-        if (!scdfImageThumbnails?.length) {
-          dispatch(getImagingStudyThumbnails(labAndTestDetails.imagingStudyId));
-        }
-        if (scdfDicom == null) {
-          dispatch(getImagingStudyDicomZip(labAndTestDetails.imagingStudyId));
-        }
-      }
-    },
-    [
-      isDetailsLoaded,
-      labAndTestDetails?.imagingStudyId,
-      scdfImageThumbnails,
-      scdfDicom,
-      dispatch,
-    ],
-  );
-
   // Focus on heading once images are loaded.
   useEffect(
     () => {
@@ -125,6 +104,38 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
     sendDataDogAction('Download DICOM files');
   };
 
+  const renderImagesError = () => (
+    <va-alert status="error" visible data-testid="image-request-error-alert">
+      <h3 slot="headline">We couldn’t load your images</h3>
+      <p>Try again later.</p>
+      <p>
+        If it still doesn’t work, call us at{' '}
+        <va-telephone contact="8773270022" /> (
+        <va-telephone tty contact="711" />
+        ). We’re here Monday through Friday, 8:00 a.m. to 8:00 p.m. ET.
+      </p>
+    </va-alert>
+  );
+
+  const renderImageGallery = () => {
+    if (hasLoadedThumbnails) {
+      return (
+        <ImageGallery
+          imageList={imageList}
+          imagesPerPage={10}
+          buildImageSrc={buildImageSrc}
+        />
+      );
+    }
+    if (hasImageError) return renderImagesError();
+    return (
+      <va-loading-indicator
+        message="Loading images..."
+        data-testid="loading-images-indicator"
+      />
+    );
+  };
+
   const renderImageContent = () => (
     <>
       <PrintHeader />
@@ -139,14 +150,7 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
         id="radiology-date"
       />
 
-      {/*                    IMAGE GALLERY                         */}
-      {imageList.length > 0 && (
-        <ImageGallery
-          imageList={imageList}
-          imagesPerPage={10}
-          buildImageSrc={buildImageSrc}
-        />
-      )}
+      {renderImageGallery()}
 
       {/*                    DICOM DOWNLOAD                        */}
       <h2>How to share images with a non-VA provider</h2>
@@ -202,28 +206,12 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
     </>
   );
 
-  const renderImagesError = () => (
-    <va-alert status="error" visible data-testid="image-request-error-alert">
-      <h3 slot="headline">We couldn’t load your images</h3>
-      <p>Try again later.</p>
-      <p>
-        If it still doesn’t work, call us at{' '}
-        <va-telephone contact="8773270022" /> (
-        <va-telephone tty contact="711" />
-        ). We’re here Monday through Friday, 8:00 a.m. to 8:00 p.m. ET.
-      </p>
-    </va-alert>
-  );
-
-  const isReady = labAndTestDetails && (scdfImageThumbnails || hasImageError);
+  const isReady = !!labAndTestDetails;
 
   return (
     <div className="vads-l-grid-container vads-u-padding-x--0 vads-u-margin-bottom--5">
       {isReady ? (
-        <>
-          {hasImageError && renderImagesError()}
-          {renderImageContent()}
-        </>
+        <>{renderImageContent()}</>
       ) : (
         <div className="vads-u-margin-y--8">
           <va-loading-indicator

@@ -48,9 +48,7 @@ describe('<ScdfImagesReadyAlert />', () => {
 
     const link = getByTestId('scdf-radiology-view-images');
     expect(link.textContent).to.contain('CHEST XRAY (1 image)');
-    expect(link.getAttribute('href')).to.equal(
-      '/labs-and-tests/study-1/images',
-    );
+    expect(link.getAttribute('href')).to.equal('/labs-and-tests/study-1');
   });
 
   it('renders a list for multiple records and pluralizes correctly', () => {
