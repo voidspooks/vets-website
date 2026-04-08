@@ -343,4 +343,331 @@ describe('ClaimFormSideNav', () => {
     expect(totalItems).to.be.at.most(6);
     tree.unmount();
   });
+
+  describe('high-impact field reset', () => {
+    it('should reset sideNavChapterIndex when conditions change on /new-disabilities/add', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/new-disabilities/add',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+
+      // Simulate adding a condition (formData changes)
+      tree.setProps({
+        formData: {
+          ...props.formData,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      // setFormData should be called with a reset chapter index
+      const resetCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return (
+          arg['view:sideNavChapterIndex'] !== undefined &&
+          arg['view:sideNavChapterIndex'] < 4
+        );
+      });
+      expect(resetCall).to.not.be.undefined;
+      tree.unmount();
+    });
+
+    it('should not reset when on a non-registered page', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/veteran-information',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+      setFormData.reset();
+
+      // Change formData — should NOT trigger reset since /veteran-information
+      // is not a registered high-impact page
+      tree.setProps({
+        formData: {
+          ...props.formData,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      // setFormData should not have been called for a reset
+      const resetCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return (
+          arg['view:sideNavChapterIndex'] !== undefined &&
+          arg['view:sideNavChapterIndex'] < 4
+        );
+      });
+      expect(resetCall).to.be.undefined;
+      tree.unmount();
+    });
+
+    it('should not reset when conditions have not changed', () => {
+      const setFormData = sinon.spy();
+      const conditions = [{ condition: 'PTSD' }];
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: conditions,
+        },
+        pathname: '/new-disabilities/add',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+      setFormData.reset();
+
+      // Re-render with same conditions (different object reference, same content)
+      tree.setProps({
+        formData: {
+          ...props.formData,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+      });
+
+      const resetCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return (
+          arg['view:sideNavChapterIndex'] !== undefined &&
+          arg['view:sideNavChapterIndex'] < 4
+        );
+      });
+      expect(resetCall).to.be.undefined;
+      tree.unmount();
+    });
+
+    it('should not reset when on /review-and-submit', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 5,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/review-and-submit',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+      setFormData.reset();
+
+      tree.setProps({
+        formData: {
+          ...props.formData,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      const resetCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return (
+          arg['view:sideNavChapterIndex'] !== undefined &&
+          arg['view:sideNavChapterIndex'] < 5
+        );
+      });
+      expect(resetCall).to.be.undefined;
+      tree.unmount();
+    });
+  });
+
+  describe('high-impact field restore on undo', () => {
+    it('should restore sideNavChapterIndex when a high-impact change is undone', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/new-disabilities/add',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+      setFormData.reset();
+
+      // Make an impactful change (add a condition) — keep chapter at 4 so
+      // the reset logic can fire and save the previous index
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      // Undo the change (back to original) — chapter is now 1 from the reset
+      setFormData.reset();
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 1,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+      });
+
+      // Should restore to the original chapter index (4)
+      const restoreCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return arg['view:sideNavChapterIndex'] === 4;
+      });
+      expect(restoreCall).to.not.be.undefined;
+      tree.unmount();
+    });
+
+    it('should not restore when the change is still impactful (partial undo)', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/new-disabilities/add',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+      setFormData.reset();
+
+      // Make an impactful change (add two conditions)
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [
+            { condition: 'PTSD' },
+            { condition: 'Tinnitus' },
+            { condition: 'Back pain' },
+          ],
+        },
+      });
+
+      // Partial undo: still different from snapshot (2 conditions instead of 1)
+      setFormData.reset();
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 1,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      // Should NOT restore since conditions still differ from snapshot
+      const restoreCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return arg['view:sideNavChapterIndex'] === 4;
+      });
+      expect(restoreCall).to.be.undefined;
+      tree.unmount();
+    });
+
+    it('should only save the original chapter index on the first reset', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/new-disabilities/add',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+      setFormData.reset();
+
+      // First impactful change — should save chapter 4 as previous
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      // Second impactful change with reset already applied —
+      // should NOT overwrite saved index (4) with current (1)
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 1,
+          newDisabilities: [
+            { condition: 'PTSD' },
+            { condition: 'Tinnitus' },
+            { condition: 'Back pain' },
+          ],
+        },
+      });
+
+      // Undo all the way back to original
+      setFormData.reset();
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 1,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+      });
+
+      // Should restore to original (4), not the intermediate (1)
+      const restoreCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return arg['view:sideNavChapterIndex'] === 4;
+      });
+      expect(restoreCall).to.not.be.undefined;
+      tree.unmount();
+    });
+
+    it('should not restore when navigating away from the high-impact page', () => {
+      const setFormData = sinon.spy();
+      const props = {
+        ...defaultProps,
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+        pathname: '/new-disabilities/add',
+        setFormData,
+      };
+
+      const tree = mount(<ClaimFormSideNav {...props} />);
+
+      // Make an impactful change
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 4,
+          newDisabilities: [{ condition: 'PTSD' }, { condition: 'Tinnitus' }],
+        },
+      });
+
+      setFormData.reset();
+
+      // Navigate away — the ref gets cleared
+      tree.setProps({ pathname: '/veteran-information' });
+
+      // Undo conditions on the non-registered page
+      tree.setProps({
+        formData: {
+          'view:sideNavChapterIndex': 1,
+          newDisabilities: [{ condition: 'PTSD' }],
+        },
+      });
+
+      // Should NOT restore because we left the high-impact page
+      const restoreCall = setFormData.getCalls().find(call => {
+        const arg = call.args[0];
+        return arg['view:sideNavChapterIndex'] === 4;
+      });
+      expect(restoreCall).to.be.undefined;
+      tree.unmount();
+    });
+  });
 });

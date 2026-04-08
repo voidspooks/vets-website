@@ -5,7 +5,10 @@ import {
   VaSidenav,
   VaSidenavItem,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import _ from 'platform/utilities/data';
+
 import { buildMajorSteps } from '../utils/buildMajorStepsFromConfig';
+import { findHighImpactFieldEntryForPath } from '../utils/sideNav/highImpactFields';
 import {
   trackSideNavChapterClick,
   trackMobileAccordionClick,
@@ -54,6 +57,12 @@ function ClaimFormSideNav({
   const previousAccordionStateRef = useRef(null);
 
   /**
+   * Stores snapshot of a high-impact field's value when user is on a registered page.
+   * @type {import('../utils/sideNav/highImpactFields').HighImpactFieldEntry|null}
+   */
+  const highImpactFieldRef = useRef(null);
+
+  /**
    * Memoize major steps with formData and pathname dependencies
    * Rebuilds when save-in-progress loads or when navigating between pages
    * @type {import('../utils/buildMajorStepsFromConfig').MajorStep[]}
@@ -68,6 +77,90 @@ function ClaimFormSideNav({
    * Used to disable navigation links for future chapters
    */
   const maxChapterIndex = formData['view:sideNavChapterIndex'] || 0;
+
+  /**
+   * Snapshot management: when pathname changes, check if the new page is
+   * in the high-impact field registry. If so, snapshot the current field
+   * value for later comparison. If not, clear the snapshot.
+   */
+  useEffect(
+    () => {
+      const match = findHighImpactFieldEntryForPath(pathname);
+
+      // If there is no match, we're not on a page with a high-impact field.
+      if (!match) {
+        highImpactFieldRef.current = null;
+        return;
+      }
+
+      highImpactFieldRef.current = {
+        ...match,
+        snapshot: _.get(match.field, formData),
+        previousMaxChapterIndex: null,
+      };
+    },
+
+    // Only react to pathname changes, not formData, to avoid excessive snapshotting and potential performance issues
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pathname],
+  );
+
+  /**
+   * Reactive comparison: when formData changes while on a registered page,
+   * compare the current field value against the snapshot. If an impactful
+   * change is detected, reset view:sideNavChapterIndex to prevent navigation
+   * to chapters that may now contain stale/invalid data.
+   */
+  useEffect(
+    () => {
+      const highImpactField = highImpactFieldRef.current;
+
+      if (!highImpactField) {
+        return;
+      }
+
+      const currentValue = _.get(highImpactField.field, formData);
+      const isImpactful = highImpactField.hasImpactfulChange(
+        highImpactField.snapshot,
+        currentValue,
+      );
+
+      if (isImpactful) {
+        const currentChapter = landingPages.find(page => page.current);
+        const resetTo = Math.max(
+          highImpactField.resetToChapter,
+          currentChapter?.idx ?? 0,
+        );
+
+        if (resetTo < maxChapterIndex) {
+          // Save original chapter index before first reset so it can be restored on undo
+          if (highImpactField.previousMaxChapterIndex === null) {
+            highImpactFieldRef.current.previousMaxChapterIndex = maxChapterIndex;
+          }
+
+          setFormData({
+            ...formData,
+            'view:sideNavChapterIndex': resetTo,
+          });
+        }
+      } else if (highImpactField.previousMaxChapterIndex !== null) {
+        // Change was undone — restore the saved chapter index
+        const restored = highImpactField.previousMaxChapterIndex;
+        highImpactFieldRef.current.previousMaxChapterIndex = null;
+
+        if (restored > maxChapterIndex) {
+          setFormData({
+            ...formData,
+            'view:sideNavChapterIndex': restored,
+          });
+        }
+      }
+    },
+    // Only react to formData changes, not pathname, to avoid resetting chapter index on every navigation and only do
+    // so when the user is actively changing data on a registered page
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [formData],
+  );
 
   /**
    * Update maxChapterIndex when user progresses to a new chapter
