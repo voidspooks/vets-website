@@ -8,7 +8,28 @@ import {
   currentOrPastDateUI,
   currentOrPastDateSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { getHospitalizationDateTitle } from '../utils';
+import { isValidDateRange } from 'platform/forms-system/src/js/utilities/validations';
+import { convertToDateField } from 'platform/forms-system/src/js/validation';
+import { getHospitalizationDateTitle, isClaimantVeteran } from '../utils';
+
+const isDateAfterDOB = (errors, fieldData, formData) => {
+  const dateToValidate = convertToDateField(fieldData);
+  let patientDOB = formData.veteranInformation?.veteranDob;
+  if (!isClaimantVeteran(formData)) {
+    patientDOB = formData?.claimantInformation?.claimantDob;
+  }
+  if (dateToValidate && patientDOB) {
+    const birthDate = convertToDateField(patientDOB);
+    if (!isValidDateRange(birthDate, dateToValidate)) {
+      errors.addError(`Please enter a date after the patient's date of birth`);
+    }
+  }
+};
+
+const admissionDateUI = currentOrPastDateUI({
+  title: 'When was the claimant admitted to the hospital?',
+  dataDogHidden: true,
+});
 
 /**
  * uiSchema for Hospitalization Date page
@@ -16,10 +37,10 @@ import { getHospitalizationDateTitle } from '../utils';
  */
 export const hospitalizationDateUiSchema = {
   hospitalizationDate: {
-    admissionDate: currentOrPastDateUI({
-      title: 'When was the claimant admitted to the hospital?',
-      dataDogHidden: true,
-    }),
+    admissionDate: {
+      ...admissionDateUI,
+      'ui:validations': [...admissionDateUI['ui:validations'], isDateAfterDOB],
+    },
   },
   'ui:options': {
     updateUiSchema: (formData, fullData) => {
