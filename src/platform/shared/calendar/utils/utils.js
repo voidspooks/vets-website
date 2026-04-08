@@ -206,7 +206,7 @@ export function getInitialBlankCells(date, showWeekends) {
   const firstDay = getFirstDayOfMonth(date, showWeekends);
   const blanks = [];
 
-  if (!showWeekends && isWeekend(date)) {
+  if (!showWeekends && isWeekend(firstDay)) {
     return blanks;
   }
 

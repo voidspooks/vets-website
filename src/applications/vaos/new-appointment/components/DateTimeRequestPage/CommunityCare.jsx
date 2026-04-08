@@ -85,8 +85,6 @@ export default function CCRequest() {
   // If so, add 1 or 2 days to get to Mon. This fixes displaying and empty calendar
   // error.
   const minDate = addDays(new Date(), 5);
-  if (minDate.getDay() === 6) addDays(minDate, 2);
-  if (minDate.getDay() === 0) addDays(minDate, 1);
 
   return (
     <div className="vaos-form__detailed-radio">

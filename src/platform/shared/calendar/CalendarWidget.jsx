@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import {
+  addDays,
   addMonths,
   format,
   isSameDay,
@@ -92,7 +93,16 @@ function CalendarWidget({
   });
   const currentDate = new Date();
   const maxMonth = getMaxMonth(maxDate, overrideMaxDays);
-  const [dates, setDates] = useState([startDate || minDate]);
+
+  let _minDate = minDate;
+  if (!showWeekends) {
+    // Calendar displays business days so check if adding 5 days falls on a Sat or Sun
+    // If so, add 1 or 2 days to get to Mon. This fixes displaying and empty calendar
+    // error.
+    if (_minDate.getDay() === 6) _minDate = addDays(_minDate, 2);
+    if (_minDate.getDay() === 0) _minDate = addDays(_minDate, 1);
+  }
+  const [dates, setDates] = useState([startDate || _minDate]);
   const exceededMaximumSelections = value.length > maxSelections;
   const hasError = (required && showValidation) || exceededMaximumSelections;
   let maxSelectionsError;
@@ -242,7 +252,7 @@ function CalendarWidget({
                             key={`row-${weekIndex}`}
                             maxDate={maxDate}
                             maxSelections={maxSelections}
-                            minDate={minDate}
+                            minDate={_minDate}
                             rowNumber={weekIndex}
                             selectedDates={value}
                             renderIndicator={renderIndicator}
