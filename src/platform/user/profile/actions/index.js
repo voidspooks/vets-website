@@ -2,7 +2,6 @@ import appendQuery from 'append-query';
 
 import { removeFormApi } from 'platform/forms/save-in-progress/api';
 import { apiRequest } from 'platform/utilities/api';
-import recordEvent from 'platform/monitoring/record-event';
 import { isVAProfileServiceConfigured } from 'platform/user/profile/vap-svc/util/local-vapsvc';
 import { updateLoggedInStatus } from '../../authentication/actions';
 import { teardownProfileSession } from '../utilities';
@@ -38,37 +37,9 @@ export function profileError() {
   };
 }
 
-// check for errors from main response body, or from meta object (aka external service errors)
-const hasError = dataPayload =>
-  dataPayload?.errors?.length > 0 || dataPayload?.meta?.errors?.length > 0;
-
-export const extractProfileErrors = dataPayload => {
-  const metaDescriptions = dataPayload?.meta?.errors?.reduce(
-    (acc, error, index) =>
-      error?.description
-        ? `${acc}${index > 0 ? ' | ' : ''}${error.description}`
-        : acc,
-    '',
-  );
-
-  const mainErrors = dataPayload?.errors?.reduce(
-    (acc, error, index) =>
-      error?.title ? `${acc}${index > 0 ? ' | ' : ''}${error.title}` : acc,
-    '',
-  );
-
-  // if neither meta nor main errors, then no errors to extract and return default value
-  if (!metaDescriptions && !mainErrors) {
-    return 'No error messages found';
-  }
-
-  return `${metaDescriptions || ''}${mainErrors || ''}`;
-};
-
 export function refreshProfile(
   forceCacheClear = false,
   localQuery = { local: 'none' },
-  recordAnalyticsEvent = recordEvent,
 ) {
   const query = {
     now: new Date().getTime(),
@@ -84,22 +55,6 @@ export function refreshProfile(
         payload.data.attributes.profile?.signIn?.serviceName,
       );
     }
-
-    const eventApiStatus = hasError(payload) ? 'failed' : 'successful';
-
-    const errorKey = extractProfileErrors(payload);
-
-    const eventData = {
-      event: 'api_call',
-      'api-name': 'GET /v0/user',
-      'api-status': eventApiStatus,
-    };
-
-    if (hasError(payload) && errorKey) {
-      eventData['error-key'] = errorKey;
-    }
-
-    recordAnalyticsEvent(eventData);
 
     dispatch(updateProfileFields(payload));
     return payload;
