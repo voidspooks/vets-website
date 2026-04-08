@@ -56,6 +56,7 @@ import {
   showOptionsSelection,
   isAddingDependents,
   isRemovingDependents,
+  onFormLoaded,
 } from './utilities';
 import migrations from './migrations';
 import reviewDependents from './chapters/picklist/reviewDependents';
@@ -102,6 +103,7 @@ export const formConfig = {
   prefillEnabled: true,
   prefillTransformer,
   verifyRequiredPrefill: true,
+  onFormLoaded,
   footerContent: FormFooter,
   getHelp: GetFormHelp,
   downtime: {

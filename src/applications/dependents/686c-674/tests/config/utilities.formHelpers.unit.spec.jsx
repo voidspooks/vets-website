@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 
 import {
   customFormReplacer,
@@ -13,6 +14,8 @@ import {
   isRemovingDependents,
   isVisiblePicklistPage,
   hasSelectedPicklistItems,
+  reformatDate,
+  onFormLoaded,
 } from '../../config/utilities/formHelpers';
 
 import { PICKLIST_DATA } from '../../config/constants';
@@ -371,5 +374,42 @@ describe('hasSelectedPicklistItems', () => {
     expect(hasSelectedPicklistItems(getData(false, true))).to.be.true;
 
     expect(hasSelectedPicklistItems(getData(true, true))).to.be.true;
+  });
+});
+
+describe('reformatDate', () => {
+  it('should return empty string for invalid dates', () => {
+    expect(reformatDate()).to.be.undefined;
+    expect(reformatDate('')).to.equal('');
+    expect(reformatDate('invalid-date')).to.equal('invalid-date');
+  });
+
+  it('should handle double-digit months and days', () => {
+    expect(reformatDate('2026-04-05')).to.equal('2026-04-05');
+    expect(reformatDate('2026-11-10')).to.equal('2026-11-10');
+    expect(reformatDate('2026-12-11')).to.equal('2026-12-11');
+    expect(reformatDate('2026-10-31')).to.equal('2026-10-31');
+  });
+
+  it('should convert date and include leading zeros in yyyy-MM-dd format', () => {
+    expect(reformatDate('2026-1-3')).to.equal('2026-01-03');
+    expect(reformatDate('2026-11-4')).to.equal('2026-11-04');
+    expect(reformatDate('2026-4-11')).to.equal('2026-04-11');
+  });
+});
+
+describe('onFormLoaded', () => {
+  it('should reformat endDate and push to returnUrl', () => {
+    const router = { push: sinon.spy() };
+    const formData = {
+      [PICKLIST_DATA]: [{ endDate: '2024-1-1' }, { endDate: '2024-2-2' }],
+    };
+    const returnUrl = '/test-return-url';
+
+    onFormLoaded({ returnUrl, router, formData });
+
+    expect(formData[PICKLIST_DATA][0].endDate).to.equal('2024-01-01');
+    expect(formData[PICKLIST_DATA][1].endDate).to.equal('2024-02-02');
+    expect(router.push.calledWith(returnUrl)).to.be.true;
   });
 });

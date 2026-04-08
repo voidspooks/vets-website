@@ -24,6 +24,8 @@ import {
   hasAwardedDependents,
   isVisiblePicklistPage,
   hasSelectedPicklistItems,
+  reformatDate,
+  onFormLoaded,
 } from './formHelpers';
 import { buildSubmissionData, customTransformForSubmit } from './submission';
 
@@ -55,4 +57,6 @@ export {
   hasAwardedDependents,
   isVisiblePicklistPage,
   hasSelectedPicklistItems,
+  reformatDate,
+  onFormLoaded,
 };

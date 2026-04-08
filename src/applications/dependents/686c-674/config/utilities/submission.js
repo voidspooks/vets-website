@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { format } from 'date-fns';
 
 import {
   filterInactivePageData,
@@ -19,14 +18,14 @@ import { isVetInReceiptOfPension } from './api';
 import {
   customFormReplacer,
   showV3Picklist,
-  parseDateToDateObj,
+  reformatDate,
 } from './formHelpers';
 import {
   transformPicklistToV2,
   enrichDivorceWithSSN,
   cleanupAddressData,
 } from './picklistTransform';
-import { PICKLIST_REMOVAL_FLAG, FORMAT_YMD_DATE_FNS } from '../constants';
+import { PICKLIST_REMOVAL_FLAG } from '../constants';
 
 /**
  * Extract data fields with values from source data
@@ -528,18 +527,6 @@ function cleanDataWithAddresses(data = {}) {
     ...data,
     ...cleanData,
   };
-}
-
-/**
- * Process date string for submission by adding leading zeros to month and day
- * parts using date-fns
- * @param {String} date - date string
- * @returns {String} Processed date string
- */
-export function reformatDate(date) {
-  const dateObj = parseDateToDateObj(date, FORMAT_YMD_DATE_FNS);
-  if (!dateObj) return date; // Return original value if parsing fails
-  return format(dateObj, FORMAT_YMD_DATE_FNS);
 }
 
 /**

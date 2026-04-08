@@ -16,7 +16,7 @@ import {
 import { routing, getPicklistRoutes } from './routes';
 import { showExitLink } from './utils';
 
-import { reformatDate } from '../../config/utilities/submission';
+import { reformatDate } from '../../config/utilities';
 
 import { getFullName } from '../../../shared/utils';
 import ExitForm from '../../../shared/components/ExitFormLink';

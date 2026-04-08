@@ -5,7 +5,6 @@ import set from 'platform/utilities/data/set';
 import {
   buildSubmissionData,
   customTransformForSubmit,
-  reformatDate,
   cleanUpDates,
 } from '../../config/utilities/submission';
 
@@ -1249,27 +1248,6 @@ describe('customTransformForSubmit integration', () => {
 });
 
 describe('clean up utilities', () => {
-  context('reformatDate', () => {
-    it('should return empty string for invalid dates', () => {
-      expect(reformatDate()).to.be.undefined;
-      expect(reformatDate('')).to.equal('');
-      expect(reformatDate('invalid-date')).to.equal('invalid-date');
-    });
-
-    it('should handle double-digit months and days', () => {
-      expect(reformatDate('2026-04-05')).to.equal('2026-04-05');
-      expect(reformatDate('2026-11-10')).to.equal('2026-11-10');
-      expect(reformatDate('2026-12-11')).to.equal('2026-12-11');
-      expect(reformatDate('2026-10-31')).to.equal('2026-10-31');
-    });
-
-    it('should convert date and include leading zeros in yyyy-MM-dd format', () => {
-      expect(reformatDate('2026-1-3')).to.equal('2026-01-03');
-      expect(reformatDate('2026-11-4')).to.equal('2026-11-04');
-      expect(reformatDate('2026-4-11')).to.equal('2026-04-11');
-    });
-  });
-
   context('cleanUpDates', () => {
     const getData = date => ({
       reportDivorce: { divorceDate: date },

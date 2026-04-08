@@ -1,10 +1,14 @@
-import { parse, parseISO, isValid } from 'date-fns';
+import { parse, parseISO, isValid, format } from 'date-fns';
 
 import omit from 'platform/utilities/data/omit';
 
 import { stringifyFormReplacer } from 'platform/forms-system/src/js/helpers';
 
-import { MARRIAGE_TYPES, PICKLIST_DATA } from '../constants';
+import {
+  MARRIAGE_TYPES,
+  PICKLIST_DATA,
+  FORMAT_YMD_DATE_FNS,
+} from '../constants';
 
 export const PHONE_KEYS = ['phoneNumber', 'internationalPhone'];
 const WHITESPACE_REGEX = /\s+/g;
@@ -229,3 +233,38 @@ export const isVisiblePicklistPage = (formData, relationship) => {
  */
 export const hasSelectedPicklistItems = formData =>
   (formData?.[PICKLIST_DATA] || []).some(item => item.selected);
+
+/**
+ * Process date string for submission by adding leading zeros to month and day
+ * parts using date-fns
+ * @param {String} date - date string
+ * @returns {String} Processed date string
+ */
+export function reformatDate(date) {
+  const dateObj = parseDateToDateObj(date, FORMAT_YMD_DATE_FNS);
+  if (!dateObj) return date; // Return original value if parsing fails
+  return format(dateObj, FORMAT_YMD_DATE_FNS);
+}
+
+/**
+ * Clean up dates in yyyy-MM-dd format that don't include leading zeros in the
+ * month and day fields
+ * @param {object} props - The props object
+ * @param {string} props.returnUrl - The URL to return to after the form is loaded
+ * @param {object} props.router - The router object used to navigate to different pages
+ * @param {object} props.formData - The form data that has been loaded
+ * @returns {void}
+ */
+export const onFormLoaded = props => {
+  const { returnUrl, router, formData } = props;
+
+  // Editing data in place
+  formData?.[PICKLIST_DATA]?.forEach(item => {
+    if (item?.endDate && item.endDate.length !== 10) {
+      // eslint-disable-next-line no-param-reassign
+      item.endDate = reformatDate(item.endDate);
+    }
+  });
+
+  router.push(returnUrl);
+};
