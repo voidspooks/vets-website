@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { isClaimingNew, isClaimingIncrease } from '../utils';
+import {
+  isClaimingNew,
+  isClaimingIncrease,
+  isEvidenceEnhancement,
+} from '../utils';
 
 export const supportingEvidenceOrientationLegacy = ({ formData }) => (
   <div>
@@ -191,7 +195,7 @@ export const supportingEvidenceOrientationEnhanced = ({ formData }) => (
 );
 
 export const SupportingEvidenceOrientation = ({ formData }) => {
-  return formData?.disability526SupportingEvidenceEnhancement
+  return isEvidenceEnhancement(formData)
     ? supportingEvidenceOrientationEnhanced({ formData })
     : supportingEvidenceOrientationLegacy({ formData });
 };

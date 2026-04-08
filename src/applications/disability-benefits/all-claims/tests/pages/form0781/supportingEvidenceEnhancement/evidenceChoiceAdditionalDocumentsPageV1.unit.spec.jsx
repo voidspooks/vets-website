@@ -49,6 +49,7 @@ describe('evidenceChoiceAdditionalDocumentsPageV1', () => {
     it('should return true when enhancement ON, v3 OFF, and has other evidence', () => {
       const formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: false,
         'view:selectableEvidenceTypes': {
           'view:hasOtherEvidence': true,

@@ -257,9 +257,22 @@ const regexNonWord = /[^\w]/g;
 export const sippableId = str =>
   (str || 'blank').replace(regexNonWord, '').toLowerCase();
 
-// Helper to check if user is in evidence enhancement flow
-export const isEvidenceEnhancement = formData =>
-  !!formData?.disability526SupportingEvidenceEnhancement;
+/**
+ * Returns true when the evidence enhancement is active for this form.
+ * Requires the live toggle (kill switch) AND the SIP lock (net-new users only).
+ *
+ * @param {Object} formData
+ * @returns {boolean}
+ */
+export const isEvidenceEnhancement = formData => {
+  const toggleEnabled = !!formData?.disability526SupportingEvidenceEnhancement;
+
+  const lockEnabled = !!formData?.[
+    'view:disability526SupportingEvidenceEnhancementLocked'
+  ];
+
+  return toggleEnabled && lockEnabled;
+};
 
 export const hasVAEvidence = formData =>
   _.get(DATA_PATHS.hasVAEvidence, formData, false);

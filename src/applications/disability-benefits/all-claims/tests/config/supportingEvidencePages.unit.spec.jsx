@@ -35,6 +35,7 @@ const createBDDFormData = (overrides = {}) => ({
  * @returns {Object} Enhancement flow form data
  */
 const createEnhancementFlowFormData = (overrides = {}) => ({
+  'view:disability526SupportingEvidenceEnhancementLocked': true,
   disability526SupportingEvidenceEnhancement: true,
   disability526SupportingEvidenceFileInputV3: true,
   ...overrides,
@@ -49,6 +50,36 @@ const createEnhancementFlowFormData = (overrides = {}) => ({
  */
 const createLegacyFlowFormData = (overrides = {}) => ({
   disability526SupportingEvidenceEnhancement: false,
+  ...overrides,
+});
+
+/**
+ * Simulates an old IPF that was migrated: the lock is set to false (legacy
+ * flow), but the live toggle is true because the feature was turned on
+ * globally. isEvidenceEnhancement() should return false for this data,
+ * keeping the user in the legacy flow.
+ *
+ * @param {Object} [overrides] - Additional form data properties
+ * @returns {Object} Locked legacy form data
+ */
+const createLockedLegacyFormData = (overrides = {}) => ({
+  'view:disability526SupportingEvidenceEnhancementLocked': false,
+  disability526SupportingEvidenceEnhancement: true,
+  disability526SupportingEvidenceFileInputV3: true,
+  ...overrides,
+});
+
+/**
+ * Simulates a form locked to enhancement but toggle turned off (kill switch).
+ * isEvidenceEnhancement() should return false because the toggle is required.
+ *
+ * @param {Object} [overrides] - Additional form data properties
+ * @returns {Object} Kill-switched form data
+ */
+const createKillSwitchedFormData = (overrides = {}) => ({
+  'view:disability526SupportingEvidenceEnhancementLocked': true,
+  disability526SupportingEvidenceEnhancement: false,
+  disability526SupportingEvidenceFileInputV3: true,
   ...overrides,
 });
 
@@ -385,6 +416,184 @@ describe('Supporting Evidence Pages - Conditional Rendering', () => {
   describe('summaryOfEvidence depends', () => {
     it('should not have a depends function (always shown)', () => {
       expect(summaryOfEvidence.depends).to.be.undefined;
+    });
+  });
+
+  describe('Version lock: old IPF with lock=false and live toggle=true should use legacy flow', () => {
+    it('evidenceTypes should return true (legacy page shown)', () => {
+      const formData = createLockedLegacyFormData();
+      expect(evidenceTypes.depends(formData)).to.be.true;
+    });
+
+    it('evidenceRequest should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData();
+      expect(evidenceRequest.depends(formData)).to.be.false;
+    });
+
+    it('medicalRecords should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData({
+        'view:hasMedicalRecords': true,
+      });
+      expect(medicalRecords.depends(formData)).to.be.false;
+    });
+
+    it('privateMedicalRecordsUpload should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasPrivateMedicalRecords': true,
+        },
+        'view:uploadPrivateRecordsQualifier': {
+          'view:hasPrivateRecordsToUpload': true,
+        },
+      });
+      expect(privateMedicalRecordsUpload.depends(formData)).to.be.false;
+    });
+
+    it('privateMedicalRecordsUploadV1 should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData({
+        disability526SupportingEvidenceFileInputV3: false,
+        'view:selectableEvidenceTypes': {
+          'view:hasPrivateMedicalRecords': true,
+        },
+        'view:uploadPrivateRecordsQualifier': {
+          'view:hasPrivateRecordsToUpload': true,
+        },
+      });
+      expect(privateMedicalRecordsUploadV1.depends(formData)).to.be.false;
+    });
+
+    it('privateMedicalRecordsAttachments should return true (legacy page shown)', () => {
+      const formData = createLockedLegacyFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasPrivateMedicalRecords': true,
+        },
+        'view:uploadPrivateRecordsQualifier': {
+          'view:hasPrivateRecordsToUpload': true,
+        },
+      });
+      expect(privateMedicalRecordsAttachments.depends(formData)).to.be.true;
+    });
+
+    it('evidenceChoiceIntro should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData();
+      expect(evidenceChoiceIntro.depends(formData)).to.be.false;
+    });
+
+    it('evidenceChoiceAdditionalDocuments should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasOtherEvidence': true,
+        },
+      });
+      expect(evidenceChoiceAdditionalDocuments.depends(formData)).to.be.false;
+    });
+
+    it('evidenceChoiceAdditionalDocumentsV1 should return false (enhancement page hidden)', () => {
+      const formData = createLockedLegacyFormData({
+        disability526SupportingEvidenceFileInputV3: false,
+        'view:selectableEvidenceTypes': {
+          'view:hasOtherEvidence': true,
+        },
+      });
+      expect(evidenceChoiceAdditionalDocumentsV1.depends(formData)).to.be.false;
+    });
+
+    it('additionalDocuments should return true (legacy page shown)', () => {
+      const formData = createLockedLegacyFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasOtherEvidence': true,
+        },
+      });
+      expect(additionalDocuments.depends(formData)).to.be.true;
+    });
+  });
+
+  describe('Kill switch: lock=true but toggle=false should use legacy flow', () => {
+    it('evidenceTypes should return true (legacy page shown)', () => {
+      const formData = createKillSwitchedFormData();
+      expect(evidenceTypes.depends(formData)).to.be.true;
+    });
+
+    it('evidenceRequest should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData();
+      expect(evidenceRequest.depends(formData)).to.be.false;
+    });
+
+    it('medicalRecords should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData({
+        'view:hasMedicalRecords': true,
+      });
+      expect(medicalRecords.depends(formData)).to.be.false;
+    });
+
+    it('privateMedicalRecordsUpload should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasPrivateMedicalRecords': true,
+        },
+        'view:uploadPrivateRecordsQualifier': {
+          'view:hasPrivateRecordsToUpload': true,
+        },
+      });
+      expect(privateMedicalRecordsUpload.depends(formData)).to.be.false;
+    });
+
+    it('privateMedicalRecordsUploadV1 should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData({
+        disability526SupportingEvidenceFileInputV3: false,
+        'view:selectableEvidenceTypes': {
+          'view:hasPrivateMedicalRecords': true,
+        },
+        'view:uploadPrivateRecordsQualifier': {
+          'view:hasPrivateRecordsToUpload': true,
+        },
+      });
+      expect(privateMedicalRecordsUploadV1.depends(formData)).to.be.false;
+    });
+
+    it('privateMedicalRecordsAttachments should return true (legacy page shown)', () => {
+      const formData = createKillSwitchedFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasPrivateMedicalRecords': true,
+        },
+        'view:uploadPrivateRecordsQualifier': {
+          'view:hasPrivateRecordsToUpload': true,
+        },
+      });
+      expect(privateMedicalRecordsAttachments.depends(formData)).to.be.true;
+    });
+
+    it('evidenceChoiceIntro should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData();
+      expect(evidenceChoiceIntro.depends(formData)).to.be.false;
+    });
+
+    it('evidenceChoiceAdditionalDocuments should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasOtherEvidence': true,
+        },
+      });
+      expect(evidenceChoiceAdditionalDocuments.depends(formData)).to.be.false;
+    });
+
+    it('evidenceChoiceAdditionalDocumentsV1 should return false (enhancement page hidden)', () => {
+      const formData = createKillSwitchedFormData({
+        disability526SupportingEvidenceFileInputV3: false,
+        'view:selectableEvidenceTypes': {
+          'view:hasOtherEvidence': true,
+        },
+      });
+      expect(evidenceChoiceAdditionalDocumentsV1.depends(formData)).to.be.false;
+    });
+
+    it('additionalDocuments should return true (legacy page shown)', () => {
+      const formData = createKillSwitchedFormData({
+        'view:selectableEvidenceTypes': {
+          'view:hasOtherEvidence': true,
+        },
+      });
+      expect(additionalDocuments.depends(formData)).to.be.true;
     });
   });
 });

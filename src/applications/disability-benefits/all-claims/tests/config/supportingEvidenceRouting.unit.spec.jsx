@@ -118,6 +118,7 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
     const formData = createBDDFormData({
       disability526NewBddShaEnforcementWorkflowEnabled: false,
       disability526SupportingEvidenceEnhancement: true,
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceFileInputV3: true,
       'view:hasSeparationHealthAssessment': false,
       'view:hasMedicalRecords': false,
@@ -152,6 +153,7 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
     const formData = createBDDFormData({
       disability526NewBddShaEnforcementWorkflowEnabled: true,
       disability526SupportingEvidenceEnhancement: true,
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceFileInputV3: true,
       'view:hasSeparationHealthAssessment': true,
       'view:hasMedicalRecords': false,
@@ -225,6 +227,7 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
     const formData = createBDDFormData({
       disability526NewBddShaEnforcementWorkflowEnabled: true,
       disability526SupportingEvidenceEnhancement: true,
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceFileInputV3: false,
       'view:hasSeparationHealthAssessment': true,
       'view:hasMedicalRecords': false,
@@ -263,6 +266,7 @@ describe('Supporting Evidence Routing — Scenario Validation', () => {
       'view:isBddData': false,
       disability526NewBddShaEnforcementWorkflowEnabled: false,
       disability526SupportingEvidenceEnhancement: true,
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceFileInputV3: true,
       'view:hasSeparationHealthAssessment': false,
       'view:hasMedicalRecords': true,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 
@@ -22,6 +23,7 @@ import {
 } from '../../actions';
 import { WIZARD_STATUS, SERVICE_BRANCHES } from '../../constants';
 import { getBranches, clearBranches } from '../../utils/serviceBranches';
+import { isEvidenceEnhancement } from '../../utils';
 import formConfig from '../../config/form';
 
 const fakeSipsIntro = user => {
@@ -70,6 +72,7 @@ describe('Form 526EZ Entry Page', () => {
             first: 'John',
             last: 'Doe',
           },
+          'view:disability526SupportingEvidenceEnhancementLocked': false,
         },
       },
       itf: {
@@ -526,6 +529,244 @@ describe('Form 526EZ Entry Page', () => {
     expect(tree.find('va-loading-indicator')).to.have.lengthOf(1);
     expect(tree.find('WizardContainer')).to.have.lengthOf(0);
     tree.unmount();
+  });
+
+  describe('Evidence enhancement version lock useEffect', () => {
+    const LOCK_FIELD = 'view:disability526SupportingEvidenceEnhancementLocked';
+
+    const mountWithStore = ({
+      toggleLoading = false,
+      evidenceEnhancementToggle = false,
+      lockFieldValue,
+      inProgressFormId = '234',
+    } = {}) => {
+      const featureToggles = toggleLoading
+        ? { loading: true }
+        : {
+            show526Wizard: true,
+            disability526SupportingEvidenceEnhancement: evidenceEnhancementToggle,
+          };
+
+      const formDataBase = {};
+      if (lockFieldValue !== undefined) {
+        formDataBase[LOCK_FIELD] = lockFieldValue;
+      }
+
+      const initialState = {
+        form: {
+          loadedStatus: 'success',
+          savedStatus: '',
+          loadedData: { metadata: { inProgressFormId } },
+          data: {
+            veteranFullName: { first: 'John', last: 'Doe' },
+            ...formDataBase,
+          },
+        },
+        itf: {
+          fetchCallState: 'notCalled',
+          creationCallState: 'notCalled',
+          currentITF: null,
+          previousITF: null,
+          messageDismissed: false,
+        },
+        user: {
+          login: { currentlyLoggedIn: false },
+          profile: {
+            verified: false,
+            services: [],
+            loading: false,
+            status: '',
+            dob: '2000-01-01',
+            accountUuid: 'uuid',
+            claims: [],
+          },
+        },
+        currentLocation: { pathname: '/introduction', search: '' },
+        mvi: { addPersonState: '' },
+        featureToggles,
+      };
+      const fakeStore = createStore(
+        combineReducers({
+          ...commonReducer,
+          ...reducers,
+        }),
+        initialState,
+      );
+      window.dataLayer = [];
+      sessionStorage.setItem(WIZARD_STATUS, WIZARD_STATUS_COMPLETE);
+      const tree = mount(
+        <Provider store={fakeStore}>
+          <Form526Entry
+            location={initialState.currentLocation}
+            user={initialState.user}
+            router={[]}
+          >
+            <main>
+              <h1>Test</h1>
+            </main>
+          </Form526Entry>
+        </Provider>,
+      );
+      return { tree, fakeStore };
+    };
+
+    // Builds a store where useToggleValue returns the real toggle value
+    // (via snake_case TOGGLE_NAMES keys). show526Wizard is omitted so the
+    // component renders showLoading() and never reaches RoutedSavableApp,
+    // which requires React Router context that the test doesn't provide.
+    const mountNewFormWithStore = (evidenceEnhancementToggle = false) => {
+      const featureToggles = {
+        loading: false,
+        /* eslint-disable camelcase */
+        // snake_case keys read by useToggleValue / useFormFeatureToggleSync
+        disability_526_supporting_evidence_enhancement: evidenceEnhancementToggle,
+        disability_526_supporting_evidence_file_input_v3: false,
+        disability_526_form4142_use_2024_version: false,
+        disability_526_toxic_exposure_opt_out_data_purge: false,
+        disability_526_new_bdd_sha_enforcement_workflow_enabled: false,
+        /* eslint-enable camelcase */
+      };
+      const initialState = {
+        form: {
+          loadedStatus: 'success',
+          savedStatus: '',
+          loadedData: { metadata: {} },
+          data: { veteranFullName: { first: 'John', last: 'Doe' } },
+          pages: {},
+        },
+        itf: {
+          fetchCallState: 'notCalled',
+          creationCallState: 'notCalled',
+          currentITF: null,
+          previousITF: null,
+          messageDismissed: false,
+        },
+        user: {
+          login: { currentlyLoggedIn: false },
+          profile: {
+            verified: false,
+            services: [],
+            loading: false,
+            status: '',
+            dob: '2000-01-01',
+            accountUuid: 'uuid',
+            claims: [],
+          },
+        },
+        currentLocation: { pathname: '/introduction', search: '' },
+        mvi: { addPersonState: '' },
+        featureToggles,
+      };
+      const store = createStore(
+        combineReducers({ ...commonReducer, ...reducers }),
+        initialState,
+      );
+      window.dataLayer = [];
+      sessionStorage.setItem(WIZARD_STATUS, WIZARD_STATUS_COMPLETE);
+      let tree;
+      act(() => {
+        tree = mount(
+          <Provider store={store}>
+            <Form526Entry
+              location={initialState.currentLocation}
+              user={initialState.user}
+              router={[]}
+            >
+              <main>
+                <h1>Test</h1>
+              </main>
+            </Form526Entry>
+          </Provider>,
+        );
+      });
+      return { tree, store };
+    };
+
+    it('should stamp lock=true for new forms when toggle is ON', () => {
+      const { tree, store } = mountNewFormWithStore(true);
+      expect(store.getState().form.data[LOCK_FIELD]).to.be.true;
+      tree.unmount();
+    });
+
+    it('should stamp lock=false for new forms when toggle is OFF', () => {
+      const { tree, store } = mountNewFormWithStore(false);
+      expect(store.getState().form.data[LOCK_FIELD]).to.be.false;
+      tree.unmount();
+    });
+
+    it('should not set lock field for existing IPFs even when undefined', () => {
+      // mountWithStore sets inProgressFormId: '234' (existing IPF)
+      const { tree, fakeStore } = mountWithStore({
+        evidenceEnhancementToggle: true,
+      });
+      const state = fakeStore.getState();
+      expect(state.form.data[LOCK_FIELD]).to.be.undefined;
+      tree.unmount();
+    });
+
+    it('should not overwrite lock field when it is already set', () => {
+      const { tree, fakeStore } = mountWithStore({
+        evidenceEnhancementToggle: true,
+        lockFieldValue: false,
+      });
+      const state = fakeStore.getState();
+      expect(state.form.data[LOCK_FIELD]).to.be.false;
+      tree.unmount();
+    });
+
+    it('should not set lock field when toggles are still loading', () => {
+      const { tree, fakeStore } = mountWithStore({
+        toggleLoading: true,
+      });
+      const state = fakeStore.getState();
+      expect(state.form.data[LOCK_FIELD]).to.be.undefined;
+      tree.unmount();
+    });
+  });
+
+  describe('isEvidenceEnhancement with version lock', () => {
+    it('should return true only when both toggle and lock are true', () => {
+      expect(
+        isEvidenceEnhancement({
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
+          disability526SupportingEvidenceEnhancement: true,
+        }),
+      ).to.be.true;
+    });
+
+    it('should return false when lock is true but toggle is off', () => {
+      expect(
+        isEvidenceEnhancement({
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
+          disability526SupportingEvidenceEnhancement: false,
+        }),
+      ).to.be.false;
+    });
+
+    it('should return false when toggle is on but lock is false', () => {
+      expect(
+        isEvidenceEnhancement({
+          'view:disability526SupportingEvidenceEnhancementLocked': false,
+          disability526SupportingEvidenceEnhancement: true,
+        }),
+      ).to.be.false;
+    });
+
+    it('should return false when toggle is on but lock is undefined', () => {
+      expect(
+        isEvidenceEnhancement({
+          disability526SupportingEvidenceEnhancement: true,
+        }),
+      ).to.be.false;
+    });
+
+    it('should return false when both lock and toggle are absent', () => {
+      expect(isEvidenceEnhancement({})).to.be.false;
+    });
+
+    it('should return false for undefined formData', () => {
+      expect(isEvidenceEnhancement(undefined)).to.be.false;
+    });
   });
 
   describe('isIntroPage', () => {

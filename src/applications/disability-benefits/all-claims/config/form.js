@@ -729,7 +729,7 @@ const formConfig = {
           title: 'Upload non-VA treatment records',
           path: 'supporting-evidence/private-medical-records-upload-evidence',
           depends: formData =>
-            formData.disability526SupportingEvidenceEnhancement &&
+            isEvidenceEnhancement(formData) &&
             formData.disability526SupportingEvidenceFileInputV3 &&
             hasPrivateEvidence(formData) &&
             !isNotUploadingPrivateMedical(formData),
@@ -744,7 +744,7 @@ const formConfig = {
           title: 'Upload non-VA treatment records',
           path: 'supporting-evidence/private-medical-records-upload-file',
           depends: formData =>
-            formData.disability526SupportingEvidenceEnhancement &&
+            isEvidenceEnhancement(formData) &&
             !formData.disability526SupportingEvidenceFileInputV3 &&
             hasPrivateEvidence(formData) &&
             !isNotUploadingPrivateMedical(formData),
@@ -759,7 +759,7 @@ const formConfig = {
           title: 'Non-VA treatment records',
           path: 'supporting-evidence/private-medical-records-upload',
           depends: formData =>
-            !formData.disability526SupportingEvidenceEnhancement &&
+            !isEvidenceEnhancement(formData) &&
             hasPrivateEvidence(formData) &&
             !isNotUploadingPrivateMedical(formData),
           uiSchema: privateMedicalRecordsAttachments.uiSchema,
@@ -803,8 +803,7 @@ const formConfig = {
           title:
             'Supporting documents and additional forms for your disability claim',
           depends: formData =>
-            formData.disability526SupportingEvidenceEnhancement &&
-            !isBDD(formData),
+            isEvidenceEnhancement(formData) && !isBDD(formData),
           path: 'supporting-evidence/additional-evidence-intro',
           CustomPage: AdditionalEvidenceIntroPage,
           CustomPageReview: null,
@@ -820,7 +819,7 @@ const formConfig = {
           path: 'supporting-evidence/additional-evidence-upload-file',
           depends: formData =>
             hasOtherEvidence(formData) &&
-            formData.disability526SupportingEvidenceEnhancement &&
+            isEvidenceEnhancement(formData) &&
             formData.disability526SupportingEvidenceFileInputV3,
           uiSchema: evidenceChoiceAdditionalDocuments.uiSchema,
           schema: evidenceChoiceAdditionalDocuments.schema,
@@ -834,7 +833,7 @@ const formConfig = {
           path: 'supporting-evidence/additional-evidence-upload',
           depends: formData =>
             hasOtherEvidence(formData) &&
-            formData.disability526SupportingEvidenceEnhancement &&
+            isEvidenceEnhancement(formData) &&
             !formData.disability526SupportingEvidenceFileInputV3,
           uiSchema: evidenceChoiceAdditionalDocumentsV1.uiSchema,
           schema: evidenceChoiceAdditionalDocumentsV1.schema,
@@ -847,8 +846,7 @@ const formConfig = {
           title: 'Non-VA treatment records you uploaded',
           path: 'supporting-evidence/additional-evidence',
           depends: formData =>
-            hasOtherEvidence(formData) &&
-            !formData.disability526SupportingEvidenceEnhancement,
+            hasOtherEvidence(formData) && !isEvidenceEnhancement(formData),
           uiSchema: additionalDocuments.uiSchema,
           schema: additionalDocuments.schema,
         },

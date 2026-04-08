@@ -278,6 +278,7 @@ describe('medicalRecords validation (enhancement flow with view:hasOtherEvidence
   it('does not add error when view:hasMedicalRecords false (validation skipped)', () => {
     const formData = {
       disability526SupportingEvidenceEnhancement: true,
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       'view:hasMedicalRecords': false,
       'view:selectableEvidenceTypes': {
         'view:hasVaMedicalRecords': false,

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useBrowserMonitoring } from 'platform/monitoring/Datadog';
 import { connect } from 'react-redux';
 import * as Sentry from '@sentry/browser';
@@ -237,6 +237,47 @@ export const Form526Entry = ({
 
   // including this helper to showLoading when feature toggles are loading
   const togglesLoading = useToggleLoadingValue();
+
+  // Lock the evidence enhancement flow for the life of the form.
+  // Only new forms (no inProgressFormId) get the lock stamped to the
+  // current toggle value. Existing IPFs keep lock=undefined, which
+  // isEvidenceEnhancement treats as false — no migration needed.
+  // Read toggle directly from the selector to avoid a race with
+  // useFormFeatureToggleSync, which writes to formData in a separate effect.
+  const evidenceEnhancementToggle = useToggleValue(
+    TOGGLE_NAMES.disability526SupportingEvidenceEnhancement,
+  );
+  const formData = form?.data;
+  const formDataRef = useRef(formData);
+  formDataRef.current = formData;
+  const evidenceEnhancementLocked =
+    formData?.['view:disability526SupportingEvidenceEnhancementLocked'];
+  useEffect(
+    () => {
+      const currentFormData = formDataRef.current;
+      if (togglesLoading || !currentFormData) return;
+      if (evidenceEnhancementLocked === undefined && !inProgressFormId) {
+        setFormData({
+          ...currentFormData,
+          'view:disability526SupportingEvidenceEnhancementLocked': !!evidenceEnhancementToggle,
+        });
+      }
+    },
+    /**
+     * Deliberately excludes formData — the ref provides the latest snapshot
+     * without re-running the effect on every form change. This fires once
+     * when toggles finish loading and the lock field is not yet set.
+     *
+     * @type {[boolean, boolean | undefined, string | undefined, boolean]}
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      togglesLoading,
+      evidenceEnhancementLocked,
+      inProgressFormId,
+      evidenceEnhancementToggle,
+    ],
+  );
 
   // We don't really need this feature toggle in formData since it's only used here
   const sideNavFeatureEnabled = useToggleValue(

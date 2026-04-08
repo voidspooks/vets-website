@@ -95,6 +95,7 @@ describe('evidenceChoiceIntroPage', () => {
       },
       // TODO: remove feature toggle when enhancement is fully launched
       disability526SupportingEvidenceEnhancement: true,
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceFileInputV3: true,
     };
     expect(evidenceChoiceAdditionalDocumentsDepends(formData)).to.be.true;

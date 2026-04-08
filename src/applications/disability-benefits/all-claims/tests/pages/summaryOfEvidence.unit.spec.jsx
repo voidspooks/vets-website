@@ -158,6 +158,7 @@ describe('Summary of Evidence', () => {
         schema={schema}
         uiSchema={uiSchema}
         data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           'view:hasEvidence': false,
           'view:uploadServiceTreatmentRecordsQualifier': {
@@ -186,6 +187,7 @@ describe('Summary of Evidence', () => {
         uiSchema={uiSchema}
         data={{
           'view:isBddData': true,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           'view:hasEvidence': false,
           'view:uploadServiceTreatmentRecordsQualifier': {
@@ -496,7 +498,10 @@ describe('Summary of Evidence', () => {
         definitions={formConfig.defaultDefinitions}
         schema={schema}
         uiSchema={uiSchema}
-        data={{ disability526SupportingEvidenceEnhancement: true }}
+        data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
+          disability526SupportingEvidenceEnhancement: true,
+        }}
       />,
     );
 
@@ -519,6 +524,7 @@ describe('Summary of Evidence', () => {
             'view:hasVaMedicalRecords': true,
           },
           vaTreatmentFacilities,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -540,6 +546,7 @@ describe('Summary of Evidence', () => {
         schema={schema}
         uiSchema={uiSchema}
         data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           disability526NewBddShaEnforcementWorkflowEnabled: true,
           'view:isBddData': true,
@@ -579,6 +586,7 @@ describe('Summary of Evidence', () => {
         schema={schema}
         uiSchema={uiSchema}
         data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           disability526NewBddShaEnforcementWorkflowEnabled: false,
           'view:isBddData': true,
@@ -615,6 +623,7 @@ describe('Summary of Evidence', () => {
         schema={schema}
         uiSchema={uiSchema}
         data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           disability526NewBddShaEnforcementWorkflowEnabled: true,
           'view:isBddData': true,
@@ -651,6 +660,7 @@ describe('Summary of Evidence', () => {
         schema={schema}
         uiSchema={uiSchema}
         data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           disability526NewBddShaEnforcementWorkflowEnabled: true,
           'view:isBddData': true,
@@ -687,6 +697,7 @@ describe('Summary of Evidence', () => {
         schema={schema}
         uiSchema={uiSchema}
         data={{
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
           disability526NewBddShaEnforcementWorkflowEnabled: true,
           'view:isBddData': false,
@@ -728,6 +739,7 @@ describe('Summary of Evidence', () => {
             'view:hasVaMedicalRecords': true,
           },
           vaTreatmentFacilities,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -755,6 +767,7 @@ describe('Summary of Evidence', () => {
             'view:hasPrivateRecordsToUpload': false,
           },
           providerFacility: privateFacilities,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -784,6 +797,7 @@ describe('Summary of Evidence', () => {
             'view:hasPrivateRecordsToUpload': true,
           },
           privateMedicalRecordAttachments,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -824,6 +838,7 @@ describe('Summary of Evidence', () => {
             'view:hasPrivateRecordsToUpload': true,
           },
           providerFacility: privateFacilities,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -845,6 +860,7 @@ describe('Summary of Evidence', () => {
             'view:hasOtherEvidence': true,
           },
           additionalDocuments,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -882,6 +898,7 @@ describe('Summary of Evidence', () => {
             'view:hasServiceTreatmentRecordsToUpload': true,
           },
           serviceTreatmentRecordsAttachments,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -914,6 +931,7 @@ describe('Summary of Evidence', () => {
         uiSchema={uiSchema}
         data={{
           'view:hasEvidence': false,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -936,6 +954,7 @@ describe('Summary of Evidence', () => {
           vaTreatmentFacilities,
           privateMedicalRecordAttachments,
           providerFacility: privateFacilities,
+          'view:disability526SupportingEvidenceEnhancementLocked': true,
           disability526SupportingEvidenceEnhancement: true,
         }}
       />,
@@ -946,5 +965,49 @@ describe('Summary of Evidence', () => {
     );
     expect(form.find('li').length).to.equal(0);
     form.unmount();
+  });
+
+  describe('Version lock scenarios', () => {
+    it('should use legacy title when lock=false even if live toggle=true', () => {
+      const form = mount(
+        <DefinitionTester
+          definitions={formConfig.defaultDefinitions}
+          schema={schema}
+          uiSchema={uiSchema}
+          data={{
+            'view:disability526SupportingEvidenceEnhancementLocked': false,
+            disability526SupportingEvidenceEnhancement: true,
+          }}
+        />,
+      );
+
+      const text = form.render().text();
+      expect(text).to.contain('Summary of evidence');
+      expect(text).to.not.contain(
+        'Summary of supporting evidence for your disability claim',
+      );
+      form.unmount();
+    });
+
+    it('should use legacy title when lock=true but toggle=false (kill switch)', () => {
+      const form = mount(
+        <DefinitionTester
+          definitions={formConfig.defaultDefinitions}
+          schema={schema}
+          uiSchema={uiSchema}
+          data={{
+            'view:disability526SupportingEvidenceEnhancementLocked': true,
+            disability526SupportingEvidenceEnhancement: false,
+          }}
+        />,
+      );
+
+      const text = form.render().text();
+      expect(text).to.contain('Summary of evidence');
+      expect(text).to.not.contain(
+        'Summary of supporting evidence for your disability claim',
+      );
+      form.unmount();
+    });
   });
 });

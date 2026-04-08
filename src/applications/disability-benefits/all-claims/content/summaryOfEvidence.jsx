@@ -1,7 +1,12 @@
 import React from 'react';
 import _ from 'platform/utilities/data';
 import { DATA_PATHS } from '../constants';
-import { getBddShaUploads, isUploadingBddSha, isBDD } from '../utils';
+import {
+  getBddShaUploads,
+  isUploadingBddSha,
+  isBDD,
+  isEvidenceEnhancement,
+} from '../utils';
 
 const SECTION_CONFIGURATIONS = {
   'bdd-sha-uploads': {
@@ -93,8 +98,9 @@ const buildSectionsList = (formData, { shouldEnhance }) => {
 };
 
 export const summaryOfEvidenceDescription = ({ formData }) => {
+  const shouldEnhance = isEvidenceEnhancement(formData);
   const sectionsList = buildSectionsList(formData, {
-    shouldEnhance: formData.disability526SupportingEvidenceEnhancement,
+    shouldEnhance,
   });
   const vaEvidence = _.get('vaTreatmentFacilities', formData, []);
   const privateEvidence = _.get('providerFacility', formData, []);
@@ -131,14 +137,14 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
   // - there's truly no evidence, or
   // - the user explicitly chose "no" for evidence and STR, even if stale uploads remain
   const legacyNoEvidence =
-    !formData.disability526SupportingEvidenceEnhancement &&
+    !shouldEnhance &&
     !sectionsList.length &&
     (!evidenceLength ||
       (!selectedEvidence && !serviceTreatmentRecordsSelected));
 
   // Enhanced, non-BDD flow: show NO_EVIDENCE_MESSAGE only when there is truly no evidence
   const enhancedNoEvidenceNonBdd =
-    formData.disability526SupportingEvidenceEnhancement &&
+    shouldEnhance &&
     !isBDD(formData) &&
     !hasMedicalRecords &&
     layEvidenceUploads.length === 0;
@@ -183,7 +189,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
     const facilitiesList = vaEvidence.map((facility, index) => (
       <li key={index}>{facility.treatmentCenterName}</li>
     ));
-    vaContent = formData.disability526SupportingEvidenceEnhancement ? (
+    vaContent = shouldEnhance ? (
       <div className="vads-u-margin-top--2">
         <strong>
           We’ll request your VA medical records on your behalf from these VA
@@ -207,7 +213,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
     const privateEvidenceUploadsList = privateEvidenceUploads.map(upload => (
       <li key={upload.name}>{upload.name}</li>
     ));
-    privateContent = formData.disability526SupportingEvidenceEnhancement ? (
+    privateContent = shouldEnhance ? (
       <div className="vads-u-margin-top--2">
         <strong>
           We’ll submit these private medical records you uploaded:
@@ -232,7 +238,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
         {facility.providerFacilityName}
       </li>
     ));
-    privateEvidenceContent = formData.disability526SupportingEvidenceEnhancement ? (
+    privateEvidenceContent = shouldEnhance ? (
       <div className="vads-u-margin-top--2">
         <strong>
           We’ll request your private medical records on your behalf from these
@@ -255,7 +261,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
     const serviceTreatmentRecordsUploadsList = serviceTreatmentRecordsUploads.map(
       upload => <li key={upload.name}>{upload.name}</li>,
     );
-    serviceTreatmentRecordsContent = formData.disability526SupportingEvidenceEnhancement ? (
+    serviceTreatmentRecordsContent = shouldEnhance ? (
       <div className="vads-u-margin-top--2">
         <strong>
           We’ll submit these service treatment records you uploaded:
@@ -274,7 +280,7 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
     const layEvidenceUploadsList = layEvidenceUploads.map(upload => (
       <li key={upload.name}>{upload.name}</li>
     ));
-    layContent = formData.disability526SupportingEvidenceEnhancement ? (
+    layContent = shouldEnhance ? (
       <div className="vads-u-margin-top--2">
         <strong>We’ll submit these documents you uploaded:</strong>
         <ul>{layEvidenceUploadsList}</ul>
@@ -293,16 +299,14 @@ export const summaryOfEvidenceDescription = ({ formData }) => {
       {!bddBothSubmitLater &&
         !enhancedNoEvidenceNonBdd &&
         (evidenceLength || sectionsList.length > 0) &&
-        formData.disability526SupportingEvidenceEnhancement && (
-          <p>You provided documents to support your claim.</p>
-        )}
+        shouldEnhance && <p>You provided documents to support your claim.</p>}
       {sectionsList}
       {vaContent}
       {privateContent}
       {privateEvidenceContent}
       {serviceTreatmentRecordsContent}
       {layContent}
-      {formData.disability526SupportingEvidenceEnhancement && (
+      {shouldEnhance && (
         <p>Next, we’ll tell you what to expect during a claim exam.</p>
       )}
     </div>

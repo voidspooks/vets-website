@@ -9,6 +9,11 @@ import {
   normalizeReturnUrlForResume,
 } from '../../utils';
 
+const enhancementFormData = {
+  disability526SupportingEvidenceEnhancement: true,
+  'view:disability526SupportingEvidenceEnhancementLocked': true,
+};
+
 describe('utils', () => {
   describe('isCompletingModern4142', () => {
     it('should return true if disability526Enable2024Form4142 is true', () => {
@@ -77,7 +82,7 @@ describe('utils', () => {
     it('should redirect to evidence-request when legacy upload to enhancement transition needed', () => {
       expectRedirect({
         returnUrl: '/supporting-evidence/private-medical-records-upload',
-        formData: { disability526SupportingEvidenceEnhancement: true },
+        formData: enhancementFormData,
         expected: '/supporting-evidence/evidence-request',
       });
     });
@@ -103,7 +108,7 @@ describe('utils', () => {
         expect(
           redirectLegacyToEnhancement({
             returnUrl: url,
-            formData: { disability526SupportingEvidenceEnhancement: true },
+            formData: enhancementFormData,
           }),
         ).to.be.true;
       });
@@ -162,7 +167,7 @@ describe('utils', () => {
       const cases = [
         {
           returnUrl: '/supporting-evidence/evidence-request',
-          formData: { disability526SupportingEvidenceEnhancement: true },
+          formData: enhancementFormData,
         },
         {
           returnUrl: '/supporting-evidence/evidence-types',
@@ -171,23 +176,23 @@ describe('utils', () => {
         {
           returnUrl:
             '/supporting-evidence/private-medical-records-upload-evidence',
-          formData: { disability526SupportingEvidenceEnhancement: true },
+          formData: enhancementFormData,
         },
         {
           returnUrl: '/supporting-evidence/private-medical-records-upload-file',
-          formData: { disability526SupportingEvidenceEnhancement: true },
+          formData: enhancementFormData,
         },
         {
           returnUrl: '/supporting-evidence/additional-evidence-intro',
-          formData: { disability526SupportingEvidenceEnhancement: true },
+          formData: enhancementFormData,
         },
         {
           returnUrl: '/supporting-evidence/additional-evidence-enhancement',
-          formData: { disability526SupportingEvidenceEnhancement: true },
+          formData: enhancementFormData,
         },
         {
           returnUrl: '/supporting-evidence/additional-evidence-enhancement-v1',
-          formData: { disability526SupportingEvidenceEnhancement: true },
+          formData: enhancementFormData,
         },
       ];
 

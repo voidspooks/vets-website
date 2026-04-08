@@ -848,6 +848,7 @@ describe('526 All Claims validations', () => {
       const fixtures = createTestFixtures();
       const formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         'view:hasMedicalRecords': false,
       };
 
@@ -1077,6 +1078,7 @@ describe('526 All Claims validations', () => {
     it('does not add error when view:hasMedicalRecords false (validation skipped) (enhancement)', () => {
       const formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         'view:hasMedicalRecords': false,
         'view:selectableEvidenceTypes': {
           'view:hasVaMedicalRecords': false,

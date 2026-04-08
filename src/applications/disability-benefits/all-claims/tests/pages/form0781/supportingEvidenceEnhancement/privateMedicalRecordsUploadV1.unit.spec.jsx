@@ -43,6 +43,7 @@ describe('Private Medical Records Upload V1 page', () => {
     it('should return true when enhancement ON, v3 OFF, has private evidence, and uploading', () => {
       const formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: false,
         'view:selectableEvidenceTypes': {
           'view:hasPrivateMedicalRecords': true,

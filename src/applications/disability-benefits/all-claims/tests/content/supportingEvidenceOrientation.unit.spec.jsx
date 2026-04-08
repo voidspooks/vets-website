@@ -10,6 +10,7 @@ describe('supportingEvidenceOrientation', () => {
         'view:claimingNew': false,
         'view:claimingIncrease': true,
       },
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceEnhancement: true,
     };
 
@@ -63,6 +64,7 @@ describe('supportingEvidenceOrientation', () => {
         'view:claimingNew': true,
         'view:claimingIncrease': false,
       },
+      'view:disability526SupportingEvidenceEnhancementLocked': true,
       disability526SupportingEvidenceEnhancement: true,
     };
 
@@ -85,5 +87,56 @@ describe('supportingEvidenceOrientation', () => {
     );
 
     getByText(/Records of receiving care/i);
+  });
+
+  describe('Version lock scenarios', () => {
+    it('renders legacy content when lock=false even if live toggle=true', () => {
+      const formData = {
+        'view:claimType': {
+          'view:claimingNew': false,
+          'view:claimingIncrease': true,
+        },
+        'view:disability526SupportingEvidenceEnhancementLocked': false,
+        disability526SupportingEvidenceEnhancement: true,
+      };
+
+      const result = render(
+        React.createElement(supportingEvidenceOrientation, { formData }),
+      );
+      result.getByText(/section 5103 notice/i);
+    });
+
+    it('renders legacy content when lock=true but toggle=false (kill switch)', () => {
+      const formData = {
+        'view:claimType': {
+          'view:claimingNew': true,
+          'view:claimingIncrease': false,
+        },
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
+        disability526SupportingEvidenceEnhancement: false,
+      };
+
+      const result = render(
+        React.createElement(supportingEvidenceOrientation, { formData }),
+      );
+      result.getByText(/section 5103 notice/i);
+    });
+
+    it('renders enhanced content when both lock and toggle are true', () => {
+      const formData = {
+        'view:claimType': {
+          'view:claimingNew': true,
+          'view:claimingIncrease': false,
+        },
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
+        disability526SupportingEvidenceEnhancement: true,
+      };
+
+      const { container, queryByText } = render(
+        React.createElement(supportingEvidenceOrientation, { formData }),
+      );
+      expect(queryByText(/section 5103 notice/i)).to.not.exist;
+      expect(container.querySelector('va-accordion')).to.exist;
+    });
   });
 });

@@ -339,6 +339,7 @@ const createEnhancementTestConfig = ({ v3Enabled }) => {
                 mailingAddress: data.mailingAddress,
               },
               'view:claimType': data['view:claimType'],
+              'view:disability526SupportingEvidenceEnhancementLocked': true,
               disability526SupportingEvidenceEnhancement: true,
               disability526SupportingEvidenceFileInputV3: v3Enabled,
               ...(data.vaTreatmentFacilities && {

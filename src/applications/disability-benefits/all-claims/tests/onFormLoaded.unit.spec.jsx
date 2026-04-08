@@ -318,6 +318,7 @@ describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
         '/supporting-evidence/private-medical-records-upload-evidence';
       mockProps.formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: false,
       };
 
@@ -336,6 +337,7 @@ describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
         '/supporting-evidence/additional-evidence-upload-file';
       mockProps.formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: false,
       };
 
@@ -356,6 +358,7 @@ describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
         '/supporting-evidence/private-medical-records-upload-file';
       mockProps.formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: true,
       };
 
@@ -373,6 +376,7 @@ describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
       mockProps.returnUrl = '/supporting-evidence/additional-evidence-upload';
       mockProps.formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: true,
       };
 
@@ -393,6 +397,7 @@ describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
         '/supporting-evidence/private-medical-records-upload-evidence';
       mockProps.formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: true,
       };
 
@@ -410,6 +415,7 @@ describe('onFormLoaded - V3/V1 FileInputV3 toggle redirects', () => {
       mockProps.returnUrl = '/supporting-evidence/additional-evidence-upload';
       mockProps.formData = {
         disability526SupportingEvidenceEnhancement: true,
+        'view:disability526SupportingEvidenceEnhancementLocked': true,
         disability526SupportingEvidenceFileInputV3: false,
       };
 
