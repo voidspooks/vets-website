@@ -8,7 +8,6 @@ import {
   validateTEConditions,
 } from '../../content/toxicExposure';
 import { formTitle, makeConditionsUI } from '../../utils';
-import ToxicExposureConditions from '../../components/confirmationFields/ToxicExposureConditions';
 
 const getCleanTEConditionsSchema = (...args) => {
   const schema = makeTEConditionsSchema(...args);
@@ -46,7 +45,6 @@ export const uiSchema = {
     }),
   },
   'ui:validations': [validateTEConditions],
-  'ui:confirmationField': ToxicExposureConditions,
 };
 
 export const schema = {

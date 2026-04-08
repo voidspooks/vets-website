@@ -437,7 +437,6 @@ Cypress.Commands.add('verifyToxicExposure', data => {
         claimedConditions.forEach(disability => {
           const capitalizedCondition = capitalizeEachWord(disability.condition);
           cy.contains(capitalizedCondition).should('exist');
-          cy.contains(/claimed/i).should('exist');
         });
       }
 
