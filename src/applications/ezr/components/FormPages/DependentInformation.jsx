@@ -167,6 +167,14 @@ const DependentInformation = props => {
     ) : null;
   });
 
+  const cancelModalText = `${
+    content['household-dependent-modal-cancel-description']
+  } ${
+    content[
+      `household-dependent-modal-cancel-${searchAction.label}-consequence`
+    ]
+  }`;
+
   return (
     <>
       {FormList}
@@ -176,14 +184,8 @@ const DependentInformation = props => {
           content['household-dependent-modal-cancel-title'],
           searchAction.label,
         )}
-        primaryButtonText={replaceStrValues(
-          content['modal-cancel-button-primary-text'],
-          searchAction.label,
-        )}
-        secondaryButtonText={replaceStrValues(
-          content['modal-cancel-button-secondary-text'],
-          searchAction.label,
-        )}
+        primaryButtonText={content['modal-cancel-button-primary-text']}
+        secondaryButtonText={content['modal-cancel-button-secondary-text']}
         onPrimaryButtonClick={handlers.onConfirm}
         onSecondaryButtonClick={handlers.onCancel}
         onCloseEvent={handlers.onCancel}
@@ -193,10 +195,7 @@ const DependentInformation = props => {
         uswds
       >
         <p className="vads-u-margin--0">
-          {replaceStrValues(
-            content['household-dependent-modal-cancel-description'],
-            searchAction.label,
-          )}
+          {replaceStrValues(cancelModalText, searchAction.label)}
         </p>
       </VaModal>
     </>

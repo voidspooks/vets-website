@@ -160,7 +160,9 @@ const DependentList = ({ labelledBy, list, mode, onDelete }) => {
         primaryButtonText={
           content['household-dependent-modal-remove-button-text']
         }
-        secondaryButtonText={content['button-modal-cancel']}
+        secondaryButtonText={
+          content['household-dependent-modal-remove-cancel-text']
+        }
         onPrimaryButtonClick={handlers.onConfirm}
         onSecondaryButtonClick={handlers.onCancel}
         onCloseEvent={handlers.onCancel}
