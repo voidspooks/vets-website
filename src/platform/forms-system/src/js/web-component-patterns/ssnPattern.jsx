@@ -49,7 +49,9 @@ const ssnUI = title => {
  * ```
  * @returns `commonDefinitions.ssn`
  */
-const ssnSchema = commonDefinitions.ssn;
+const ssnSchema = {
+  type: commonDefinitions.ssn.type,
+};
 
 /**
  * uiSchema for VA File Number

@@ -345,12 +345,42 @@ describe('Schemaform validations', () => {
     });
   });
   describe('validateSSN', () => {
-    it('should set message if invalid', () => {
+    it('should not set error for valid SSN', () => {
+      const errors = { addError: sinon.spy() };
+      validateSSN(errors, '123456780');
+      expect(errors.addError.callCount).to.equal(0);
+    });
+    it('should set digit count message when fewer than 9 digits entered', () => {
+      const errors = { addError: sinon.spy() };
+      validateSSN(errors, '1234567');
+      expect(errors.addError.callCount).to.equal(1);
+      expect(errors.addError.firstCall.args[0]).to.equal(
+        'You entered 7 digits. SSN must be 9 digits.',
+      );
+    });
+    it('should set digit count message when more than 9 digits entered', () => {
+      const errors = { addError: sinon.spy() };
+      validateSSN(errors, '1234567890');
+      expect(errors.addError.callCount).to.equal(1);
+      expect(errors.addError.firstCall.args[0]).to.equal(
+        'You entered 10 digits. SSN must be 9 digits.',
+      );
+    });
+    it('should set digit count message for non-digit input', () => {
       const errors = { addError: sinon.spy() };
       validateSSN(errors, 'asfd');
-      validateSSN(errors, '123334455');
-
       expect(errors.addError.callCount).to.equal(1);
+      expect(errors.addError.firstCall.args[0]).to.equal(
+        'You entered 0 digits. SSN must be 9 digits.',
+      );
+    });
+    it('should set generic invalid message for 9-digit invalid SSN', () => {
+      const errors = { addError: sinon.spy() };
+      validateSSN(errors, '123456789');
+      expect(errors.addError.callCount).to.equal(1);
+      expect(errors.addError.firstCall.args[0]).to.equal(
+        'Please enter a valid 9 digit SSN (dashes allowed)',
+      );
     });
   });
   describe('validateDate', () => {

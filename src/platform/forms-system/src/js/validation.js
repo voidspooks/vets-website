@@ -361,7 +361,14 @@ export function isValidForm(form, pageList, isTesting = false) {
 
 export function validateSSN(errors, ssn) {
   if (ssn && !isValidSSN(ssn)) {
-    errors.addError('Please enter a valid 9 digit SSN (dashes allowed)');
+    const digitCount = (ssn.match(/\d/g) || []).length;
+    if (digitCount !== 9) {
+      errors.addError(
+        `You entered ${digitCount} digits. SSN must be 9 digits.`,
+      );
+    } else {
+      errors.addError('Please enter a valid 9 digit SSN (dashes allowed)');
+    }
   }
 }
 
