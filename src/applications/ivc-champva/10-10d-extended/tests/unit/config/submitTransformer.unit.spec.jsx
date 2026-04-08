@@ -8,6 +8,26 @@ const SHARED_ADDRESS_FIELD_NAME = 'view:sharesAddressWith';
 const APPLICANT_SSN = '345345345';
 const SSN_HASH = toHash(APPLICANT_SSN);
 
+const makeAddress = (overrides = {}, withViewFields = false) => {
+  const safeOverrides = overrides || {};
+
+  const base = {
+    street: safeOverrides.street ?? '123 Main Street',
+    city: safeOverrides.city ?? 'Anytown',
+    state: safeOverrides.state ?? 'MD',
+    postalCode: safeOverrides.postalCode ?? '12345',
+    country: safeOverrides.country ?? 'USA',
+  };
+
+  if (!withViewFields) return base;
+
+  return {
+    ...base,
+    'view:militaryBaseDescription': {},
+    'view:customFlag': true,
+  };
+};
+
 describe('10-10d-extended transform for submit', () => {
   it('should return passed in relationship if already flat', () => {
     const transformed = JSON.parse(
@@ -343,72 +363,172 @@ describe('10-10d-extended transform for submit', () => {
     expect(veteran.email).to.equal('');
   });
 
-  describe('address formatting', () => {
-    it('should properly format sponsor address fields when address is not shared', () => {
+  context('address formatting', () => {
+    it('should properly format sponsor address fields when hydrated into "Veteran" object', () => {
       const testData = {
         data: {
           [SHARED_ADDRESS_FIELD_NAME]: NOT_SHARED,
           sponsorAddress: {
             street: '123 Main Street',
-            street2: 'Apartment 4B',
+            street2: 'Suite 200',
             city: 'Anytown',
-            state: 'CA',
+            state: 'MD',
             postalCode: '12345',
             country: 'USA',
           },
         },
       };
-
       const transformed = JSON.parse(transformForSubmit(formConfig, testData));
-
-      // Verify that the street fields were combined
-      expect(transformed.veteran.address.streetCombined).to.contain(
-        '123 Main Street',
-      );
-      expect(transformed.veteran.address.streetCombined).to.contain(
-        'Apartment 4B',
-      );
-
-      // Original fields should be preserved
-      expect(transformed.veteran.address.street).to.equal('123 Main Street');
-      expect(transformed.veteran.address.street2).to.equal('Apartment 4B');
-      expect(transformed.veteran.address.city).to.equal('Anytown');
-      expect(transformed.veteran.address.state).to.equal('CA');
-      expect(transformed.veteran.address.postalCode).to.equal('12345');
+      const { address } = transformed.veteran;
+      expect(address.streetCombined).to.contain('123 Main Street');
+      expect(address.streetCombined).to.contain('Suite 200');
+      expect(address.street).to.equal('123 Main Street');
+      expect(address.city).to.equal('Anytown');
+      expect(address.state).to.equal('MD');
+      expect(address.postalCode).to.equal('12345');
     });
 
-    it('should properly format sponsor address fields when address is shared', () => {
-      const testAddress = {
-        street: '123 Main Street',
-        street2: 'Apartment 4B',
-        city: 'Anytown',
-        state: 'CA',
+    it('should rehydrate certifier address from original form data for non-applicant certifiers', () => {
+      const certifierAddress = makeAddress({
+        street: '321 Certifier Blvd',
+        city: 'Baltimore',
+        state: 'MD',
         postalCode: '12345',
-        country: 'USA',
-      };
+      });
       const testData = {
         data: {
-          [SHARED_ADDRESS_FIELD_NAME]: JSON.stringify(testAddress),
-          sponsorAddress: testAddress,
+          certifierRole: 'other',
+          certifierName: { first: 'John', last: 'Smith' },
+          certifierAddress,
         },
       };
-
       const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      const certifier = transformed.certification;
+      expect(certifier.streetAddress).to.contain('321 Certifier Blvd');
+      expect(certifier.city).to.equal('Baltimore');
+      expect(certifier.state).to.equal('MD');
+      expect(certifier.postalCode).to.equal('12345');
+    });
 
-      // Verify that the street fields were combined
-      expect(transformed.veteran.address.streetCombined).to.contain(
-        '123 Main Street',
-      );
-      expect(transformed.veteran.address.streetCombined).to.contain(
-        'Apartment 4B',
-      );
+    it('should rehydrate sponsor address from original form data after shared-address selection strips inactive page data', () => {
+      const sponsorAddress = makeAddress({
+        street: '789 Sponsor Ln',
+        city: 'Sponsor',
+        state: 'MD',
+        postalCode: '12345',
+      });
+      const testData = {
+        data: {
+          [SHARED_ADDRESS_FIELD_NAME]: JSON.stringify(sponsorAddress),
+          sponsorAddress,
+        },
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      const { address } = transformed.veteran;
+      expect(address.street).to.equal('789 Sponsor Ln');
+      expect(address.streetCombined).to.contain('789 Sponsor Ln');
+    });
 
-      // Original fields should be preserved
-      expect(transformed.veteran.address.street).to.equal('123 Main Street');
-      expect(transformed.veteran.address.street2).to.equal('Apartment 4B');
-      expect(transformed.veteran.address.city).to.equal('Anytown');
-      expect(transformed.veteran.address.state).to.equal('CA');
-      expect(transformed.veteran.address.postalCode).to.equal('12345');
+    it('should rehydrate each applicant address by index from original form data when shared selection is used', () => {
+      const firstAddress = makeAddress({
+        street: '111 First St',
+        city: 'AppOne',
+        state: 'MD',
+        postalCode: '12345',
+      });
+      const secondAddress = makeAddress({
+        street: '222 Second St',
+        city: 'AppTwo',
+        state: 'MD',
+        postalCode: '12345',
+      });
+      const testData = {
+        data: {
+          applicants: [
+            {
+              applicantName: { first: 'Alpha', last: 'One' },
+              applicantRelationshipToSponsor: 'child',
+              'view:sharesAddressWith': JSON.stringify(firstAddress),
+              applicantAddress: firstAddress,
+            },
+            {
+              applicantName: { first: 'Beta', last: 'Two' },
+              applicantRelationshipToSponsor: 'child',
+              'view:sharesAddressWith': JSON.stringify(secondAddress),
+              applicantAddress: secondAddress,
+            },
+          ],
+        },
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      const address = index => transformed.applicants[index].applicantAddress;
+      expect(address(0).street).to.equal('111 First St');
+      expect(address(1).street).to.equal('222 Second St');
+    });
+
+    it('should strip "view:" fields from sponsor, certifier, and applicant addresses during rehydration', () => {
+      const sponsorAddress = makeAddress({ street: '123 Sponsor St' }, true);
+      const certifierAddress = makeAddress(
+        { street: '456 Certifier St' },
+        true,
+      );
+      const applicantAddress = makeAddress(
+        { street: '789 Applicant St' },
+        true,
+      );
+      const testData = {
+        data: {
+          certifierRole: 'other',
+          certifierName: { first: 'John', last: 'Smith' },
+          sponsorAddress,
+          certifierAddress,
+          applicants: [
+            {
+              applicantName: { first: 'Jane', last: 'Doe' },
+              applicantRelationshipToSponsor: 'child',
+              applicantAddress,
+            },
+          ],
+        },
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      const vetAddress = transformed.veteran.address;
+      const appAddress = transformed.applicants[0].applicantAddress;
+      const certAddress = transformed.certification.streetAddress;
+      expect(vetAddress).to.not.have.property('view:militaryBaseDescription');
+      expect(vetAddress).to.not.have.property('view:customFlag');
+      expect(appAddress).to.not.have.property('view:militaryBaseDescription');
+      expect(appAddress).to.not.have.property('view:customFlag');
+      expect(certAddress).to.contain('456 Certifier St');
+    });
+
+    it('should default sponsor address to empty object when omitted', () => {
+      const testData = {
+        data: {
+          certifierRole: 'applicant',
+          sponsorName: { first: 'Jane', last: 'Doe' },
+          sponsorDob: '1990-01-01',
+          sponsorSsn: '411111111',
+          sponsorIsDeceased: true,
+        },
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.veteran.address).to.deep.equal({});
+    });
+
+    it('should keep applicantAddress undefined when original applicant address is omitted', () => {
+      const testData = {
+        data: {
+          applicants: [
+            {
+              applicantName: { first: 'Jane', last: 'Doe' },
+              applicantRelationshipToSponsor: 'child',
+            },
+          ],
+        },
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.applicants[0].applicantAddress).to.be.undefined;
     });
   });
 });

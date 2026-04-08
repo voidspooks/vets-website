@@ -1,5 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { transformForSubmit as formsSystemTransformForSubmit } from 'platform/forms-system/src/js/helpers';
+import {
+  transformForSubmit as formsSystemTransformForSubmit,
+  filterViewFields,
+} from 'platform/forms-system/src/js/helpers';
 import {
   adjustYearString,
   getObjectsWithAttachmentId,
@@ -67,19 +70,12 @@ function transformApplicants(applicants = []) {
       vetRelationship: extractRelationship(
         applicant.applicantRelationshipToSponsor || 'NA',
       ),
-      // Get supporting documents for this applicant
       applicantSupportingDocuments: getObjectsWithAttachmentId(
         applicant,
         'confirmationCode',
       ),
     };
-
-    // Apply year string adjustments and concatenate street addresses
-    const withAdjustedYear = adjustYearString(transformedApplicant);
-    return {
-      ...withAdjustedYear,
-      applicantAddress: concatStreets(withAdjustedYear.applicantAddress),
-    };
+    return adjustYearString(transformedApplicant);
   });
 }
 
@@ -210,6 +206,22 @@ const buildPrimaryContactInfo = (data = {}) => {
   };
 };
 
+const hydrateAddress = address => {
+  if (!address || typeof address !== 'object') return address;
+  return concatStreets(filterViewFields(address));
+};
+
+const hydrateApplicantAddresses = (
+  transformedApplicants = [],
+  originalApplicants = [],
+) =>
+  transformedApplicants.map((applicant, index) => ({
+    ...applicant,
+    applicantAddress: hydrateAddress(
+      originalApplicants?.[index]?.applicantAddress,
+    ),
+  }));
+
 /**
  * Main transformer function that prepares form data for submission
  * @param {Object} formConfig - Form configuration
@@ -217,19 +229,21 @@ const buildPrimaryContactInfo = (data = {}) => {
  * @returns {string} JSON string of transformed data
  */
 export default function transformForSubmit(formConfig, form) {
+  const originalData = form?.data || {};
   const initialTransform = JSON.parse(
     formsSystemTransformForSubmit(formConfig, form),
   );
 
-  // Concat streets for addresses
+  // Rehydrate all addresses from original form data so shared-address selections
+  // survive inactive-page filtering in formsSystemTransformForSubmit.
   const withConcatAddresses = {
     ...initialTransform,
-    sponsorAddress: form.data.sponsorAddress
-      ? concatStreets(form.data.sponsorAddress)
-      : form.data.sponsorAddress,
-    certifierAddress: initialTransform.certifierAddress
-      ? concatStreets(initialTransform.certifierAddress)
-      : initialTransform.certifierAddress,
+    sponsorAddress: hydrateAddress(originalData.sponsorAddress),
+    certifierAddress: hydrateAddress(originalData.certifierAddress),
+    applicants: hydrateApplicantAddresses(
+      initialTransform.applicants || [],
+      originalData.applicants || [],
+    ),
   };
 
   const currentDate = formatDate(new Date().toISOString().split('T')[0]) || '';
