@@ -4,7 +4,10 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { DocumentTypeSelect } from '../../../pages/uploadDocuments';
-import { serviceStatuses } from '../../../constants';
+import {
+  entitlementRestorationOptions,
+  serviceStatuses,
+} from '../../../constants';
 
 const mockStore = configureStore([]);
 
@@ -85,33 +88,67 @@ describe('DocumentTypeSelect component', () => {
     expect(options[2].textContent).to.equal('Retirement Points Statement');
   });
 
-  it('should show 4 document types for DNANA', () => {
+  it('should show 3 document types for DNANA (no Department of Defense Discharge Certificate)', () => {
     const { container } = renderWithStore({
       identity: serviceStatuses.DNANA,
     });
 
     const options = container.querySelectorAll('option');
-    expect(options).to.have.length(4);
+    expect(options).to.have.length(3);
     expect(options[0].textContent).to.equal('Separation and Report of Service');
     expect(options[1].textContent).to.equal('Retirement Points Accounting');
     expect(options[2].textContent).to.equal('Proof of character of service');
-    expect(options[3].textContent).to.equal(
-      'Department of Defense Discharge Certificate',
-    );
   });
 
-  it('should show 4 document types for DRNA', () => {
+  it('should show 4 document types for DNANA with prior VA home loan including Loan evidence', () => {
+    const { container } = renderWithStore({
+      identity: serviceStatuses.DNANA,
+      loanHistory: { hadPriorLoans: true },
+    });
+
+    const options = container.querySelectorAll('option');
+    expect(options).to.have.length(4);
+    expect(options[3].textContent).to.equal('Loan evidence');
+  });
+
+  it('should show 2 document types for DRNA (no Separation and Report of Service or DoD Discharge Certificate)', () => {
     const { container } = renderWithStore({
       identity: serviceStatuses.DRNA,
     });
 
     const options = container.querySelectorAll('option');
-    expect(options).to.have.length(4);
-    expect(options[0].textContent).to.equal('Separation and Report of Service');
-    expect(options[1].textContent).to.equal('Retirement Points Accounting');
-    expect(options[2].textContent).to.equal('Proof of character of service');
-    expect(options[3].textContent).to.equal(
-      'Department of Defense Discharge Certificate',
+    expect(options).to.have.length(2);
+    expect(options[0].textContent).to.equal('Retirement Points Accounting');
+    expect(options[1].textContent).to.equal('Proof of character of service');
+  });
+
+  it('should show 3 document types for DRNA with prior VA home loan including Loan evidence', () => {
+    const { container } = renderWithStore({
+      identity: serviceStatuses.DRNA,
+      loanHistory: { hadPriorLoans: true },
+    });
+
+    const options = container.querySelectorAll('option');
+    expect(options).to.have.length(3);
+    expect(options[2].textContent).to.equal('Loan evidence');
+  });
+
+  it('does not add Loan evidence when user said no to prior VA loans even if a property has one-time restoration', () => {
+    const { container } = renderWithStore({
+      identity: serviceStatuses.VETERAN,
+      loanHistory: { hadPriorLoans: false },
+      relevantPriorLoans: [
+        {
+          entitlementRestoration:
+            entitlementRestorationOptions.ONE_TIME_RESTORATION,
+        },
+      ],
+    });
+
+    const labels = [...container.querySelectorAll('option')].map(
+      el => el.textContent,
     );
+    expect(labels).to.deep.equal(['Discharge papers (DD214)']);
+    expect(labels).to.not.include('Loan evidence');
   });
 });

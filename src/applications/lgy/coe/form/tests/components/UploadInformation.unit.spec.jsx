@@ -2,7 +2,10 @@ import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 import UploadInformation from '../../components/UploadInformation';
-import { serviceStatuses } from '../../constants';
+import {
+  entitlementRestorationOptions,
+  serviceStatuses,
+} from '../../constants';
 
 describe('UploadInformation component', () => {
   describe('accordion display', () => {
@@ -79,6 +82,31 @@ describe('UploadInformation component', () => {
       expect(accordion).to.exist;
       expect(accordion.textContent).to.include('Statement of service');
       expect(accordion.textContent).to.include(
+        'Type of evidence to show a VA loan was paid in full',
+      );
+    });
+
+    it('does not show loan evidence accordion when hadPriorLoans is false, regardless of property entitlement restoration', () => {
+      const { container } = render(
+        <UploadInformation
+          formData={{
+            identity: serviceStatuses.VETERAN,
+            relevantPriorLoans: [
+              {
+                entitlementRestoration:
+                  entitlementRestorationOptions.ONE_TIME_RESTORATION,
+              },
+            ],
+          }}
+          hadPriorLoans={false}
+        />,
+      );
+      const accordion = container.querySelector(
+        '[data-testid="document-upload-accordion"]',
+      );
+      expect(accordion).to.exist;
+      expect(accordion.textContent).to.include('Statement of service');
+      expect(accordion.textContent).to.not.include(
         'Type of evidence to show a VA loan was paid in full',
       );
     });

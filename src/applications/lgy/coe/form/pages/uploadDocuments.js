@@ -13,7 +13,9 @@ import { UploadDocumentsReview } from '../components/UploadDocumentsReview';
 import UploadInformation from '../components/UploadInformation';
 import DocumentsNeeded from '../components/DocumentsNeeded';
 
-const hadPriorLoans = formData => formData?.loanHistory?.hadPriorLoans;
+/** True only when the user answered Yes to "Have you used the VA home loan program before?" */
+const userUsedVaHomeLoanBefore = formData =>
+  formData?.loanHistory?.hadPriorLoans === true;
 
 export const DocumentTypeSelect = () => {
   const formData = useSelector(state => state?.form?.data);
@@ -31,19 +33,20 @@ export const DocumentTypeSelect = () => {
       'Creditable number of years',
       'Retirement Points Statement',
     );
-  } else if (
-    formData?.identity === serviceStatuses.DNANA ||
-    formData?.identity === serviceStatuses.DRNA
-  ) {
+  } else if (formData?.identity === serviceStatuses.DNANA) {
     requiredDocumentTypes.push(
       'Separation and Report of Service',
       'Retirement Points Accounting',
       'Proof of character of service',
-      'Department of Defense Discharge Certificate',
+    );
+  } else if (formData?.identity === serviceStatuses.DRNA) {
+    requiredDocumentTypes.push(
+      'Retirement Points Accounting',
+      'Proof of character of service',
     );
   }
 
-  if (hadPriorLoans(formData)) {
+  if (userUsedVaHomeLoanBefore(formData)) {
     requiredDocumentTypes.push('Loan evidence');
   }
 
@@ -63,18 +66,18 @@ export const DocumentTypeSelect = () => {
 };
 
 export const getUiSchema = () => ({
-  ...titleUI('Upload documents', ({ formData }) => (
-    <>
-      <DocumentsNeeded
-        formData={formData}
-        hadPriorLoans={hadPriorLoans(formData)}
-      />
-      <UploadInformation
-        formData={formData}
-        hadPriorLoans={hadPriorLoans(formData)}
-      />
-    </>
-  )),
+  ...titleUI('Upload documents', ({ formData }) => {
+    const showLoanEvidence = userUsedVaHomeLoanBefore(formData);
+    return (
+      <>
+        <DocumentsNeeded formData={formData} hadPriorLoans={showLoanEvidence} />
+        <UploadInformation
+          formData={formData}
+          hadPriorLoans={showLoanEvidence}
+        />
+      </>
+    );
+  }),
   files2: fileInputMultipleUI({
     title: 'Select a file to upload',
     required: false,

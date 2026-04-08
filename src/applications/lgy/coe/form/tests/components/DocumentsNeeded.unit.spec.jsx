@@ -2,7 +2,10 @@ import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 import DocumentsNeeded from '../../components/DocumentsNeeded';
-import { serviceStatuses } from '../../constants';
+import {
+  entitlementRestorationOptions,
+  serviceStatuses,
+} from '../../constants';
 
 const homeLoanEvidence = 'Evidence a VA loan was paid in full, if applicable';
 const multipleDocuments =
@@ -178,6 +181,22 @@ describe('DocumentsNeeded', () => {
       expect(text).to.include(NGBForm23);
       expect(text).to.include(proofOfCharacterOfService);
       expect(text).to.include(homeLoanEvidence);
+    });
+
+    it('does not show loan evidence when hadPriorLoans is false even if form lists one-time restoration on a property', () => {
+      const formData = {
+        identity: serviceStatuses.DNANA,
+        relevantPriorLoans: [
+          {
+            entitlementRestoration:
+              entitlementRestorationOptions.ONE_TIME_RESTORATION,
+          },
+        ],
+      };
+      const { container } = render(
+        <DocumentsNeeded formData={formData} hadPriorLoans={false} />,
+      );
+      expect(container.textContent).to.not.include(homeLoanEvidence);
     });
   });
 
