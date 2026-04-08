@@ -12,7 +12,7 @@ import React from 'react';
  * query: string,
  * }} props
  */
-export default function SearchDescription({
+export default function SearchDescriptionOld({
   categoryFilter,
   pageEnd,
   pageStart,
@@ -51,7 +51,7 @@ export default function SearchDescription({
   );
 }
 
-SearchDescription.propTypes = {
+SearchDescriptionOld.propTypes = {
   query: PropTypes.string.isRequired,
   total: PropTypes.number.isRequired,
   categoryFilter: PropTypes.string,

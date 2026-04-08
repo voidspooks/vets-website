@@ -174,9 +174,8 @@ export default function InboxLayoutNew({
         )}
         <InquiriesList
           inquiries={results}
-          categoryFilter={filters.categories[0]}
-          statusFilter={filters.statuses[0]}
           query={filters.query}
+          {...{ sortOrder, filters }}
         />
       </div>
     </div>

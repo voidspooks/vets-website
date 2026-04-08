@@ -1,20 +1,14 @@
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 import React from 'react';
-import SearchDescription from '../../../components/inbox/SearchDescription';
+import SearchDescriptionOld from '../../../components/inbox/SearchDescriptionOld';
 
-describe('SearchDescription', () => {
+describe('SearchDescriptionOld', () => {
   it('renders correct sentence with default settings', () => {
     const sentence =
       'Showing 1-5 of 5 results with the status set to "All" and the category set to "All."';
     const view = render(
-      <SearchDescription
-        categoryFilter="All"
-        statusFilter="All"
-        total={5}
-        pageStart={1}
-        pageEnd={5}
-      />,
+      <SearchDescriptionOld total={5} pageStart={1} pageEnd={5} />,
     );
     const heading = view.getByRole('heading', { level: 3, name: /showing/i });
     expect(heading.textContent).to.equal(sentence);
@@ -26,13 +20,7 @@ describe('SearchDescription', () => {
     const sentence =
       'Showing no results with the status set to "All" and the category set to "All."Search 1 of these 3 things to get more results:Reference numberCategory nameOriginal question';
     const view = render(
-      <SearchDescription
-        categoryFilter="All"
-        statusFilter="All"
-        total={0}
-        pageStart={undefined}
-        pageEnd={0}
-      />,
+      <SearchDescriptionOld total={0} pageStart={undefined} pageEnd={0} />,
     );
     const heading = view.getByRole('heading', { level: 3, name: /showing/i });
     expect(view.queryByTestId('no-results-suggestion')).to.exist;
@@ -43,7 +31,7 @@ describe('SearchDescription', () => {
     const sentence =
       'Showing 5-8 of 10 results with the status set to "Replied" and the category set to "Heath care."';
     const view = render(
-      <SearchDescription
+      <SearchDescriptionOld
         categoryFilter="Heath care"
         statusFilter="Replied"
         total={10}
@@ -59,9 +47,7 @@ describe('SearchDescription', () => {
     const sentence =
       'Showing 1-4 of 5 results for "last week" with the status set to "All" and the category set to "All."';
     const view = render(
-      <SearchDescription
-        categoryFilter="All"
-        statusFilter="All"
+      <SearchDescriptionOld
         total={5}
         pageStart={1}
         pageEnd={4}
@@ -76,9 +62,7 @@ describe('SearchDescription', () => {
     const sentence =
       'Showing 1-5 of 5 results with the status set to "All" and the category set to "All" in "Business."';
     const view = render(
-      <SearchDescription
-        categoryFilter="All"
-        statusFilter="All"
+      <SearchDescriptionOld
         total={5}
         pageStart={1}
         pageEnd={5}

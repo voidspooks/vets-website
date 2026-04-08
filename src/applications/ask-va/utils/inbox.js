@@ -58,8 +58,8 @@ export function standardizeInquiries(rawInquiries) {
   return {
     standardInquiries: output.inquiries,
     types: [...output.inquiryTypes],
-    uniqueCategories: [...output.uniqueCategories],
-    uniqueStatuses: [...output.uniqueStatuses],
+    uniqueCategories: [...output.uniqueCategories].toSorted(),
+    uniqueStatuses: [...output.uniqueStatuses].toSorted(),
   };
 }
 
@@ -109,7 +109,7 @@ const sortOptions = {
  *   inquiryTypes: ('Business' | 'Personal' | 'All')[]
  *   query: string
  * }} _.filters destructured object
- * @param {string} [_.sortOrder] use the `sortOptions` object to pick the right option
+ * @param {typeof sortOptions} [_.sortOrder] use the `sortOptions` object to pick the right option
  * @returns {Inquiry[]}
  */
 export function filterAndSort({

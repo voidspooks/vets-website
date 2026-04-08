@@ -161,9 +161,8 @@ export default function InboxLayoutOld({
                   filters: { ...filters, inquiryTypes: ['Business'] },
                 })}
                 tabName="Business"
-                categoryFilter={filters.categories[0]}
-                statusFilter={filters.statuses[0]}
                 query={filters.query}
+                {...{ filters }}
               />
             </TabPanel>
             <TabPanel className="inbox-tab-panel">
@@ -173,9 +172,8 @@ export default function InboxLayoutOld({
                   filters: { ...filters, inquiryTypes: ['Personal'] },
                 })}
                 tabName="Personal"
-                categoryFilter={filters.categories[0]}
-                statusFilter={filters.statuses[0]}
                 query={filters.query}
+                {...{ filters }}
               />
             </TabPanel>
           </Tabs>
@@ -186,9 +184,8 @@ export default function InboxLayoutOld({
             inquiriesArray: inquiries,
             filters: { ...filters, inquiryTypes: ['Personal'] },
           })}
-          categoryFilter={filters.categories[0]}
-          statusFilter={filters.statuses[0]}
           query={filters.query}
+          {...{ filters }}
         />
       )}
     </div>

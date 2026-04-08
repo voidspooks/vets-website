@@ -32,8 +32,7 @@ describe('InquiriesList', () => {
   it('only renders 6 items per page', () => {
     const { view } = renderWithStore(
       <InquiriesList
-        categoryFilter="All"
-        statusFilter="All"
+        filters={{ categories: ['All'], statuses: ['All'] }}
         inquiries={personalInquiries}
       />,
     );
@@ -45,8 +44,7 @@ describe('InquiriesList', () => {
   it('renders first 6 inquiries on first page', () => {
     const { view } = renderWithStore(
       <InquiriesList
-        categoryFilter="All"
-        statusFilter="All"
+        filters={{ categories: ['All'], statuses: ['All'] }}
         inquiries={personalInquiries}
       />,
     );
@@ -65,8 +63,7 @@ describe('InquiriesList', () => {
     const { view } = renderWithStore(
       <InquiriesList
         inquiries={[]}
-        categoryFilter="All"
-        statusFilter="In progress"
+        filters={{ categories: ['All'], statuses: ['In progress'] }}
       />,
     );
 
@@ -79,8 +76,7 @@ describe('InquiriesList', () => {
   it('updates results based on pagination', () => {
     const { view } = renderWithStore(
       <InquiriesList
-        categoryFilter="All"
-        statusFilter="All"
+        filters={{ categories: ['All'], statuses: ['All'] }}
         inquiries={personalInquiries}
       />,
     );

@@ -5,7 +5,8 @@ import { focusElement } from '@department-of-veterans-affairs/platform-utilities
 import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import InquiryCard from './InquiryCard';
 import { paginateInquiries } from '../../utils/inbox';
-import SearchDescription from './SearchDescription';
+import SearchDescriptionOld from './SearchDescriptionOld';
+import SearchDescriptionNew from './SearchDescriptionNew';
 
 /**
  * @typedef {import('./InquiryCard').Inquiry} Inquiry
@@ -14,8 +15,8 @@ import SearchDescription from './SearchDescription';
 /**
  * @typedef {Object} InquiriesListProps
  * @property {Inquiry[]} inquiries
- * @property {string} [categoryFilter]
- * @property {string} [statusFilter]
+ * @property {import('./SearchDescriptionNew').sortOption} sortOrder
+ * @property {{categories: string[]; statuses: string[]; types: string[]}} filters
  * @property {string} query
  * @property {'Business' | 'Personal'} [tabName]
  */
@@ -25,8 +26,8 @@ import SearchDescription from './SearchDescription';
  */
 export default function InquiriesList({
   inquiries,
-  categoryFilter,
-  statusFilter,
+  sortOrder,
+  filters,
   query,
   tabName,
 }) {
@@ -44,17 +45,34 @@ export default function InquiriesList({
 
   return (
     <>
-      <SearchDescription
-        total={inquiries.length}
-        pageEnd={currentPageContents.pageEnd}
-        pageStart={currentPageContents.pageStart}
-        {...{
-          categoryFilter,
-          statusFilter,
-          tabName,
-          query,
-        }}
-      />
+      {isNewInbox ? (
+        <SearchDescriptionNew
+          total={inquiries.length}
+          pageEnd={currentPageContents.pageEnd}
+          pageStart={currentPageContents.pageStart}
+          filtersCount={
+            filters.categories.length +
+            filters.statuses.length +
+            filters.types.length
+          }
+          {...{
+            sortOrder,
+            query,
+          }}
+        />
+      ) : (
+        <SearchDescriptionOld
+          total={inquiries.length}
+          pageEnd={currentPageContents.pageEnd}
+          pageStart={currentPageContents.pageStart}
+          categoryFilter={filters.categories[0]}
+          statusFilter={filters.statuses[0]}
+          {...{
+            tabName,
+            query,
+          }}
+        />
+      )}
       {inquiries.length ? (
         <div className={isNewInbox ? 'inquiries-list' : 'inquiries-list-old'}>
           {currentPageContents.items.map(inquiry => (
@@ -75,7 +93,6 @@ export default function InquiriesList({
           </va-alert>
         </div>
       )}
-
       {totalPages > 1 && (
         <VaPagination
           page={currentPageNum}
@@ -94,9 +111,13 @@ export default function InquiriesList({
 }
 
 InquiriesList.propTypes = {
+  filters: PropTypes.shape({
+    categories: PropTypes.arrayOf(PropTypes.string),
+    statuses: PropTypes.arrayOf(PropTypes.string),
+    types: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
   inquiries: PropTypes.arrayOf(InquiryCard.propTypes.inquiry).isRequired,
-  categoryFilter: SearchDescription.propTypes.categoryFilter,
-  query: SearchDescription.propTypes.query,
-  statusFilter: SearchDescription.propTypes.statusFilter,
-  tabName: SearchDescription.propTypes.tabName,
+  query: SearchDescriptionOld.propTypes.query,
+  sortOrder: SearchDescriptionNew.propTypes.sortOrder,
+  tabName: SearchDescriptionOld.propTypes.tabName,
 };
