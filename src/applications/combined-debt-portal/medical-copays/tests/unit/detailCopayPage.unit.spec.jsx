@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import { expect } from 'chai';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -18,6 +18,7 @@ describe('DetailCopayPage', () => {
   before(() => {
     registerMockElement('va-breadcrumbs');
     registerMockElement('va-loading-indicator');
+    registerMockElement('va-link');
   });
 
   const renderWithStore = (component, initialState) => {
@@ -243,5 +244,64 @@ describe('DetailCopayPage', () => {
     );
 
     expect(container.textContent).to.include('516 0000 0000 24571 JONES');
+  });
+
+  describe('legacy previous statements (getCopaysForPriorMonthlyStatements)', () => {
+    const FACILITY = '648';
+
+    const legacyCopay = (id, pSStatementDateOutput, overrides = {}) => ({
+      id,
+      station: { facilityName: 'Legacy VA Medical Center' },
+      pSFacilityNum: FACILITY,
+      pSStatementDateOutput,
+      accountNumber: 'ACC123',
+      details: [],
+      pHNewBalance: 50,
+      pHTotCharges: 10,
+      ...overrides,
+    });
+
+    const baseLegacyState = statementsData => ({
+      user: {
+        profile: {
+          userFullName: { first: 'John', last: 'Doe' },
+        },
+      },
+      combinedPortal: {
+        mcp: {
+          selectedStatement: statementsData[0],
+          statements: { data: statementsData, meta: null },
+          shouldUseLighthouseCopays: false,
+          isCopayDetailLoading: false,
+        },
+      },
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
+        loading: false,
+      },
+    });
+
+    it('renders a previous-statement link for each prior copay row (including multiple rows in the same month)', () => {
+      const open = legacyCopay('123', '03/15/2024', {
+        pHNewBalance: 100,
+        pHTotCharges: 25,
+      });
+      const febLate = legacyCopay('feb-late', '02/28/2024');
+      const febEarly = legacyCopay('feb-early', '02/05/2024');
+      const jan = legacyCopay('jan', '01/10/2024');
+
+      const { container } = renderWithStore(
+        <DetailCopayPage match={mockMatch} />,
+        baseLegacyState([open, febLate, febEarly, jan]),
+      );
+
+      const view = within(container);
+      expect(view.getByTestId('view-statements')).to.exist;
+      expect(view.getByTestId('balance-details-feb-late-statement-view')).to
+        .exist;
+      expect(view.getByTestId('balance-details-feb-early-statement-view')).to
+        .exist;
+      expect(view.getByTestId('balance-details-jan-statement-view')).to.exist;
+    });
   });
 });

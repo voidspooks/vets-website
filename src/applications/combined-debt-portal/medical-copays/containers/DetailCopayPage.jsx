@@ -24,6 +24,7 @@ import { getCopayDetailStatement } from '../../combined/actions/copays';
 import useHeaderPageTitle from '../../combined/hooks/useHeaderPageTitle';
 import CopayAlertContainer from '../components/CopayAlertContainer';
 import { splitAccountNumber } from '../components/HowToPay';
+import { getCopaysForPriorMonthlyStatements } from '../../combined/utils/vbsCopayStatements';
 
 const DetailCopayPage = ({ match }) => {
   const dispatch = useDispatch();
@@ -47,22 +48,11 @@ const DetailCopayPage = ({ match }) => {
 
   const previousStatements = shouldUseLighthouseCopays
     ? copayDetail?.attributes?.recentStatements || []
-    : (() => {
-        // Legacy logic for old data
-        const facilityId = selectedCopay?.pSFacilityNum;
-
-        return allStatements
-          .filter(
-            statement =>
-              statement.pSFacilityNum === facilityId &&
-              statement.id !== selectedId,
-          )
-          .sort((a, b) => {
-            const dateA = new Date(a.pSStatementDateOutput);
-            const dateB = new Date(b.pSStatementDateOutput);
-            return dateB - dateA;
-          });
-      })();
+    : getCopaysForPriorMonthlyStatements(
+        allStatements,
+        selectedCopay?.pSFacilityNum,
+        selectedId,
+      );
 
   const hasPreviousStatements =
     previousStatements && previousStatements.length > 0;
