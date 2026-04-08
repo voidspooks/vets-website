@@ -6,6 +6,8 @@ import sinon from 'sinon';
 import YourPersonalInformationAuthenticated from '../../components/YourPersonalInformationAuthenticated';
 import { createMockStore, mockRouterProps } from '../common';
 
+const ssnDisplayText = 'Last 4 digits of Social Security number:';
+
 describe('YourPersonalInformationAuthenticated', () => {
   it('should render with SSN and correctly formatted date', () => {
     const store = createMockStore({
@@ -37,8 +39,8 @@ describe('YourPersonalInformationAuthenticated', () => {
 
     expect(getByRole('heading', { name: /Your personal information/i })).to
       .exist;
-    expect(getByText(/Social Security number:/)).to.exist;
-    expect(getByText(/Date of birth: December 8, 1971/)).to.exist;
+    expect(getByText(`${ssnDisplayText} 6789`)).to.exist;
+    expect(getByText(/Date of Birth: December 8, 1971/i)).to.exist;
   });
 
   it('should handle dates with timezone information correctly', () => {
@@ -66,7 +68,7 @@ describe('YourPersonalInformationAuthenticated', () => {
       </Provider>,
     );
 
-    expect(getByText(/Date of birth: December 8, 1971/)).to.exist;
+    expect(getByText(/Date of Birth: December 8, 1971/i)).to.exist;
   });
 
   it('should render with service number', () => {
@@ -121,7 +123,7 @@ describe('YourPersonalInformationAuthenticated', () => {
       </Provider>,
     );
 
-    expect(getByText('Date of birth: None provided')).to.exist;
+    expect(getByText(/Date of Birth: None provided/i)).to.exist;
   });
 
   it('should redirect if not logged in', () => {
@@ -147,5 +149,61 @@ describe('YourPersonalInformationAuthenticated', () => {
     );
 
     expect(goForwardSpy.calledOnce).to.be.true;
+  });
+
+  it('should display last 4 digits when SSN is a full 9-digit string', () => {
+    const store = createMockStore({
+      formData: {
+        aboutYourself: {
+          first: 'Test',
+          last: 'User',
+          dateOfBirth: '1971-12-08',
+          socialOrServiceNum: {
+            ssn: '123456789',
+          },
+        },
+      },
+    });
+
+    const { getByText } = render(
+      <Provider store={store}>
+        <YourPersonalInformationAuthenticated
+          router={mockRouterProps}
+          goForward={() => {}}
+          goBack={() => {}}
+          isLoggedIn
+        />
+      </Provider>,
+    );
+
+    expect(getByText(`${ssnDisplayText} 6789`)).to.exist;
+  });
+
+  it('should display last 4 digits when SSN is already only 4 digits', () => {
+    const store = createMockStore({
+      formData: {
+        aboutYourself: {
+          first: 'Test',
+          last: 'User',
+          dateOfBirth: '1971-12-08',
+          socialOrServiceNum: {
+            ssn: '6789',
+          },
+        },
+      },
+    });
+
+    const { getByText } = render(
+      <Provider store={store}>
+        <YourPersonalInformationAuthenticated
+          router={mockRouterProps}
+          goForward={() => {}}
+          goBack={() => {}}
+          isLoggedIn
+        />
+      </Provider>,
+    );
+
+    expect(getByText(`${ssnDisplayText} 6789`)).to.exist;
   });
 });
