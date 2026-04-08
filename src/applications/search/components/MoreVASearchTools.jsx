@@ -11,7 +11,7 @@ const MoreVASearchTools = () => (
     <li>
       <va-link
         href="https://search.usa.gov/search?affiliate=bvadecisions"
-        text="Look up Board of Veterans' Appeals (BVA) decisions"
+        text="Search for Board of Veterans' Appeals (BVA) decisions"
       />
     </li>
     <li>
@@ -20,7 +20,7 @@ const MoreVASearchTools = () => (
     <li>
       <va-link
         href="https://www.va.gov/vapubs/"
-        text="VA handbooks and other publications"
+        text="Review VA handbooks and other publications"
       />
     </li>
     <li>

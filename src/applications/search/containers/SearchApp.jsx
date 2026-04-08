@@ -35,6 +35,21 @@ import ResultsCounter from '../components/ResultsCounter';
 import ResultsList from '../components/ResultsList';
 
 const SCREENREADER_FOCUS_CLASSNAME = 'sr-focus';
+const DOCUMENT_TITLE_SUFFIX = ' | Veterans Affairs';
+
+const setSearchResultsDocumentTitle = query => {
+  const normalizedQuery = (query || '').trim();
+
+  if (!normalizedQuery) {
+    document.title = `Search VA.gov${DOCUMENT_TITLE_SUFFIX}`;
+    return;
+  }
+
+  const escapedQuery = normalizedQuery
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+  document.title = `Search results for "${escapedQuery}"${DOCUMENT_TITLE_SUFFIX}`;
+};
 
 const SearchApp = ({
   fetchSearchResults,
@@ -157,6 +172,13 @@ const SearchApp = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(
+    () => {
+      setSearchResultsDocumentTitle(userInputFromURL);
+    },
+    [userInputFromURL],
+  );
 
   useEffect(
     () => {

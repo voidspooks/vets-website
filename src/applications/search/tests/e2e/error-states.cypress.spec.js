@@ -56,7 +56,13 @@ xdescribe('Error states', () => {
       cy.get(s.SEARCH_BUTTON).should('be.visible');
       cy.get(`${s.ERROR_ALERT_BOX} h2`)
         .should('be.visible')
-        .should('have.text', 'Your search didn’t go through');
+        .should('have.text', 'We couldn’t complete your search');
+      cy.get(`${s.ERROR_ALERT_BOX} p`)
+        .should('be.visible')
+        .should(
+          'have.text',
+          'We’re sorry. Something went wrong in our system. Try again later. Or use one of the other VA search tools on this page.',
+        );
     });
 
     cy.axeCheck();

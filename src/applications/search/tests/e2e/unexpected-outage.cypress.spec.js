@@ -72,7 +72,7 @@ describe('Unexpected outage from Search.gov', () => {
     cy.get(s.APP).within(() => {
       cy.get(s.ERROR_ALERT_BOX)
         .should('exist')
-        .and('contain', 'Something went wrong on our end,');
+        .and('contain', 'Something went wrong in our system');
     });
   };
 

@@ -12,7 +12,6 @@ import {
   formatResponseString,
   truncateResponseString,
   removeDoubleBars,
-  toSentenceCase,
 } from '../utils';
 
 const MAX_DESCRIPTION_LENGTH = 186;
@@ -103,7 +102,6 @@ const Result = ({
     const strippedTitle = removeDoubleBars(
       formatResponseString(result.title, true),
     );
-    const displayTitle = toSentenceCase(strippedTitle);
 
     return (
       <li
@@ -125,7 +123,7 @@ const Result = ({
           <va-link
             disable-analytics
             href={replaceWithStagingDomain(result.url)}
-            text={displayTitle}
+            text={strippedTitle}
             onClick={onSearchResultClick({
               bestBet: isBestBet,
               index,
