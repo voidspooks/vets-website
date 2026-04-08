@@ -36,7 +36,7 @@ describe('PicklistRemoveDependentFollowup', () => {
           last: 'FOSTER',
         },
         dateOfBirth: createDoB(0, 3),
-        ssn: '000111234',
+        ssn: '000111235',
         relationshipToVeteran: 'Child',
         selected: false,
         awardIndicator: 'Y',
@@ -48,7 +48,7 @@ describe('PicklistRemoveDependentFollowup', () => {
           last: 'FOSTER',
         },
         dateOfBirth: createDoB(45),
-        ssn: '000111234',
+        ssn: '000111236',
         relationshipToVeteran: 'Spouse',
         selected: true,
         awardIndicator: 'Y',
@@ -61,7 +61,7 @@ describe('PicklistRemoveDependentFollowup', () => {
           last: 'FOSTER',
         },
         dateOfBirth: createDoB(82),
-        ssn: '000111234',
+        ssn: '000111237',
         relationshipToVeteran: 'Parent',
         selected: parentSelected,
         awardIndicator: 'Y',
@@ -203,15 +203,17 @@ describe('PicklistRemoveDependentFollowup', () => {
   it('should navigate using goForward after continuing past last spouse marriage ended page when there are further selected dependents', () => {
     const goToPath = sinon.spy();
     const goForward = sinon.spy();
+    const setFormData = sinon.spy();
     const { container } = renderComponent({
       goToPath,
       goForward,
+      setFormData,
       testUrl: '?index=2&page=spouse-marriage-ended',
       data: defaultData(
         {
           removalReason: 'marriageEnded',
           endType: 'divorce',
-          endDate: '2020-1-1',
+          endDate: '2020-3-4',
           endCity: 'Test',
           endState: 'AK',
         },
@@ -223,6 +225,15 @@ describe('PicklistRemoveDependentFollowup', () => {
 
     expect(goToPath.notCalled).to.be.true;
     expect(goForward.calledOnce).to.be.true;
+    // Submit will fix zero-padding of endDate
+    expect(setFormData.firstCall.args[0][PICKLIST_DATA][2]).to.include({
+      ssn: '000111236',
+      removalReason: 'marriageEnded',
+      endType: 'divorce',
+      endDate: '2020-03-04',
+      endCity: 'Test',
+      endState: 'AK',
+    });
   });
 
   it('should navigate to parent removal follow up page', () => {

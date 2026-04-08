@@ -16,6 +16,8 @@ import {
 import { routing, getPicklistRoutes } from './routes';
 import { showExitLink } from './utils';
 
+import { reformatDate } from '../../config/utilities/submission';
+
 import { getFullName } from '../../../shared/utils';
 import ExitForm from '../../../shared/components/ExitFormLink';
 
@@ -181,7 +183,18 @@ const PicklistRemoveDependentFollowup = ({
     onSubmit: event => {
       event.preventDefault();
       setFormSubmitted(true);
-      setFormData({ ...data, [PICKLIST_PATHS]: getPicklistRoutes(data) });
+
+      // Prevent issue with endDate not including leading zeros, see
+      // https://github.com/department-of-veterans-affairs/va.gov-team/issues/138769
+      if (currentDependent.endDate && currentDependent.endDate.length !== 10) {
+        currentDependent.endDate = reformatDate(currentDependent.endDate);
+      }
+
+      const updatedData = set([PICKLIST_DATA, index], currentDependent, data);
+      setFormData({
+        ...updatedData,
+        [PICKLIST_PATHS]: getPicklistRoutes(updatedData),
+      });
 
       pageToRender?.page.handlers.onSubmit({
         event,

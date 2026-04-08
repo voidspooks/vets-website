@@ -568,6 +568,11 @@ describe('getPastDateError', () => {
     expect(error).to.equal('Enter a valid date');
   });
 
+  it('should return if a 4-digit year error with min date with incorrect date', () => {
+    const error = getPastDateError('20-01-01', 'Missing date');
+    expect(error).to.contain('Enter a 4-digit year greater than');
+  });
+
   it('should return null if date is valid and in the past', () => {
     const error = getPastDateError('2020-01-01', 'Missing date');
     expect(error).to.be.null;

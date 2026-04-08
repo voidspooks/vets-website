@@ -348,6 +348,11 @@ export const showExitLink = ({ data = {}, index = 0 } = {}) => {
   );
 };
 
+const currentYear = new Date().getFullYear();
+// Minimum year for date validation, set to 150 years ago to allow for older
+// dependents, but prevent invalid 2 digit years
+const minYear = currentYear - 150 < 1900 ? 1900 : currentYear - 150;
+
 /**
  * Get past date error message
  * @param {string} date - date string in YYYY-MM-DD format
@@ -365,6 +370,10 @@ export const getPastDateError = (
   const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
   if (!isValid(parsedDate) || date.includes('X')) {
     return 'Enter a valid date';
+  }
+  // Check for 2 digit year which can be parsed but is not valid in this context
+  if (parsedDate.getFullYear() <= minYear) {
+    return `Enter a 4-digit year greater than ${minYear}`;
   }
   if (!isPast(parsedDate)) {
     return 'Enter a past date';
