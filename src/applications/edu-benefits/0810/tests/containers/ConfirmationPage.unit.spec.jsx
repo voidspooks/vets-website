@@ -1,73 +1,86 @@
 import React from 'react';
 import { expect } from 'chai';
-import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { cleanup, render } from '@testing-library/react';
-import { createInitialState } from '@department-of-veterans-affairs/platform-forms-system/state/helpers';
-import formConfig from '../../config/form';
-import ConfirmationPage from '../../containers/ConfirmationPage';
-import maximalTestData from '../fixtures/data/maximal-test.json';
+import { render, fireEvent } from '@testing-library/react';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import sinon from 'sinon';
+import {
+  ConfirmationPage,
+  setClaimIdInLocalStage,
+  getClaimIdFromLocalStage,
+} from '../../containers/ConfirmationPage';
 
-const mockStore = state => createStore(() => state);
-
-const initConfirmationPage = ({ formData } = {}) => {
-  const store = mockStore({
-    form: {
-      ...createInitialState(formConfig),
-      submission: {
-        response: {
-          confirmationNumber: '1234567890',
-        },
-        timestamp: new Date(),
-      },
-      data: formData || {},
-    },
-  });
-
-  return render(
-    <Provider store={store}>
-      <ConfirmationPage route={{ formConfig }} />
-    </Provider>,
-  );
+const storeBase = {
+  form: {
+    data: {},
+  },
 };
 
-describe('ConfirmationPage', () => {
+describe('<ConfirmationPage>', () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+
   afterEach(() => {
-    cleanup();
+    sandbox.restore();
   });
+  const middleware = [thunk];
+  const mockStore = configureStore(middleware);
 
-  it('should show success alert, h2, and confirmation number if present', () => {
-    const { container } = initConfirmationPage();
-    const alert = container.querySelector('va-alert');
-    expect(alert).to.have.attribute('status', 'success');
-    expect(alert.querySelector('h2')).to.contain.text(
-      'Form submission started',
-    );
-    expect(alert).to.contain.text('Your confirmation number is 1234567890');
+  it('should set claim id in local stage', () => {
+    const submission = { response: { id: 1 } };
+    setClaimIdInLocalStage(submission);
+    const result = getClaimIdFromLocalStage();
+    expect(result).to.equal(submission.response.id);
   });
-
-  it('should render without submission data using fallback defaults', () => {
-    const store = mockStore({
-      form: {
-        ...createInitialState(formConfig),
-        data: {},
-      },
-    });
-    const { container } = render(
-      <Provider store={store}>
-        <ConfirmationPage route={{ formConfig }} />
+  it('should render with data', () => {
+    const router = { push: () => {} };
+    const { getByTestId } = render(
+      <Provider store={mockStore(storeBase)}>
+        <ConfirmationPage router={router} />
       </Provider>,
     );
-    const alert = container.querySelector('va-alert');
-    expect(alert).to.exist;
-    expect(alert).to.not.contain.text('Your confirmation number is');
+    expect(getByTestId('print-page')).to.exist;
   });
 
-  it('should render with form data', () => {
-    const { container } = initConfirmationPage({
-      formData: maximalTestData.data,
-    });
-    const alert = container.querySelector('va-alert');
-    expect(alert).to.have.attribute('status', 'success');
+  it('should call window.print when print button is clicked', () => {
+    window.print = window.print || (() => {});
+    const printSpy = sandbox.stub(window, 'print');
+    const { getByTestId } = render(
+      <Provider store={mockStore(storeBase)}>
+        <ConfirmationPage />
+      </Provider>,
+    );
+    fireEvent.click(getByTestId('print-page'));
+    expect(printSpy.calledOnce).to.be.true;
+  });
+
+  it("should call router.push('/review-and-submit') when back button is clicked", () => {
+    const router = {
+      push: sandbox.spy(),
+    };
+    const { getByTestId } = render(
+      <Provider store={mockStore(storeBase)}>
+        <ConfirmationPage router={router} />
+      </Provider>,
+    );
+    fireEvent.click(getByTestId('back-button'));
+    expect(router.push.calledOnce).to.be.true;
+    expect(router.push.calledWith('/review-and-submit')).to.be.true;
+  });
+
+  it('should call window.history.back when back button is clicked and no router is present', () => {
+    const router = {};
+    const historyStub = sandbox.stub(window.history, 'back');
+    const { getByTestId } = render(
+      <Provider store={mockStore(storeBase)}>
+        <ConfirmationPage router={router} />
+      </Provider>,
+    );
+    fireEvent.click(getByTestId('back-button'));
+    expect(historyStub.calledOnce).to.be.true;
   });
 });

@@ -5,9 +5,14 @@ import {
   profileContactInfoPages,
 } from 'platform/forms-system/src/js/patterns/prefill';
 import { getContent } from 'platform/forms-system/src/js/utilities/data/profile';
+import environment from '~/platform/utilities/environment';
 import { TITLE, SUBTITLE } from '../constants';
 import manifest from '../manifest.json';
+import { CustomReviewTopContent } from '../helpers';
+
 import prefillTransform from './prefillTransform';
+import submitForm from './submitForm';
+import transform from './transform';
 
 // Components
 import IntroductionPage from '../containers/IntroductionPage';
@@ -27,13 +32,17 @@ import {
   submissionInstructions,
 } from '../pages';
 
+export const SUBMIT_URL = `${
+  environment.API_URL
+}/v0/education_benefits_claims/0810`;
+
 /** @type {FormConfig} */
 const formConfig = {
   rootUrl: manifest.rootUrl,
   urlPrefix: '/',
-  submitUrl: '/v0/api',
-  submit: () =>
-    Promise.resolve({ attributes: { confirmationNumber: '123123123' } }),
+  submitUrl: SUBMIT_URL,
+  submit: submitForm,
+  transformForSubmit: transform,
   trackingPrefix: '0810-edu-benefits',
   introduction: IntroductionPage,
   confirmation: ConfirmationPage,
@@ -61,6 +70,7 @@ const formConfig = {
       useProfileFullName: true,
     },
   },
+  CustomReviewTopContent,
   savedFormMessages: {
     notFound: 'Please start over.',
     noAuth: 'Please sign in again to continue your request.',
