@@ -22,9 +22,9 @@ describe('21-4502 vehicleDetails page', () => {
     expect(conveyanceEnum).to.include.members(Object.keys(CONVEYANCE_TYPES));
   });
 
-  it('conveyanceTypeOther uses hideIf for non-other selection', () => {
+  it('otherConveyanceType uses hideIf for non-other selection', () => {
     const conveyanceOtherHideIf =
-      appUI[applicationInfoFields.conveyanceTypeOther]['ui:options']?.hideIf;
+      appUI[applicationInfoFields.otherConveyanceType]['ui:options']?.hideIf;
     expect(
       conveyanceOtherHideIf({ applicationInfo: { conveyanceType: 'other' } }),
     ).to.equal(false);
@@ -39,8 +39,8 @@ describe('21-4502 vehicleDetails page', () => {
     expect(errorMessages.required).to.equal(VD.ERROR_TYPE);
   });
 
-  it('conveyanceTypeOther is required when other is selected and has custom error message', () => {
-    const conveyanceOther = appUI[applicationInfoFields.conveyanceTypeOther];
+  it('otherConveyanceType is required when other is selected and has custom error message', () => {
+    const conveyanceOther = appUI[applicationInfoFields.otherConveyanceType];
     expect(
       conveyanceOther['ui:required']({
         applicationInfo: { conveyanceType: 'other' },

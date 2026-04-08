@@ -114,7 +114,7 @@ const mapVehicleType = applicationInfo => {
 
   if (type === 'other') {
     return stringOrUndefined(
-      applicationInfo?.[applicationInfoFields.conveyanceTypeOther],
+      applicationInfo?.[applicationInfoFields.otherConveyanceType],
     );
   }
 
@@ -192,13 +192,16 @@ const buildSubmissionPayload = data => {
       applicationInfo[applicationInfoFields.dateOfRelease],
     ),
     applied_for_compensation: booleanOrUndefined(
-      applicationInfo[applicationInfoFields.appliedDisabilityCompensation],
+      applicationInfo[applicationInfoFields.veteranDisabilityCompensation],
     ),
     date_applied_for_compensation: stringOrUndefined(
-      applicationInfo[applicationInfoFields.dateApplied],
+      applicationInfo[applicationInfoFields.appliedDisabilityCompensationDate],
     ),
     location_of_office: stringOrUndefined(
       applicationInfo[applicationInfoFields.vaOfficeLocation],
+    ),
+    name_of_office: stringOrUndefined(
+      applicationInfo[applicationInfoFields.appliedDisabilityCompensationPlace],
     ),
     vehicle_type: mapVehicleType(applicationInfo),
     previously_applied: booleanOrUndefined(

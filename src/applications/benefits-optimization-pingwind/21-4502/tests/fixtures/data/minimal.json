@@ -20,7 +20,7 @@
     "conveyanceType": "automobile",
     "driverOrPassenger": "driver",
     "previouslyAppliedConveyance": false,
-    "appliedDisabilityCompensation": false
+    "veteranDisabilityCompensation": false
   },
   "certifyLicensing": true,
   "certifyNoPriorGrant": true

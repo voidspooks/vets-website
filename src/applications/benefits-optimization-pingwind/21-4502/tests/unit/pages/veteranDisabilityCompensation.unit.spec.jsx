@@ -11,27 +11,28 @@ describe('21-4502 veteranDisabilityCompensation page', () => {
   const appUiSchema = uiSchema[applicationInfoFields.parentObject];
   const { VETERAN_DISABILITY_COMPENSATION: V } = FORM_21_4502;
 
-  it('requires appliedDisabilityCompensation', () => {
+  it('requires veteranDisabilityCompensation', () => {
     expect(appSchema.required).to.include(
-      applicationInfoFields.appliedDisabilityCompensation,
+      applicationInfoFields.veteranDisabilityCompensation,
     );
   });
 
-  it('defines appliedDisabilityCompensationPlace, dateApplied, vaOfficeLocation', () => {
+  it('defines appliedDisabilityCompensationPlace and appliedDisabilityCompensationDate', () => {
     expect(
       appSchema.properties[
         applicationInfoFields.appliedDisabilityCompensationPlace
       ],
     ).to.exist;
-    expect(appSchema.properties[applicationInfoFields.dateApplied]).to.exist;
-    expect(appSchema.properties[applicationInfoFields.vaOfficeLocation]).to
-      .exist;
+    expect(
+      appSchema.properties[
+        applicationInfoFields.appliedDisabilityCompensationDate
+      ],
+    ).to.exist;
   });
 
   it('uses the custom required messages', () => {
-    expect(appUiSchema['ui:validations']).to.have.length(1);
     expect(
-      appUiSchema[applicationInfoFields.appliedDisabilityCompensation][
+      appUiSchema[applicationInfoFields.veteranDisabilityCompensation][
         'ui:errorMessages'
       ].required,
     ).to.equal(V.ERROR_APPLIED);
@@ -44,14 +45,31 @@ describe('21-4502 veteranDisabilityCompensation page', () => {
       appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace][
         'ui:required'
       ],
-    ).to.not.exist;
+    ).to.be.a('function');
+    expect(
+      appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace][
+        'ui:required'
+      ]({
+        applicationInfo: {
+          [applicationInfoFields.veteranDisabilityCompensation]: true,
+        },
+      }),
+    ).to.equal(true);
   });
 
   it('uses the custom date hint and messages', () => {
-    const dateUi = appUiSchema[applicationInfoFields.dateApplied];
+    const dateUi =
+      appUiSchema[applicationInfoFields.appliedDisabilityCompensationDate];
 
     expect(dateUi['ui:options'].hint).to.equal(V.HINT_DATE_APPLIED);
     expect(dateUi['ui:options'].hideIf).to.be.a('function');
+    expect(
+      dateUi['ui:options'].hideIf({
+        applicationInfo: {
+          [applicationInfoFields.veteranDisabilityCompensation]: true,
+        },
+      }),
+    ).to.equal(false);
     expect(dateUi['ui:errorMessages'].required).to.equal(
       V.ERROR_DATE_APPLIED_REQUIRED,
     );

@@ -26,7 +26,7 @@ export default {
           required: VD.ERROR_TYPE,
         },
       }),
-      [applicationInfoFields.conveyanceTypeOther]: {
+      [applicationInfoFields.otherConveyanceType]: {
         ...textUI({
           title: VD.OTHER_SPECIFY,
           required: formData =>
@@ -50,7 +50,7 @@ export default {
           [applicationInfoFields.conveyanceType]: radioSchema(
             Object.keys(CONVEYANCE_TYPES),
           ),
-          [applicationInfoFields.conveyanceTypeOther]: {
+          [applicationInfoFields.otherConveyanceType]: {
             type: 'string',
             maxLength: 100,
           },

@@ -55,6 +55,7 @@ describe('21-4502 submit transformer', () => {
     expect(payload.previously_applied).to.equal(true);
     expect(payload.applied_for_compensation).to.equal(true);
     expect(payload.date_applied_for_compensation).to.equal('2019-07-22');
+    expect(payload.name_of_office).to.include('Baltimore');
     expect(payload.vehicle_type).to.equal('Motorcycle with sidecar');
   });
 

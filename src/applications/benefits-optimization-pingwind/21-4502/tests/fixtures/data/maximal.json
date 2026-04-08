@@ -35,14 +35,14 @@
     "dateOfRelease": "2022-06-30",
     "vaOfficeLocation": "Houston Regional Office",
     "conveyanceType": "other",
-    "conveyanceTypeOther": "Motorcycle with sidecar",
+    "otherConveyanceType": "Motorcycle with sidecar",
     "driverOrPassenger": "passenger",
     "previouslyAppliedConveyance": true,
     "previouslyAppliedPlace": "Philadelphia VA Regional Office",
     "previouslyAppliedDate": "2020-03-15",
-    "appliedDisabilityCompensation": true,
+    "veteranDisabilityCompensation": true,
     "appliedDisabilityCompensationPlace": "Baltimore VA Medical Center",
-    "dateApplied": "2019-07-22"
+    "appliedDisabilityCompensationDate": "2019-07-22"
   },
   "certifyLicensing": true,
   "certifyNoPriorGrant": true

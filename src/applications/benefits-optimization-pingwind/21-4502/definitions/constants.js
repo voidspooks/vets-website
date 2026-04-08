@@ -49,14 +49,14 @@ export const applicationInfoFields = {
   dateOfRelease: 'dateOfRelease',
   vaOfficeLocation: 'vaOfficeLocation',
   conveyanceType: 'conveyanceType',
-  conveyanceTypeOther: 'conveyanceTypeOther',
+  otherConveyanceType: 'otherConveyanceType',
   driverOrPassenger: 'driverOrPassenger',
   previouslyAppliedConveyance: 'previouslyAppliedConveyance',
   previouslyAppliedPlace: 'previouslyAppliedPlace',
   previouslyAppliedDate: 'previouslyAppliedDate',
-  appliedDisabilityCompensation: 'appliedDisabilityCompensation',
+  veteranDisabilityCompensation: 'veteranDisabilityCompensation',
   appliedDisabilityCompensationPlace: 'appliedDisabilityCompensationPlace',
-  dateApplied: 'dateApplied',
+  appliedDisabilityCompensationDate: 'appliedDisabilityCompensationDate',
 };
 
 export const DRIVER_OR_PASSENGER = {
@@ -299,7 +299,7 @@ export const FORM_21_4502 = {
     ERROR_DATE_APPLIED_REQUIRED:
       'Enter the date you applied for disability benefits',
     ERROR_DATE_APPLIED_INCOMPLETE: 'Please enter a complete date',
-    ERROR_DATE_APPLIED_INVALID: 'Please enter a valid date of birth',
+    ERROR_DATE_APPLIED_INVALID: 'Please enter a valid date',
     VA_OFFICE_LOCATION: 'Location of VA Office that has your file (if known)',
   },
   VEHICLE_DETAILS: {
@@ -382,7 +382,7 @@ export const FORM_21_4502 = {
     REQUIREMENT_AUTOMOBILE:
       'Applying for financial assistance to purchase an automobile (not adaptive equipment only)',
     NOT_ELIGIBLE_DISABILITY:
-      'Based on your response, you may not currently eligible to complete ',
+      'Based on your response, you may not currently be eligible to complete ',
     NOT_ELIGIBLE_DISABILITY_EMPHASIS: 'VA Form 21-4502',
     NOT_ELIGIBLE_DISABILITY_AFTER:
       '. Confirm you have applied for service-connected disability benefits through the VA. Select the link to file for disability compensation with the VA.',
@@ -418,8 +418,8 @@ export const FORM_21_4502 = {
     CHAPTER_QUALIFYING: 'Section II: Qualifying disabilities',
     CHAPTER_SERVICE_RECORD: 'Section II: Service record',
     CHAPTER_CONVEYANCE: 'Section II: Type of vehicle',
-    CHAPTER_VEHICLE_USE: 'Section II: Vehicle Use',
-    CHAPTER_PREVIOUS_VEHICLE: 'Section II: Vehicle Application History',
+    CHAPTER_VEHICLE_USE: 'Section II: Vehicle use',
+    CHAPTER_PREVIOUS_VEHICLE: 'Section II: Vehicle application history',
     CHAPTER_CERTIFICATION: 'Section II: Required certifications',
     PAGE_PERSONAL_INFO: 'Section I: Veteran or Service Member ID Information',
     PAGE_CONTACT: 'Phone Number and Email Address',

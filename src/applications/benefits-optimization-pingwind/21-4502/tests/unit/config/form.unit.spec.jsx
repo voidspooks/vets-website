@@ -103,13 +103,13 @@ describe('21-4502 form config', () => {
         chapters.serviceRecordChapter.pages.currentServiceStatusPage,
       ).to.not.have.property('initialData');
       expect(
-        chapters.serviceRecordChapter.pages.veteranDisabilityCompensationPage,
-      ).to.not.have.property('initialData');
-      expect(
         chapters.conveyanceTypeChapter.pages.vehicleDetailsPage,
       ).to.not.have.property('initialData');
       expect(
         chapters.vehicleUseChapter.pages.vehicleUsePage,
+      ).to.not.have.property('initialData');
+      expect(
+        chapters.serviceRecordChapter.pages.veteranDisabilityCompensationPage,
       ).to.not.have.property('initialData');
       expect(
         chapters.previousVehicleApplicationChapter.pages
@@ -117,17 +117,31 @@ describe('21-4502 form config', () => {
       ).to.not.have.property('initialData');
     });
 
-    it('shows veteran-only service record pages only when not currently on active duty', () => {
+    it('keeps veteran status and disability compensation in the service record chapter with the current depends behavior', () => {
       const { pages } = formConfig.chapters.serviceRecordChapter;
 
       expect(
-        pages.veteranStatusInformationPage.depends({
+        pages.veteranDisabilityCompensationPage.depends({
           applicationInfo: { currentlyOnActiveDuty: false },
         }),
       ).to.equal(true);
       expect(
         pages.veteranDisabilityCompensationPage.depends({
+          applicationInfo: { currentlyOnActiveDuty: true },
+        }),
+      ).to.equal(false);
+      expect(pages.veteranDisabilityCompensationPage.path).to.equal(
+        'veteran-disability-compensation',
+      );
+
+      expect(
+        pages.veteranStatusInformationPage.depends({
           applicationInfo: { currentlyOnActiveDuty: false },
+        }),
+      ).to.equal(true);
+      expect(
+        pages.veteranStatusInformationPage.depends({
+          applicationInfo: { currentlyOnActiveDuty: 'N' },
         }),
       ).to.equal(true);
 
@@ -137,10 +151,10 @@ describe('21-4502 form config', () => {
         }),
       ).to.equal(false);
       expect(
-        pages.veteranDisabilityCompensationPage.depends({
-          applicationInfo: { currentlyOnActiveDuty: true },
+        pages.veteranStatusInformationPage.depends({
+          applicationInfo: { currentlyOnActiveDuty: 'Y' },
         }),
-      ).to.equal(false);
+      ).to.equal(true);
     });
   });
 });
