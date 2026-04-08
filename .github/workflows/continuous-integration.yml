@@ -134,6 +134,7 @@ jobs:
         timeout-minutes: 30
         env:
           ENTRY: ${{ steps.get-changed-apps.outputs.entry_names }}
+          GIT_REVISION: ${{ github.sha }}
 
       - name: Generate build details
         run: |
