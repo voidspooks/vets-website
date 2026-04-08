@@ -96,6 +96,9 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
             claimant.id
           }`}
           text="Go to the claimant overview"
+          aria-label={`Go to the claimant overview for ${claimant.firstName} ${
+            claimant.lastName
+          }`}
           type="primary"
         />
       ) : (
@@ -104,6 +107,9 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
             claimant.id
           }`}
           text="Go to the claimant overview"
+          aria-label={`Go to the claimant overview for ${claimant.firstName} ${
+            claimant.lastName
+          }`}
           type="primary"
         />
       )}

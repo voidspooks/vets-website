@@ -47,6 +47,9 @@ const response = (poaStatus, poaRequest, poaRequestSubmission) => {
                   poaRequest.claimantId
                 }`}
                 text="Go to the claimant overview"
+                aria-label={`Go to the claimant overview for ${
+                  poaRequest?.claimant?.firstName
+                } ${poaRequest?.claimant?.lastName}`}
               />
             </Toggler.Enabled>
           </Toggler>
