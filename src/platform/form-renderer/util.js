@@ -6,9 +6,29 @@ Handlebars.registerHelper('lastFour', ssn => ssn.slice(-4));
 Handlebars.registerHelper('formatDate', iso8601 =>
   format(parseISO(iso8601), 'MMMM d, yyyy'),
 );
-Handlebars.registerHelper('formatBool', (bool, yes, no) => {
-  if (bool === null || bool === undefined) return '';
-  return bool ? yes : no;
+Handlebars.registerHelper('formatBool', (bool, trueValue, falseValue) => {
+  if (bool == null) {
+    if (trueValue === '✓ Selected' && falseValue === 'Not selected') {
+      return 'Not selected';
+    }
+    if (trueValue === 'Yes' && falseValue === 'No') {
+      return '';
+    }
+    return falseValue;
+  }
+
+  // Normalize string representations to actual booleans
+  if (typeof bool === 'string') {
+    const lower = bool.toLowerCase().trim();
+    if (lower === 'false' || lower === '0' || lower === '') {
+      return falseValue;
+    }
+    if (lower === 'true' || lower === '1') {
+      return trueValue;
+    }
+  }
+
+  return bool ? trueValue : falseValue;
 });
 
 Handlebars.registerHelper('multilineList', (list, options) => {
