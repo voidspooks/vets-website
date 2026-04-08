@@ -130,21 +130,13 @@ describe('CareTeamNameChangeAlert', () => {
     });
   });
 
-  it('displays the footer text with bold message title', async () => {
+  it('displays the footer text', async () => {
     const { container } = renderComponent();
 
     await waitFor(() => {
       const alert = container.querySelector('va-alert');
       expect(alert.textContent).to.include(
-        Alerts.Message.CARE_TEAM_CHANGE_FOOTER_PREFIX,
-      );
-      expect(alert.textContent).to.include(
-        Alerts.Message.CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE,
-      );
-      const strong = alert.querySelector('strong');
-      expect(strong).to.exist;
-      expect(strong.textContent).to.equal(
-        Alerts.Message.CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE,
+        Alerts.Message.CARE_TEAM_CHANGE_FOOTER,
       );
     });
   });

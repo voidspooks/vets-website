@@ -164,10 +164,7 @@ const CareTeamNameChangeAlert = () => {
           </li>
         ))}
       </ul>
-      <p>
-        {Alerts.Message.CARE_TEAM_CHANGE_FOOTER_PREFIX}
-        <strong>{Alerts.Message.CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE}</strong>
-      </p>
+      <p>{Alerts.Message.CARE_TEAM_CHANGE_FOOTER}</p>
       {messageId !== null && (
         <RouterLink
           href={`${Paths.MESSAGE_THREAD}${messageId}/`}

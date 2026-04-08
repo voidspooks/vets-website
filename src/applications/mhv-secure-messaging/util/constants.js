@@ -230,9 +230,8 @@ export const Alerts = {
       count === 1
         ? 'Here is the new name of one of your recent care teams:'
         : 'Here are the new names of some of your recent care teams:',
-    CARE_TEAM_CHANGE_FOOTER_PREFIX:
-      'Go to your inbox to see your full list in a message titled ',
-    CARE_TEAM_CHANGE_FOOTER_MESSAGE_TITLE: 'Your new care team names.',
+    CARE_TEAM_CHANGE_FOOTER:
+      'We sent you a message with all your new care team names.',
     CARE_TEAM_CHANGE_LINK_TEXT: 'Read the message now',
     CARE_TEAM_CHANGE_TOOLTIP_NAME: 'sm_care_team_name_change',
   },
