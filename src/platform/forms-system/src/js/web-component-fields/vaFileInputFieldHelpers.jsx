@@ -58,6 +58,7 @@ export const uploadFile = (
   password,
   createPayload,
   parseResponse,
+  requestController,
 ) => {
   const uiOptions = {
     fileUploadUrl,
@@ -76,6 +77,8 @@ export const uploadFile = (
       () => {}, // onError
       '', // tracking prefix placeholder
       password,
+      false,
+      requestController,
     );
     uploadRequest(dispatch, () => ({ form: { formId: formNumber } }));
   };
@@ -107,7 +110,13 @@ export const useFileUpload = (
   const [isUploading, setIsUploading] = useState(false);
   const [percentUploaded, setPercentUploaded] = useState(null);
 
-  const handleUpload = (file, onSuccess, password = null, fileIndex) => {
+  const handleUpload = (
+    file,
+    onSuccess,
+    password = null,
+    fileIndex,
+    requestController,
+  ) => {
     setIsUploading(true);
 
     const onFileUploaded = uploadedFile => {
@@ -132,6 +141,7 @@ export const useFileUpload = (
         password,
         createPayload,
         parseResponse,
+        requestController,
       ),
     );
   };
@@ -292,18 +302,32 @@ const INTERVAL = 50;
  * @param {Function} setPercent - function to set percent uploaded value
  * @param {Function} update - function that updates the form state
  * @param {File} file - the file to be uploaded
+ * @param {AbortController} requestController - controller that can cancel the upload
  */
-export function simulateUploadSingle(setPercent, update, file) {
+export function simulateUploadSingle(
+  setPercent,
+  update,
+  file,
+  requestController,
+) {
   let per = START_PERCENT;
+
   const id = setInterval(() => {
     setPercent(per);
     if (per >= 100) {
-      update(getMockFileData(file));
+      if (!requestController?.signal?.aborted) {
+        update(getMockFileData(file));
+      }
       setPercent(null);
       clearInterval(id);
     }
     per += Math.random() * PERCENT_MAX_STEP;
   }, INTERVAL);
+
+  requestController.signal.addEventListener('abort', () => {
+    setPercent(null);
+    clearInterval(id);
+  });
 }
 
 /**
@@ -313,6 +337,7 @@ export function simulateUploadSingle(setPercent, update, file) {
  * @param {number} index - index of the file
  * @param {Object} childrenProps - props passed to field, including data and onchange function
  * @param {File} file - the file to be uploaded
+ * @param {AbortController} requestController - controller that can cancel the upload
  */
 export function simulateUploadMultiple(
   setPercentsUploaded,
@@ -320,22 +345,38 @@ export function simulateUploadMultiple(
   index,
   childrenProps,
   file,
+  requestController,
 ) {
   let per = START_PERCENT;
   const id = setInterval(() => {
     const _percents = [...percentsUploaded];
     _percents[index] = per;
-    setPercentsUploaded(_percents);
+    setPercentsUploaded(prev => {
+      const next = [...prev];
+      next[index] = per;
+      return next;
+    });
     if (per >= 100) {
       const files = [...childrenProps.formData];
       files[index] = getMockFileData(file);
-      childrenProps.onChange(files);
+      if (!requestController?.signal?.aborted) {
+        childrenProps.onChange(files);
+      }
       _percents[index] = null;
       setPercentsUploaded(_percents);
       clearInterval(id);
     }
     per += Math.random() * PERCENT_MAX_STEP;
   }, INTERVAL);
+
+  requestController.signal.addEventListener('abort', () => {
+    setPercentsUploaded(prev => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
+    clearInterval(id);
+  });
 }
 
 const UPLOADING_MESSAGE = 'Uploading file';

@@ -134,6 +134,33 @@ function testRejectFileNotAccepted() {
   deleteFile();
 }
 
+// test that canceling an in-progress upload returns the UI to its initial state
+function testCancelUpload() {
+  const uploadUrl =
+    formConfig.chapters.fileInput.pages.fileInput.uiSchema.wcv3FileInput[
+      'ui:options'
+    ].fileUploadUrl;
+
+  // Override the upload intercept with a throttled response so the
+  // progress bar stays visible long enough to click cancel.
+  // throttleKbps: 1 keeps the response trickling in slowly.
+  cy.intercept('POST', uploadUrl, {
+    statusCode: 200,
+    body: JSON.stringify(mockFileUpload),
+    delay: 500,
+    throttleKbps: 1,
+  }).as('slowUpload');
+
+  cy.wrap(makeMinimalPNG()).then(file => {
+    cy.cancelVaFileInputUpload(file, SELECTOR);
+  });
+
+  // restore the normal (fast) upload intercept for subsequent tests
+  cy.then(() => {
+    cy.intercept('POST', uploadUrl, mockFileUpload).as('normalUpload');
+  });
+}
+
 // test happy path
 function uploadValidFileAndNavigateToReviewPage() {
   testFileUpload(makeMinimalPNG);
@@ -175,6 +202,7 @@ const testConfig = createTestConfig(
           testEncryptedPdf();
           testRejectFileNotAccepted();
           testAdditionalInfo();
+          testCancelUpload();
           uploadValidFileAndNavigateToReviewPage();
         });
       },

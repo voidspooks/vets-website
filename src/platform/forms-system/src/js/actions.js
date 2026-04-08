@@ -280,6 +280,7 @@ export function uploadFile(
   trackingPrefix,
   password,
   hasAttemptedTokenRefresh = false,
+  requestController,
 ) {
   // This item should have been set in any previous API calls
   const csrfTokenStored = localStorage.getItem('csrfToken');
@@ -519,6 +520,10 @@ export function uploadFile(
         // where the backend is uploading to s3
         onProgress((evt.loaded / evt.total) * 80);
       }
+    });
+
+    requestController?.signal?.addEventListener('abort', () => {
+      req.abort();
     });
 
     req.setRequestHeader('X-Key-Inflection', 'camel');

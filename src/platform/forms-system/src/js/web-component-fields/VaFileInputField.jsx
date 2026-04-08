@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { VaFileInput } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import PropTypes from 'prop-types';
@@ -89,6 +89,8 @@ const VaFileInputField = props => {
   const [passwordSubmissionSuccess, setPasswordSubmissionSuccess] = useState(
     null,
   );
+  const requestController = useRef(null);
+
   const _id = childrenProps.idSchema.$id;
 
   // only needed because sometimes we skip upload and simulate percent progress
@@ -153,21 +155,35 @@ const VaFileInputField = props => {
   };
 
   const handleFileProcessing = uploadedFile => {
-    if (!uploadedFile || !uploadedFile.file) return;
+    if (
+      !uploadedFile ||
+      !uploadedFile.file ||
+      (requestController.current && requestController.current?.signal?.aborted)
+    )
+      return;
+    requestController.current = null;
     handleSubmissionErrors(uploadedFile);
     assignFileUploadToStore(uploadedFile);
   };
 
   const handleVaChange = async e => {
+    // clear error
+    setError(null);
     // reset in case user is replacing one encrypted file with another
     setPasswordSubmissionSuccess(null);
     const fileFromEvent = e.detail.files[0];
 
     if (!fileFromEvent) {
+      // if there is a request in flight, cancel it
+      requestController.current?.abort?.();
+      setPercent(null);
       setError(mappedProps.error);
       childrenProps.onChange({});
       return;
     }
+
+    // create a new controller for each upload
+    requestController.current = new AbortController();
 
     const { fileError, encryptedCheck } = await getFileError(
       fileFromEvent,
@@ -186,7 +202,12 @@ const VaFileInputField = props => {
     setEncrypted(encryptedCheck);
 
     if (uiOptions.skipUpload && !encryptedCheck) {
-      simulateUploadSingle(setPercent, childrenProps.onChange, fileFromEvent);
+      simulateUploadSingle(
+        setPercent,
+        childrenProps.onChange,
+        fileFromEvent,
+        requestController.current,
+      );
       return;
     }
 
@@ -198,7 +219,13 @@ const VaFileInputField = props => {
         _id,
       });
     } else {
-      handleUpload(fileFromEvent, handleFileProcessing);
+      handleUpload(
+        fileFromEvent,
+        handleFileProcessing,
+        null,
+        null,
+        requestController.current,
+      );
     }
   };
 
@@ -218,7 +245,13 @@ const VaFileInputField = props => {
         handleSubmissionErrors({ errorMessage: null, isEncrypted: true });
       }, 500);
     } else {
-      handleUpload(fileWithPassword, handleFileProcessing, password);
+      handleUpload(
+        fileWithPassword,
+        handleFileProcessing,
+        password,
+        null,
+        requestController.current,
+      );
     }
   };
 

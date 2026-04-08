@@ -37,6 +37,7 @@ const VaFileInputMultipleField = props => {
     dispatch,
   );
   const componentRef = useRef(null);
+  const requestController = useRef({});
 
   // if prefill, initialize values
   useEffect(() => {
@@ -206,7 +207,17 @@ const VaFileInputMultipleField = props => {
   };
 
   const handleFileProcessing = (uploadedFile, index) => {
-    if (!uploadedFile || !uploadedFile.file) return;
+    if (
+      !uploadedFile ||
+      !uploadedFile.file ||
+      (requestController.current[index] &&
+        requestController.current[index]?.signal?.aborted)
+    )
+      return;
+    // remove controller if file has been uploaded
+    if (!uploadedFile.uploading) {
+      requestController.current[index] = null;
+    }
     handleUploadErrors(uploadedFile, index);
     assignFileUploadToStore(uploadedFile, index);
   };
@@ -222,6 +233,7 @@ const VaFileInputMultipleField = props => {
     if (fileError) {
       _errors[index] = fileError;
       setErrors(_errors);
+      requestController.current[index] = null;
       errorManager.setFileCheckError(index, true);
       const files = [...childrenProps.formData];
       // add placeholder file in case another file added before user resolves this error
@@ -250,13 +262,20 @@ const VaFileInputMultipleField = props => {
         index,
         childrenProps,
         file,
+        requestController.current[index],
       );
       return;
     }
 
     // this file not encrypted - upload right now
     if (!encryptedCheck) {
-      handleUpload(file, handleFileProcessing, null, index);
+      handleUpload(
+        file,
+        handleFileProcessing,
+        null,
+        index,
+        requestController.current[index],
+      );
     }
   };
 
@@ -282,12 +301,14 @@ const VaFileInputMultipleField = props => {
     const { action, state, file, index } = detail;
     switch (action) {
       case 'FILE_ADDED': {
+        requestController.current[index] = new AbortController();
         errorManager.setInternalFileInputErrors(index, false);
         handleFileAdded(file, index);
         setCurrentIndex(index);
         break;
       }
       case 'FILE_UPDATED': {
+        requestController.current[index] = new AbortController();
         handleFileAdded(file, index);
         setCurrentIndex(index);
         break;
@@ -315,11 +336,19 @@ const VaFileInputMultipleField = props => {
             );
           }, 500);
         } else {
-          handleUpload(passwordFile, handleFileProcessing, password, index);
+          handleUpload(
+            passwordFile,
+            handleFileProcessing,
+            password,
+            index,
+            requestController.current[index],
+          );
         }
         break;
       }
       case 'FILE_REMOVED':
+        // if this is a cancelled upload, call abort on the controller
+        requestController.current[index]?.abort?.();
         handleFileRemoved(index);
         break;
       default:

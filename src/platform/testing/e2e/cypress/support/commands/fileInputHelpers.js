@@ -570,6 +570,48 @@ Cypress.Commands.add(
   },
 );
 
+/**
+ * Cancel an in-progress upload on a va-file-input.
+ *
+ * Selects a file into the input (bypassing fillVaFileInput which waits for
+ * upload completion), waits for the transitory cancel button to appear,
+ * clicks it, and asserts the component returns to its initial empty state.
+ *
+ * @param {File} file - The file to upload.
+ * @param {string} [field] - Optional `name` attribute selector.
+ */
+Cypress.Commands.add('cancelVaFileInputUpload', (file, field = undefined) => {
+  // Select the file directly into the native input rather than using
+  // fillVaFileInput, which waits for the upload to finish — by that point
+  // the cancel button would already be gone.
+  cy.wrap(file).then(async f => {
+    const selectFileArg = await getFileContents(f);
+
+    getVaFileInputEl(field)
+      .shadow()
+      .find('input[type="file"]')
+      .selectFile(selectFileArg, { force: true });
+  });
+
+  // wait for the cancel button to appear during upload and click it
+  getVaFileInputEl(field)
+    .shadow()
+    .find('va-button-icon[button-type="cancel"]', { timeout: 10000 })
+    .should('be.visible')
+    .click();
+
+  // verify the UI returned to initial state — no file card, no progress bar
+  getVaFileInputEl(field)
+    .shadow()
+    .find('va-card')
+    .should('not.exist');
+
+  getVaFileInputEl(field)
+    .shadow()
+    .find('.progress-bar-and-cancel-button')
+    .should('not.exist');
+});
+
 // ---------------------------------------------------------------------------
 // va-file-input-multiple commands
 // ---------------------------------------------------------------------------
@@ -887,5 +929,53 @@ Cypress.Commands.add(
     getVaFileInputMultipleChild(field, index)
       .find('va-select')
       .should('exist');
+  },
+);
+
+/**
+ * Cancel an in-progress upload on a child va-file-input inside a
+ * va-file-input-multiple.
+ *
+ * Selects a file into the first child (bypassing fillVaFileInputMultiple
+ * which waits for upload completion), waits for the transitory cancel
+ * button to appear, clicks it, and asserts the component returns to its
+ * initial empty state.
+ *
+ * @param {File} file - The file to upload.
+ * @param {string} [field] - Optional `name` attribute of the parent.
+ */
+Cypress.Commands.add(
+  'cancelVaFileInputMultipleUpload',
+  (file, field = undefined) => {
+    // Select the file directly into the first child's native input,
+    // bypassing fillVaFileInputMultiple which waits for upload completion.
+    cy.wrap(file).then(async f => {
+      const selectFileArg = await getFileContents(f);
+
+      getVaFileInputMultipleChild(field, 0)
+        .shadow()
+        .find('input[type="file"]')
+        .selectFile(selectFileArg, { force: true });
+    });
+
+    // verify a file card appears (upload in progress) before cancelling
+    getVaFileInputMultipleChild(field, 0)
+      .shadow()
+      .find('va-card', { timeout: 10000 })
+      .should('exist');
+
+    // find the cancel button on the uploading child and click it
+    getVaFileInputMultipleChild(field, 0)
+      .shadow()
+      .find('va-button-icon[button-type="cancel"]', { timeout: 10000 })
+      .should('be.visible')
+      .click();
+
+    // verify the component returned to initial state:
+    // no file card on the first child
+    getVaFileInputMultipleChild(field, 0)
+      .shadow()
+      .find('va-card')
+      .should('not.exist');
   },
 );
