@@ -66,10 +66,7 @@ export const V3_TRANSFORMATION_ROUTES = {
   childMarried: 'childMarriage',
 
   // Child not in school - stepchildren go to stepChildren, others to childStoppedAttendingSchool
-  childNotInSchool: {
-    default: 'childStoppedAttendingSchool',
-    stepchild: 'stepChildren',
-  },
+  childNotInSchool: 'childStoppedAttendingSchool',
 
   // Spouse divorce/annulment
   marriageEnded: 'reportDivorce',
@@ -92,7 +89,7 @@ export const V3_TRANSFORMATION_ROUTES = {
  * @param {boolean} isStepchild - Whether the dependent is a stepchild
  * @returns {string|null} - V2 array name or null if unsupported
  */
-export function getV2Destination(removalReason, isStepchild) {
+export function getV2Destination(removalReason) {
   const route = V3_TRANSFORMATION_ROUTES[removalReason];
 
   if (route === undefined) {
@@ -103,11 +100,5 @@ export function getV2Destination(removalReason, isStepchild) {
     return null; // Unsupported removal reason
   }
 
-  // Simple route (string)
-  if (typeof route === 'string') {
-    return route;
-  }
-
-  // Stepchild-aware route (object)
-  return isStepchild ? route.stepchild : route.default;
+  return route;
 }

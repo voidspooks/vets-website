@@ -299,10 +299,8 @@ export function transformPicklistToV2(data) {
   };
 
   selected.forEach(item => {
-    const isStepchild = item.isStepchild === 'Y';
-
     // Get destination array from centralized routing
-    const arrayName = getV2Destination(item.removalReason, isStepchild);
+    const arrayName = getV2Destination(item.removalReason);
 
     // Handle unknown removal reasons
     if (arrayName === undefined) {
@@ -319,13 +317,8 @@ export function transformPicklistToV2(data) {
       return;
     }
 
-    // Get transformation function
-    // For stepchild-routed items, use stepchild transform; otherwise use
-    // reason-specific transform
-    const transformFn =
-      isStepchild && item.removalReason === 'childNotInSchool'
-        ? transformStepchildByFlag
-        : transformFunctions[item.removalReason];
+    // Get transformation function: using reason-specific transform
+    const transformFn = transformFunctions[item.removalReason];
 
     // Apply transformation and add to destination
     if (arrayName === 'reportDivorce') {

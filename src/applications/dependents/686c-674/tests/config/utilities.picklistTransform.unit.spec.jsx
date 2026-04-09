@@ -575,7 +575,7 @@ describe('transformPicklistToV2', () => {
     });
   });
 
-  it('should add stepchild to stepChildren array only when isStepchild is Y and removalReason is childNotInSchool', () => {
+  it('should add stepchild to childStoppedAttendingSchool array when isStepchild is Y and removalReason is childNotInSchool', () => {
     const data = {
       [PICKLIST_DATA]: [
         {
@@ -591,16 +591,19 @@ describe('transformPicklistToV2', () => {
     };
     const result = transformPicklistToV2(data);
 
-    // Stepchild with childNotInSchool goes to stepChildren array (not childStoppedAttendingSchool)
-    expect(result.stepChildren).to.be.an('array');
-    expect(result.stepChildren).to.have.lengthOf(1);
-    expect(result.stepChildren[0]).to.deep.equal({
+    // Stepchild with childNotInSchool goes to childStoppedAttendingSchool array
+    // (not stepChildren)
+    expect(result.childStoppedAttendingSchool).to.be.an('array');
+    expect(result.childStoppedAttendingSchool).to.have.lengthOf(1);
+    expect(result.childStoppedAttendingSchool[0]).to.deep.equal({
       fullName: { first: 'STEP', last: 'CHILD' },
       ssn: '555666777',
       birthDate: '2003-11-10',
+      dateChildLeftSchool: '2024-05-20',
+      dependentIncome: 'N',
     });
-    // Should NOT be in childStoppedAttendingSchool array
-    expect(result.childStoppedAttendingSchool).to.be.undefined;
+    // Should NOT be in stepChildren array
+    expect(result.stepChildren).to.be.undefined;
   });
 
   it('should NOT add stepchild to stepChildren array when isStepchild is N', () => {
