@@ -1219,6 +1219,125 @@ describe('Medication card component', () => {
       });
     });
   });
+
+  describe('Recently renewed alert (isRecentlyRenewed)', () => {
+    const recentTimestamp = Date.now() - 24 * 60 * 60 * 1000; // 1 day ago
+    const oldTimestamp = Date.now() - 96 * 60 * 60 * 1000; // 4 days ago
+
+    const activeNoRefillsRx = {
+      ...prescriptionsListItem,
+      dispStatus: 'Active',
+      refillStatus: 'active',
+      refillRemaining: 0,
+      isRefillable: false,
+      isRenewable: true,
+      isTrackable: false,
+      prescriptionSource: 'RX',
+      expirationDate: '2025-07-19T04:00:00.000Z',
+      rxRfRecords: [],
+      trackingList: [],
+    };
+
+    const expiredRenewableRx = {
+      ...activeNoRefillsRx,
+      dispStatus: 'Expired',
+      refillStatus: 'expired',
+    };
+
+    const setupRenewalTest = (rx, flags = {}) => {
+      const { mhvSecureMessagingMedicationsRenewalRequest = true } = flags;
+
+      const initialState = {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: mhvSecureMessagingMedicationsRenewalRequest,
+        },
+      };
+
+      return renderWithStoreAndRouterV6(<MedicationsListCard rx={rx} />, {
+        initialState,
+        reducers,
+      });
+    };
+
+    it('shows the recently renewed alert when Active with no refills and timestamp is within 72 hours', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        renewalSubmittedTimestamp: recentTimestamp,
+      };
+      const screen = setupRenewalTest(rx);
+      expect(screen.getByTestId('rx-details-refill-alert')).to.exist;
+      expect(screen.getByText(/You may have already requested a renewal/)).to
+        .exist;
+      expect(screen.queryByTestId('no-refills-left-alert')).to.not.exist;
+    });
+
+    it('shows the recently renewed alert when Expired renewable and timestamp is within 72 hours', () => {
+      const rx = {
+        ...expiredRenewableRx,
+        renewalSubmittedTimestamp: recentTimestamp,
+      };
+      const screen = setupRenewalTest(rx);
+      expect(screen.getByTestId('rx-details-refill-alert')).to.exist;
+      expect(screen.getByText(/You may have already requested a renewal/)).to
+        .exist;
+      expect(screen.queryByTestId('no-refills-left-alert')).to.not.exist;
+    });
+
+    it('includes a link to sent messages in the recently renewed alert', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        renewalSubmittedTimestamp: recentTimestamp,
+      };
+      const screen = setupRenewalTest(rx);
+      expect(screen.getByTestId('go-to-sent-messages-alert-link')).to.exist;
+    });
+
+    it('does not show the recently renewed alert when timestamp is older than 72 hours', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        renewalSubmittedTimestamp: oldTimestamp,
+      };
+      const screen = setupRenewalTest(rx);
+      expect(screen.queryByTestId('rx-details-refill-alert')).to.not.exist;
+    });
+
+    it('does not show the recently renewed alert when timestamp is null', () => {
+      const rx = { ...activeNoRefillsRx, renewalSubmittedTimestamp: null };
+      const screen = setupRenewalTest(rx);
+      expect(screen.queryByTestId('rx-details-refill-alert')).to.not.exist;
+    });
+
+    it('does not show the recently renewed alert when showSecureMessagingRenewalRequest is false', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        renewalSubmittedTimestamp: recentTimestamp,
+      };
+      const screen = setupRenewalTest(rx, {
+        mhvSecureMessagingMedicationsRenewalRequest: false,
+      });
+      expect(screen.queryByTestId('rx-details-refill-alert')).to.not.exist;
+    });
+
+    it('does not show the recently renewed alert for Active prescription with refills remaining', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        refillRemaining: 3,
+        renewalSubmittedTimestamp: recentTimestamp,
+      };
+      const screen = setupRenewalTest(rx);
+      expect(screen.queryByTestId('rx-details-refill-alert')).to.not.exist;
+    });
+
+    it('does not show the recently renewed alert for Non-VA prescription', () => {
+      const rx = {
+        ...activeNoRefillsRx,
+        prescriptionSource: 'NV',
+        renewalSubmittedTimestamp: recentTimestamp,
+      };
+      const screen = setupRenewalTest(rx);
+      expect(screen.queryByTestId('rx-details-refill-alert')).to.not.exist;
+    });
+  });
 });
 
 const TRANSITION_PHASES = {

@@ -62,6 +62,7 @@ function mockPrescription(n = 0, attrs = {}, isV2 = false) {
       stationNumber: '001',
       isRefillable,
       isRenewable,
+      renewalSubmittedTimestamp: attrs.renewalSubmittedTimestamp ?? null,
       isTrackable: null,
       sig: null,
       cmopDivisionPhone,
@@ -167,6 +168,7 @@ function mockPrescriptionArray(n = 20, isV2 = false) {
         stationNumber: realPrescription.stationNumber,
         isRefillable: realPrescription.isRefillable,
         isRenewable: realPrescription.isRenewable,
+        renewalSubmittedTimestamp: realPrescription.renewalSubmittedTimestamp,
         isTrackable: realPrescription.isTrackable,
         sig: realPrescription.sig,
         cmopDivisionPhone:
@@ -252,6 +254,7 @@ function mockOracleHealthPrescription(
       orderableItem: null,
       sortedDispensedDate: null,
       prescriptionImage: null,
+      renewalSubmittedTimestamp: null,
       ...overrides,
     },
     links: {

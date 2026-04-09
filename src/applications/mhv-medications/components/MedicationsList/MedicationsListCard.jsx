@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
 import { selectCernerFacilityIds } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/selectors';
+import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import ExtraDetails from '../shared/ExtraDetails';
 import LastFilledInfo from '../shared/LastFilledInfo';
 import SendRxRenewalMessage from '../shared/SendRxRenewalMessage';
@@ -16,6 +17,7 @@ import {
   getTrackingUrl,
   isExpirationDatePassed,
   isOracleHealthPrescription,
+  isRenewalWithin72Hours,
 } from '../../util/helpers';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import {
@@ -137,6 +139,15 @@ const MedicationsListCard = ({ rx }) => {
       isExpiredRenewable ||
       isExpiredNoRenewalFlow ||
       isNonRenewableExpired);
+
+  const renewalWithin72Hours = isRenewalWithin72Hours(
+    rx.renewalSubmittedTimestamp,
+  );
+
+  const isRecentlyRenewed =
+    (isActiveNoRefills || isExpiredRenewable) &&
+    renewalWithin72Hours &&
+    showSecureMessagingRenewalRequest;
 
   const renderNonVaCard = () => (
     <>
@@ -285,6 +296,7 @@ const MedicationsListCard = ({ rx }) => {
           )}
         {rx && !(isMedsImprovements && isOnHold) && <LastFilledInfo {...rx} />}
         {showMedImprovementCard &&
+          !isRecentlyRenewed &&
           (isActiveNoRefills || isExpiredRenewable) && (
             <div
               className="vads-u-margin-top--1"
@@ -398,6 +410,27 @@ const MedicationsListCard = ({ rx }) => {
       } vads-u-margin-y--2 no-break`}
     >
       <div className="rx-card-details" data-testid="rx-card-info">
+        {isRecentlyRenewed && (
+          <VaAlert
+            data-testid="rx-details-refill-alert"
+            status="info"
+            className="vads-u-margin-bottom--2"
+            uswds
+          >
+            <p>
+              You may have already requested a renewal. Check your sent messages
+              for a renewal request.
+            </p>
+            <p className="vads-u-margin-bottom--0">
+              <va-link
+                className="vads-u-margin-bottom--0"
+                href="/my-health/secure-messages/sent/"
+                text="Go to your sent messages"
+                data-testid="go-to-sent-messages-alert-link"
+              />
+            </p>
+          </VaAlert>
+        )}
         <Link
           id={`card-header-${rx.prescriptionId}`}
           data-dd-privacy="mask"

@@ -41,3 +41,4 @@ export { rxSourceIsNonVA } from './rxSourceIsNonVA';
 export { sanitizeKramesHtmlStr } from './sanitizeKramesHtmlStr';
 export { validateField } from './validateField';
 export { validateIfAvailable } from './validateIfAvailable';
+export { isRenewalWithin72Hours } from './renewalSubmittedAt';
