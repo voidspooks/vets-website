@@ -52,22 +52,6 @@ describe('InProductionEducationAlert', () => {
     drupalStaticData: cernerDrupalData,
   };
 
-  const hiddenState = {
-    sm: {
-      tooltip: {
-        tooltipVisible: false,
-        tooltipId: undefined,
-        error: undefined,
-      },
-    },
-    user: {
-      profile: {
-        facilities: [{ facilityId: '528' }],
-      },
-    },
-    drupalStaticData: cernerDrupalData,
-  };
-
   const notCernerState = {
     sm: {
       tooltip: {
@@ -137,17 +121,22 @@ describe('InProductionEducationAlert', () => {
     expect(aside.classList.contains('sm-ipe-alert')).to.be.true;
   });
 
-  it('does not render the alert when tooltipVisible is false', () => {
-    sandbox.stub(SmApi, 'getTooltipsList').resolves([]);
-    sandbox.stub(SmApi, 'createTooltip').resolves({
-      id: 'new-id',
-      tooltipName: 'sm_care_team_list_update_ipe',
-      hidden: true,
-      counter: 0,
-    });
+  it('does not render the alert when the tooltip has been persistently dismissed', async () => {
+    sandbox.stub(SmApi, 'getTooltipsList').resolves([
+      {
+        id: 'mock-tooltip-id',
+        tooltipName: 'sm_care_team_list_update_ipe',
+        hidden: true,
+        counter: 2,
+      },
+    ]);
 
-    const { queryByTestId } = renderComponent(hiddenState);
-    expect(queryByTestId('sm-care-team-list-update-ipe-container')).to.be.null;
+    const { queryByTestId } = renderComponent();
+
+    await waitFor(() => {
+      expect(queryByTestId('sm-care-team-list-update-ipe-container')).to.be
+        .null;
+    });
   });
 
   it('does not render the alert when facility is not a Cerner facility', () => {

@@ -234,6 +234,8 @@ export const Alerts = {
       'We sent you a message with all your new care team names.',
     CARE_TEAM_CHANGE_LINK_TEXT: 'Read the message now',
     CARE_TEAM_CHANGE_TOOLTIP_NAME: 'sm_care_team_name_change',
+    CONTACT_LIST_MIGRATION_ALERT_TOOLTIP_NAME:
+      'sm_contact_list_migration_alert',
   },
 
   Folder: {

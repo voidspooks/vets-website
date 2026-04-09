@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import useOhMigrationAlertMetric from 'platform/mhv/hooks/useOhMigrationAlertMetric';
-import { ContactListMigrationAlertContent } from '../../util/constants';
+import useTooltipLifecycle from '../../hooks/useTooltipLifecycle';
+import { Alerts, ContactListMigrationAlertContent } from '../../util/constants';
 import { filterSchedulesByPhase } from '../../util/helpers';
 
 /**
@@ -16,6 +17,9 @@ import { filterSchedulesByPhase } from '../../util/helpers';
  * facility list). New variants can be added to ContactListMigrationAlertContent
  * in constants.js without modifying this component.
  *
+ * Uses the IPE API via Redux to manage dismissible state, persisting
+ * the user's preference to close the alert across sessions.
+ *
  * @param {Object} props
  * @param {boolean} props.userFacilityMigratingToOh - Whether the user has a facility migrating to Oracle Health
  * @param {Array} props.migrationSchedules - Array of migration schedule objects
@@ -24,8 +28,6 @@ const ContactListMigrationAlert = ({
   userFacilityMigratingToOh,
   migrationSchedules,
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
-
   // Memoize phase matching and facility dedup so they only recompute when
   // migrationSchedules actually changes, avoiding unnecessary re-renders.
   const {
@@ -109,16 +111,43 @@ const ContactListMigrationAlert = ({
     [migrationSchedules],
   );
 
+  // Only run the IPE lifecycle when the alert could potentially be shown —
+  // skip fetch/increment/create if the user has no migrating facility,
+  // no matching phase content, or no facilities, to avoid inflating view counts
+  // or generating unnecessary PATCH traffic.
+  const { tooltipVisible, dismiss } = useTooltipLifecycle(
+    Alerts.Message.CONTACT_LIST_MIGRATION_ALERT_TOOLTIP_NAME,
+    {
+      skip:
+        !userFacilityMigratingToOh ||
+        !matchedPhaseContent ||
+        facilities.length === 0,
+    },
+  );
+
+  const handleClose = useCallback(
+    () => {
+      dismiss();
+      focusElement(document.querySelector('h1'));
+    },
+    [dismiss],
+  );
+
   const alertVisible = useMemo(
     () => {
       return (
-        isVisible &&
+        tooltipVisible &&
         userFacilityMigratingToOh &&
         !!matchedPhaseContent &&
         facilities.length > 0
       );
     },
-    [isVisible, userFacilityMigratingToOh, matchedPhaseContent, facilities],
+    [
+      tooltipVisible,
+      userFacilityMigratingToOh,
+      matchedPhaseContent,
+      facilities,
+    ],
   );
 
   useOhMigrationAlertMetric({
@@ -136,10 +165,7 @@ const ContactListMigrationAlert = ({
       class="vads-u-margin-bottom--2"
       closeBtnAriaLabel="Close notification"
       closeable
-      onCloseEvent={() => {
-        setIsVisible(false);
-        focusElement(document.querySelector('h1'));
-      }}
+      onCloseEvent={handleClose}
       status="warning"
       visible
       data-testid="contact-list-migration-alert"

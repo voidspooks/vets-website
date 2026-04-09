@@ -12,6 +12,7 @@ import oneAssociatedFacility from '../fixtures/json-triage-mocks/triage-teams-on
 import drupalStaticData from '../fixtures/json-triage-mocks/drupal-data-mock.json';
 import reducer from '../../reducers';
 import EditContactList from '../../containers/EditContactList';
+import * as tooltipActions from '../../actions/tooltip';
 import { ErrorMessages, Paths } from '../../util/constants';
 import { checkVaCheckbox, getProps } from '../../util/testUtils';
 
@@ -640,6 +641,30 @@ describe('Edit Contact List container', async () => {
   });
 
   describe('Migration Alert', () => {
+    let tooltipSandbox;
+
+    beforeEach(() => {
+      tooltipSandbox = sinon.createSandbox();
+      tooltipSandbox
+        .stub(tooltipActions, 'getTooltipByName')
+        .returns(() =>
+          Promise.resolve({ id: 'tooltip-123', hidden: false, counter: 0 }),
+        );
+      tooltipSandbox
+        .stub(tooltipActions, 'createNewTooltip')
+        .returns(() => Promise.resolve({ id: 'tooltip-123', hidden: false }));
+      tooltipSandbox
+        .stub(tooltipActions, 'incrementTooltip')
+        .returns(() => Promise.resolve());
+      tooltipSandbox
+        .stub(tooltipActions, 'updateTooltipVisibility')
+        .returns(() => Promise.resolve());
+    });
+
+    afterEach(() => {
+      tooltipSandbox.restore();
+    });
+
     it('displays migration alert when user is in phase p1-p5 with migrating facilities', async () => {
       const customState = {
         ...initialState,

@@ -1,14 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import {
-  getTooltipByName,
-  createNewTooltip,
-  setTooltip,
-  incrementTooltip,
-  updateTooltipVisibility,
-} from '../../actions/tooltip';
+import useTooltipLifecycle from '../../hooks/useTooltipLifecycle';
 
 const DismissibleAlert = ({
   tooltipName,
@@ -17,42 +10,8 @@ const DismissibleAlert = ({
   children,
   className,
 }) => {
-  const dispatch = useDispatch();
-  const tooltipVisible = useSelector(
-    state => state.sm?.tooltip?.tooltipVisible,
-  );
-  const tooltipId = useSelector(state => state.sm?.tooltip?.tooltipId);
-
-  useEffect(
-    () => {
-      const fetchOrCreateTooltip = async () => {
-        const existing = await dispatch(getTooltipByName(tooltipName));
-
-        if (existing?.id) {
-          dispatch(setTooltip(existing.id, !existing.hidden));
-          if (!existing.hidden) {
-            dispatch(incrementTooltip(existing.id));
-          }
-        } else if (!existing) {
-          const created = await dispatch(createNewTooltip(tooltipName));
-          if (created?.id) {
-            dispatch(setTooltip(created.id, !created.hidden));
-          }
-        }
-      };
-
-      fetchOrCreateTooltip();
-    },
-    [dispatch, tooltipName],
-  );
-
-  const handleClose = useCallback(
-    () => {
-      if (tooltipId) {
-        dispatch(updateTooltipVisibility(tooltipId));
-      }
-    },
-    [dispatch, tooltipId],
+  const { tooltipVisible, tooltipId, dismiss } = useTooltipLifecycle(
+    tooltipName,
   );
 
   if (!tooltipVisible) return null;
@@ -62,7 +21,7 @@ const DismissibleAlert = ({
       status={status}
       closeable
       closeBtnAriaLabel="Close notification"
-      onCloseEvent={handleClose}
+      onCloseEvent={dismiss}
       className={className}
       data-testid="dismissible-tooltip-alert"
       data-dd-privacy="mask"

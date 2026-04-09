@@ -103,6 +103,7 @@ describe('tooltip actions', () => {
 
       await incrementTooltip('tooltip-123')(dispatch);
 
+      expect(SmApi.incrementTooltipCounter.calledOnce).to.be.true;
       expect(dispatchedActions).to.have.lengthOf(0);
     });
 
@@ -126,6 +127,7 @@ describe('tooltip actions', () => {
 
       await updateTooltipVisibility('tooltip-123')(dispatch);
 
+      expect(SmApi.hideTooltip.calledOnce).to.be.true;
       expect(dispatchedActions).to.have.lengthOf(1);
       expect(dispatchedActions[0].type).to.equal(
         Actions.Tooltip.SET_TOOLTIP_VISIBILITY,
@@ -133,17 +135,21 @@ describe('tooltip actions', () => {
       expect(dispatchedActions[0].payload).to.be.false;
     });
 
-    it('dispatches UPDATE_TOOLTIP_VISIBILITY_ERROR on failure', async () => {
+    it('optimistically hides tooltip then dispatches UPDATE_TOOLTIP_VISIBILITY_ERROR on failure', async () => {
       const error = new Error('hide failed');
       sandbox.stub(SmApi, 'hideTooltip').rejects(error);
 
       await updateTooltipVisibility('tooltip-123')(dispatch);
 
-      expect(dispatchedActions).to.have.lengthOf(1);
+      expect(dispatchedActions).to.have.lengthOf(2);
       expect(dispatchedActions[0].type).to.equal(
+        Actions.Tooltip.SET_TOOLTIP_VISIBILITY,
+      );
+      expect(dispatchedActions[0].payload).to.be.false;
+      expect(dispatchedActions[1].type).to.equal(
         Actions.Tooltip.UPDATE_TOOLTIP_VISIBILITY_ERROR,
       );
-      expect(dispatchedActions[0].error).to.equal(error);
+      expect(dispatchedActions[1].error).to.equal(error);
     });
   });
 
@@ -186,7 +192,7 @@ describe('tooltip actions', () => {
       expect(result).to.be.undefined;
     });
 
-    it('returns undefined on API error', async () => {
+    it('returns undefined when API error causes getTooltips to return undefined', async () => {
       sandbox.stub(SmApi, 'getTooltipsList').rejects(new Error('failed'));
 
       const result = await getTooltipByName('sm_target')(dispatch);

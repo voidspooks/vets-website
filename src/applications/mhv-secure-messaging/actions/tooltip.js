@@ -46,12 +46,12 @@ export const incrementTooltip = tooltipId => async dispatch => {
 };
 
 export const updateTooltipVisibility = tooltipId => async dispatch => {
+  dispatch({
+    type: Actions.Tooltip.SET_TOOLTIP_VISIBILITY,
+    payload: false,
+  });
   try {
     await hideTooltip(tooltipId);
-    dispatch({
-      type: Actions.Tooltip.SET_TOOLTIP_VISIBILITY,
-      payload: false,
-    });
   } catch (error) {
     dispatch({
       type: Actions.Tooltip.UPDATE_TOOLTIP_VISIBILITY_ERROR,
@@ -74,7 +74,7 @@ export const setTooltip = (tooltipId, tooltipVisibility) => dispatch => {
 export const getTooltipByName = tooltipName => async dispatch => {
   try {
     const tooltips = await dispatch(getTooltips());
-    return tooltips?.find?.(t => t.tooltipName === tooltipName);
+    return tooltips?.find(t => t.tooltipName === tooltipName);
   } catch (error) {
     return undefined;
   }

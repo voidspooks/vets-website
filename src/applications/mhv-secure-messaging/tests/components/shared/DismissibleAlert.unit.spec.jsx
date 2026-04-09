@@ -74,27 +74,21 @@ describe('DismissibleAlert', () => {
     );
   });
 
-  it('does not render the alert when tooltipVisible is false', () => {
-    sandbox.stub(SmApi, 'getTooltipsList').resolves([]);
-    sandbox.stub(SmApi, 'createTooltip').resolves({
-      id: 'new-id',
-      tooltipName: 'test_tooltip',
-      hidden: true,
-      counter: 0,
-    });
-
-    const hiddenState = {
-      sm: {
-        tooltip: {
-          tooltipVisible: false,
-          tooltipId: undefined,
-          error: undefined,
-        },
+  it('does not render the alert when the tooltip has been persistently dismissed', async () => {
+    sandbox.stub(SmApi, 'getTooltipsList').resolves([
+      {
+        id: '123',
+        tooltipName: 'test_tooltip',
+        hidden: true,
+        counter: 3,
       },
-    };
+    ]);
 
-    const { queryByTestId } = renderComponent(hiddenState);
-    expect(queryByTestId('dismissible-tooltip-alert')).to.be.null;
+    const { queryByTestId } = renderComponent();
+
+    await waitFor(() => {
+      expect(queryByTestId('dismissible-tooltip-alert')).to.be.null;
+    });
   });
 
   it('creates a new tooltip when none exists', async () => {

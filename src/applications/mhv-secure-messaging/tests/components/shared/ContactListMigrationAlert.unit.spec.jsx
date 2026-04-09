@@ -4,14 +4,40 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import * as useOhMigrationAlertMetricModule from 'platform/mhv/hooks/useOhMigrationAlertMetric';
+import * as tooltipActions from '../../../actions/tooltip';
 import ContactListMigrationAlert from '../../../components/shared/ContactListMigrationAlert';
 
-const mockStore = configureStore();
+const mockStore = configureStore([thunk]);
 
 describe('ContactListMigrationAlert component', () => {
+  let sandbox;
+  let getTooltipByNameStub;
+  let updateTooltipVisibilityStub;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    getTooltipByNameStub = sandbox
+      .stub(tooltipActions, 'getTooltipByName')
+      .returns(async () => ({ id: '123', hidden: false }));
+    sandbox
+      .stub(tooltipActions, 'createNewTooltip')
+      .returns(async () => ({ id: '123', hidden: false }));
+    sandbox.stub(tooltipActions, 'incrementTooltip').returns(async () => {});
+    updateTooltipVisibilityStub = sandbox
+      .stub(tooltipActions, 'updateTooltipVisibility')
+      .returns(async () => {});
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+    cleanup();
+  });
+
   const store = mockStore({
     user: { profile: { facilities: [{ facilityId: '553' }] } },
+    sm: { tooltip: {} },
   });
 
   const baseMigrationSchedule = {
@@ -48,10 +74,6 @@ describe('ContactListMigrationAlert component', () => {
       </Provider>,
     );
   };
-
-  afterEach(() => {
-    cleanup();
-  });
 
   describe('POST_MIGRATION variant (phase p6)', () => {
     it('renders the alert when a facility is in phase p6', async () => {
@@ -105,13 +127,33 @@ describe('ContactListMigrationAlert component', () => {
       alert.__events.closeEvent();
 
       await waitFor(() => {
-        expect(screen.queryByTestId('contact-list-migration-alert')).to.not
-          .exist;
+        expect(updateTooltipVisibilityStub.called).to.be.true;
       });
     });
   });
 
   describe('alert visibility conditions', () => {
+    it('does not render when alert has been persistently dismissed', async () => {
+      // Return a previously dismissed tooltip (hidden: true) — local state
+      // will be set to visible: false, keeping the alert hidden.
+      getTooltipByNameStub.returns(async () => ({ id: '123', hidden: true }));
+
+      const dismissedStore = mockStore({
+        user: { profile: { facilities: [{ facilityId: '553' }] } },
+        sm: { tooltip: {} },
+      });
+
+      const { queryByTestId } = render(
+        <Provider store={dismissedStore}>
+          <ContactListMigrationAlert {...defaultProps} />
+        </Provider>,
+      );
+
+      await waitFor(() => {
+        expect(queryByTestId('contact-list-migration-alert')).to.not.exist;
+      });
+    });
+
     it('renders the alert when facility is in phase p7', async () => {
       const scheduleP7 = {
         ...baseMigrationSchedule,
@@ -252,27 +294,33 @@ describe('ContactListMigrationAlert component', () => {
 
   describe('useOhMigrationAlertMetric integration', () => {
     let metricSpy;
-    let metricStub;
+    let metricSandbox;
 
     beforeEach(() => {
       metricSpy = sinon.spy();
-      metricStub = sinon
+      metricSandbox = sinon.createSandbox();
+      metricSandbox
         .stub(useOhMigrationAlertMetricModule, 'default')
         .callsFake(metricSpy);
     });
 
     afterEach(() => {
-      metricStub.restore();
+      metricSandbox.restore();
     });
 
-    it('calls useOhMigrationAlertMetric with isVisible true when alert renders', () => {
+    it('calls useOhMigrationAlertMetric with isVisible true when alert renders', async () => {
       setup();
 
-      const call = metricSpy
-        .getCalls()
-        .find(c => c.args[0].alertName === 'ContactListMigrationAlert');
-      expect(call).to.exist;
-      expect(call.args[0].isVisible).to.be.true;
+      await waitFor(() => {
+        const call = metricSpy
+          .getCalls()
+          .find(
+            c =>
+              c.args[0].alertName === 'ContactListMigrationAlert' &&
+              c.args[0].isVisible === true,
+          );
+        expect(call).to.exist;
+      });
     });
 
     it('calls useOhMigrationAlertMetric with matched phases', () => {

@@ -1,6 +1,7 @@
 import SecureMessagingSite from './sm_site/SecureMessagingSite';
 import ContactListPage from './pages/ContactListPage';
-import { AXE_CONTEXT, Alerts, Locators } from './utils/constants';
+import { AXE_CONTEXT, Alerts, Locators, Paths } from './utils/constants';
+import { Alerts as AppAlerts } from '../../util/constants';
 import mockUser from './fixtures/userResponse/user.json';
 
 // Base migration date used in createMigratingUser fixture (ISO format for reliable parsing)
@@ -18,6 +19,46 @@ const computeMigrationDate = days => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+  });
+};
+
+// IPE API constants for the ContactListMigrationAlert tooltip
+const TOOLTIP_ID = 'test-tooltip-id-contact-list-migration';
+const TOOLTIP_NAME =
+  AppAlerts.Message.CONTACT_LIST_MIGRATION_ALERT_TOOLTIP_NAME;
+
+/**
+ * Creates a mock GET /tooltips response for the ContactListMigrationAlert tooltip.
+ * @param {boolean} hidden - Whether the tooltip has been dismissed
+ * @returns {Array} Mock tooltips list response
+ */
+const mockTooltipResponse = (hidden = false) => [
+  {
+    id: TOOLTIP_ID,
+    tooltipName: TOOLTIP_NAME,
+    hidden,
+    counter: 0,
+  },
+];
+
+/**
+ * Sets up IPE API intercepts required for the ContactListMigrationAlert component.
+ * Must be called before cy.visit() so intercepts are in place when the component mounts.
+ *
+ * @param {boolean} hidden - Whether the tooltip should appear as already dismissed
+ */
+const setupIpeIntercepts = (hidden = false) => {
+  cy.intercept('GET', Paths.INTERCEPT.TOOLTIPS, mockTooltipResponse(hidden)).as(
+    'getTooltips',
+  );
+
+  cy.intercept('PATCH', Paths.INTERCEPT.TOOLTIPS_BY_ID, req => {
+    if (req.url.includes('increment_counter=true')) {
+      req.alias = 'patchTooltipIncrement';
+    } else {
+      req.alias = 'patchTooltipDismiss';
+    }
+    req.reply({});
   });
 };
 
@@ -97,8 +138,10 @@ const createMigratingUser = (
  * 2. User with facility in phase p6-p8 → POST_MIGRATION alert displayed
  * 3. User in phase p0 (before migration) → No alert displayed
  * 4. User without migration schedules → No alert displayed
- * 5. Alert is closeable
- * 6. Accessibility check
+ * 5. Alert is closeable and calls IPE API to persist dismissal
+ * 6. Alert does not reappear when IPE returns hidden: true (persistent dismissal)
+ * 7. First visit creates a new tooltip record via IPE API
+ * 8. Accessibility check
  */
 
 describe('SM Contact List Migration Alert', () => {
@@ -119,6 +162,7 @@ describe('SM Contact List Migration Alert', () => {
     ['p1', 'p2', 'p3', 'p4', 'p5'].forEach(phase => {
       describe(`Phase ${phase}`, () => {
         beforeEach(() => {
+          setupIpeIntercepts();
           SecureMessagingSite.login(
             undefined,
             undefined,
@@ -185,7 +229,8 @@ describe('SM Contact List Migration Alert', () => {
       });
     });
 
-    it('is closeable', () => {
+    it('is closeable and calls the IPE API to persist dismissal', () => {
+      setupIpeIntercepts();
       SecureMessagingSite.login(
         undefined,
         undefined,
@@ -204,12 +249,15 @@ describe('SM Contact List Migration Alert', () => {
         .find('button.va-alert-close')
         .click({ force: true });
 
+      // Confirm the IPE API was called to persist the dismissal
+      cy.wait('@patchTooltipDismiss');
       cy.findByTestId(ALERT_TESTID).should('not.exist');
     });
   });
 
   describe('Phase p0 (pre-migration: T-60)', () => {
     beforeEach(() => {
+      setupIpeIntercepts();
       SecureMessagingSite.login(
         undefined,
         undefined,
@@ -241,6 +289,7 @@ describe('SM Contact List Migration Alert', () => {
     ['p6', 'p7', 'p8'].forEach(phase => {
       describe(`Phase ${phase}`, () => {
         beforeEach(() => {
+          setupIpeIntercepts();
           SecureMessagingSite.login(
             undefined,
             undefined,
@@ -284,6 +333,7 @@ describe('SM Contact List Migration Alert', () => {
     });
 
     it('displays migrating facility names', () => {
+      setupIpeIntercepts();
       SecureMessagingSite.login(
         undefined,
         undefined,
@@ -301,6 +351,7 @@ describe('SM Contact List Migration Alert', () => {
     });
 
     it('displays the reassurance message', () => {
+      setupIpeIntercepts();
       SecureMessagingSite.login(
         undefined,
         undefined,
@@ -319,7 +370,8 @@ describe('SM Contact List Migration Alert', () => {
       cy.axeCheck(AXE_CONTEXT);
     });
 
-    it('is closeable', () => {
+    it('is closeable and calls the IPE API to persist dismissal', () => {
+      setupIpeIntercepts();
       SecureMessagingSite.login(
         undefined,
         undefined,
@@ -338,12 +390,15 @@ describe('SM Contact List Migration Alert', () => {
         .find('button.va-alert-close')
         .click({ force: true });
 
+      // Confirm the IPE API was called to persist the dismissal
+      cy.wait('@patchTooltipDismiss');
       cy.findByTestId(ALERT_TESTID).should('not.exist');
     });
   });
 
   describe('User without migration schedules', () => {
     beforeEach(() => {
+      setupIpeIntercepts();
       SecureMessagingSite.login(undefined, undefined, true, mockUser);
       ContactListPage.loadContactList();
     });
@@ -355,6 +410,87 @@ describe('SM Contact List Migration Alert', () => {
     });
 
     it('passes accessibility check', () => {
+      cy.injectAxe();
+      cy.axeCheck(AXE_CONTEXT);
+    });
+  });
+
+  describe('Persistent dismissal (IPE integration)', () => {
+    it('does not display the alert when the tooltip is already dismissed (hidden: true)', () => {
+      // Simulate returning to the page after a prior dismissal
+      setupIpeIntercepts(true);
+      SecureMessagingSite.login(
+        undefined,
+        undefined,
+        true,
+        createMigratingUser('p6'),
+      );
+      ContactListPage.loadContactList();
+
+      cy.wait('@getTooltips');
+      cy.findByTestId(ALERT_TESTID).should('not.exist');
+      cy.injectAxe();
+      cy.axeCheck(AXE_CONTEXT);
+    });
+
+    it('calls the IPE PATCH endpoint to persist dismissal when closed', () => {
+      setupIpeIntercepts();
+      SecureMessagingSite.login(
+        undefined,
+        undefined,
+        true,
+        createMigratingUser('p6'),
+      );
+      ContactListPage.loadContactList();
+
+      cy.findByTestId(ALERT_TESTID).should('exist');
+
+      cy.findByTestId(ALERT_TESTID)
+        .shadow()
+        .find('button.va-alert-close')
+        .click({ force: true });
+
+      // The PATCH to /my_health/v1/tooltips/:id must be called to persist dismissal
+      cy.wait('@patchTooltipDismiss');
+      cy.findByTestId(ALERT_TESTID).should('not.exist');
+
+      cy.injectAxe();
+      cy.axeCheck(AXE_CONTEXT);
+    });
+  });
+
+  describe('First visit (no existing tooltip)', () => {
+    it('creates a new tooltip via the IPE API and displays the alert', () => {
+      // Empty list = no prior tooltip record for this user
+      cy.intercept('GET', Paths.INTERCEPT.TOOLTIPS, []).as('getTooltips');
+      cy.intercept('POST', Paths.INTERCEPT.TOOLTIPS, {
+        id: TOOLTIP_ID,
+        tooltipName: TOOLTIP_NAME,
+        hidden: false,
+        counter: 0,
+      }).as('createTooltip');
+      cy.intercept('PATCH', Paths.INTERCEPT.TOOLTIPS_BY_ID, req => {
+        if (req.url.includes('increment_counter=true')) {
+          req.alias = 'patchTooltipIncrement';
+        } else {
+          req.alias = 'patchTooltipDismiss';
+        }
+        req.reply({});
+      });
+
+      SecureMessagingSite.login(
+        undefined,
+        undefined,
+        true,
+        createMigratingUser('p6'),
+      );
+      ContactListPage.loadContactList();
+
+      // Component should create a new tooltip, increment the counter, then display the alert
+      cy.wait('@createTooltip');
+      cy.wait('@patchTooltipIncrement');
+      cy.findByTestId(ALERT_TESTID).should('exist');
+
       cy.injectAxe();
       cy.axeCheck(AXE_CONTEXT);
     });
