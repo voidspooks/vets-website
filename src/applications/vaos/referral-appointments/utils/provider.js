@@ -4,6 +4,7 @@ const createDefaultDraftAppointment = () => ({
   id: 'EEKoGzEf',
   type: 'draft_appointment',
   attributes: {
+    careType: 'CC',
     provider: {
       id: '9mN718pH',
       name: 'Dr. Bones @ FHA South Melbourne Medical Complex',
@@ -41,6 +42,8 @@ const createDefaultDraftAppointment = () => ({
           name: 'Urology',
         },
       ],
+      phone: '(321) 555-1234',
+      tty: '711',
       visitMode: 'phone',
       features: {
         isDigital: true,

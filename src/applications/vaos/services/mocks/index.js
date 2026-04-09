@@ -185,7 +185,7 @@ const MockReferralListResponse = require('../../tests/fixtures/MockReferralListR
 const MockReferralDetailResponse = require('../../tests/fixtures/MockReferralDetailResponse');
 const MockReferralDraftAppointmentResponse = require('../../tests/fixtures/MockReferralDraftAppointmentResponse');
 const MockReferralAppointmentDetailsResponse = require('../../tests/fixtures/MockReferralAppointmentDetailsResponse');
-const MockReferralSubmitAppointmentResponse = require('../../tests/fixtures/MockReferralSubmitAppointmentResponse');
+const MockUnifiedBookingResponse = require('../../tests/fixtures/MockUnifiedBookingResponse');
 
 // Returns the meta object without any backend service errors
 const meta = require('./v2/meta.json');
@@ -667,21 +667,24 @@ const responses = {
       }),
     );
   },
-  'POST /vaos/v2/appointments/draft': (req, res) => {
-    const { referral_number: referralNumber } = req.body;
-    // empty referral number throws error
-    if (referralNumber === '') {
-      return res.status(500).json(
-        new MockReferralDraftAppointmentResponse({
-          referralNumber,
-          serverError: true,
-        }),
-      );
+  'GET /vaos/v2/provider-slots': (req, res) => {
+    const referralId = req.query.referral_id;
+    if (!referralId) {
+      return res.status(422).json({
+        errors: [
+          {
+            title: 'Missing parameter',
+            detail: 'param is missing or the value is empty: referral_id',
+            code: '422',
+            status: '422',
+          },
+        ],
+      });
     }
-    if (referralNumber === 'draft-no-slots-error') {
+    if (referralId === 'draft-no-slots-error') {
       return res.json(
         new MockReferralDraftAppointmentResponse({
-          referralNumber,
+          referralNumber: referralId,
           categoryOfCare: 'OPTOMETRY',
           startDate: new Date(),
           noSlotsError: true,
@@ -691,7 +694,7 @@ const responses = {
 
     return res.json(
       new MockReferralDraftAppointmentResponse({
-        referralNumber,
+        referralNumber: referralId,
         categoryOfCare: 'OPTOMETRY',
         startDate: new Date(),
       }),
@@ -767,37 +770,23 @@ const responses = {
 
     return res.json(mockAppointment);
   },
-  'POST /vaos/v2/appointments/submit': (req, res) => {
-    const {
-      id,
-      referralNumber,
-      slotId,
-      networkId,
-      providerServiceId,
-    } = req.body;
+  'POST /vaos/v2/unified_bookings': (req, res) => {
+    const { provider_type: providerType, slot_id: slotId } = req.body;
 
-    if (!id || !referralNumber || !slotId || !networkId || !providerServiceId) {
+    if (!providerType || !slotId) {
       return res.status(400).json(
-        new MockReferralSubmitAppointmentResponse({
-          appointmentId: id,
+        new MockUnifiedBookingResponse({
+          appointmentId: null,
           notFound: true,
         }),
       );
     }
 
-    if (referralNumber === 'appointment-submit-error') {
-      return res.status(500).json(
-        new MockReferralSubmitAppointmentResponse({
-          appointmentId: id,
-          serverError: true,
-        }),
-      );
-    }
-
-    draftAppointmentPollCount[id] = 1;
+    const appointmentId = `mock-${Date.now()}`;
+    draftAppointmentPollCount[appointmentId] = 1;
     return res.json(
-      new MockReferralSubmitAppointmentResponse({
-        appointmentId: id,
+      new MockUnifiedBookingResponse({
+        appointmentId,
       }),
     );
   },

@@ -8,7 +8,7 @@ import { getUpcomingAppointmentListInfo } from '../../appointment-list/redux/sel
 import { setFormCurrentPage } from '../redux/actions';
 // eslint-disable-next-line import/no-restricted-paths
 import { fetchFutureAppointments } from '../../appointment-list/redux/actions';
-import { useGetDraftReferralAppointmentQuery } from '../../redux/api/vaosApi';
+import { useGetProviderSlotsQuery } from '../../redux/api/vaosApi';
 import { FETCH_STATUS } from '../../utils/constants';
 import DateAndTimeContent from '../components/DateAndTimeContent';
 
@@ -16,15 +16,17 @@ export const ChooseDateAndTime = props => {
   const { attributes: currentReferral } = props.currentReferral;
   const dispatch = useDispatch();
   const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const providerId = urlParams.get('providerId');
   const {
-    data: draftAppointmentInfo,
-    isLoading: isDraftLoading,
-    isError: isDraftError,
-    isSuccess: isDraftSuccess,
-    isUninitialized: isDraftUninitialized,
-  } = useGetDraftReferralAppointmentQuery({
-    referralNumber: currentReferral.referralNumber,
-    referralConsultId: currentReferral.referralConsultId,
+    data: providerSlotsInfo,
+    isLoading: isProviderSlotsLoading,
+    isError: isProviderSlotsError,
+    isSuccess: isProviderSlotsSuccess,
+    isUninitialized: isProviderSlotsUninitialized,
+  } = useGetProviderSlotsQuery({
+    referralId: currentReferral.uuid,
+    providerId,
   });
 
   const { futureStatus, appointmentsByMonth } = useSelector(
@@ -37,7 +39,7 @@ export const ChooseDateAndTime = props => {
 
   useEffect(
     () => {
-      if (draftAppointmentInfo?.attributes) {
+      if (providerSlotsInfo?.attributes) {
         if (futureStatus === FETCH_STATUS.notStarted) {
           dispatch(fetchFutureAppointments({ includeRequests: false }));
         }
@@ -45,13 +47,13 @@ export const ChooseDateAndTime = props => {
           setLoading(false);
         }
       } else if (
-        isDraftUninitialized ||
+        isProviderSlotsUninitialized ||
         futureStatus === FETCH_STATUS.notStarted
       ) {
         if (futureStatus === FETCH_STATUS.notStarted) {
           dispatch(fetchFutureAppointments({ includeRequests: false }));
         }
-      } else if (isDraftError || futureStatus === FETCH_STATUS.failed) {
+      } else if (isProviderSlotsError || futureStatus === FETCH_STATUS.failed) {
         setLoading(false);
         setFailed(true);
       }
@@ -59,11 +61,11 @@ export const ChooseDateAndTime = props => {
     [
       currentReferral,
       dispatch,
-      draftAppointmentInfo,
+      providerSlotsInfo,
       futureStatus,
-      isDraftError,
-      isDraftSuccess,
-      isDraftUninitialized,
+      isProviderSlotsError,
+      isProviderSlotsSuccess,
+      isProviderSlotsUninitialized,
     ],
   );
   useEffect(
@@ -74,8 +76,8 @@ export const ChooseDateAndTime = props => {
   );
 
   // Check for error state before showing loading indicator to prevent race condition
-  // where isDraftError becomes true while loading is still true
-  if ((loading || isDraftLoading) && !isDraftError) {
+  // where isProviderSlotsError becomes true while loading is still true
+  if ((loading || isProviderSlotsLoading) && !isProviderSlotsError) {
     return (
       <ReferralLayout
         data-testid="loading"
@@ -89,11 +91,11 @@ export const ChooseDateAndTime = props => {
   return (
     <ReferralLayout
       hasEyebrow
-      apiFailure={failed || isDraftError}
+      apiFailure={failed || isProviderSlotsError}
       heading={scheduleHeader}
     >
       <DateAndTimeContent
-        draftAppointmentInfo={draftAppointmentInfo}
+        draftAppointmentInfo={providerSlotsInfo}
         currentReferral={currentReferral}
         appointmentsByMonth={appointmentsByMonth}
       />

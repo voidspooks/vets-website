@@ -5,13 +5,11 @@ import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   getAppointmentCreateStatus,
+  // getSelectedProviderId,
   getSelectedSlotStartTime,
 } from '../redux/selectors';
 import { setFormCurrentPage, setSelectedSlotStartTime } from '../redux/actions';
-import {
-  useGetDraftReferralAppointmentQuery,
-  usePostReferralAppointmentMutation,
-} from '../../redux/api/vaosApi';
+import { usePostReferralAppointmentMutation } from '../../redux/api/vaosApi';
 
 import ReferralLayout from '../components/ReferralLayout';
 import {
@@ -21,10 +19,27 @@ import {
 } from '../flow';
 
 import { getReferralSlotKey } from '../utils/referrals';
-import { getSlotByDate } from '../utils/provider';
+import { createDraftAppointmentInfo, getSlotByDate } from '../utils/provider';
 import { stripDST } from '../../utils/timezone';
 import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
 import { titleCase } from '../../utils/formatters';
+
+function useMockDraftData() {
+  const data = createDraftAppointmentInfo();
+  data.attributes.slots = [
+    {
+      id: 'mock-slot|2024-09-09T16:00:00.000Z|60m',
+      start: '2024-09-09T16:00:00.000Z',
+    },
+  ];
+  return {
+    data,
+    isLoading: false,
+    isError: false,
+    isSuccess: true,
+    isUninitialized: false,
+  };
+}
 
 const ReviewAndConfirm = props => {
   const { attributes: currentReferral } = props.currentReferral;
@@ -33,10 +48,12 @@ const ReviewAndConfirm = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const selectedSlot = useSelector(state => getSelectedSlotStartTime(state));
+  // const providerId = useSelector(getSelectedProviderId);
 
   const appointmentCreateStatus = useSelector(getAppointmentCreateStatus);
   const [failed, setFailed] = useState(false);
-  const [skipDraft, setSkipDraft] = useState(false);
+
+  // const [skipDraft, setSkipDraft] = useState(false);
   const [createFailed, setCreateFailed] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const savedSelectedSlot = sessionStorage.getItem(
@@ -48,13 +65,7 @@ const ReviewAndConfirm = props => {
     isError: isDraftError,
     isSuccess: isDraftSuccess,
     isUninitialized: isDraftUninitialized,
-  } = useGetDraftReferralAppointmentQuery(
-    {
-      referralNumber: currentReferral.referralNumber,
-      referralConsultId: currentReferral.referralConsultId,
-    },
-    { skip: skipDraft },
-  );
+  } = useMockDraftData();
   // Use savedSelectedSlot as fallback to handle sessionStorage restoration timing
   const slotDetails = getSlotByDate(
     draftAppointmentInfo?.attributes?.slots,
@@ -87,7 +98,7 @@ const ReviewAndConfirm = props => {
   useEffect(
     () => {
       if (!isDraftLoading && !isDraftUninitialized) {
-        setSkipDraft(true);
+        // setSkipDraft(true);
       }
       if (isDraftError) {
         setFailed(true);

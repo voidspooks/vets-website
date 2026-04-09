@@ -54,6 +54,8 @@ class MockReferralDraftAppointmentResponse {
       id,
       name: 'Dr. Bones @ FHA South Melbourne Medical Complex',
       isActive: true,
+      phone: '(321) 555-0100',
+      tty: '711',
       individualProviders: [
         {
           name: 'Dr. Bones',
@@ -206,10 +208,7 @@ class MockReferralDraftAppointmentResponse {
     // Create provider
     const provider = MockReferralDraftAppointmentResponse.createProvider();
 
-    // Update provider's location to match the new format (removing the name property)
-    const { ...locationWithoutName } = provider.location;
-    delete locationWithoutName.name;
-    provider.location = locationWithoutName;
+    // No modifications to provider - use as-is from createProvider()
 
     // Generate slots unless noSlotsError is true
     let mockSlots;
@@ -234,6 +233,7 @@ class MockReferralDraftAppointmentResponse {
         type: 'draft_appointment',
         attributes: {
           referralNumber,
+          careType: 'CC',
           provider,
           slots: mockSlots,
           drivetime: {

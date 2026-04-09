@@ -16,27 +16,19 @@ import { getReferralSlotKey } from '../utils/referrals';
 import { scrollAndFocus } from '../../utils/scrollAndFocus';
 import FindCommunityCareOfficeLink from './FindCCFacilityLink';
 import { getIsInPilotReferralStation } from '../utils/pilot';
-import { vaClinicInfo, ccProviderInfo } from '../utils/mocks';
 
 export const DateAndTimeContent = props => {
   const { currentReferral, draftAppointmentInfo, appointmentsByMonth } = props;
   const dispatch = useDispatch();
   const history = useHistory();
-  // TODO: Add a selector to determine if the appointment is a VA clinic appointment or CC
-  const isVAClinicAppointment = false;
 
-  const appointmentInfo = isVAClinicAppointment ? vaClinicInfo : ccProviderInfo;
-  const schedulingName = isVAClinicAppointment
-    ? vaClinicInfo.clinicName
-    : ccProviderInfo.providerName;
-  const schedulingLocation = isVAClinicAppointment
-    ? vaClinicInfo.vaFacilityName
-    : ccProviderInfo.providerOrganizationName;
-  const {
-    name: facilityName,
-    phone: facilityPhone,
-    tty: facilityTty,
-  } = appointmentInfo.facilityDetails;
+  const { provider, careType } = draftAppointmentInfo.attributes;
+  const isVAAppointment = careType === 'VA';
+  const providerName = provider.individualProviders?.[0]?.name;
+  const organizationName = provider.providerOrganization?.name;
+  const locationName = provider.location?.name;
+  const providerPhone = provider.phone;
+  const providerTty = provider.tty;
 
   const isStationIdValid = getIsInPilotReferralStation(currentReferral);
 
@@ -217,9 +209,11 @@ export const DateAndTimeContent = props => {
           <p className="vads-u-margin--0">
             Contact your facility, or find a new facility.
           </p>
-          <p className="vads-u-margin--0">{facilityName}</p>
-          <p className="vads-u-margin--0">Main Phone: {facilityPhone}</p>
-          <p className="vads-u-margin--0">(TTY: {facilityTty})</p>
+          <p className="vads-u-margin--0">{locationName}</p>
+          <p className="vads-u-margin--0">Main Phone: {providerPhone}</p>
+          {providerTty && (
+            <p className="vads-u-margin--0">(TTY: {providerTty})</p>
+          )}
           <p className="vads-u-margin-top--4 vads-u-margin-bottom--0">
             Or find a different VA location.
           </p>
@@ -238,9 +232,9 @@ export const DateAndTimeContent = props => {
     <>
       <div>
         <p className="vads-u-margin--0" data-dd-privacy="mask">
-          {`Scheduling with ${schedulingName}${
-            isVAClinicAppointment ? ' clinic' : ''
-          } at ${schedulingLocation}.`}
+          {`Scheduling with ${providerName}${
+            isVAAppointment ? ' clinic' : ''
+          } at ${organizationName}.`}
           <br />
           {`Times are displayed in ${timezoneDescription}`}
         </p>

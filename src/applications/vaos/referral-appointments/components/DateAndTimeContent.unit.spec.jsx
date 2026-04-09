@@ -201,6 +201,42 @@ describe('VAOS Component: DateAndTimeContent', () => {
     expect(screen.getByTestId('facility-locator-link')).to.exist;
   });
 
+  it('should display "clinic" in header for VA appointments', () => {
+    const vaDraftAppointmentInfo = createDraftAppointmentInfo();
+    vaDraftAppointmentInfo.attributes.careType = 'VA';
+    vaDraftAppointmentInfo.attributes.slots = transformSlotsForCommunityCare(
+      slots,
+    );
+
+    const screen = renderWithStoreAndRouter(
+      <DateAndTimeContent
+        currentReferral={referral}
+        draftAppointmentInfo={vaDraftAppointmentInfo}
+        appointmentsByMonth={appointmentsByMonth}
+      />,
+      {
+        initialState,
+      },
+    );
+
+    expect(screen.getByText(/Scheduling with Dr\. Bones clinic at/)).to.exist;
+  });
+
+  it('should not display "clinic" in header for CC appointments', () => {
+    const screen = renderWithStoreAndRouter(
+      <DateAndTimeContent
+        currentReferral={referral}
+        draftAppointmentInfo={draftAppointmentInfo}
+        appointmentsByMonth={appointmentsByMonth}
+      />,
+      {
+        initialState,
+      },
+    );
+
+    expect(screen.getByText(/Scheduling with Dr\. Bones at/)).to.exist;
+  });
+
   it('should display provider timezone when it differs from referral timezone', async () => {
     // Create draft appointment info with Pacific timezone provider
     const pacificTimezoneDraftAppointmentInfo = createDraftAppointmentInfo();

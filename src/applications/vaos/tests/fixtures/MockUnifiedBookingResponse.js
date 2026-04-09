@@ -1,10 +1,14 @@
+/* eslint-disable camelcase */
 /**
- * Class to create mock submit appointment responses for Cypress tests
+ * Class to create mock responses for POST /vaos/v2/unified_bookings
  */
-class MockReferralSubmitAppointmentResponse {
+class MockUnifiedBookingResponse {
   constructor(options = {}) {
     this.options = {
       appointmentId: 'EEKoGzEf',
+      providerType: 'community_care',
+      status: 'booked',
+      start: '2026-04-15T14:00:00Z',
       success: true,
       notFound: false,
       serverError: false,
@@ -13,16 +17,31 @@ class MockReferralSubmitAppointmentResponse {
   }
 
   /**
-   * Creates a successful appointment submission response
+   * Creates a successful unified booking response
    *
    * @param {Object} options - Options for the response
-   * @param {string} options.appointmentId - ID for the submitted appointment
+   * @param {string} options.appointmentId - ID for the booked appointment
+   * @param {string} options.providerType - 'va' or 'community_care'
+   * @param {string} options.status - 'booked' or 'submitted'
+   * @param {string} options.start - ISO 8601 UTC appointment start time
    * @returns {Object} A successful response object
    */
-  static createSuccessResponse({ appointmentId = 'EEKoGzEf' } = {}) {
+  static createSuccessResponse({
+    appointmentId = 'EEKoGzEf',
+    providerType = 'community_care',
+    status = 'booked',
+    start = '2026-04-15T14:00:00Z',
+  } = {}) {
     return {
       data: {
         id: appointmentId,
+        type: 'unified_booking',
+        attributes: {
+          appointment_id: appointmentId,
+          provider_type: providerType,
+          status,
+          start,
+        },
       },
     };
   }
@@ -56,7 +75,7 @@ class MockReferralSubmitAppointmentResponse {
       errors: [
         {
           title: 'Internal Server Error',
-          detail: 'An error occurred while submitting the appointment',
+          detail: 'An error occurred while booking the appointment',
           code: '500',
           status: '500',
         },
@@ -65,7 +84,7 @@ class MockReferralSubmitAppointmentResponse {
   }
 
   /**
-   * Creates an error response for appointment submission
+   * Creates an error response for unified booking
    *
    * @param {Object} options - Options for the error response
    * @param {string} options.code - Error code
@@ -76,7 +95,7 @@ class MockReferralSubmitAppointmentResponse {
   static createErrorResponse({
     code = '500',
     title = 'Internal Server Error',
-    detail = 'An error occurred while submitting the appointment',
+    detail = 'An error occurred while booking the appointment',
   } = {}) {
     return {
       errors: [
@@ -96,30 +115,35 @@ class MockReferralSubmitAppointmentResponse {
    * @returns {Object} The complete response object
    */
   toJSON() {
-    const { appointmentId, success, notFound, serverError } = this.options;
-
-    // Return 404 error if notFound is true
-    if (notFound) {
-      return MockReferralSubmitAppointmentResponse.create404Response(
-        appointmentId,
-      );
-    }
-
-    // Return 500 error if serverError is true
-    if (serverError) {
-      return MockReferralSubmitAppointmentResponse.create500Response();
-    }
-
-    // Return error response if success is false
-    if (!success) {
-      return MockReferralSubmitAppointmentResponse.createErrorResponse();
-    }
-
-    // Return successful response
-    return MockReferralSubmitAppointmentResponse.createSuccessResponse({
+    const {
       appointmentId,
+      providerType,
+      status,
+      start,
+      success,
+      notFound,
+      serverError,
+    } = this.options;
+
+    if (notFound) {
+      return MockUnifiedBookingResponse.create404Response(appointmentId);
+    }
+
+    if (serverError) {
+      return MockUnifiedBookingResponse.create500Response();
+    }
+
+    if (!success) {
+      return MockUnifiedBookingResponse.createErrorResponse();
+    }
+
+    return MockUnifiedBookingResponse.createSuccessResponse({
+      appointmentId,
+      providerType,
+      status,
+      start,
     });
   }
 }
 
-module.exports = MockReferralSubmitAppointmentResponse;
+module.exports = MockUnifiedBookingResponse;

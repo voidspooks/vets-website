@@ -84,23 +84,14 @@ export const vaosApi = createApi({
         }
       },
     }),
-    getDraftReferralAppointment: builder.query({
-      async queryFn({ referralNumber, referralConsultId }) {
+    getProviderSlots: builder.query({
+      async queryFn({ referralId, providerId }) {
         try {
-          return await apiRequestWithUrl(`/vaos/v2/appointments/draft`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              // eslint-disable-next-line camelcase
-              referral_number: referralNumber,
-              // eslint-disable-next-line camelcase
-              referral_consult_id: referralConsultId,
-            }),
-          });
+          return await apiRequestWithUrl(
+            `/vaos/v2/provider-slots?referral_id=${referralId}&provider_id=${providerId}`,
+          );
         } catch (error) {
-          captureError(error, false, 'post draft referral appointment');
+          captureError(error, false, 'fetch provider slots');
           return {
             error: { status: error.status || 500, message: error.message },
           };
@@ -108,26 +99,14 @@ export const vaosApi = createApi({
       },
     }),
     postReferralAppointment: builder.mutation({
-      async queryFn({
-        draftApppointmentId,
-        referralNumber,
-        slotId,
-        networkId,
-        providerServiceId,
-      }) {
+      async queryFn(bookingPayload) {
         try {
-          return await apiRequestWithUrl(`/vaos/v2/appointments/submit`, {
+          return await apiRequestWithUrl(`/vaos/v2/unified_bookings`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              id: draftApppointmentId,
-              referralNumber,
-              slotId,
-              networkId,
-              providerServiceId,
-            }),
+            body: JSON.stringify(bookingPayload),
           });
         } catch (error) {
           captureError(error, false, 'post referral appointment');
@@ -146,5 +125,5 @@ export const {
   useGetAppointmentInfoQuery,
   usePollAppointmentInfoQuery,
   usePostReferralAppointmentMutation,
-  useGetDraftReferralAppointmentQuery,
+  useGetProviderSlotsQuery,
 } = vaosApi;

@@ -99,23 +99,23 @@ export function mockAppointmentDetailsApiWithPolling({
 }
 
 /**
- * Function to mock the 'POST' draft referral appointment endpoint.
+ * Function to mock the 'GET' provider-slots endpoint.
  *
- * @example POST '/vaos/v2/epsApi/draftReferralAppointment'
+ * @example GET '/vaos/v2/provider-slots?referral_id=...&provider_id=...'
  *
  * @export
  * @param {Object} arguments - Function arguments.
  * @param {Object} [arguments.response] - The response to return from the mock api call.
  * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
  */
-export function mockDraftReferralAppointmentApi({
+export function mockProviderSlotsApi({
   response: data,
   responseCode = 200,
 } = {}) {
   cy.intercept(
     {
-      method: 'POST',
-      pathname: '/vaos/v2/appointments/draft',
+      method: 'GET',
+      pathname: '/vaos/v2/provider-slots',
     },
     req => {
       req.reply({
@@ -123,7 +123,7 @@ export function mockDraftReferralAppointmentApi({
         body: data,
       });
     },
-  ).as('v2:post:draftReferralAppointment');
+  ).as('v2:get:providerSlots');
 }
 
 /**
@@ -155,23 +155,23 @@ export function mockCreateAppointmentApi({
 }
 
 /**
- * Function to mock the 'POST' submit appointment endpoint.
+ * Function to mock the 'POST' unified bookings endpoint.
  *
- * @example POST '/vaos/v2/appointments/submit'
+ * @example POST '/vaos/v2/unified_bookings'
  *
  * @export
  * @param {Object} arguments - Function arguments.
  * @param {Object} [arguments.response] - The response to return from the mock api call.
  * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
  */
-export function mockSubmitAppointmentApi({
+export function mockUnifiedBookingApi({
   response: data,
   responseCode = 200,
 } = {}) {
   cy.intercept(
     {
       method: 'POST',
-      pathname: '/vaos/v2/appointments/submit',
+      pathname: '/vaos/v2/unified_bookings',
     },
     req => {
       req.reply({
@@ -179,7 +179,7 @@ export function mockSubmitAppointmentApi({
         body: data,
       });
     },
-  ).as('v2:post:submitAppointment');
+  ).as('v2:post:unifiedBooking');
 }
 
 /**

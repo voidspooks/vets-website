@@ -74,19 +74,19 @@ export const buildAppointmentsUrl = () => {
 };
 
 /**
- * Build the draft appointments API URL
- * @returns {string} The draft appointments API URL
+ * Build the provider-slots API URL
+ * @returns {string} The provider-slots API URL
  */
-export const buildDraftAppointmentsUrl = () => {
-  return `${environment.API_URL}/vaos/v2/appointments/draft`;
+export const buildProviderSlotsUrl = () => {
+  return `${environment.API_URL}/vaos/v2/provider-slots`;
 };
 
 /**
- * Build the submit appointments API URL
- * @returns {string} The submit appointments API URL
+ * Build the unified bookings API URL
+ * @returns {string} The unified bookings API URL
  */
-export const buildSubmitAppointmentsUrl = () => {
-  return `${environment.API_URL}/vaos/v2/appointments/submit`;
+export const buildUnifiedBookingsUrl = () => {
+  return `${environment.API_URL}/vaos/v2/unified_bookings`;
 };
 
 /**
@@ -252,52 +252,46 @@ export const mockAppointmentsGetApi = ({ response, responseCode = 200 }) => {
 };
 
 /**
- * Mock the draft appointments POST API endpoint using MSW
+ * Mock the provider-slots GET API endpoint using MSW
  *
- * @example POST '/vaos/v2/appointments/draft'
+ * @example GET '/vaos/v2/provider-slots?referral_id=...&provider_id=...'
  *
  * @param {Object} options
- * @param {Object} options.response - The draft appointment data to return
+ * @param {Object} options.response - The provider slots data to return
  * @param {number} [options.responseCode=200] - The HTTP response code
- * @param {Function} [options.onRequest] - Optional callback to capture request data
  */
-export const mockDraftAppointmentsApi = ({
-  response,
-  responseCode = 200,
-  onRequest,
-}) => {
-  const url = buildDraftAppointmentsUrl();
+export const mockProviderSlotsApi = ({ response, responseCode = 200 }) => {
+  const url = buildProviderSlotsUrl();
   server.use(
-    createPostHandler(url, ({ request }) => {
-      if (onRequest) {
-        onRequest(request.body);
-      }
-      return responseCode === 200
-        ? jsonResponse({ data: response })
-        : jsonResponse(
-            { error: { status: responseCode, message: 'Error' } },
-            { status: responseCode },
-          );
-    }),
+    createGetHandler(
+      url,
+      () =>
+        responseCode === 200
+          ? jsonResponse({ data: response })
+          : jsonResponse(
+              { error: { status: responseCode, message: 'Error' } },
+              { status: responseCode },
+            ),
+    ),
   );
 };
 
 /**
- * Mock the submit appointments POST API endpoint using MSW
+ * Mock the unified bookings POST API endpoint using MSW
  *
- * @example POST '/vaos/v2/appointments/submit'
+ * @example POST '/vaos/v2/unified_bookings'
  *
  * @param {Object} options
- * @param {Object} options.response - The submitted appointment data to return
+ * @param {Object} options.response - The booking data to return
  * @param {number} [options.responseCode=200] - The HTTP response code
  * @param {Function} [options.onRequest] - Optional callback to capture request data
  */
-export const mockSubmitAppointmentsApi = ({
+export const mockUnifiedBookingsApi = ({
   response,
   responseCode = 200,
   onRequest,
 }) => {
-  const url = buildSubmitAppointmentsUrl();
+  const url = buildUnifiedBookingsUrl();
   server.use(
     createPostHandler(url, ({ request }) => {
       if (onRequest) {

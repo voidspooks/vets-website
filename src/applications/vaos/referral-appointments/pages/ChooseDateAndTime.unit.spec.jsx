@@ -6,7 +6,6 @@ import { cleanup } from '@testing-library/react';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import {
   createGetHandler,
-  createPostHandler,
   jsonResponse,
 } from 'platform/testing/unit/msw-adapter';
 import { server } from 'platform/testing/unit/mocha-setup';
@@ -112,17 +111,17 @@ describe('VAOS ChooseDateAndTime component', () => {
     },
     appointmentApi: {
       queries: {
-        'getDraftReferralAppointment({"referralConsultId":"984_646907","referralNumber":"VA0000007241"})': {
+        'getProviderSlots({"providerId":"9mN718pH","referralId":"UUID"})': {
           status: 'fulfilled',
           data: createDraftAppointmentInfo(1),
-          endpoint: 'getDraftReferralAppointment',
+          endpoint: 'getProviderSlots',
           requestId: 'abc',
           startedTimeStamp: 1758046349181,
           fulfilledTimeStamp: 1758046349182,
         },
       },
       subscriptions: {
-        'getDraftReferralAppointment({"referralConsultId":"984_646907","referralNumber":"VA0000007241"})': {
+        'getProviderSlots({"providerId":"9mN718pH","referralId":"UUID"})': {
           abc: { pollingInterval: 0 },
         },
       },
@@ -185,13 +184,10 @@ describe('VAOS ChooseDateAndTime component', () => {
     let apiCalled = false;
 
     server.use(
-      createPostHandler(
-        `${environment.API_URL}/vaos/v2/appointments/draft`,
-        () => {
-          apiCalled = true;
-          return jsonResponse({ data: createDraftAppointmentInfo() });
-        },
-      ),
+      createGetHandler(`${environment.API_URL}/vaos/v2/provider-slots`, () => {
+        apiCalled = true;
+        return jsonResponse({ data: createDraftAppointmentInfo() });
+      }),
     );
 
     const store = createTestStore(initialFullState);
@@ -202,21 +198,20 @@ describe('VAOS ChooseDateAndTime component', () => {
       />,
       {
         store,
+        path: '/?providerId=9mN718pH',
       },
     );
     expect(apiCalled).to.be.false;
     sandbox.assert.notCalled(fetchAppointmentsModule.fetchAppointments);
   });
   it('should call API for provider or appointment data if not in store', async () => {
-    let capturedBody = null;
+    let capturedUrl = null;
 
     server.use(
-      createPostHandler(
-        `${environment.API_URL}/vaos/v2/appointments/draft`,
+      createGetHandler(
+        `${environment.API_URL}/vaos/v2/provider-slots`,
         ({ request }) => {
-          // MSW v1 uses req.body, MSW v2 uses request.json()
-          // The request object in v1 already has body parsed
-          capturedBody = request.body || null;
+          capturedUrl = request.url || null;
           return jsonResponse({ data: createDraftAppointmentInfo() });
         },
       ),
@@ -228,28 +223,24 @@ describe('VAOS ChooseDateAndTime component', () => {
       />,
       {
         store: createTestStore(initialEmptyState),
+        path: '/?providerId=9mN718pH',
       },
     );
     await waitForElementToBeRemoved(() =>
       screen.queryByTestId('loading-container'),
     );
-    expect(capturedBody).to.deep.equal({
-      /* eslint-disable camelcase */
-      referral_number: 'VA0000007241',
-      referral_consult_id: '984_646907',
-      /* eslint-enable camelcase */
-    });
+    const urlString = capturedUrl.toString();
+    expect(urlString).to.include('referral_id=UUID');
+    expect(urlString).to.include('provider_id=9mN718pH');
     sandbox.assert.calledOnce(fetchAppointmentsModule.fetchAppointments);
   });
   it('should show error if any fetch fails', async () => {
     server.use(
-      createPostHandler(
-        `${environment.API_URL}/vaos/v2/appointments/draft`,
-        () =>
-          jsonResponse(
-            { error: { status: 500, message: 'Failed to create appointment' } },
-            { status: 500 },
-          ),
+      createGetHandler(`${environment.API_URL}/vaos/v2/provider-slots`, () =>
+        jsonResponse(
+          { error: { status: 500, message: 'Failed to create appointment' } },
+          { status: 500 },
+        ),
       ),
     );
 
@@ -259,6 +250,7 @@ describe('VAOS ChooseDateAndTime component', () => {
       />,
       {
         store: createTestStore(failedState),
+        path: '/?providerId=9mN718pH',
       },
     );
     expect(await screen.findByTestId('error')).to.exist;

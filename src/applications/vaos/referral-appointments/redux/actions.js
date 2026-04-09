@@ -10,6 +10,7 @@ export const FETCH_PROVIDER_DETAILS_SUCCEEDED =
 export const FETCH_PROVIDER_DETAILS_FAILED = 'FETCH_PROVIDER_DETAILS_FAILED';
 export const FETCH_REFERRAL = 'FETCH_REFERRAL';
 export const SET_SELECTED_SLOT_START_TIME = 'SET_SELECTED_SLOT_START_TIME';
+export const SET_SELECTED_PROVIDER_ID = 'SET_SELECTED_PROVIDER_ID';
 export const SET_INIT_REFERRAL_FLOW = 'SET_INIT_REFERRAL_FLOW';
 
 export function setFormCurrentPage(currentPage) {
@@ -45,6 +46,13 @@ export function setSelectedSlotStartTime(slotStartTime) {
   return {
     type: SET_SELECTED_SLOT_START_TIME,
     payload: slotStartTime,
+  };
+}
+
+export function setSelectedProviderId(providerId) {
+  return {
+    type: SET_SELECTED_PROVIDER_ID,
+    payload: providerId,
   };
 }
 
