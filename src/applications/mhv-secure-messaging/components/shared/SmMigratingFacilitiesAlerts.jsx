@@ -7,8 +7,18 @@ import { Alerts } from '../../util/constants';
  * Wrapper that calls the metric hook for each rendered alert.
  * Each instance gets its own ref guard so every alert logs independently.
  */
-const SmMigratingFacilityAlert = ({ alertName, currentPhase, children }) => {
-  useOhMigrationAlertMetric({ alertName, isVisible: true, currentPhase });
+const SmMigratingFacilityAlert = ({
+  alertName,
+  currentPhase,
+  stationNumber,
+  children,
+}) => {
+  useOhMigrationAlertMetric({
+    alertName,
+    isVisible: true,
+    stationNumber,
+    currentPhase,
+  });
   return children;
 };
 
@@ -16,13 +26,18 @@ SmMigratingFacilityAlert.propTypes = {
   alertName: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   currentPhase: PropTypes.string,
+  stationNumber: PropTypes.string,
 };
 
 /**
  * Component to render alerts for facilities migrating to Oracle Health
  * Shows warning or error alerts based on the current migration phase
  */
-const SmMigratingFacilitiesAlerts = ({ className, migratingFacilities }) => {
+const SmMigratingFacilitiesAlerts = ({
+  className,
+  migratingFacilities,
+  stationNumber,
+}) => {
   // Map over migrating facilities to create alerts
   const alerts = migratingFacilities.map((migration, index) => {
     const currentPhase = migration.phases.current;
@@ -60,6 +75,7 @@ const SmMigratingFacilitiesAlerts = ({ className, migratingFacilities }) => {
           key={index}
           alertName="SmMigratingFacilitiesAlerts-error"
           currentPhase={currentPhase}
+          stationNumber={stationNumber}
         >
           <va-alert
             class={`vads-u-margin-bottom--2p5 ${className} ${
@@ -106,6 +122,7 @@ const SmMigratingFacilitiesAlerts = ({ className, migratingFacilities }) => {
         key={index}
         alertName="SmMigratingFacilitiesAlerts-warning"
         currentPhase={currentPhase}
+        stationNumber={stationNumber}
       >
         <va-alert-expandable
           class={`vads-u-margin-bottom--2p5 ${className} ${
@@ -165,6 +182,7 @@ SmMigratingFacilitiesAlerts.propTypes = {
       }),
     }),
   ).isRequired,
+  stationNumber: PropTypes.string.isRequired,
   className: PropTypes.string,
 };
 
