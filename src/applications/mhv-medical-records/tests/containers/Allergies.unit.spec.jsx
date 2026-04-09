@@ -180,6 +180,7 @@ describe('Allergies list container with no allergies', () => {
   it('displays a no allergies message', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         allergies: {
           allergiesList: [],
@@ -209,6 +210,7 @@ describe('Allergies does not flash NoRecordsMessage before data loads', () => {
   it('does not show NoRecordsMessage when allergiesList is undefined', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         allergies: {
           allergiesList: undefined, // Data not yet fetched
@@ -237,6 +239,7 @@ describe('Allergies list container with errors', () => {
   it('displays an error', async () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         allergies: {},
         alerts: {
@@ -293,6 +296,7 @@ describe('Allergies list container with unified data', () => {
 
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       allergies: {
         allergiesList: [convertUnifiedAllergy(unifiedAllergyData)],

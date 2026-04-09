@@ -12,6 +12,7 @@ import { convertVaccine } from '../../reducers/vaccines';
 describe('Vaccines list container', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vaccines: {
         vaccinesList: vaccines.entry.map(vaccine =>
@@ -53,6 +54,7 @@ describe('Vaccines list container', () => {
 describe('Vaccines list container still loading', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vaccines: {},
       alerts: {
@@ -78,6 +80,7 @@ describe('Vaccines list container still loading', () => {
 describe('Vaccines list container first time loading', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vaccines: { listCurrentAsOf: undefined },
       alerts: { alertList: [] },
@@ -113,6 +116,7 @@ describe('Vaccines list container with no vaccines', () => {
   it('displays a no vaccines message', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         vaccines: {
           vaccinesList: [],
@@ -143,6 +147,7 @@ describe('Vaccines does not flash NoRecordsMessage before data loads', () => {
   it('does not show NoRecordsMessage when vaccinesList is undefined', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         vaccines: {
           vaccinesList: undefined, // Data not yet fetched
@@ -169,6 +174,7 @@ describe('Vaccines does not flash NoRecordsMessage before data loads', () => {
 describe('Vaccines list container with errors', async () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       alerts: {
         alertList: [

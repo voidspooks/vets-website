@@ -12,6 +12,7 @@ import user from '../fixtures/user.json';
 
 describe('Vitals list container', () => {
   const initialState = {
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vitals: {
         vitalsList: vitals.entry.map(item => convertVital(item.resource)),
@@ -217,6 +218,7 @@ describe('Vitals list container', () => {
 describe('Vitals list container with errors', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vitals: {},
       alerts: {
@@ -259,6 +261,7 @@ describe('Vitals list container with errors', () => {
 describe('Vitals list container with no vitals', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vitals: {
         vitalsList: [],
@@ -290,6 +293,7 @@ describe('Vitals list container with no vitals', () => {
 describe('Vitals list container with no vitals of a type', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vitals: {
         vitalsList: vitalsWithNoBloodPressure.entry.map(item =>
@@ -329,6 +333,7 @@ describe('Vitals does not flash NoRecordsMessage before data loads', () => {
   it('does not show NoRecordsMessage when vitalsList is undefined', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         vitals: {
           vitalsList: undefined, // Data not yet fetched
@@ -355,6 +360,7 @@ describe('Vitals does not flash NoRecordsMessage before data loads', () => {
 describe('Vitals list container first time loading', () => {
   const initialState = {
     user,
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       vitals: { listCurrentAsOf: undefined },
       alerts: { alertList: [] },

@@ -16,6 +16,7 @@ import { loadStates } from '../../util/constants';
 
 describe('Health conditions list container', () => {
   const initialState = {
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       user,
       conditions: {
@@ -68,6 +69,7 @@ describe('Health conditions list container still loading', () => {
   it('displays a loading indicator', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         conditions: {},
         alerts: {
@@ -93,6 +95,7 @@ describe('Health conditions list container with no health conditions', () => {
   it('displays a no health conditions message', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         conditions: {
           conditionsList: [],
@@ -124,6 +127,7 @@ describe('HealthConditions does not flash NoRecordsMessage before data loads', (
   it('does not show NoRecordsMessage when conditionsList is undefined', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         conditions: {
           conditionsList: undefined, // Data not yet fetched
@@ -152,6 +156,7 @@ describe('Health conditions container with errors', () => {
   it('displays an error', async () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         conditions: {},
         alerts: {

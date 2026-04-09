@@ -21,6 +21,7 @@ describe('LabsAndTests list container', () => {
     convertLabsAndTestsRecord(item),
   );
   const initialState = {
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       labsAndTests: {
         labsAndTestsList: [...labsAndTestsFhir, ...radiologyTestsMhv],
@@ -130,6 +131,7 @@ describe('Labs and tests list container with no data', () => {
   it('displays a no labs and tests message', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         labsAndTests: {
           labsAndTestsList: [],
@@ -166,6 +168,7 @@ describe('LabsAndTests does not flash NoRecordsMessage before data loads', () =>
   it('does not show NoRecordsMessage when labsAndTestsList is undefined', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         labsAndTests: {
           labsAndTestsList: undefined, // Data not yet fetched
@@ -199,6 +202,7 @@ describe('Labs and tests list container with errors', () => {
   it('displays an error', async () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         labsAndTests: {
           dateRange: {
@@ -251,6 +255,7 @@ describe('Labs and tests list container with radiology images ready', () => {
   it('displays the images ready alert and download links', async () => {
     const stateWithRadiology = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         labsAndTests: {
           labsAndTestsList: radiologyTestsMhv,
@@ -309,6 +314,7 @@ describe('Labs and tests list container with warnings', () => {
   it('displays a warning banner when warnings are present', async () => {
     const stateWithWarnings = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         labsAndTests: {
           labsAndTestsList: labsAndTestsFhir,
@@ -374,6 +380,7 @@ describe('Labs and tests list container hold time messaging', () => {
   );
 
   const initialState = {
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       labsAndTests: {
         labsAndTestsList: [...labsAndTestsFhir, ...radiologyTestsMhv],

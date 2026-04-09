@@ -93,7 +93,16 @@ const useAcceleratedData = () => {
   const { featureToggles, drupalStaticData } = useSelector(state => state);
   const isLoading = useMemo(
     () => {
-      return featureToggles.loading || drupalStaticData?.vamcEhrData?.loading;
+      // Treat uninitialized Drupal DSOT data as still loading.
+      // Without this check, vamcEhrData being undefined causes isLoading
+      // to return false prematurely, which allows isCerner to evaluate
+      // as false before facility data arrives — hiding the
+      // DateRangeSelector and falling back to the legacy data path.
+      return (
+        featureToggles.loading ||
+        !drupalStaticData?.vamcEhrData ||
+        drupalStaticData.vamcEhrData.loading
+      );
     },
     [drupalStaticData, featureToggles],
   );

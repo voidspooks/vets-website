@@ -11,6 +11,7 @@ import user from '../fixtures/user.json';
 
 describe('CareSummariesAndNotes list container', () => {
   const initialState = {
+    drupalStaticData: { vamcEhrData: { loading: false } },
     mr: {
       careSummariesAndNotes: {
         careSummariesAndNotesList: notes.entry.map(note =>
@@ -49,6 +50,7 @@ describe('CareSummariesAndNotes list container', () => {
 describe('CareSummariesAndNotes list container still loading', () => {
   it('shows a loading indicator', () => {
     const initialState = {
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         careSummariesAndNotes: {
           dateRange: {
@@ -73,6 +75,7 @@ describe('CareSummariesAndNotes list container still loading', () => {
 describe('CareSummariesAndNotes list container with no records', () => {
   it('shows a no records message', () => {
     const initialState = {
+      drupalStaticData: { vamcEhrData: { loading: false } },
       careSummariesAndNotes: {
         careSummariesAndNotesList: [],
         dateRange: {
@@ -107,6 +110,7 @@ describe('CareSummariesAndNotes list container with errors', () => {
   it('displays an error', async () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         careSummariesAndNotesList: {
           dateRange: {
@@ -156,6 +160,7 @@ describe('CareSummariesAndNotes does not flash NoRecordsMessage before data load
   it('does not show NoRecordsMessage when careSummariesAndNotesList is undefined', () => {
     const initialState = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         careSummariesAndNotes: {
           careSummariesAndNotesList: undefined, // Data not yet fetched
@@ -189,6 +194,7 @@ describe('CareSummariesAndNotes list container with warnings', () => {
   it('displays a warning banner when warnings are present', async () => {
     const stateWithWarnings = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         careSummariesAndNotes: {
           careSummariesAndNotesList: notes.entry.map(note =>
@@ -223,6 +229,7 @@ describe('CareSummariesAndNotes list container with warnings', () => {
   it('does not display a warning banner when warnings are empty', () => {
     const stateNoWarnings = {
       user,
+      drupalStaticData: { vamcEhrData: { loading: false } },
       mr: {
         careSummariesAndNotes: {
           careSummariesAndNotesList: notes.entry.map(note =>
