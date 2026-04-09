@@ -217,6 +217,62 @@ describe('AddressValidationPage', () => {
     expect(goForward.called).to.equal(false);
   });
 
+  it('shows warning/manual confirmation for low confidence instead of suggested address', async () => {
+    const addressPath = 'applicant.mailingAddress';
+    const formData = {
+      applicant: {
+        mailingAddress: {
+          street: '123 Main St',
+          city: 'Brooklyn',
+          state: 'NY',
+          postalCode: '',
+          country: 'USA',
+        },
+      },
+    };
+
+    fetchSuggestedAddressStub.resolves({
+      suggestedAddress: {
+        street: '123 Main Street',
+        city: 'Brooklyn',
+        state: 'NY',
+        postalCode: '',
+        country: 'USA',
+      },
+      showSuggestions: false,
+      confidenceScore: 0,
+      deliveryPointValidation: 'MISSING_ZIP',
+    });
+
+    const goBack = sinon.spy();
+    const goForward = sinon.spy();
+    const CustomPage = createAddressValidationPage({
+      addressPath,
+      title: 'Confirm mailing address',
+    });
+
+    const view = render(
+      <Provider store={buildStore(formData)}>
+        <CustomPage
+          goBack={goBack}
+          goForward={goForward}
+          contentBeforeButtons={null}
+          contentAfterButtons={null}
+        />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(fetchSuggestedAddressStub.calledOnce).to.equal(true);
+    });
+
+    expect(
+      view.getByText('Check the address you entered').textContent,
+    ).to.not.equal('');
+    expect(view.container.querySelector('va-radio')).to.not.exist;
+    expect(goForward.called).to.equal(false);
+  });
+
   it('shows suggestion radio flow for confidence below 100 and allows manual continue', async () => {
     const addressPath = 'applicant.mailingAddress';
     const formData = {

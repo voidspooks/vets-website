@@ -17,6 +17,7 @@ const ADDRESS_TYPE = 'address_type';
 const COUNTRY_CODE_ISO3 = 'country_code_iso3';
 const STATE_CODE = 'state_code';
 const ZIP_CODE = 'zip_code';
+const MIN_CONFIDENCE_SCORE_FOR_SUGGESTION = 50;
 
 export const prepareAddressForAPI = address => {
   const countryCode = address.country || 'USA';
@@ -59,7 +60,8 @@ export const fetchSuggestedAddress = async userAddress => {
     if (res?.addresses?.length > 0) {
       const firstAddress = res.addresses[0] || {};
       const suggested = firstAddress.address;
-      const { confidenceScore } = firstAddress.addressMetaData || {};
+      const { confidenceScore, deliveryPointValidation } =
+        firstAddress.addressMetaData || {};
 
       if (!suggested) {
         // Some upstream responses can include metadata without a usable
@@ -69,10 +71,14 @@ export const fetchSuggestedAddress = async userAddress => {
           suggestedAddress: null,
           confidenceScore,
           showSuggestions: false,
-          deliveryPointValidation:
-            firstAddress?.addressMetaData?.deliveryPointValidation,
+          deliveryPointValidation,
         };
       }
+
+      const hasSuggestionConfidence =
+        typeof confidenceScore === 'number' &&
+        confidenceScore >= MIN_CONFIDENCE_SCORE_FOR_SUGGESTION &&
+        confidenceScore < 100;
 
       return {
         suggestedAddress: {
@@ -84,12 +90,10 @@ export const fetchSuggestedAddress = async userAddress => {
           postalCode: suggested.zipCode,
         },
         confidenceScore,
-        // Match Medallions app UX: confidence 100 goes to confirmation page,
-        // while lower confidence shows side-by-side address choice.
-        showSuggestions:
-          typeof confidenceScore === 'number' && confidenceScore !== 100,
-        deliveryPointValidation:
-          firstAddress?.addressMetaData?.deliveryPointValidation,
+        // Confidence below the minimum threshold (e.g., 0 with MISSING_ZIP)
+        // is treated as non-actionable and should not appear as a suggestion.
+        showSuggestions: hasSuggestionConfidence,
+        deliveryPointValidation,
       };
     }
   } catch {

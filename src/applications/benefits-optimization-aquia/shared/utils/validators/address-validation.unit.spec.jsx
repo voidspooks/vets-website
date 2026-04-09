@@ -153,7 +153,7 @@ describe('address-validation utils', () => {
       expect(result.suggestedAddress.street).to.equal('37 N 1st St');
     });
 
-    it('returns showSuggestions=true when confidence is below 100', async () => {
+    it('returns showSuggestions=true when confidence is between 50 and 99', async () => {
       mockApiRequest(
         {
           addresses: [
@@ -185,6 +185,109 @@ describe('address-validation utils', () => {
 
       expect(result.showSuggestions).to.be.true;
       expect(result.confidenceScore).to.equal(85);
+    });
+
+    it('returns showSuggestions=true at confidence boundary of 50', async () => {
+      mockApiRequest(
+        {
+          addresses: [
+            {
+              address: {
+                addressLine1: '37 North 1st Street',
+                city: 'Brooklyn',
+                countryCodeIso3: 'USA',
+                stateCode: 'NY',
+                zipCode: '11249',
+              },
+              addressMetaData: {
+                confidenceScore: 50,
+                deliveryPointValidation: 'CONFIRMED',
+              },
+            },
+          ],
+        },
+        true,
+      );
+
+      const result = await fetchSuggestedAddress({
+        street: '37 N 1st St',
+        city: 'Brooklyn',
+        state: 'NY',
+        postalCode: '11249',
+        country: 'USA',
+      });
+
+      expect(result.showSuggestions).to.be.true;
+      expect(result.confidenceScore).to.equal(50);
+    });
+
+    it('returns showSuggestions=false when confidence is below threshold', async () => {
+      mockApiRequest(
+        {
+          addresses: [
+            {
+              address: {
+                addressLine1: '37 North 1st Street',
+                city: 'Brooklyn',
+                countryCodeIso3: 'USA',
+                stateCode: 'NY',
+                zipCode: '11249',
+              },
+              addressMetaData: {
+                confidenceScore: 49,
+                deliveryPointValidation: 'CONFIRMED',
+              },
+            },
+          ],
+        },
+        true,
+      );
+
+      const result = await fetchSuggestedAddress({
+        street: '37 N 1st St',
+        city: 'Brooklyn',
+        state: 'NY',
+        postalCode: '11249',
+        country: 'USA',
+      });
+
+      expect(result.showSuggestions).to.be.false;
+      expect(result.confidenceScore).to.equal(49);
+    });
+
+    it('returns showSuggestions=false for confidence 0 with MISSING_ZIP', async () => {
+      mockApiRequest(
+        {
+          addresses: [
+            {
+              address: {
+                addressLine1: '123 Main Street',
+                city: 'Brooklyn',
+                countryCodeIso3: 'USA',
+                stateCode: 'NY',
+                zipCode: '',
+              },
+              addressMetaData: {
+                confidenceScore: 0,
+                deliveryPointValidation: 'MISSING_ZIP',
+              },
+            },
+          ],
+        },
+        true,
+      );
+
+      const result = await fetchSuggestedAddress({
+        street: '123 Main St',
+        city: 'Brooklyn',
+        state: 'NY',
+        postalCode: '',
+        country: 'USA',
+      });
+
+      expect(result.showSuggestions).to.be.false;
+      expect(result.confidenceScore).to.equal(0);
+      expect(result.deliveryPointValidation).to.equal('MISSING_ZIP');
     });
 
     it('returns fallback when API call fails', async () => {
