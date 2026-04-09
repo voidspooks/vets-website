@@ -50,9 +50,9 @@ const FoldersList = props => {
                         </span>
                       )}
                     {showUnread &&
-                      folder.unreadCount > 0 &&
-                      folder.id !== Folders.DRAFTS.id &&
-                      `(${folder.unreadCount} unread messages)`}
+                      folder.id === Folders.DRAFTS.id &&
+                      folder.count > 0 &&
+                      ` (${folder.count})`}
                   </span>
                 </div>
               </Link>

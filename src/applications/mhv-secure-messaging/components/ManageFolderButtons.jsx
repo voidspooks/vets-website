@@ -36,15 +36,6 @@ const ManageFolderButtons = props => {
   const removeFolderRef = useRef(null);
   const prevFolderIdRef = useRef(folder?.folderId);
 
-  useEffect(
-    () => {
-      if (!folderList) {
-        dispatch(getFolders());
-      }
-    },
-    [folderList, dispatch],
-  );
-
   // Reset local state when navigating to a different folder (not on initial mount)
   useEffect(
     () => {

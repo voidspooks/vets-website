@@ -124,6 +124,7 @@ const Folders = () => {
               folders={folders.filter(
                 folder => folder.id !== -1 && folder.id !== 0,
               )}
+              showUnread
               highlightName={newlyCreatedFolderName}
             />
           </>

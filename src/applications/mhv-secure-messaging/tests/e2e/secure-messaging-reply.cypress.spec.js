@@ -34,11 +34,8 @@ describe('Secure Messaging Reply Axe Check', () => {
 
     PatientReplyPage.getMessageBodyField()
       .should('be.visible')
-      .and('not.be.disabled');
-    PatientReplyPage.getMessageBodyField().clear();
-    PatientReplyPage.getMessageBodyField().type('Test message body', {
-      force: true,
-    });
+      .and('not.be.disabled')
+      .type('{selectall}{del}Test message body', { force: true });
 
     cy.injectAxe();
     cy.axeCheck(AXE_CONTEXT);

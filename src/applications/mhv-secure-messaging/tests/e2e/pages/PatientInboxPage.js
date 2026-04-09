@@ -41,6 +41,7 @@ class PatientInboxPage {
     detailedMessage = mockSingleMessage,
     recipients = mockRecipients,
     getFoldersStatus = 200,
+    foldersFixture = mockFolders,
   ) => {
     this.mockInboxMessages = inboxMessages;
     this.mockRecipients = recipients;
@@ -54,7 +55,7 @@ class PatientInboxPage {
       cy.intercept(
         'GET',
         `${Paths.SM_API_BASE + Paths.FOLDERS}*`,
-        mockFolders,
+        foldersFixture,
       ).as('folders');
     } else {
       cy.intercept('GET', `${Paths.SM_API_BASE + Paths.FOLDERS}/*`, {

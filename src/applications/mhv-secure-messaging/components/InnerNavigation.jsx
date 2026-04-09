@@ -1,12 +1,15 @@
 import React, { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { InnerNavigationPaths, Paths } from '../util/constants';
 import { clearFolder } from '../actions/folders';
 
 const InnerNavigation = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const folderList = useSelector(state => state.sm.folders.folderList);
+  const inboxUnreadCount =
+    folderList?.find(folder => folder.id === 0)?.unreadCount || 0;
 
   const handleLinkClick = useCallback(
     () => {
@@ -72,8 +75,16 @@ const InnerNavigation = () => {
                   ? 'page'
                   : undefined
               }
+              aria-label={
+                path.path === Paths.INBOX && inboxUnreadCount > 0
+                  ? `Inbox (${inboxUnreadCount} unread)`
+                  : undefined
+              }
             >
               {path.label}
+              {path.path === Paths.INBOX &&
+                inboxUnreadCount > 0 &&
+                ` (${inboxUnreadCount})`}
             </Link>
           </div>
         ))}

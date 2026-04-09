@@ -14,7 +14,7 @@ import {
 } from '../util/constants';
 import useInterval from '../hooks/use-interval';
 import FolderHeader from '../components/MessageList/FolderHeader';
-import { retrieveFolder } from '../actions/folders';
+import { getFolders, retrieveFolder } from '../actions/folders';
 import AlertBackgroundBox from '../components/shared/AlertBackgroundBox';
 import { closeAlert } from '../actions/alerts';
 import ThreadsList from '../components/ThreadList/ThreadsList';
@@ -38,6 +38,7 @@ const FolderThreadListView = () => {
   );
   const threadSort = useSelector(state => state.sm.threads.threadSort);
   const folder = useSelector(state => state.sm.folders?.folder);
+  const folderList = useSelector(state => state.sm.folders?.folderList);
   const folderId = folder?.folderId;
   const {
     searchFolder,
@@ -149,6 +150,15 @@ const FolderThreadListView = () => {
       };
     },
     [dispatch, currentFolderId, location.pathname],
+  );
+
+  useEffect(
+    () => {
+      if (!folderList) {
+        dispatch(getFolders());
+      }
+    },
+    [dispatch, folderList],
   );
 
   // Effect to refetch threads when refetchRequired is true
