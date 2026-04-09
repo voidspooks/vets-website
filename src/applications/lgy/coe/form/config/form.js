@@ -14,6 +14,7 @@ import { definitions } from './schemaImports';
 // chapter schema imports
 import { applicantInformation } from './chapters/applicant';
 import personalInformation from '../pages/personalInformation';
+import nameOnCoe from '../pages/nameOnCoe';
 
 import {
   additionalInformation,
@@ -95,6 +96,13 @@ const formConfig = {
       },
       pages: {
         yourInformation: personalInformation,
+        nameOnCoe: {
+          path: 'name-on-coe',
+          title: 'Name to show on COE',
+          depends: formData => formData[`view:${TOGGLE_KEY}`],
+          uiSchema: nameOnCoe.uiSchema,
+          schema: nameOnCoe.schema,
+        },
         ...profileContactInfoPages({
           depends: formData => formData[`view:${TOGGLE_KEY}`],
           included: ['mailingAddress', 'email', 'homePhone'],

@@ -16,7 +16,7 @@ const CustomPersonalInfo = props => {
       {...props}
       data={props.formData}
       config={{
-        name: { show: true },
+        name: { show: false },
         ssn: { show: true, required: false },
         dateOfBirth: { show: true },
       }}
@@ -38,26 +38,16 @@ const CustomPersonalInfo = props => {
       <PersonalInformationNote>
         <p>
           <strong>Note:</strong> To protect your personal information, we don’t
-          allow online changes to your name, date of birth, or Social Security
-          number. If you need to change any of this information for your COE,
-          you’ll need to update it before you continue filling out the form. You
-          can call us at <va-telephone contact={CONTACTS.VA_BENEFITS} /> (
+          allow online changes to your date of birth, or Social Security number.
+          If you need to change this information, call us at{' '}
+          <va-telephone contact={CONTACTS.VA_BENEFITS} /> (
           <va-telephone contact={CONTACTS[711]} tty />
-          ). We’re here Monday through Friday, 8:00 a.m. to 9:00 p.m.{' '}
+          ). We’re here Monday through Friday, between 8:00 a.m. and 9:00 p.m.{' '}
           <dfn>
             <abbr title="Eastern Time">ET</abbr>
           </dfn>
           .
         </p>
-        <div className="vads-u-margin-top--6 vads-u-margin-bottom--4">
-          <p>
-            <va-link
-              external
-              href="/resources/how-to-change-your-legal-name-on-file-with-va/"
-              text="Find more detailed instructions for how to change your legal name"
-            />
-          </p>
-        </div>
       </PersonalInformationNote>
     </PersonalInformation>
   );

@@ -5,7 +5,7 @@ const CustomPersonalInfoReview = props => (
   <PersonalInformationReview
     {...props}
     config={{
-      name: { show: true },
+      name: { show: false },
       ssn: { show: true },
       dateOfBirth: { show: true },
     }}

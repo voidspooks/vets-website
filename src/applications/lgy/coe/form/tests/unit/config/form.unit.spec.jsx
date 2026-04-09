@@ -6,6 +6,20 @@ import {
   TOGGLE_KEY,
 } from '../../../constants';
 
+const viewKey = `view:${TOGGLE_KEY}`;
+
+describe('COE form config Step 1 name page', () => {
+  const { pages } = formConfig.chapters.applicantInformationChapter;
+
+  it('shows nameOnCoe page when rebuild flag is enabled', () => {
+    expect(pages.nameOnCoe.depends({ [viewKey]: true })).to.equal(true);
+  });
+
+  it('hides nameOnCoe page when rebuild flag is disabled', () => {
+    expect(pages.nameOnCoe.depends({ [viewKey]: false })).to.equal(false);
+  });
+});
+
 describe('COE form config Step 2 conditional pages', () => {
   const { pages } = formConfig.chapters.serviceHistoryChapter;
 
@@ -52,7 +66,6 @@ describe('COE form config Step 2 conditional pages', () => {
 describe('COE form config loans chapter (Step 3 / certificate use)', () => {
   const { pages } = formConfig.chapters.loansChapter;
   const { pages: documentPages } = formConfig.chapters.documentsChapter;
-  const viewKey = `view:${TOGGLE_KEY}`;
 
   describe('Step 3 flow (acceptance criteria)', () => {
     it('shows Certificate use only when the rebuild experience is on (not tied to other loan fields)', () => {

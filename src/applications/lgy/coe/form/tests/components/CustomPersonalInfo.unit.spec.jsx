@@ -54,7 +54,7 @@ describe('<CustomPersonalInfo>', () => {
         <CustomPersonalInfo {...props} />
       </Provider>,
     );
-    expect(container.textContent).to.include('John A Doe');
+    expect(container.textContent).to.not.include('John A Doe');
     expect(container.textContent).to.include('January 1, 1990');
     expect(container.textContent).to.include('6 7 8 9');
   });
