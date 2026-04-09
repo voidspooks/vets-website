@@ -5,6 +5,13 @@ import { focusElement } from 'platform/utilities/ui';
 import { resolutionDate, checkReason } from '../utilities/poaRequests';
 
 const response = (poaStatus, poaRequest, poaRequestSubmission) => {
+  const claimantOverviewLabel =
+    poaRequest?.powerOfAttorneyForm?.claimant?.name?.first &&
+    poaRequest?.powerOfAttorneyForm?.claimant?.name?.last
+      ? `Go to the claimant overview for ${
+          poaRequest.powerOfAttorneyForm.claimant.name.last
+        }, ${poaRequest.powerOfAttorneyForm.claimant.name.first}`
+      : 'Go to the claimant overview';
   focusElement('.poa__submit-response');
   switch (poaStatus) {
     case 'declination':
@@ -47,9 +54,7 @@ const response = (poaStatus, poaRequest, poaRequestSubmission) => {
                   poaRequest.claimantId
                 }`}
                 text="Go to the claimant overview"
-                aria-label={`Go to the claimant overview for ${
-                  poaRequest?.claimant?.firstName
-                } ${poaRequest?.claimant?.lastName}`}
+                label={claimantOverviewLabel}
               />
             </Toggler.Enabled>
           </Toggler>

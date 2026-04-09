@@ -162,9 +162,13 @@ const SubmissionCard = ({ submission, context }) => {
               <va-link
                 active
                 class="vads-u-margin-top--2 vads-u-display--block"
-                aria-label={`Go to the claimant overview for ${
-                  submission.lastName
-                }, ${submission.firstName}`}
+                label={
+                  submission.firstName && submission.lastName
+                    ? `Go to the claimant overview for ${
+                        submission.lastName
+                      }, ${submission.firstName}`
+                    : 'Go to the claimant overview'
+                }
                 href={`/representative/find-claimant/claimant-overview/${
                   submission.claimantId
                 }`}

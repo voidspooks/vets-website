@@ -12,6 +12,12 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
     focusElement('.claimant__results-text');
   }, []);
   const firstPOA = claimant.poaRequests?.[0];
+  const claimantOverviewLabel =
+    claimant?.firstName && claimant?.lastName
+      ? `Go to the claimant overview for ${claimant.lastName}, ${
+          claimant.firstName
+        }`
+      : 'Go to the claimant overview';
   const checkStatus = status => {
     if (
       status.representative &&
@@ -96,9 +102,7 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
             claimant.id
           }`}
           text="Go to the claimant overview"
-          aria-label={`Go to the claimant overview for ${claimant.firstName} ${
-            claimant.lastName
-          }`}
+          label={claimantOverviewLabel}
           type="primary"
         />
       ) : (
@@ -107,9 +111,7 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
             claimant.id
           }`}
           text="Go to the claimant overview"
-          aria-label={`Go to the claimant overview for ${claimant.firstName} ${
-            claimant.lastName
-          }`}
+          label={claimantOverviewLabel}
           type="primary"
         />
       )}
