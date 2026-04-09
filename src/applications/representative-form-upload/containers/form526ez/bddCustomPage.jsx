@@ -141,7 +141,9 @@ export function BddCustomPage(props) {
         <VaModal
           modalTitle="Continue without a Separation Health Assessment - Part A?"
           onCloseEvent={onClose}
-          onPrimaryButtonClick={() => onModalNext(props, setModalVisible)}
+          onPrimaryButtonClick={event =>
+            onModalNext(props, setModalVisible, event)
+          }
           onSecondaryButtonClick={onClose}
           primaryButtonText="Continue"
           secondaryButtonText="Cancel"

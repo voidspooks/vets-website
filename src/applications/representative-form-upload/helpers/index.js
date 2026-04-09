@@ -144,9 +144,11 @@ export const onClickContinueBdd = (props, setModalVisible, event) => {
   setModalVisible(false);
   props.onContinue();
 };
-export const onModalNext = (props, setModalVisible) => {
+
+export const onModalNext = (props, setModalVisible, event) => {
+  event.preventDefault();
   setModalVisible(false);
-  props.onContinue();
+  props.goForward(event);
 };
 
 export const getAlert = (props, continueClicked) => {
