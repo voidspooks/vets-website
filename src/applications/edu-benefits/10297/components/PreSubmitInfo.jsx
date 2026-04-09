@@ -144,8 +144,8 @@ const PreSubmitInfo = ({
         </p>
         <ul className="numbered-list">
           <li className="vads-u-font-family--sans">
-            I understand that if I have eligibility remaining under chapter 30,
-            33, or 35 of this title, such entitlement shall be charged at the
+            I understand that if I have eligibility remaining under chapter 35,
+            30, or 33 of this title, such entitlement shall be charged at the
             rate of one month of such entitlement for each month of education
             assistance provided under this section. If I am eligible for more
             than one of these education benefits, VA will charge the program
@@ -158,7 +158,7 @@ const PreSubmitInfo = ({
           <li className="vads-u-font-family--sans">
             If I am enrolled in a VET TEC 2.0 program of education under this
             section and do not have remaining entitlement to education
-            assistance under chapter 30, 33, or 35 of this title, any education
+            assistance under chapter 35, 30, or 33 of this title, any education
             assistance provided to me under this section shall be provided in
             addition to the entitlement I used previously.
           </li>
