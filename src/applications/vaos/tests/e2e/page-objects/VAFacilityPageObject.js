@@ -73,10 +73,27 @@ class VAFacilityPageObject extends PageObject {
       'not.exist',
     );
 
-    cy.findByLabelText(label)
-      .as('radio')
-      .focus();
-    cy.get('@radio').check();
+    // Handle both string and regex patterns
+    const labelText = label instanceof RegExp ? label.source : label;
+
+    // Check if VADS va-radio-option exists (new-appointment flow)
+    // or fall back to old form-radio-buttons (COVID-19 vaccine flow)
+    cy.get('body').then($body => {
+      if ($body.find(`va-radio-option[label*="${labelText}"]`).length > 0) {
+        // New VADS radio - get value and use platform command
+        cy.get(`va-radio-option[label*="${labelText}"]`)
+          .invoke('attr', 'value')
+          .then(value => {
+            cy.selectVaRadioOption('root_vaFacility', value);
+          });
+      } else {
+        // Old form radio buttons (COVID-19 vaccine flow)
+        cy.findByLabelText(label)
+          .as('radio')
+          .focus();
+        cy.get('@radio').check();
+      }
+    });
 
     return this;
   }

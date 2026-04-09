@@ -371,11 +371,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await screen.findAllByText(
-        /These are the facilities you’re registered at that offer/i,
-      );
-
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await waitFor(() => {
         screen.findByText(
@@ -445,11 +442,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await screen.findAllByText(
-        /These are the facilities you’re registered at that offer/i,
-      );
-
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await screen.findByTestId('eligibilityModal');
 
@@ -514,11 +508,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await screen.findAllByText(
-        /These are the facilities you’re registered at that offer/i,
-      );
-
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await screen.findByTestId('eligibilityModal');
       const loadingEvent = global.window.dataLayer.find(
@@ -581,11 +572,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await screen.findAllByText(
-        /These are the facilities you’re registered at that offer/i,
-      );
-
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await waitFor(() => {
         expect(screen.history.push.lastCall.args[0]).to.equal(
@@ -634,11 +622,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await screen.findAllByText(
-        /These are the facilities you’re registered at that offer/i,
-      );
-
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await screen.findByTestId('eligibilityModal');
       expect(screen.baseElement).not.to.contain.text(
@@ -690,7 +675,9 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      // Select facility using VaRadio custom event (shadow DOM compatible)
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       expect(
         await screen.findByText(
@@ -751,9 +738,12 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await expect(screen.findByLabelText(/Fake facility name 1/i)).to.exist;
-      // When the user selects the facility
-      fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+      // Verify facility option exists (shadow DOM compatible)
+      const facilityOption = await screen.findByTestId('facility-radio-1');
+      expect(facilityOption).to.exist;
+      // When the user selects the facility using VaRadio custom event
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
 
       // Then they are presented with the message that they are over the request limit
@@ -821,11 +811,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await screen.findAllByText(
-          /These are the facilities you’re registered at that offer/i,
-        );
-
-        fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await waitFor(() => {
           expect(screen.history.push.lastCall.args[0]).to.equal(
@@ -885,7 +872,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await screen.findByTestId('eligibilityModal');
         expect(screen.getByRole('alertdialog')).to.be.ok;
@@ -954,7 +942,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
 
         await waitFor(() =>
@@ -1024,11 +1013,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await screen.findAllByText(
-          /These are the facilities you’re registered at that offer/i,
-        );
-
-        fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await waitFor(() => {
           expect(screen.history.push.lastCall.args[0]).to.equal(
@@ -1092,7 +1078,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await screen.findByTestId('eligibilityModal');
         expect(screen.getByRole('alertdialog')).to.be.ok;
@@ -1165,7 +1152,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        fireEvent.click(await screen.findByLabelText(/Fake facility name 1/i));
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
 
         await waitFor(() =>

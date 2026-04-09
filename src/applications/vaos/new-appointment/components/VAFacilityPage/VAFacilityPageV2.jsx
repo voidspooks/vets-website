@@ -87,10 +87,14 @@ export default function VAFacilityPageV2() {
 
   const uiSchema = {
     vaFacility: {
-      'ui:title': `These are the facilities you’re registered at that offer ${lowerCase(
+      'ui:label': "Select the facility you'd like to visit",
+      'ui:hint': `These are the facilities you’re registered at that offer ${lowerCase(
         typeOfCare?.name,
       )}.`,
       'ui:widget': FacilitiesRadioWidget,
+      'ui:options': {
+        hideLabelText: true,
+      },
     },
   };
 
@@ -115,7 +119,7 @@ export default function VAFacilityPageV2() {
       document.title = `${pageTitle} | Veterans Affairs`;
       scrollAndFocus();
     },
-    [isLoading],
+    [isLoading, pageTitle],
   );
 
   const previouslyShowingModal = usePrevious(showEligibilityModal);

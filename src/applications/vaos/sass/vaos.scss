@@ -17,6 +17,7 @@
   display: block;
   text-transform: uppercase;
 }
+
 .vaos-u-word-break--break-word {
   word-break: break-word;
 }
@@ -26,6 +27,7 @@
   flex-direction: row;
 
 }
+
 .vaos__loading-overlay {
   background-color: var(--vads-color-white);
   opacity: 0.9;
@@ -55,6 +57,7 @@
 
 .vaos__form-button {
   width: 100%;
+
   @media (min-width: $xsmall-screen) {
     width: auto;
   }
@@ -71,6 +74,10 @@ va-radio::part(header) {
 
 va-radio::part(legend) {
   margin-bottom: 16px;
+}
+
+va-radio#facilitiesRadioWidget::part(legend) {
+  margin-bottom: unset;
 }
 
 #root_reasonAdditionalInfo-label {
@@ -125,7 +132,7 @@ va-textarea::part(input-type-textarea) {
 // Remove this override once all native radio/checkbox inputs have been replaced
 // with va-radio / va-checkbox web components.
 // See: https://github.com/department-of-veterans-affairs/vets-design-system-documentation/issues/5350
-[type="radio"] + label::before,
-[type="checkbox"] + label::before {
+[type="radio"]+label::before,
+[type="checkbox"]+label::before {
   content: unquote('"\\00a0"');
 }

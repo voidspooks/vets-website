@@ -3,28 +3,24 @@ import PropTypes from 'prop-types';
 import { shallowEqual, useSelector } from 'react-redux';
 import {
   VaButton,
+  VaRadio,
   VaSelect,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { selectFacilitiesRadioWidget } from '../../redux/selectors';
-import State from '../../../components/State';
+import { stateNames } from '../../../components/State';
 import InfoAlert from '../../../components/InfoAlert';
 import { FACILITY_SORT_METHODS, FETCH_STATUS } from '../../../utils/constants';
 import { scrollAndFocus } from '../../../utils/scrollAndFocus';
 import NoAddressNote from '../NoAddressNote';
 
 const INITIAL_FACILITY_DISPLAY_COUNT = 5;
-/*
- * This is a copy of the form system RadioWidget, but with custom
- * code to disable certain options. This isn't currently supported by the
- * form system.
- */
+
 export default function FacilitiesRadioWidget({
   id,
   options,
   value,
   onChange,
   formContext,
-  required,
 }) {
   const { requestLocationStatus, sortMethod, loadingEligibility } = useSelector(
     state => selectFacilitiesRadioWidget(state),
@@ -57,7 +53,7 @@ export default function FacilitiesRadioWidget({
       ? enumOptions.length - INITIAL_FACILITY_DISPLAY_COUNT
       : 0;
 
-  // format optons for new component
+  // format options for new component
   const selectOptions = sortOptions.map((s, i) => {
     return (
       <option key={i} value={s.value}>
@@ -69,11 +65,50 @@ export default function FacilitiesRadioWidget({
   useEffect(
     () => {
       if (displayedOptions.length > INITIAL_FACILITY_DISPLAY_COUNT) {
-        scrollAndFocus(`#${id}_${INITIAL_FACILITY_DISPLAY_COUNT + 1}`);
+        scrollAndFocus(
+          `[data-testid="facility-radio-${INITIAL_FACILITY_DISPLAY_COUNT +
+            1}"]`,
+        );
       }
     },
     [displayedOptions.length, displayAll],
   );
+
+  /**
+   * Format the description text for a facility radio option.
+   * "City, ST" with optional "X miles" on next line.
+   */
+  const formatFacilityDescription = (address, distance) => {
+    const city = address?.city || '';
+    const state = address?.state || '';
+    const location = city && state ? `${city}, ${state}` : city || state;
+
+    if (location && distance) {
+      return `${location}\n${distance} miles`;
+    }
+    if (distance) {
+      return `${distance} miles`;
+    }
+    return location;
+  };
+
+  /**
+   * Format the aria-label for a facility radio option.
+   * Uses full state name for screen reader accessibility (matching State component behavior).
+   */
+  const formatFacilityAriaLabel = (facilityName, address, distance) => {
+    const city = address?.city || '';
+    const stateAbbrev = address?.state || '';
+    const fullStateName = stateNames[stateAbbrev] || stateAbbrev;
+    const location =
+      city && fullStateName
+        ? `${city}, ${fullStateName}`
+        : city || fullStateName;
+    const distanceText = distance ? `${distance} miles` : '';
+
+    const parts = [facilityName, location, distanceText].filter(Boolean);
+    return parts.join('. ');
+  };
 
   return (
     <div className="vads-u-margin-top--3">
@@ -120,10 +155,17 @@ export default function FacilitiesRadioWidget({
       </>
 
       {!requestingLocationFailed && (
-        <fieldset>
-          <legend className="sr-only">
-            {options.title} {required ? 'required' : ''}
-          </legend>
+        <VaRadio
+          label={options.label}
+          hint={options.hint}
+          onVaValueChange={event => {
+            if (event.detail.value) {
+              onChange(event.detail.value);
+            }
+          }}
+          id="facilitiesRadioWidget"
+          data-testid="facilitiesRadio"
+        >
           {displayedOptions.map((option, i) => {
             const { name, address, legacyVAR } = option?.label;
             const checked = option.value === value;
@@ -141,33 +183,23 @@ export default function FacilitiesRadioWidget({
             const facilityPosition = i + 1;
 
             return (
-              <div className="form-radio-buttons" key={option.value}>
-                <input
-                  type="radio"
-                  checked={checked}
-                  id={`${id}_${facilityPosition}`}
-                  name={`${id}`}
-                  value={option.value}
-                  onChange={_ => onChange(option.value)}
-                  disabled={loadingEligibility}
-                />
-                <label htmlFor={`${id}_${facilityPosition}`}>
-                  <span className="vads-u-display--block vads-u-font-weight--bold">
-                    {name}
-                  </span>
-                  <span className="vads-u-display--block">
-                    {address?.city}, <State state={address?.state} />
-                  </span>
-                  {!!distance && (
-                    <span className="vads-u-display--block">
-                      {distance} miles
-                    </span>
-                  )}
-                </label>
-              </div>
+              <va-radio-option
+                key={option.value}
+                name={id}
+                value={option.value}
+                label={name}
+                description={formatFacilityDescription(address, distance)}
+                aria-label={formatFacilityAriaLabel(name, address, distance)}
+                checked={checked}
+                disabled={loadingEligibility}
+                tile
+                data-testid={`facility-radio-${facilityPosition}`}
+                style={{ whiteSpace: 'pre-line' }} // this allows for City, State Distance to display on two lines
+                uswds
+              />
             );
           })}
-        </fieldset>
+        </VaRadio>
       )}
       {!displayAll &&
         !requestingLocationFailed &&
@@ -191,7 +223,6 @@ FacilitiesRadioWidget.propTypes = {
   formContext: PropTypes.object,
   id: PropTypes.string,
   options: PropTypes.object,
-  required: PropTypes.bool,
   value: PropTypes.string,
   onChange: PropTypes.func,
 };
