@@ -1,3 +1,9 @@
+// New patterns - use these instead of this component:
+// import {
+//   profilePersonalInfoPage,
+//   profileContactInfoPages,
+// } from 'platform/forms-system/src/js/patterns/prefill';
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -51,6 +57,8 @@ import { getValidationErrors } from '../utilities/validations';
  * @parma {import('../utilities/data/profile').ContactInfoKeys} keys - contact info data key
  * @param {String[]} requiredKeys - list of keys of required fields
  * @returns
+ * @deprecated Use profileContactInfoPages() from platform/forms-system/src/js/patterns/prefill instead.
+ * @see {@link https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md|Prefill README}
  */
 const ContactInfo = ({
   data,
@@ -71,7 +79,23 @@ const ContactInfo = ({
   disableMockContactInfo = false,
   contactSectionHeadingLevel,
   useWebComponentForNavigation,
+  disableDeprecationWarning = false,
 }) => {
+  if (
+    !environment.isProduction() &&
+    !disableDeprecationWarning &&
+    !ContactInfo.hasWarnedDeprecation
+  ) {
+    ContactInfo.hasWarnedDeprecation = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Deprecation warning: ContactInfo component is deprecated. ' +
+        'Use profileContactInfoPages() from ' +
+        'platform/forms-system/src/js/patterns/prefill instead. ' +
+        'See: https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md',
+    );
+  }
+
   const wrapRef = useRef(null);
   window.sessionStorage.setItem(REVIEW_CONTACT, onReviewPage || false);
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -428,6 +452,7 @@ ContactInfo.propTypes = {
   contentAfterButtons: PropTypes.element,
   contentBeforeButtons: PropTypes.element,
   data: contactInfoPropTypes.data,
+  disableDeprecationWarning: PropTypes.bool,
   disableMockContactInfo: PropTypes.bool,
   goBack: PropTypes.func,
   goForward: PropTypes.func,

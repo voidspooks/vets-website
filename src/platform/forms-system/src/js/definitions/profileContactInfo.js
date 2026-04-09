@@ -1,5 +1,6 @@
 import { focusElement } from 'platform/utilities/ui/focus';
 import { scrollTo } from 'platform/utilities/scroll';
+import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import {
   EditAddress,
   EditEmail,
@@ -19,6 +20,12 @@ import {
   getReturnState,
   clearReturnState,
 } from '../utilities/data/profile';
+
+// New patterns - use these instead of profileContactInfo():
+// import {
+//   profilePersonalInfoPage,
+//   profileContactInfoPages,
+// } from 'platform/forms-system/src/js/patterns/prefill';
 
 /**
  * Profile settings
@@ -58,6 +65,8 @@ import {
  * returned object into the app config/form
  * @param {ContactInfoSettings} - Contact info settings
  * @returns {Object} - form config pages for a chapter
+ * @deprecated Use profileContactInfoPages() from platform/forms-system/src/js/patterns/prefill instead.
+ * @see {@link https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md|Prefill README}
  */
 const profileContactInfo = ({
   content = getContent('application'),
@@ -95,7 +104,23 @@ const profileContactInfo = ({
   disableMockContactInfo = false,
   contactSectionHeadingLevel = null,
   editContactInfoHeadingLevel = null,
+  disableDeprecationWarning = false,
 } = {}) => {
+  if (
+    !environment.isProduction() &&
+    !disableDeprecationWarning &&
+    !profileContactInfo.hasWarnedDeprecation
+  ) {
+    profileContactInfo.hasWarnedDeprecation = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Deprecation warning: profileContactInfo() is deprecated. ' +
+        'Use profileContactInfoPages() from ' +
+        'platform/forms-system/src/js/patterns/prefill instead. ' +
+        'See: https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md',
+    );
+  }
+
   const config = {};
   const wrapperProperties = {};
   const keys = { wrapper: wrapperKey };

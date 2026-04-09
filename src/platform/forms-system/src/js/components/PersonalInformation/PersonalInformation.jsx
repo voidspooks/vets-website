@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { format, isValid } from 'date-fns';
 
 import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
+import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 
 import { genderLabels } from '~/platform/static-data/labels';
 import { selectProfile } from '~/platform/user/selectors';
@@ -77,6 +78,8 @@ export const defaultConfig = {
  * @param {string | ReactNode} props.errorMessage - Custom error message or ReactNode for missing data
  * @param {boolean} props.background - Whether to show background on va-card
  * @returns {ReactNode} - Rendered component
+ * @deprecated Use profilePersonalInfoPage() from platform/forms-system/src/js/patterns/prefill instead.
+ * @see {@link https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md|Prefill README}
  */
 export const PersonalInformation = ({
   data,
@@ -91,7 +94,22 @@ export const PersonalInformation = ({
   errorMessage,
   formOptions = {},
   background = false,
+  disableDeprecationWarning = false,
 }) => {
+  if (
+    !environment.isProduction() &&
+    !disableDeprecationWarning &&
+    !PersonalInformation.hasWarnedDeprecation
+  ) {
+    PersonalInformation.hasWarnedDeprecation = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Deprecation warning: PersonalInformation component is deprecated. ' +
+        'Use profilePersonalInfoPage() from ' +
+        'platform/forms-system/src/js/patterns/prefill instead. ' +
+        'See: https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md',
+    );
+  }
   const finalConfig = { ...defaultConfig, ...config };
 
   const finalErrorMessage = errorMessage || DefaultErrorMessage;
@@ -304,6 +322,7 @@ PersonalInformation.propTypes = {
     ssnPath: PropTypes.string,
     vaFileNumberPath: PropTypes.string,
   }),
+  disableDeprecationWarning: PropTypes.bool,
   errorMessage: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,

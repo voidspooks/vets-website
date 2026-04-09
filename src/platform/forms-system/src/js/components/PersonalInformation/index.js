@@ -1,5 +1,12 @@
+// New patterns - use these instead of personalInformationPage():
+// import {
+//   profilePersonalInfoPage,
+//   profileContactInfoPages,
+// } from 'platform/forms-system/src/js/patterns/prefill';
+
 import React from 'react';
 import PropTypes from 'prop-types';
+import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 
 import {
   defaultConfig,
@@ -46,6 +53,8 @@ export const defaultPageConfig = {
  * @property {PersonalInformationConfig} personalInfoConfig - Configuration object for the PersonalInformation component
  * @property {DataAdapter} dataAdapter - Data adapter configuration object for the PersonalInformation component
  * @property {string|Function} errorMessage - Custom error message or component for missing data
+ * @deprecated Use profilePersonalInfoPage() from platform/forms-system/src/js/patterns/prefill instead.
+ * @see {@link https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md|Prefill README}
  */
 const personalInformationPage = ({
   key = defaultPageConfig.key,
@@ -63,7 +72,23 @@ const personalInformationPage = ({
   hideOnReview = defaultPageConfig.hideOnReview,
   depends = defaultPageConfig.depends,
   background = false,
+  disableDeprecationWarning = false,
 } = defaultPageConfig) => {
+  if (
+    !environment.isProduction() &&
+    !disableDeprecationWarning &&
+    !personalInformationPage.hasWarnedDeprecation
+  ) {
+    personalInformationPage.hasWarnedDeprecation = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Deprecation warning: personalInformationPage() is deprecated. ' +
+        'Use profilePersonalInfoPage() from ' +
+        'platform/forms-system/src/js/patterns/prefill instead. ' +
+        'See: https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md',
+    );
+  }
+
   const config = {
     ...defaultPageConfig.personalInfoConfig,
     ...personalInfoConfig,

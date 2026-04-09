@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
+import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 
 import { Element } from 'platform/utilities/scroll';
 
@@ -27,6 +28,8 @@ import {
  * @param {ContactInfoContent} content
  * @param {Object} keys - form data keys
  * @returns {Element}
+ * @deprecated Use profileContactInfoPages() from platform/forms-system/src/js/patterns/prefill instead.
+ * @see {@link https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md|Prefill README}
  */
 const ContactInfoReview = ({
   data,
@@ -34,7 +37,23 @@ const ContactInfoReview = ({
   content,
   keys,
   contactInfoPageKey,
+  disableDeprecationWarning,
 }) => {
+  if (
+    !environment.isProduction() &&
+    !disableDeprecationWarning &&
+    !ContactInfoReview.hasWarnedDeprecation
+  ) {
+    ContactInfoReview.hasWarnedDeprecation = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Deprecation warning: ContactInfoReview component is deprecated. ' +
+        'Use profileContactInfoPages() from ' +
+        'platform/forms-system/src/js/patterns/prefill instead. ' +
+        'See: https://github.com/department-of-veterans-affairs/vets-website/tree/main/src/platform/forms-system/src/js/patterns/prefill/README.md',
+    );
+  }
+
   const editRef = useRef(null);
   useEffect(
     () => {
@@ -302,6 +321,7 @@ ContactInfoReview.propTypes = {
   contactInfoPageKey: contactInfoPropTypes.contactInfoPageKey,
   content: contactInfoPropTypes.content,
   data: contactInfoPropTypes.data,
+  disableDeprecationWarning: PropTypes.bool,
   editPage: PropTypes.func,
   keys: contactInfoPropTypes.keys,
 };
