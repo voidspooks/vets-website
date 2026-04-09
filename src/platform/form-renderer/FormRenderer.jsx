@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -148,10 +149,71 @@ function emit(obj) {
   return [obj];
 }
 
-function renderPart(part, data, depth, key, suppressRepeatable) {
+function renderGrouping(
+  grouping,
+  data,
+  depth,
+  key,
+  suppressRepeatable = false,
+) {
+  if (grouping.repeatable && !suppressRepeatable) {
+    const items = getNestedProperty(data, grouping.repeatable);
+    if (!(items instanceof Array)) {
+      return [];
+    }
+    return items
+      .map((item, index) => {
+        // eslint-disable-next-line no-param-reassign
+        item.LIST_INDEX = index + 1;
+        const rendered = renderGrouping(
+          grouping,
+          item,
+          depth,
+          `${key}[#${index}]`,
+          true,
+        );
+        // eslint-disable-next-line no-param-reassign
+        delete item.LIST_INDEX;
+        return rendered;
+      })
+      .flat();
+  }
+  const label = renderStr(grouping.sectionHeader || grouping.blockLabel, data);
+  const style = grouping.blockStyle;
+  const labelType = grouping.blockLabelType;
+  const header = {
+    label,
+    depth,
+    key,
+    ...(style && { style }),
+    ...(labelType && { labelType }),
+  };
+  emit(header);
+  const renderables = [header];
+  if (grouping.fields) {
+    renderables.push(
+      ...renderGroupingSubparts(grouping.fields, data, depth, `${key}.fields`),
+    );
+  }
+  if (grouping.blocks) {
+    renderables.push(
+      ...renderGroupingSubparts(grouping.blocks, data, depth, `${key}.blocks`),
+    );
+  }
+  return renderables;
+}
+
+function renderGroupingSubparts(subparts, data, depth, key) {
+  return subparts
+    .map((subpart, index) =>
+      renderPart(subpart, data, depth + 1, `${key}[${index}]`),
+    )
+    .flat();
+}
+
+function renderPart(part, data, depth, key = '') {
   if (part.showIf) {
     const value = getNestedProperty(data, part.showIf);
-
     if (part.showIfCondition === 'defined') {
       if (value === null || value === undefined) {
         return [];
@@ -160,74 +222,23 @@ function renderPart(part, data, depth, key, suppressRepeatable) {
       return [];
     }
   }
-  if (part.showUnless && getNestedProperty(data, part.showUnless)) return [];
-
-  if ('blocks' in part || 'fields' in part) {
-    const grouping = part;
-
-    if (grouping.repeatable && !suppressRepeatable) {
-      const items = getNestedProperty(data, grouping.repeatable);
-      if (!(items instanceof Array)) return [];
-
-      return items
-        .map((item, index) => {
-          const itemCopy = { ...item, LIST_INDEX: index + 1 };
-          return renderPart(
-            grouping,
-            itemCopy,
-            depth,
-            `${key}[#${index}]`,
-            true,
-          );
-        })
-        .flat();
-    }
-
-    const labelValue = grouping.sectionHeader || grouping.blockLabel;
-    const label =
-      typeof labelValue === 'string' ? renderStr(labelValue, data) : labelValue;
-    const style = grouping.blockStyle;
-    const labelType = grouping.blockLabelType;
-    const header = {
-      label,
-      depth,
-      key,
-      ...(style && { style }),
-      ...(labelType && { labelType }),
-    };
-    emit(header);
-
-    const renderables = [header];
-    const subpartTypes = [
-      { items: grouping.fields, prefix: 'fields' },
-      { items: grouping.blocks, prefix: 'blocks' },
-    ];
-
-    subpartTypes.forEach(({ items, prefix }) => {
-      if (!items) return;
-      const results = items
-        .map((subpart, index) =>
-          renderPart(subpart, data, depth + 1, `${key}.${prefix}[${index}]`),
-        )
-        .flat();
-      renderables.push(...results);
-    });
-
-    return renderables;
+  if (part.showUnless && getNestedProperty(data, part.showUnless)) {
+    return [];
   }
-
+  if ('blocks' in part || 'fields' in part) {
+    return renderGrouping(part, data, depth, key);
+  }
   if (part.fieldType === 'multiline') {
     const field = part;
     const renderedMultiline = renderStr(field.fieldValue, data);
     const values =
-      renderedMultiline?.length === 0 ? [] : renderedMultiline?.split('\n');
+      renderedMultiline.length === 0 ? [] : renderedMultiline.split('\n');
     return emit({
-      label: part.fieldLabel,
+      label: field.fieldLabel,
       values,
       key,
     });
   }
-
   if ('fieldValue' in part) {
     const field = part;
     return emit({
@@ -236,14 +247,12 @@ function renderPart(part, data, depth, key, suppressRepeatable) {
       key,
     });
   }
-
   if ('style' in part && part.style === 'checklist') {
     const options = part.options
       .filter(option => renderStr(option.value, data) === 'true')
       .map(option => option.label);
     return emit(options.length ? { label: part.label, options, key } : null);
   }
-
   return [];
 }
 
