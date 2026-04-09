@@ -1386,11 +1386,6 @@
   },
   {
     "domain": "www.benefits.va.gov",
-    "src": "/gibill/resources/education_resources/debt_info.asp",
-    "dest": "/resources/how-your-reason-for-withdrawing-from-a-class-affects-your-va-debt/"
-  },
-  {
-    "domain": "www.benefits.va.gov",
     "src": "/vso/",
     "dest": "/resources/va-accredited-representative-faqs/"
   },
