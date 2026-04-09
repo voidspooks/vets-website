@@ -1,18 +1,19 @@
 import _ from 'platform/utilities/data';
 import VaCheckboxField from 'platform/forms-system/src/js/web-component-fields/VaCheckboxField';
 import VaCheckboxGroupField from 'platform/forms-system/src/js/web-component-fields/VaCheckboxGroupField';
+import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
 import fullSchema from 'vets-json-schema/dist/21-526EZ-ALLCLAIMS-schema.json';
-import dateRangeUI from 'platform/forms-system/src/js/definitions/dateRange';
 import { validateDate } from 'platform/forms-system/src/js/validation';
 import {
+  currentOrPastDateRangeUI,
   selectUI,
   yesNoUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import {
   recordReleaseDescription,
   limitedConsentTitle,
-  limitedConsentTextTitle,
   limitedConsentDescription,
+  limitedConsentTextTitle,
 } from '../content/privateMedicalRecordsRelease';
 import { isCompletingForm0781 } from '../utils/form0781';
 import { standardTitle } from '../content/form0781';
@@ -41,6 +42,7 @@ export const uiSchema = {
   },
   limitedConsent: {
     'ui:title': limitedConsentTextTitle,
+    'ui:webComponentField': VaTextInputField,
     'ui:options': {
       expandUnder: 'view:limitedConsent',
       expandUnderCondition: true,
@@ -59,6 +61,7 @@ export const uiSchema = {
     items: {
       providerFacilityName: {
         'ui:title': 'Name of private provider or hospital',
+        'ui:webComponentField': VaTextInputField,
       },
       treatmentLocation0781Related: {
         ...yesNoUI({
@@ -95,7 +98,7 @@ export const uiSchema = {
         'ui:confirmationField': PrivateMedicalProvidersConditions,
       },
       'ui:validations': [validateDate],
-      treatmentDateRange: dateRangeUI(
+      treatmentDateRange: currentOrPastDateRangeUI(
         'When did your treatment start? (You can provide an estimated date)',
         'When did your treatment end? (You can provide an estimated date)',
         'End of treatment must be after start of treatment',
@@ -113,19 +116,23 @@ export const uiSchema = {
         country: selectUI('Country'),
         street: {
           'ui:title': 'Street address (20 characters maximum)',
+          'ui:webComponentField': VaTextInputField,
           'ui:autocomplete': 'off',
         },
         street2: {
           'ui:title': 'Street address 2 (20 characters maximum)',
+          'ui:webComponentField': VaTextInputField,
           'ui:autocomplete': 'off',
         },
         city: {
           'ui:title': 'City (30 characters maximum)',
+          'ui:webComponentField': VaTextInputField,
           'ui:autocomplete': 'off',
         },
         state: selectUI('State'),
         postalCode: {
           'ui:title': 'Postal code',
+          'ui:webComponentField': VaTextInputField,
           'ui:autocomplete': 'off',
           'ui:validations': [validateZIP],
           'ui:errorMessages': {
@@ -133,7 +140,7 @@ export const uiSchema = {
               'Please enter a valid 5- or 9-digit Postal code (dashes allowed)',
           },
           'ui:options': {
-            widgetClassNames: 'usa-input-medium',
+            width: 'md',
           },
         },
       },

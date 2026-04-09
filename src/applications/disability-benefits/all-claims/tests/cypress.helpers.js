@@ -1289,7 +1289,15 @@ export const pageHooks = (cy, testOptions) => ({
             toDay: '7',
           },
         };
-        cy.findByText(/add another provider or hospital/i).click();
+        cy.get('body').then($body => {
+          const addProviderButton =
+            'va-button[text="Add another provider or hospital"]';
+          if ($body.find(addProviderButton).length) {
+            cy.get(addProviderButton).click();
+          } else {
+            cy.findByText(/add another provider or hospital/i).click();
+          }
+        });
         // verify that the treated disability name checkboxes are visible and clickable
         const ratedDisabilitiesCount = data?.ratedDisabilities.filter(
           disability => disability['view:selected'] === true,
@@ -1308,51 +1316,131 @@ export const pageHooks = (cy, testOptions) => ({
           .and('be.visible')
           .and('be.enabled');
 
-        cy.get('input[name="root_providerFacilityName1"]').type(
-          newProviderFacility.providerFacilityName,
-        );
-        cy.get('input[name="root_providerFacilityAddress1_street1"]').type(
-          newProviderFacility.providerFacilityAddress.street,
-        );
-        cy.get('input[name="root_providerFacilityAddress1_city1"]').type(
-          newProviderFacility.providerFacilityAddress.city,
-        );
-        cy.get('select[name="root_providerFacilityAddress1_state1"]').select(
-          newProviderFacility.providerFacilityAddress.state,
-        );
-        cy.get('input[name="root_providerFacilityAddress1_postalCode1"]').type(
-          newProviderFacility.providerFacilityAddress.postalCode,
-        );
-        cy.get('select[name="root_providerFacilityAddress1_country1"]').select(
-          newProviderFacility.providerFacilityAddress.country,
-        );
+        cy.get('body').then($body => {
+          const providerNameField =
+            'va-text-input[name="root_providerFacility_1_providerFacilityName"]';
+          if ($body.find(providerNameField).length) {
+            cy.fillVaTextInput(
+              'root_providerFacility_1_providerFacilityName',
+              newProviderFacility.providerFacilityName,
+            );
+            cy.fillVaTextInput(
+              'root_providerFacility_1_providerFacilityAddress_street',
+              newProviderFacility.providerFacilityAddress.street,
+            );
+            cy.fillVaTextInput(
+              'root_providerFacility_1_providerFacilityAddress_city',
+              newProviderFacility.providerFacilityAddress.city,
+            );
+            cy.selectVaSelect(
+              'root_providerFacility_1_providerFacilityAddress_state',
+              newProviderFacility.providerFacilityAddress.state,
+            );
+            cy.fillVaTextInput(
+              'root_providerFacility_1_providerFacilityAddress_postalCode',
+              newProviderFacility.providerFacilityAddress.postalCode,
+            );
+            cy.selectVaSelect(
+              'root_providerFacility_1_providerFacilityAddress_country',
+              newProviderFacility.providerFacilityAddress.country,
+            );
+          } else {
+            cy.get('input[name="root_providerFacilityName1"]').type(
+              newProviderFacility.providerFacilityName,
+            );
+            cy.get('input[name="root_providerFacilityAddress1_street1"]').type(
+              newProviderFacility.providerFacilityAddress.street,
+            );
+            cy.get('input[name="root_providerFacilityAddress1_city1"]').type(
+              newProviderFacility.providerFacilityAddress.city,
+            );
+            cy.get(
+              'select[name="root_providerFacilityAddress1_state1"]',
+            ).select(newProviderFacility.providerFacilityAddress.state);
+            cy.get(
+              'input[name="root_providerFacilityAddress1_postalCode1"]',
+            ).type(newProviderFacility.providerFacilityAddress.postalCode);
+            cy.get(
+              'select[name="root_providerFacilityAddress1_country1"]',
+            ).select(newProviderFacility.providerFacilityAddress.country);
+          }
+        });
         cy.get(
           'input[name="root_treatedDisabilityNames1_anklereplacementanklearthroplastybilateral"]',
         ).check();
         cy.get(
           'input[name="root_treatedDisabilityNames1_heartattackmyocardialinfarction"]',
         ).check();
-        cy.get('select[name="root_treatmentDateRange1_from1Month"]').select(
-          newProviderFacility.treatmentDateRange.fromMonth.toString(),
-        );
-        cy.get('input[name="root_treatmentDateRange1_from1Year"]').type(
-          `${newProviderFacility.treatmentDateRange.fromYear}`,
-        );
-        cy.get('select[name="root_treatmentDateRange1_from1Day"]').select(
-          `${newProviderFacility.treatmentDateRange.fromDay}`,
-        );
-        cy.get('select[name="root_treatmentDateRange1_to1Month"]').select(
-          `${newProviderFacility.treatmentDateRange.toMonth}`,
-        );
-        cy.get('select[name="root_treatmentDateRange1_to1Day"]').select(
-          `${newProviderFacility.treatmentDateRange.toDay}`,
-        );
-        cy.get('input[name="root_treatmentDateRange1_to1Year"]').type(
-          `${newProviderFacility.treatmentDateRange.toYear}`,
-        );
-        cy.findByText('Update', { selector: 'button' })
-          .should('exist')
-          .click();
+        cy.get('body').then($body => {
+          const memorableDates = $body.find(
+            'va-memorable-date[name*="treatmentDateRange"]',
+          );
+          if (memorableDates.length) {
+            cy.get(
+              'va-memorable-date[name*="treatmentDateRange"][name*="from"]',
+            )
+              .last()
+              .then($fromDate =>
+                cy.fillVaMemorableDate(
+                  $fromDate,
+                  `${
+                    newProviderFacility.treatmentDateRange.fromYear
+                  }-${newProviderFacility.treatmentDateRange.fromMonth.padStart(
+                    2,
+                    '0',
+                  )}-${newProviderFacility.treatmentDateRange.fromDay.padStart(
+                    2,
+                    '0',
+                  )}`,
+                ),
+              );
+            cy.get('va-memorable-date[name*="treatmentDateRange"][name*="to"]')
+              .last()
+              .then($toDate =>
+                cy.fillVaMemorableDate(
+                  $toDate,
+                  `${
+                    newProviderFacility.treatmentDateRange.toYear
+                  }-${newProviderFacility.treatmentDateRange.toMonth.padStart(
+                    2,
+                    '0',
+                  )}-${newProviderFacility.treatmentDateRange.toDay.padStart(
+                    2,
+                    '0',
+                  )}`,
+                ),
+              );
+          } else {
+            cy.get('select[name="root_treatmentDateRange1_from1Month"]').select(
+              newProviderFacility.treatmentDateRange.fromMonth.toString(),
+            );
+            cy.get('input[name="root_treatmentDateRange1_from1Year"]').type(
+              `${newProviderFacility.treatmentDateRange.fromYear}`,
+            );
+            cy.get('select[name="root_treatmentDateRange1_from1Day"]').select(
+              `${newProviderFacility.treatmentDateRange.fromDay}`,
+            );
+            cy.get('select[name="root_treatmentDateRange1_to1Month"]').select(
+              `${newProviderFacility.treatmentDateRange.toMonth}`,
+            );
+            cy.get('select[name="root_treatmentDateRange1_to1Day"]').select(
+              `${newProviderFacility.treatmentDateRange.toDay}`,
+            );
+            cy.get('input[name="root_treatmentDateRange1_to1Year"]').type(
+              `${newProviderFacility.treatmentDateRange.toYear}`,
+            );
+          }
+        });
+        cy.get('body').then($body => {
+          const updateButton = 'va-button[text="Update"]';
+          if ($body.find(updateButton).length) {
+            cy.get(updateButton).click();
+          } else {
+            cy.findByText('Update', { selector: 'button' })
+              .should('exist')
+              .click();
+          }
+        });
         cy.get('div[name="providerFacility-1"]')
           .should('be.visible')
           .within(() => {
@@ -1378,12 +1466,12 @@ export const pageHooks = (cy, testOptions) => ({
             cy.findByText(/heart attack \(myocardial infarction\)/i).should(
               'exist',
             );
-            cy.findByText(newProviderFacility.treatmentDateRange.from).should(
-              'exist',
-            );
-            cy.findByText(newProviderFacility.treatmentDateRange.to).should(
-              'exist',
-            );
+            cy.findByText(
+              /01\/02\/2020|2020-0?1-0?2|jan\.?\s+2,\s+2020|january\s+2,\s+2020/i,
+            ).should('exist');
+            cy.findByText(
+              /12\/07\/2020|2020-12-0?7|dec\.?\s+7,\s+2020|december\s+7,\s+2020/i,
+            ).should('exist');
             cy.get('va-button[text="Edit"]').should('be.visible');
             cy.get('va-button[text="Edit"]').click();
             cy.findByText('New Provider or hospital').should('exist');
