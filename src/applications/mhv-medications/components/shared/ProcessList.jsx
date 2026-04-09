@@ -14,6 +14,7 @@ const ProcessList = ({ stepGuideProps }) => {
     processSteps,
     pharmacyPhone,
     title,
+    introContent,
     prescription,
     isRefillRunningLate,
   } = stepGuideProps;
@@ -319,6 +320,7 @@ const ProcessList = ({ stepGuideProps }) => {
               >
                 {title}
               </h2>
+              {introContent}
             </>
           )}
 

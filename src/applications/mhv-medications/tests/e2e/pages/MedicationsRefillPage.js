@@ -615,14 +615,14 @@ class MedicationsRefillPage {
   verifyProcessStepOneContentV2 = () => {
     cy.get('[header="You request a refill"]').should(
       'contain',
-      'Request submitted',
+      'it may take us up to 7 days',
     );
   };
 
   verifyProcessStepThreeContentV2 = () => {
     cy.get('[header="We ship your refill to you"]').should(
       'contain',
-      'Medication shipped',
+      'Refills usually arrive within 3 to 5 days',
     );
   };
 

@@ -343,6 +343,19 @@ const RefillPrescriptionsV2 = () => {
     const stepGuideProps = {
       processSteps: refillProcessStepGuideV2.processSteps,
       title: refillProcessStepGuideV2.title,
+      introContent: (
+        <>
+          <p>
+            You can check the status of your refill requests on your{' '}
+            <strong>Prescription refill status</strong> page.
+          </p>
+          <va-link
+            data-testid="refill-status-link"
+            href="#"
+            text="Check your refill request status"
+          />
+        </>
+      ),
     };
     return (
       <div>
