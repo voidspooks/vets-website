@@ -22,7 +22,7 @@ export default {
             We consider you to be living together unless you’ve separated
             because of relationship differences or problems. Being apart for
             reasons like a job move, nursing home care, or military service
-            still counts as living together.
+            would not sever continuous cohabitation for VA purposes.
           </p>
         </va-additional-info>
       ),
