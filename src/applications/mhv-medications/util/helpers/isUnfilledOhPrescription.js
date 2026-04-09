@@ -7,9 +7,14 @@ import { isOracleHealthPrescription } from './isOracleHealthPrescription';
  * When this is true, the user cannot request a refill and we should show
  * additional context explaining why.
  *
+ * Intentionally defers to the backend refill-eligibility flag: if
+ * `rx.isRefillable` is truthy the helper returns `false` so the refill
+ * button is never suppressed for prescriptions the API marks as refillable.
+ *
  * @param {Object} rx - The prescription object
  * @param {Array} cernerFacilityIds - Array of Cerner facility IDs
  * @returns {boolean} True if this is an unfilled Oracle Health prescription
+ *   whose `isRefillable` flag is falsy
  */
 export const isUnfilledOhPrescription = (rx, cernerFacilityIds = []) => {
   if (!rx) return false;
