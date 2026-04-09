@@ -276,6 +276,7 @@ export function sessionTypeUrl({
         ...(gaClientId && { gaClientId }),
         ...(scope && { scope }),
         ...(queryParams.operation && { operation: queryParams.operation }),
+        ...(queryParams.op && { op: queryParams.op }),
       },
       passedOptions: {
         isSignup,
@@ -437,7 +438,6 @@ export async function signupOrVerify({
       }),
     // just signup
     ...(isSignup &&
-      !useOAuth &&
       policy === CSP_IDS.ID_ME && { queryParams: { op: 'signup' } }),
   });
   const eventBase = isSignup ? AUTH_EVENTS.REGISTER : AUTH_EVENTS.VERIFY;

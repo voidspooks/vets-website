@@ -669,6 +669,28 @@ describe('Authentication Utilities', () => {
     });
   });
 
+  describe('signupOrVerify (OAuth)', () => {
+    afterEach(() => cleanup());
+
+    it('should include op=signup query param for ID.me signup via SiS', async () => {
+      const url = await authUtilities.signupOrVerify({
+        policy: CSP_IDS.ID_ME,
+        isLink: true,
+        useOAuth: true,
+      });
+      expect(url).to.include('op=signup');
+    });
+
+    it('should NOT include op=signup query param for Login.gov signup via SiS', async () => {
+      const url = await authUtilities.signupOrVerify({
+        policy: CSP_IDS.LOGIN_GOV,
+        isLink: true,
+        useOAuth: true,
+      });
+      expect(url).to.not.include('op=signup');
+    });
+  });
+
   describe('logout', () => {
     afterEach(() => cleanup());
     it('should redirect to the logout session url', () => {

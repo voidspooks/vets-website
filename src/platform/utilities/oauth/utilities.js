@@ -150,6 +150,9 @@ export async function createOAuthRequest({
     ...(passedQueryParams.operation && {
       [OAUTH_ALLOWED_PARAMS.OPERATION]: passedQueryParams.operation,
     }),
+    ...(passedQueryParams.op && {
+      [OAUTH_ALLOWED_PARAMS.OP]: passedQueryParams.op,
+    }),
     ...(isMobileOAuth &&
       passedQueryParams.scope && {
         [OAUTH_ALLOWED_PARAMS.SCOPE]: passedQueryParams.scope,

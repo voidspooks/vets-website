@@ -60,6 +60,7 @@ export const OAUTH_ALLOWED_PARAMS = {
   S256: 'S256',
   AUTH_CODE: 'authorization_code',
   OPERATION: 'operation',
+  OP: 'op',
   SCOPE: 'scope',
 };
 

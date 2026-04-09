@@ -4,6 +4,10 @@ import * as authUtilities from 'platform/user/authentication/utilities';
 import { updateStateAndVerifier } from 'platform/utilities/oauth/utilities';
 import { SERVICE_PROVIDERS } from '../constants';
 
+// Note: For the `op=signup` param to reach ID.me, vets-api's Sign in Service will need
+// to forward it in the authorization redirect it constructs. See ID.me OIDC docs:
+// https://docs.id.me/guides/open-id-connect/integration
+
 function signupHandler(loginType, isOAuth) {
   authUtilities.createAndStoreReturnUrl();
   if (isOAuth) {
