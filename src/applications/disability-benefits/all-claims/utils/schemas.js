@@ -35,6 +35,7 @@ import {
   pathWithIndex,
   sippableId,
 } from './index';
+import { isNewOrSecondary } from '../content/toxicExposure';
 
 const createCheckboxSchema = (schema, disabilityName) => {
   const capitalizedDisabilityName =
@@ -97,6 +98,19 @@ export const makeSchemaForNewDisabilities = createSelector(
     return { properties };
   },
 );
+
+/**
+ * Create the checkbox schema for new disabilities filtered to only
+ * NEW / SECONDARY causes. Used by POW pages so that WORSENED and VA
+ * conditions are excluded.
+ */
+export const makeSchemaForPOWDisabilities = formData => {
+  const filtered = {
+    ...formData,
+    newDisabilities: (formData?.newDisabilities || []).filter(isNewOrSecondary),
+  };
+  return makeSchemaForNewDisabilities(filtered);
+};
 
 /**
  * Create the checkbox schema for rated disabilities based if user has selected

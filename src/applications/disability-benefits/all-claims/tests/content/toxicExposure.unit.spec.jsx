@@ -7,6 +7,7 @@ import {
   getOtherFieldDescription,
   getSelectedCount,
   isClaimingTECondition,
+  isNewOrSecondary,
   makeTEConditionsSchema,
   makeTEConditionsUISchema,
   reviewDateField,
@@ -330,7 +331,7 @@ describe('toxicExposure', () => {
       });
     });
 
-    it('handles null condition', () => {
+    it('handles null condition (filtered out by isNewOrSecondary)', () => {
       const formData = {
         newDisabilities: [
           {
@@ -341,10 +342,8 @@ describe('toxicExposure', () => {
         ],
       };
 
+      // Disability with no condition string is filtered out by isNewOrSecondary
       expect(makeTEConditionsUISchema(formData)).to.eql({
-        unknowncondition: {
-          'ui:title': 'Unknown Condition',
-        },
         none: {
           'ui:title':
             'I am not claiming any conditions related to toxic exposure',
@@ -381,10 +380,14 @@ describe('toxicExposure', () => {
     it('adds side of body to condition title', () => {
       const formData = {
         newDisabilities: [
-          { condition: 'knee pain', sideOfBody: 'left' },
-          { condition: 'hearing loss', sideOfBody: 'right' },
-          { condition: 'shoulder injury', sideOfBody: 'bilateral' },
-          { condition: 'ankle strain', sideOfBody: 'upper' },
+          { condition: 'knee pain', cause: 'NEW', sideOfBody: 'left' },
+          { condition: 'hearing loss', cause: 'NEW', sideOfBody: 'right' },
+          {
+            condition: 'shoulder injury',
+            cause: 'SECONDARY',
+            sideOfBody: 'bilateral',
+          },
+          { condition: 'ankle strain', cause: 'NEW', sideOfBody: 'upper' },
         ],
       };
 
@@ -396,6 +399,171 @@ describe('toxicExposure', () => {
         'Shoulder Injury, Bilateral',
       );
       expect(schema.anklestrain['ui:title']).to.equal('Ankle Strain, Upper');
+    });
+  });
+
+  describe('isNewOrSecondary', () => {
+    it('returns true for NEW cause', () => {
+      expect(isNewOrSecondary({ condition: 'Asthma', cause: 'NEW' })).to.be
+        .true;
+    });
+
+    it('returns true for SECONDARY cause', () => {
+      expect(
+        isNewOrSecondary({ condition: 'Hearing loss', cause: 'SECONDARY' }),
+      ).to.be.true;
+    });
+
+    it('returns false for WORSENED cause', () => {
+      expect(isNewOrSecondary({ condition: 'COPD', cause: 'WORSENED' })).to.be
+        .false;
+    });
+
+    it('returns false for VA cause', () => {
+      expect(isNewOrSecondary({ condition: 'Back pain', cause: 'VA' })).to.be
+        .false;
+    });
+
+    it('returns false for placeholder rated disability', () => {
+      expect(isNewOrSecondary({ condition: 'Rated Disability', cause: 'NEW' }))
+        .to.be.false;
+    });
+
+    it('returns falsy for null input', () => {
+      expect(isNewOrSecondary(null)).to.not.be.ok;
+    });
+  });
+
+  describe('makeTEConditionsSchema - filtering', () => {
+    it('[NEW, WORSENED] → only NEW shown', () => {
+      const formData = {
+        newDisabilities: [
+          { condition: 'Asthma', cause: 'NEW' },
+          { condition: 'COPD', cause: 'WORSENED' },
+        ],
+      };
+
+      const schema = makeTEConditionsSchema(formData);
+      expect(schema.properties).to.have.property('asthma');
+      expect(schema.properties).to.not.have.property('copd');
+      expect(schema.properties).to.have.property('none');
+    });
+
+    it('[SECONDARY, WORSENED] → only SECONDARY shown', () => {
+      const formData = {
+        newDisabilities: [
+          { condition: 'Hearing loss', cause: 'SECONDARY' },
+          { condition: 'COPD', cause: 'WORSENED' },
+        ],
+      };
+
+      const schema = makeTEConditionsSchema(formData);
+      expect(schema.properties).to.have.property('hearingloss');
+      expect(schema.properties).to.not.have.property('copd');
+      expect(schema.properties).to.have.property('none');
+    });
+
+    it('[WORSENED only] → only none option present', () => {
+      const formData = {
+        newDisabilities: [{ condition: 'COPD', cause: 'WORSENED' }],
+      };
+
+      const schema = makeTEConditionsSchema(formData);
+      expect(Object.keys(schema.properties)).to.deep.equal(['none']);
+    });
+
+    it('[VA only] → only none option present', () => {
+      const formData = {
+        newDisabilities: [{ condition: 'Back pain', cause: 'VA' }],
+      };
+
+      const schema = makeTEConditionsSchema(formData);
+      expect(Object.keys(schema.properties)).to.deep.equal(['none']);
+    });
+
+    it('[NEW + VA] → only NEW shown', () => {
+      const formData = {
+        newDisabilities: [
+          { condition: 'Asthma', cause: 'NEW' },
+          { condition: 'Back pain', cause: 'VA' },
+        ],
+      };
+
+      const schema = makeTEConditionsSchema(formData);
+      expect(schema.properties).to.have.property('asthma');
+      expect(schema.properties).to.not.have.property('backpain');
+      expect(schema.properties).to.have.property('none');
+    });
+  });
+
+  describe('makeTEConditionsUISchema - filtering', () => {
+    it('[NEW, WORSENED] → only NEW shown in UI', () => {
+      const formData = {
+        newDisabilities: [
+          { condition: 'Asthma', cause: 'NEW' },
+          { condition: 'COPD', cause: 'WORSENED' },
+        ],
+      };
+
+      const ui = makeTEConditionsUISchema(formData);
+      expect(ui).to.have.property('asthma');
+      expect(ui).to.not.have.property('copd');
+      expect(ui).to.have.property('none');
+    });
+
+    it('[SECONDARY, WORSENED] → only SECONDARY shown in UI', () => {
+      const formData = {
+        newDisabilities: [
+          { condition: 'Hearing loss', cause: 'SECONDARY' },
+          { condition: 'COPD', cause: 'WORSENED' },
+        ],
+      };
+
+      const ui = makeTEConditionsUISchema(formData);
+      expect(ui).to.have.property('hearingloss');
+      expect(ui).to.not.have.property('copd');
+      expect(ui).to.have.property('none');
+    });
+
+    it('[WORSENED only] → only none option present in UI', () => {
+      const formData = {
+        newDisabilities: [{ condition: 'COPD', cause: 'WORSENED' }],
+      };
+
+      const ui = makeTEConditionsUISchema(formData);
+      expect(Object.keys(ui)).to.deep.equal(['none']);
+    });
+
+    it('[VA only] → only none option present in UI', () => {
+      const formData = {
+        newDisabilities: [{ condition: 'Back pain', cause: 'VA' }],
+      };
+
+      const ui = makeTEConditionsUISchema(formData);
+      expect(Object.keys(ui)).to.deep.equal(['none']);
+    });
+
+    it('[NEW + VA] → only NEW shown in UI', () => {
+      const formData = {
+        newDisabilities: [
+          { condition: 'Asthma', cause: 'NEW' },
+          { condition: 'Back pain', cause: 'VA' },
+        ],
+      };
+
+      const ui = makeTEConditionsUISchema(formData);
+      expect(ui).to.have.property('asthma');
+      expect(ui).to.not.have.property('backpain');
+      expect(ui).to.have.property('none');
+    });
+
+    it('none option is always present even with no valid conditions', () => {
+      const formData = { newDisabilities: [] };
+      const ui = makeTEConditionsUISchema(formData);
+      expect(ui).to.have.property('none');
+      expect(ui.none['ui:title']).to.equal(
+        'I am not claiming any conditions related to toxic exposure',
+      );
     });
   });
 

@@ -12,7 +12,7 @@ import {
   defaultDisabilityDescriptions,
 } from './constants';
 
-import { isBDD, truncateDescriptions } from './utils';
+import { isBDD, sippableId, truncateDescriptions } from './utils';
 import {
   customReplacer,
   getClaimedConditionNames,
@@ -122,6 +122,47 @@ export function transform(formConfig, form) {
       : formData;
 
   const filterRatedViewFields = formData => filterViewFields(formData);
+
+  // IPF edge-case: a veteran may have selected WORSENED / VA conditions on
+  // the TE or POW pages before those checkboxes were hidden. The selections
+  // persist in form state (for rollback) but must not reach the submission
+  // payload.  Strip them here so addPOWSpecialIssues and the final payload
+  // only include NEW / SECONDARY associations.
+  const filterStaleIPFSelections = formData => {
+    if (!formData.newDisabilities) return formData;
+
+    const excludedIds = new Set(
+      formData.newDisabilities
+        .filter(
+          d => d.cause === causeTypes.WORSENED || d.cause === causeTypes.VA,
+        )
+        .map(d => sippableId(d.condition)),
+    );
+
+    if (excludedIds.size === 0) return formData;
+
+    const clonedData = _.cloneDeep(formData);
+
+    // Remove stale TE condition selections
+    if (clonedData.toxicExposure?.conditions) {
+      Object.keys(clonedData.toxicExposure.conditions).forEach(key => {
+        if (excludedIds.has(key)) {
+          delete clonedData.toxicExposure.conditions[key];
+        }
+      });
+    }
+
+    // Remove stale POW disability selections
+    if (clonedData.powDisabilities) {
+      Object.keys(clonedData.powDisabilities).forEach(key => {
+        if (excludedIds.has(key)) {
+          delete clonedData.powDisabilities[key];
+        }
+      });
+    }
+
+    return clonedData;
+  };
 
   const addPOWSpecialIssues = formData => {
     if (!formData.newDisabilities) {
@@ -352,6 +393,7 @@ export function transform(formConfig, form) {
     filterServicePeriods,
     removeExtraData, // Removed data EVSS doesn't want
     cleanUpMailingAddress,
+    filterStaleIPFSelections, // Must run before addPOWSpecialIssues
     addPOWSpecialIssues,
     addPTSDCause,
     addRequiredDescriptionsToDisabilitiesBDD,

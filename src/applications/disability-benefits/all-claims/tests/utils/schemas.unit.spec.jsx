@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import {
   makeSchemaForNewDisabilities,
+  makeSchemaForPOWDisabilities,
   makeSchemaForRatedDisabilities,
   makeSchemaForAllDisabilities,
 } from '../../utils/schemas';
@@ -104,6 +105,69 @@ describe('makeSchemaForNewDisabilities', () => {
         },
       },
     });
+  });
+});
+
+describe('makeSchemaForPOWDisabilities', () => {
+  it('should exclude WORSENED conditions', () => {
+    const formData = {
+      newDisabilities: [
+        { condition: 'Asthma', cause: 'NEW' },
+        { condition: 'COPD', cause: 'WORSENED' },
+      ],
+    };
+
+    const result = makeSchemaForPOWDisabilities(formData);
+    expect(result.properties).to.have.property('asthma');
+    expect(result.properties).to.not.have.property('copd');
+  });
+
+  it('should exclude VA conditions', () => {
+    const formData = {
+      newDisabilities: [
+        { condition: 'Asthma', cause: 'NEW' },
+        { condition: 'Back pain', cause: 'VA' },
+      ],
+    };
+
+    const result = makeSchemaForPOWDisabilities(formData);
+    expect(result.properties).to.have.property('asthma');
+    expect(result.properties).to.not.have.property('backpain');
+  });
+
+  it('should include NEW and SECONDARY conditions', () => {
+    const formData = {
+      newDisabilities: [
+        { condition: 'Asthma', cause: 'NEW' },
+        { condition: 'Hearing loss', cause: 'SECONDARY' },
+      ],
+    };
+
+    const result = makeSchemaForPOWDisabilities(formData);
+    expect(result.properties).to.have.property('asthma');
+    expect(result.properties).to.have.property('hearingloss');
+  });
+
+  it('should return empty properties when only WORSENED conditions exist', () => {
+    const formData = {
+      newDisabilities: [{ condition: 'COPD', cause: 'WORSENED' }],
+    };
+
+    const result = makeSchemaForPOWDisabilities(formData);
+    expect(result.properties).to.deep.equal({});
+  });
+
+  it('should handle sideOfBody with filtered conditions', () => {
+    const formData = {
+      newDisabilities: [
+        { condition: 'knee pain', cause: 'NEW', sideOfBody: 'LEFT' },
+        { condition: 'shoulder pain', cause: 'WORSENED', sideOfBody: 'RIGHT' },
+      ],
+    };
+
+    const result = makeSchemaForPOWDisabilities(formData);
+    expect(result.properties).to.have.property('kneepainleft');
+    expect(result.properties).to.not.have.property('shoulderpainright');
   });
 });
 

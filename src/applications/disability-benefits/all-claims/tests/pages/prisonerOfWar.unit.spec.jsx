@@ -146,7 +146,10 @@ describe('Prisoner of war info', () => {
         uiSchema={uiSchema}
         data={{
           ...formData,
-          newDisabilities: [{ condition: 'ASHD' }, { condition: 'scars' }],
+          newDisabilities: [
+            { condition: 'ASHD', cause: 'NEW' },
+            { condition: 'scars', cause: 'NEW' },
+          ],
         }}
       />,
     );

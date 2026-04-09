@@ -122,14 +122,15 @@ export function teSubtitle(
 
 /* ---------- utils ---------- */
 /**
- * Checks if a disability is a real toxic exposure candidate.
- * A disability is a candidate if it has a valid condition string,
- * is not a placeholder rated disability, and has cause 'NEW' or 'SECONDARY'.
+ * Checks if a disability has a NEW or SECONDARY cause, a valid condition
+ * string, and is not a placeholder rated disability. Used by both the
+ * Toxic Exposure and Prisoner of War pages to exclude WORSENED / VA
+ * conditions from selection and display.
  *
  * @param {object} d - disability object
- * @returns {boolean} true if the disability is a valid TE candidate
+ * @returns {boolean} true if the disability is NEW or SECONDARY
  */
-const isRealTECandidate = d =>
+export const isNewOrSecondary = d =>
   d &&
   typeof d.condition === 'string' &&
   !isPlaceholderRated(d.condition) &&
@@ -144,7 +145,7 @@ const isRealTECandidate = d =>
  */
 const hasRealNewDisabilities = formData =>
   Array.isArray(formData?.newDisabilities) &&
-  formData.newDisabilities.some(isRealTECandidate);
+  formData.newDisabilities.some(isNewOrSecondary);
 
 /**
  * Checks if the toxic exposure pages should be displayed.
@@ -203,7 +204,11 @@ export function isClaimingTECondition(formData) {
  * @returns {object} Object with id's for each condition
  */
 export function makeTEConditionsSchema(formData) {
-  return makeConditionsSchema(formData);
+  const filtered = {
+    ...formData,
+    newDisabilities: (formData?.newDisabilities || []).filter(isNewOrSecondary),
+  };
+  return makeConditionsSchema(filtered);
 }
 
 /**
@@ -226,6 +231,7 @@ export function makeTEConditionsSchema(formData) {
  */
 export function makeTEConditionsUISchema(formData) {
   const { newDisabilities = [] } = formData;
+  const filteredDisabilities = newDisabilities.filter(isNewOrSecondary);
   const options = {};
 
   const formatSide = side => {
@@ -235,7 +241,7 @@ export function makeTEConditionsUISchema(formData) {
     return map[clean] || clean.charAt(0).toUpperCase() + clean.slice(1);
   };
 
-  newDisabilities.forEach(disability => {
+  filteredDisabilities.forEach(disability => {
     const { condition, sideOfBody } = disability;
 
     let id = sippableId(NULL_CONDITION_STRING);

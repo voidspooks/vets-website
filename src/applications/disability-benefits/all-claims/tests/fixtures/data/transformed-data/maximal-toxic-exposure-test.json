@@ -36,8 +36,7 @@
     "startedFormVersion": "2022",
     "toxicExposure": {
       "conditions": {
-        "asthma": true,
-        "heartattackmyocardialinfarction": true
+        "asthma": true
       },
       "gulfWar1990": {
         "afghanistan": true,
@@ -205,16 +204,14 @@
         "cause": "WORSENED",
         "worsenedDescription": "My knee was strained in the service",
         "worsenedEffects": "It wasn't great before, but it got bad enough I needed a replacement. Now I have to take medication for it. I think. That makes sense, right?",
-        "condition": "ankylosis in knee, bilateral",
-        "specialIssues": ["POW"]
+        "condition": "ankylosis in knee, bilateral"
       },
       {
         "cause": "VA",
         "vaMistreatmentDescription": "A thing happened.",
         "vaMistreatmentLocation": "Somewhereville",
         "vaMistreatmentDate": "A while ago",
-        "condition": "heart attack (myocardial infarction)",
-        "specialIssues": ["POW"]
+        "condition": "heart attack (myocardial infarction)"
       },
       {
         "cause": "NEW",

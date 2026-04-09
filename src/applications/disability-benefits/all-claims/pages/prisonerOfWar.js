@@ -5,7 +5,7 @@ import { yesNoUI } from 'platform/forms-system/src/js/web-component-patterns/yes
 import PeriodOfConfinement from '../components/PeriodOfConfinement';
 import { claimingNew } from '../utils';
 import { formatDate } from '../utils/dates/formatting';
-import { makeSchemaForNewDisabilities } from '../utils/schemas';
+import { makeSchemaForPOWDisabilities } from '../utils/schemas';
 import { isWithinServicePeriod } from '../validations';
 import { confinementDescription } from '../content/prisonerOfWar';
 import ConfirmationPrisonerOfWar from '../components/confirmationFields/ConfirmationPrisonerOfWar';
@@ -50,7 +50,7 @@ export const uiSchema = {
         'Which of your conditions is connected to your POW experience?',
       'ui:options': {
         hideIf: formData => !claimingNew(formData),
-        updateSchema: makeSchemaForNewDisabilities,
+        updateSchema: makeSchemaForPOWDisabilities,
       },
     },
   },

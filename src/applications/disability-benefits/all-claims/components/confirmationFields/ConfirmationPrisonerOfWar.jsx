@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { reviewEntry } from 'platform/forms-system/src/js/components/ConfirmationView/ChapterSectionCollection';
 import { capitalizeEachWord, sippableId } from '../../utils';
+import { isNewOrSecondary } from '../../content/toxicExposure';
 import { formatDate } from '../../utils/dates';
 
 const ConfirmationPrisonerOfWar = ({ formData }) => {
@@ -23,7 +24,11 @@ const ConfirmationPrisonerOfWar = ({ formData }) => {
 
   const conditionsContainer = formData?.newDisabilities || [];
   const finalList = conditionsContainer
-    .filter(condition => claimedKeys.includes(sippableId(condition.condition)))
+    .filter(
+      condition =>
+        isNewOrSecondary(condition) &&
+        claimedKeys.includes(sippableId(condition.condition)),
+    )
     .map(condition => capitalizeEachWord(condition.condition));
 
   const powEntries = {

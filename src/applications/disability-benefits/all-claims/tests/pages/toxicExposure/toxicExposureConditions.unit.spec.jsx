@@ -7,13 +7,13 @@ import {
   $,
   $$,
 } from '@department-of-veterans-affairs/platform-forms-system/ui';
+import ToxicExposureConditions from '../../../components/confirmationFields/ToxicExposureConditions';
 import {
   conditionsPageTitle,
   conditionsQuestion,
   noneAndConditionError,
 } from '../../../content/toxicExposure';
 import formConfig from '../../../config/form';
-import ToxicExposureConditions from '../../../components/confirmationFields/ToxicExposureConditions';
 
 describe('Toxic Exposure Conditions', () => {
   const {
@@ -66,9 +66,9 @@ describe('Toxic Exposure Conditions', () => {
         },
       },
       newDisabilities: [
-        { condition: 'Asthma' },
-        { condition: 'COPD' },
-        { condition: 'Sleep Apnea' },
+        { condition: 'Asthma', cause: 'NEW' },
+        { condition: 'COPD', cause: 'NEW' },
+        { condition: 'Sleep Apnea', cause: 'NEW' },
       ],
     };
     const { getByRole, queryByText, getByText } = render(

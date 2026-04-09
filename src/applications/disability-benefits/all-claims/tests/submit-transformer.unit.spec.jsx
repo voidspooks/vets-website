@@ -215,7 +215,6 @@ describe('Test internal transform functions', () => {
         worsenedDescription: getString('worsenedDescription'),
         worsenedEffects: getString('worsenedEffects'),
         condition: 'ankylosis in knee, bilateral',
-        specialIssues: ['POW'],
       },
       {
         cause: 'VA',
@@ -223,7 +222,6 @@ describe('Test internal transform functions', () => {
         vaMistreatmentLocation: getString('vaMistreatmentLocation'),
         vaMistreatmentDate: getString('vaMistreatmentDate'),
         condition: 'heart attack (myocardial infarction)',
-        specialIssues: ['POW'],
       },
       {
         condition:
