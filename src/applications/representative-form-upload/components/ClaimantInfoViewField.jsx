@@ -9,7 +9,7 @@ const ClaimantInfoViewField = props => {
     return `${month}-${day}-${year}`;
   };
 
-  const { formData, defaultEditButton } = props;
+  const { formData } = props;
 
   const {
     veteranSsn,
@@ -21,6 +21,7 @@ const ClaimantInfoViewField = props => {
     claimantFullName,
     claimantDateOfBirth,
     isVeteran,
+    selectBddClaim,
   } = formData;
 
   const isDependentClaim = isVeteran === 'no';
@@ -49,7 +50,6 @@ const ClaimantInfoViewField = props => {
         <h4 className="vads-u-font-size--h5 vads-u-margin--0">
           Claimant information
         </h4>
-        {defaultEditButton()}
         <dl className="review vads-u-margin-top--2 vads-u-width--full">
           {Object.entries(claimantDisplay).map(
             ([label, value]) =>
@@ -86,6 +86,28 @@ const ClaimantInfoViewField = props => {
             )}
           </dl>
         </div>
+      )}
+      {selectBddClaim ? (
+        <div className="form-review-panel-page vads-u-justify-content--space-between">
+          <h4 className="vads-u-font-size--h5 vads-u-margin--0">
+            Benefits Delivery at Discharge (BDD)
+          </h4>
+          <dl className="review vads-u-margin-top--2 vads-u-width--full">
+            <div
+              key="BDD"
+              className="review-row vads-u-display--flex vads-u-justify-content--space-between vads-u-padding-bottom--0 vads-u-width--full"
+            >
+              <dt className="vads-u-font-weight--normal">
+                This is a Benefits Delivery at Discharge (BDD) claim
+              </dt>
+              <dd className="vads-u-font-weight--bold">
+                {selectBddClaim.BDD === true ? 'Yes' : 'No'}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      ) : (
+        ''
       )}
     </div>
   );

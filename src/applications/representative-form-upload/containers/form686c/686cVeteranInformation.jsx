@@ -11,14 +11,11 @@ import {
   ssnUI,
   dateOfBirthUI,
   dateOfBirthSchema,
-  checkboxGroupUI,
-  checkboxGroupSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import {
   emptyObjectSchema,
   claimantTitleAndDescription,
   CustomAlertPage,
-  BddCheckbox,
 } from '../../helpers/helpers';
 import ClaimantInfoViewField from '../../components/ClaimantInfoViewField';
 
@@ -49,17 +46,6 @@ export const veteranInformationPage = {
       ...vaFileNumberUI,
       'ui:title': 'VA file number',
     },
-    selectBddClaim: checkboxGroupUI({
-      title: 'Benefits Delivery at Discharge (BDD)',
-      description:
-        'If this is a Benefits Delivery at Discharge (BDD) claim, you’ll need to include a completed Separation Health Assessment - Part A Self-Assessment form.',
-      labelHeaderLevel: '3',
-      required: false,
-      labels: BddCheckbox,
-      classNames: 'form__checkbox',
-      hideIf: formData =>
-        !formData?.accreditedRepresentativePortalEnable526ezBdd,
-    }),
   },
   schema: {
     type: 'object',
@@ -81,7 +67,6 @@ export const veteranInformationPage = {
         ],
       }),
       vaFileNumber: vaFileNumberSchema,
-      selectBddClaim: checkboxGroupSchema(Object.keys(BddCheckbox)),
     },
     required: [
       'veteranSsn',
