@@ -5,6 +5,7 @@ import { updateStateAndVerifier } from 'platform/utilities/oauth/utilities';
 import { SERVICE_PROVIDERS } from '../constants';
 
 function signupHandler(loginType, isOAuth) {
+  authUtilities.createAndStoreReturnUrl();
   if (isOAuth) {
     updateStateAndVerifier(loginType);
   }
@@ -40,7 +41,7 @@ export default function CreateAccountLink({
   return (
     <a
       href={href}
-      className={`vads-c-action-link--blue vads-u-padding-y--2p5 vads-u-width--full ${policy}`}
+      className="vads-c-action-link--blue"
       data-testid={policy}
       onClick={() => signupHandler(policy, useOAuth)}
     >
