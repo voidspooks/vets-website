@@ -29,7 +29,10 @@ import {
   getDisabilityName,
   addFileAttachments,
   flattenAttachments,
+  setSeparationHealthAssessmentAttachmentId,
+  salvageOutmodedBddSha,
 } from '../../utils/submit';
+import { daysFromToday } from '../../utils/dates/formatting';
 import {
   PTSD_INCIDENT_ITERATION,
   PTSD_CHANGE_LABELS,
@@ -2236,5 +2239,134 @@ describe('addFileAttachments', () => {
     expect(shaAttachment.attachmentId).to.equal('L702');
     expect(result).to.not.have.property('separationHealthAssessmentUploads');
     expect(result).to.not.have.property('additionalDocuments');
+  });
+});
+
+describe('setSeparationHealthAssessmentAttachmentId', () => {
+  it('should add attachmentId L702 to uploads missing it', () => {
+    const formData = {
+      separationHealthAssessmentUploads: [
+        { name: 'sha.pdf', confirmationCode: 'abc123' },
+      ],
+    };
+    const result = setSeparationHealthAssessmentAttachmentId(formData);
+    expect(result.separationHealthAssessmentUploads[0].attachmentId).to.equal(
+      'L702',
+    );
+  });
+
+  it('should preserve existing attachmentId', () => {
+    const formData = {
+      separationHealthAssessmentUploads: [
+        { name: 'sha.pdf', confirmationCode: 'abc123', attachmentId: 'L702' },
+      ],
+    };
+    const result = setSeparationHealthAssessmentAttachmentId(formData);
+    expect(result.separationHealthAssessmentUploads[0].attachmentId).to.equal(
+      'L702',
+    );
+  });
+
+  it('should return formData unchanged when no uploads exist', () => {
+    const formData = { someField: 'value' };
+    const result = setSeparationHealthAssessmentAttachmentId(formData);
+    expect(result).to.equal(formData);
+  });
+});
+
+describe('salvageOutmodedBddSha', () => {
+  const makeBddFormData = (overrides = {}) => ({
+    'view:isBddData': true,
+    'view:hasSeparationHealthAssessment': true,
+    serviceInformation: {
+      servicePeriods: [
+        {
+          serviceBranch: 'Air Force',
+          dateRange: { from: '2001-03-21', to: daysFromToday(90) },
+        },
+      ],
+    },
+    separationHealthAssessmentUploads: [
+      { name: 'sha.pdf', confirmationCode: 'abc123' },
+    ],
+    ...overrides,
+  });
+
+  it('should be a no-op when the feature flag is enabled', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: true,
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.equal(formData);
+  });
+
+  it('should copy SHA uploads to attachments with attachmentId when flag is disabled (V1 path)', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.not.equal(formData);
+    expect(result.attachments).to.have.lengthOf(1);
+    expect(result.attachments[0].attachmentId).to.equal('L702');
+    expect(result.attachments[0].name).to.equal('sha.pdf');
+  });
+
+  it('should preserve existing attachmentId on V3 uploads when flag is disabled', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      separationHealthAssessmentUploads: [
+        { name: 'sha.pdf', confirmationCode: 'abc123', attachmentId: 'L702' },
+      ],
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.not.equal(formData);
+    expect(result.attachments).to.have.lengthOf(1);
+    expect(result.attachments[0].attachmentId).to.equal('L702');
+  });
+
+  it('should remove separationHealthAssessmentUploads after salvaging to prevent duplicates', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.not.equal(formData);
+    expect(result).to.not.have.property('separationHealthAssessmentUploads');
+  });
+
+  it('should append to existing attachments when salvaging', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      attachments: [
+        {
+          name: 'existing.pdf',
+          confirmationCode: 'existing-code',
+          attachmentId: 'L107',
+        },
+      ],
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.not.equal(formData);
+    expect(result.attachments).to.have.lengthOf(2);
+    expect(result.attachments[0].name).to.equal('existing.pdf');
+    expect(result.attachments[1].name).to.equal('sha.pdf');
+    expect(result.attachments[1].attachmentId).to.equal('L702');
+  });
+
+  it('should be a no-op when no SHA uploads exist', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      separationHealthAssessmentUploads: [],
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.equal(formData);
+  });
+
+  it('should be a no-op when hasSeparationHealthAssessment is false', () => {
+    const formData = makeBddFormData({
+      disability526NewBddShaEnforcementWorkflowEnabled: false,
+      'view:hasSeparationHealthAssessment': false,
+    });
+    const result = salvageOutmodedBddSha(formData);
+    expect(result).to.equal(formData);
   });
 });

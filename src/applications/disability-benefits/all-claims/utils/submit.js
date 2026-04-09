@@ -1043,8 +1043,17 @@ export const salvageOutmodedBddSha = formData => {
     !formData.disability526NewBddShaEnforcementWorkflowEnabled
   ) {
     // then salvage it!
-    const clonedData = _.cloneDeep(formData);
-    clonedData.attachments = [...(clonedData.attachments || []), ...uploads];
+
+    // Ensure that the attachment id is included before mass copying it to attachments array
+    const clonedData = setSeparationHealthAssessmentAttachmentId(formData);
+
+    clonedData.attachments = [
+      ...(clonedData.attachments || []),
+      ...(clonedData.separationHealthAssessmentUploads || []),
+    ];
+    // Remove the original key so no further processing can occur. This should be the final state for
+    // separationHealthAssessmentUploads in the outmoded flow.
+    delete clonedData.separationHealthAssessmentUploads;
     return clonedData;
   }
 
