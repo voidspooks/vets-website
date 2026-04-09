@@ -588,28 +588,44 @@ class MedicationsRefillPage {
   verifyRefillSuccessDescriptionTextV2 = () => {
     cy.findByTestId('success-refill-description').should(
       'contain',
-      'in-progress medications',
+      'Prescription refill status',
     );
   };
 
-  verifySuccessLinkGoesToInProgressV2 = () => {
+  verifySuccessLinkGoesToRefillStatusV2 = () => {
     cy.findByTestId('back-to-medications-page-link')
       .should('be.visible')
       .and('have.attr', 'href')
-      .and('include', '/my-health/medications/in-progress');
+      .and('include', '/refill-status');
   };
 
   verifySuccessLinkTextV2 = () => {
     cy.findByTestId('back-to-medications-page-link').should(
       'contain',
-      'Go to your in-progress medications',
+      'Review your refill requests',
     );
   };
 
-  verifyMedicationNameBoldedInSuccessList = prescriptionName => {
+  verifyMedicationNameIsLinkInSuccessList = prescriptionName => {
     cy.findByTestId('successful-medication-list')
-      .find('strong')
+      .find('a')
       .should('contain', prescriptionName);
+  };
+
+  clickMedicationNameLinkInSuccessAlert = (prescriptionId, prescription) => {
+    cy.intercept('GET', '/my_health/v1/medical_records/allergies', allergies);
+    cy.intercept(
+      'GET',
+      `${this.basePath}/prescriptions/${prescriptionId}`,
+      prescription,
+    ).as('prescriptionDetails');
+    cy.findByTestId('refill-success-medication-link-0')
+      .should('be.visible')
+      .click({ waitForAnimations: true });
+    cy.url().should(
+      'include',
+      `${medicationsUrls.PRESCRIPTION_DETAILS}/${prescriptionId}`,
+    );
   };
 
   verifyProcessStepOneContentV2 = () => {

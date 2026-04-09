@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const MEDICATION_REFILL_CONFIG = {
   ERROR: {
     id: 'error-refill',
@@ -57,9 +59,13 @@ export const MEDICATION_REFILL_CONFIG_V2 = {
     status: 'success',
     className: 'vads-u-margin-y--2',
     title: 'Refills requested',
-    description:
-      'To check the status of your refill requests, review your list of in-progress medications.',
-    linkText: 'Go to your in-progress medications',
+    description: (
+      <>
+        To check the status of your refill requests, go to your{' '}
+        <strong>Prescription refill status</strong> page.
+      </>
+    ),
+    linkText: 'Review your refill requests',
   },
 };
 

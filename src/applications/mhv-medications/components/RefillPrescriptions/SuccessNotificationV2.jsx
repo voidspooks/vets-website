@@ -14,6 +14,7 @@ export const SuccessNotificationV2 = ({ handleClick, successfulMeds }) => {
       config={config}
       additionalProps={{ 'data-dd-privacy': 'mask' }}
     >
+      <p>We submitted these refill requests:</p>
       <RefillMedicationList
         medications={successfulMeds}
         testId="successful-medication-list"
@@ -25,11 +26,10 @@ export const SuccessNotificationV2 = ({ handleClick, successfulMeds }) => {
         <p>{config.description}</p>
         <Link
           data-testid="back-to-medications-page-link"
-          to="/my-health/medications/in-progress"
+          to="/refill-status"
           className="hide-visited-link"
           data-dd-action-name={
-            dataDogActionNames.refillPage
-              .GO_TO_YOUR_MEDICATIONS_LIST_ACTION_LINK
+            dataDogActionNames.refillPage.GO_TO_REFILL_STATUS_LINK
           }
           onClick={handleClick}
         >

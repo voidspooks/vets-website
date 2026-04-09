@@ -155,7 +155,7 @@ describe('RefillNotification', () => {
       expect(screen.getByTestId('success-refill-description')).to.exist;
       const link = screen.getByTestId('back-to-medications-page-link');
       expect(link).to.exist;
-      expect(link.textContent).to.include('Go to your in-progress medications');
+      expect(link.textContent).to.include('Review your refill requests');
     });
 
     it('should link to the in-progress medications page', () => {
@@ -168,9 +168,7 @@ describe('RefillNotification', () => {
       );
 
       const link = screen.getByTestId('back-to-medications-page-link');
-      expect(link.getAttribute('href')).to.include(
-        '/my-health/medications/in-progress',
-      );
+      expect(link.getAttribute('href')).to.include('/refill-status');
     });
   });
 });

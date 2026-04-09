@@ -100,6 +100,10 @@ export const dataDogActionNames = {
     GO_TO_YOUR_IN_PROGRESS_MEDICATIONS_LINK: `Go To Your In-Progress Medications Link - ${
       pageType.REFILL
     }`,
+    GO_TO_REFILL_STATUS_LINK: `Go To Refill Status Link - ${pageType.REFILL}`,
+    MEDICATION_NAME_LINK_IN_SUCCESS_ALERT: `Medication Name Link In Success Alert - ${
+      pageType.REFILL
+    }`,
     GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK: `Go To Review And Print Medication History Link - ${
       pageType.REFILL
     }`,

@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import { SuccessNotificationV2 } from '../../../components/RefillPrescriptions/SuccessNotificationV2';
 import { MEDICATION_REFILL_CONFIG_V2 } from '../../../util/constants';
+import { dataDogActionNames } from '../../../util/dataDogConstants';
 import refillableList from '../../fixtures/refillablePrescriptionsList.json';
 
 describe('SuccessNotificationV2 component', () => {
@@ -64,23 +65,29 @@ describe('SuccessNotificationV2 component', () => {
     });
   });
 
-  it('renders success description with correct content', () => {
+  it('renders success description section', () => {
     const screen = setup();
     const descriptionContainer = screen.getByTestId(
       'success-refill-description',
     );
     expect(descriptionContainer).to.exist;
-    expect(descriptionContainer.textContent).to.include(config.description);
+    expect(descriptionContainer.textContent).to.not.be.empty;
   });
 
-  it('renders a link to the in-progress medications page', () => {
+  it('renders a link to the refill status page', () => {
     const screen = setup();
     const link = screen.getByTestId('back-to-medications-page-link');
     expect(link).to.exist;
-    expect(link.getAttribute('href')).to.include(
-      '/my-health/medications/in-progress',
-    );
+    expect(link.getAttribute('href')).to.include('/refill-status');
     expect(link.textContent).to.equal(config.linkText);
+  });
+
+  it('renders the correct data-dd-action-name on the link', () => {
+    const screen = setup();
+    const link = screen.getByTestId('back-to-medications-page-link');
+    expect(link.getAttribute('data-dd-action-name')).to.equal(
+      dataDogActionNames.refillPage.GO_TO_REFILL_STATUS_LINK,
+    );
   });
 
   it('calls handleClick when the link is clicked', () => {

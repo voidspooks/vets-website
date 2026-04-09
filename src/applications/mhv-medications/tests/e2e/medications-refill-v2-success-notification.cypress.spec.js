@@ -5,7 +5,7 @@ import prescriptions from './fixtures/listOfPrescriptions.json';
 import successRequest from './fixtures/refill-success.json';
 
 describe('Medications Refill V2 Success Notification', () => {
-  it('visits Refill Page V2 and verifies success notification links to in-progress medications', () => {
+  it('visits Refill Page V2 and verifies success notification with medication links', () => {
     const site = new MedicationsSite();
     const refillPage = new MedicationsRefillPage();
 
@@ -27,9 +27,13 @@ describe('Medications Refill V2 Success Notification', () => {
     );
     refillPage.verifyRefillSuccessDescriptionTextV2();
     refillPage.verifySuccessLinkTextV2();
-    refillPage.verifySuccessLinkGoesToInProgressV2();
-    refillPage.verifyMedicationNameBoldedInSuccessList(
+    refillPage.verifySuccessLinkGoesToRefillStatusV2();
+    refillPage.verifyMedicationNameIsLinkInSuccessList(
       prescription.data.attributes.prescriptionName,
+    );
+    refillPage.clickMedicationNameLinkInSuccessAlert(
+      prescription.data.attributes.prescriptionId,
+      prescription,
     );
   });
 });

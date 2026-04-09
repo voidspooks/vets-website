@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import { Link } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
 import { selectMedicationsManagementImprovementsFlag } from '../../util/selectors';
+import { dataDogActionNames } from '../../util/dataDogConstants';
 
 export const RefillMedicationList = ({
   medications,
@@ -27,7 +28,16 @@ export const RefillMedicationList = ({
           data-dd-privacy="mask"
         >
           {isManagementImprovementsEnabled ? (
-            <strong>{medication?.prescriptionName}</strong>
+            <Link
+              to={`/prescription/${medication?.prescriptionId}`}
+              data-testid={`refill-success-medication-link-${idx}`}
+              data-dd-action-name={
+                dataDogActionNames.refillPage
+                  .MEDICATION_NAME_LINK_IN_SUCCESS_ALERT
+              }
+            >
+              {medication?.prescriptionName}
+            </Link>
           ) : (
             medication?.prescriptionName
           )}

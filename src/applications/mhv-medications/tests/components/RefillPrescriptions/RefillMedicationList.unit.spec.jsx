@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import RefillMedicationList from '../../../components/RefillPrescriptions/RefillMedicationList';
+import { dataDogActionNames } from '../../../util/dataDogConstants';
 
 describe('RefillMedicationList component', () => {
   const medications = [
@@ -72,13 +73,30 @@ describe('RefillMedicationList component', () => {
   });
 
   describe('when mhvMedicationsManagementImprovements flag is enabled', () => {
-    it('wraps medication names in strong tags', () => {
+    it('renders medication names as links', () => {
       const screen = setup(medications, true);
-      const listItems = screen.getByTestId('refill-medication-list');
-      const strongElements = listItems.querySelectorAll('strong');
-      expect(strongElements).to.have.lengthOf(medications.length);
-      expect(strongElements[0].textContent).to.equal('Medication 1');
-      expect(strongElements[1].textContent).to.equal('Medication 2');
+      const link1 = screen.getByTestId('refill-success-medication-link-0');
+      const link2 = screen.getByTestId('refill-success-medication-link-1');
+      expect(link1).to.exist;
+      expect(link2).to.exist;
+      expect(link1.textContent).to.equal('Medication 1');
+      expect(link2.textContent).to.equal('Medication 2');
+    });
+
+    it('links to the correct prescription details page', () => {
+      const screen = setup(medications, true);
+      const link1 = screen.getByTestId('refill-success-medication-link-0');
+      const link2 = screen.getByTestId('refill-success-medication-link-1');
+      expect(link1.getAttribute('href')).to.include('/prescription/1');
+      expect(link2.getAttribute('href')).to.include('/prescription/2');
+    });
+
+    it('sets the correct data-dd-action-name on links', () => {
+      const screen = setup(medications, true);
+      const link1 = screen.getByTestId('refill-success-medication-link-0');
+      expect(link1.getAttribute('data-dd-action-name')).to.equal(
+        dataDogActionNames.refillPage.MEDICATION_NAME_LINK_IN_SUCCESS_ALERT,
+      );
     });
   });
 
