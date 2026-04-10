@@ -362,14 +362,7 @@ export const arrayBuilderYesNoUI = (
                       nounPlural,
                       maxItems,
                     })
-                  : `You’ll need to add at least one ${nounSingular}. ${maxItemsHint(
-                      {
-                        arrayData,
-                        nounSingular,
-                        nounPlural,
-                        maxItems,
-                      },
-                    )}`,
+                  : `If you select "Yes," you’ll need to add at least 1 ${nounSingular}`,
                 labels: {
                   Y: yesNoOptionsInitial?.labels?.Y || 'Yes',
                   N: yesNoOptionsInitial?.labels?.N || 'No',
