@@ -17,7 +17,7 @@ const content = {
 const ombInfo = {
   resBurden: '5',
   ombNumber: '2900-0740',
-  expDate: '12/31/2024',
+  expDate: '11/30/2027',
 };
 
 const childContent = (
