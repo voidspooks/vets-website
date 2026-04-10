@@ -45,6 +45,16 @@ const setup = (stateOverrides = {}, recordOverrides = {}) => {
         alertList: stateOverrides.alertList || [],
       },
     },
+    featureToggles: {
+      loading: false,
+      ...stateOverrides.featureToggles,
+    },
+    user: {
+      profile: {
+        isCernerPatient: false,
+        ...stateOverrides.userProfile,
+      },
+    },
   };
 
   return renderWithStoreAndRouter(
@@ -247,6 +257,41 @@ describe('UnifiedRadiologyDetails component', () => {
         'va-link[text="Go to notification settings"]',
       );
       expect(link).to.exist;
+    });
+  });
+
+  describe('notification hiding for Oracle Health users', () => {
+    it('hides notification content when isCernerPatient is true', () => {
+      const screen = setup({
+        labsAndTests: {
+          scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
+        },
+        userProfile: { isCernerPatient: true },
+      });
+      expect(
+        screen.queryByText('Get email notifications for images', {
+          selector: 'h3',
+        }),
+      ).to.not.exist;
+      expect(
+        screen.container.querySelector(
+          'va-link[text="Go to notification settings"]',
+        ),
+      ).to.not.exist;
+    });
+
+    it('shows notification content when user is not Cerner', () => {
+      const screen = setup({
+        labsAndTests: {
+          scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
+        },
+        userProfile: { isCernerPatient: false },
+      });
+      expect(
+        screen.getByText('Get email notifications for images', {
+          selector: 'h3',
+        }),
+      ).to.exist;
     });
   });
 

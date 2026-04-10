@@ -36,6 +36,10 @@ const UnifiedRadiologyDetails = props => {
   );
   const { notificationStatus } = useSelector(state => state.mr.images);
 
+  const isCernerUser = useSelector(
+    state => state.user?.profile?.isCernerPatient,
+  );
+
   const { hasLoadedThumbnails, hasImageError } = useThumbnailPolling(
     record?.imagingStudyId,
   );
@@ -245,25 +249,30 @@ const UnifiedRadiologyDetails = props => {
                 {hasImageError && !hasLoadedThumbnails
                   ? renderImagesError()
                   : renderImagesLink()}
-                {notificationStatus ? (
-                  <p>
-                    <strong>Note: </strong> If you do not want us to notify you
-                    about images, change your settings in your profile.
-                  </p>
-                ) : (
+                {!isCernerUser && (
                   <>
-                    <h3>Get email notifications for images</h3>
-                    <p>
-                      If you want us to email you when your images are ready,
-                      change your notification settings in your profile.
-                    </p>
+                    {notificationStatus ? (
+                      <p>
+                        <strong>Note: </strong> If you do not want us to notify
+                        you about images, change your settings in your profile.
+                      </p>
+                    ) : (
+                      <>
+                        <h3>Get email notifications for images</h3>
+                        <p>
+                          If you want us to email you when your images are
+                          ready, change your notification settings in your
+                          profile.
+                        </p>
+                      </>
+                    )}
+                    <va-link
+                      className="vads-u-margin-top--1"
+                      href="/profile/notifications"
+                      text="Go to notification settings"
+                    />
                   </>
                 )}
-                <va-link
-                  className="vads-u-margin-top--1"
-                  href="/profile/notifications"
-                  text="Go to notification settings"
-                />
               </HeaderSection>
             </div>
             <div className="vads-u-margin-y--4 vads-u-border-top--1px vads-u-border-color--gray-light" />
