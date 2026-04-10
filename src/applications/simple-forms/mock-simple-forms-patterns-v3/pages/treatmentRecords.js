@@ -58,6 +58,27 @@ const options = {
       );
     },
   },
+  duplicateChecks: {
+    comparisonType: 'all',
+    comparisons: ['name', 'address.street'],
+    duplicateSummaryCardWarningOrErrorAlert: () => (
+      <p className="vads-u-margin-top--0">
+        You have entered multiple treatment records with the same name and
+        address. Before continuing, review these entries and delete any
+        duplicates.
+      </p>
+    ),
+    itemPathModalChecks: {
+      'name-and-address': {
+        comparisons: ['name', 'address.street'],
+      },
+      'treatment-dates': {
+        comparisonType: 'external',
+        comparisons: ['name', 'treatmentDates.from', 'treatmentDates.to'],
+        externalComparisonData: () => [['test 3', '1997-01-03', '1999-01-03']],
+      },
+    },
+  },
 };
 
 /** @returns {PageSchema} */

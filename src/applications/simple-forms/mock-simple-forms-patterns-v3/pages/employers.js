@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   addressNoMilitarySchema,
   addressNoMilitaryUI,
@@ -28,6 +29,26 @@ const options = {
       `${formatReviewDate(item?.dateRange?.from)} - ${formatReviewDate(
         item?.dateRange?.to,
       )}`,
+  },
+  duplicateChecks: {
+    comparisonType: 'all',
+    comparisons: ['name', 'address.street'],
+    duplicateSummaryCardWarningOrErrorAlert: () => (
+      <p className="vads-u-margin-top--0">
+        You have entered multiple employers with the same name and address.
+        Before continuing, review these entries and delete any duplicates.
+      </p>
+    ),
+    itemPathModalChecks: {
+      'name-and-address': {
+        comparisons: ['name', 'address.street'],
+      },
+      dates: {
+        comparisonType: 'external',
+        comparisons: ['name', 'dateRange.from', 'dateRange.to'],
+        externalComparisonData: () => [['test 3', '1997-01-03', '1999-01-03']],
+      },
+    },
   },
 };
 
