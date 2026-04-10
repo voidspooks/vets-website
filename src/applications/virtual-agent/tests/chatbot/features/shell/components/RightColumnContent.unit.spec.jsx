@@ -4,6 +4,7 @@ import React from 'react';
 import sinon from 'sinon';
 
 import * as ReactReduxModule from 'react-redux';
+import * as ChatConversationModule from '../../../../../chatbot/components/chatbox/ChatConversation';
 
 import RightColumnContent from '../../../../../chatbot/features/shell/components/RightColumnContent';
 
@@ -13,6 +14,9 @@ describe('RightColumnContent', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     sandbox.stub(ReactReduxModule, 'useDispatch').returns(sinon.stub());
+    sandbox
+      .stub(ChatConversationModule, 'default')
+      .returns(<div data-testid="chat-conversation" />);
   });
 
   afterEach(() => {
@@ -35,17 +39,9 @@ describe('RightColumnContent', () => {
   it('renders the chat conversation when accepted', () => {
     sandbox.stub(ReactReduxModule, 'useSelector').returns(true);
 
-    const { getByTestId, queryByTestId, getByText } = render(
-      <RightColumnContent />,
-    );
+    const { getByTestId, queryByTestId } = render(<RightColumnContent />);
 
     expect(getByTestId('chat-conversation')).to.exist;
-    expect(getByTestId('chat-message-list')).to.exist;
     expect(queryByTestId('disclaimer')).to.equal(null);
-    expect(
-      getByText(
-        "Welcome to the VA chatbot. I'm here to help with general questions about VA benefits and services.",
-      ),
-    ).to.exist;
   });
 });

@@ -7,6 +7,7 @@ import manifest from './manifest.json';
 import reducer from './webchat/reducers';
 import routes from './webchat/routes';
 import { initLogging } from './webchat/utils/logging';
+import { chatbotApi } from './chatbot/store';
 
 const script = document.createElement('script');
 script.nonce = '**CSP_NONCE**';
@@ -22,6 +23,7 @@ document.body.appendChild(script);
 initLogging();
 
 startApp({
+  additionalMiddlewares: [chatbotApi.middleware],
   entryName: manifest.entryName,
   url: manifest.rootUrl,
   reducer,

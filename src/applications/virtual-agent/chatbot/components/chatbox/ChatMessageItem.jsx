@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import ChatMessageContent from './ChatMessageContent';
 import ChatMessageIcon from './ChatMessageIcon';
+import ChatMessageOptions from './ChatMessageOptions';
 
 const SENDER_TYPES = {
   USER: 'user',
@@ -14,11 +16,13 @@ const SENDER_TYPES = {
  * @property {string} id
  * @property {string} sender
  * @property {string} text
+ * @property {string[]} [options]
  */
 
 /**
  * @typedef {Object} ChatMessageItemProps
  * @property {ChatMessage} message
+ * @property {(value: string) => void} [onOptionSelect]
  */
 
 const buildBubbleClassNames = isUser => {
@@ -34,8 +38,9 @@ const buildBubbleClassNames = isUser => {
  * @param {ChatMessageItemProps} props
  * @returns {JSX.Element}
  */
-export default function ChatMessageItem({ message }) {
+export default function ChatMessageItem({ message, onOptionSelect }) {
   const isUser = message.sender === SENDER_TYPES.USER;
+  const messageOptions = Array.isArray(message.options) ? message.options : [];
 
   return (
     <li
@@ -49,7 +54,14 @@ export default function ChatMessageItem({ message }) {
       )}
 
       <div className={buildBubbleClassNames(isUser)}>
-        <p className="vads-u-margin--0">{message.text}</p>
+        <ChatMessageContent isUser={isUser} text={message.text} />
+        {!isUser ? (
+          <ChatMessageOptions
+            messageId={message.id}
+            onOptionSelect={onOptionSelect}
+            options={messageOptions}
+          />
+        ) : null}
       </div>
 
       {isUser && (
@@ -66,5 +78,7 @@ ChatMessageItem.propTypes = {
     id: PropTypes.string.isRequired,
     sender: PropTypes.oneOf([SENDER_TYPES.USER, SENDER_TYPES.VA]).isRequired,
     text: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
+  onOptionSelect: PropTypes.func,
 };

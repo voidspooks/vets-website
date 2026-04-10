@@ -286,3 +286,17 @@ button.webchat__send-button[disabled] {
     transform: scale(1);
   }
 }
+
+// Fix markdown list spacing so chat bubbles keep the right spacing.
+.va-chatbot-message-content-markdown > ul:last-child,
+.va-chatbot-message-content-markdown > ol:last-child {
+  margin-bottom: 1rem;
+}
+
+.va-chatbot-message-content-markdown > :first-child {
+  margin-top: 0;
+}
+
+.va-chatbot-message-content-markdown > :last-child {
+  margin-bottom: 0;
+}
