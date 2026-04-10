@@ -16,6 +16,7 @@ import {
   rxSourceIsNonVA,
   getTrackingUrl,
   isExpirationDatePassed,
+  isInitialFill,
   isOracleHealthPrescription,
   isRenewalWithin72Hours,
 } from '../../util/helpers';
@@ -57,9 +58,8 @@ const MedicationsListCard = ({ rx }) => {
   const isFillInProgress =
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_REFILL_IN_PROCESS ||
     rx.dispStatus === DISPENSE_STATUS.ACTIVE_SUBMITTED;
-  const isFirstFill =
-    Array.isArray(rx.rxRfRecords) && rx.rxRfRecords.length === 0;
-  const isInitialFill = isFillInProgress && isFirstFill;
+  const isInitialFillRx = isInitialFill(rx);
+  const isInitialFillInProgress = isFillInProgress && isInitialFillRx;
   const isOracleHealthCutoverEnabled = useSelector(
     selectMhvMedicationsOracleHealthCutoverFlag,
   );
@@ -257,16 +257,16 @@ const MedicationsListCard = ({ rx }) => {
         {isMedsImprovements &&
           isFillInProgress && (
             <StatusAlertBanner testId="fill-in-progress-alert" icon="schedule">
-              {isInitialFill ? 'Fill' : 'Refill'} in progress.{' '}
-              <Link to={medicationsUrls.MEDICATIONS_IN_PROGRESS}>
-                Go to in-progress medications
+              {isInitialFillInProgress ? 'Fill' : 'Refill'} in progress.{' '}
+              <Link to={getPrescriptionDetailUrl(rx)}>
+                Review prescription status
               </Link>
             </StatusAlertBanner>
           )}
         {isMedsImprovements &&
           isRecentlyShipped && (
             <StatusAlertBanner testId="shipped-alert" icon="local_shipping">
-              {isFirstFill ? 'Fill' : 'Refill'} has shipped.{' '}
+              {isInitialFillRx ? 'Fill' : 'Refill'} has shipped.{' '}
               {trackingUrl ? (
                 <a
                   href={trackingUrl}

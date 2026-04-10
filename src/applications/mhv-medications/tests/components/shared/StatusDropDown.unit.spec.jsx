@@ -428,6 +428,57 @@ describe('component that displays Status', () => {
       expect(definition.textContent).to.include('reviewing your request');
       expect(screen.queryByText(/Check back for updates/)).to.not.exist;
     });
+
+    describe('Initial fill in progress', () => {
+      const renderWithPrescription = prescription => {
+        const s5InitialState = {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: false,
+            [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]: false,
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+          drupalStaticData: {
+            vamcEhrData: {
+              data: {
+                cernerFacilities: [],
+              },
+            },
+          },
+        };
+
+        return renderWithStoreAndRouter(
+          <StatusDropdown
+            status={prescription?.dispStatus || 'Active'}
+            prescription={prescription}
+          />,
+          { initialState: s5InitialState, reducers: reducer },
+        );
+      };
+
+      it('shows "Active: Fill in process" when rxRfRecords is empty', () => {
+        const prescription = {
+          prescriptionId: 99999999,
+          dispStatus: 'Active: Refill in Process',
+          rxRfRecords: [],
+        };
+
+        const screen = renderWithPrescription(prescription);
+
+        expect(screen.getByText('Active: Fill in process')).to.exist;
+      });
+
+      it('shows "Active: Refill in process" when rxRfRecords has items', () => {
+        const prescription = {
+          prescriptionId: 99999999,
+          dispStatus: 'Active: Refill in Process',
+          rxRfRecords: [{ dispensedDate: '2025-10-03T04:00:00.000Z' }],
+        };
+
+        const screen = renderWithPrescription(prescription);
+
+        expect(screen.getByText('Active: Refill in process')).to.exist;
+      });
+    });
   });
 
   describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
@@ -449,6 +500,45 @@ describe('component that displays Status', () => {
         'We got your request to fill or refill this prescription',
       );
       expect(screen.getByText(/Check back for updates/)).to.exist;
+    });
+
+    describe('Initial fill in progress', () => {
+      const renderWithPrescription = prescription => {
+        const s5InitialState = {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: false,
+            [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]: false,
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
+          },
+          drupalStaticData: {
+            vamcEhrData: {
+              data: {
+                cernerFacilities: [],
+              },
+            },
+          },
+        };
+
+        return renderWithStoreAndRouter(
+          <StatusDropdown
+            status={prescription?.dispStatus || 'Active'}
+            prescription={prescription}
+          />,
+          { initialState: s5InitialState, reducers: reducer },
+        );
+      };
+
+      it('shows "Active: Refill in process" even with empty rxRfRecords', () => {
+        const prescription = {
+          prescriptionId: 99999999,
+          dispStatus: 'Active: Refill in Process',
+          rxRfRecords: [],
+        };
+
+        const screen = renderWithPrescription(prescription);
+
+        expect(screen.getByText('Active: Refill in process')).to.exist;
+      });
     });
   });
 });

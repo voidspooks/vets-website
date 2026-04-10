@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { selectCernerFacilityIds } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/selectors';
 import { isUnfilledOhPrescription } from '../../util/helpers/isUnfilledOhPrescription';
+import { isInitialFill } from '../../util/helpers';
 import {
   ACTIVE_NON_VA,
   DISPENSE_STATUS,
@@ -224,6 +225,8 @@ const StatusDropdown = props => {
           );
         }
         case statusObj.refillinprocess: {
+          const showFillText =
+            isMedicationsImprovementsEnabled && isInitialFill(prescription);
           const dropdownContent = () => {
             return (
               <p data-testid="refillinprocess-status-definition">
@@ -234,7 +237,11 @@ const StatusDropdown = props => {
           };
           return (
             <>
-              {displayStatus('Active: Refill in process')}
+              {displayStatus(
+                showFillText
+                  ? 'Active: Fill in process'
+                  : 'Active: Refill in process',
+              )}
               <va-additional-info
                 uswds
                 trigger="What does this status mean?"
