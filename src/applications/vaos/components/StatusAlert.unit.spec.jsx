@@ -53,8 +53,14 @@ describe('VAOS Component: StatusAlert', () => {
     expect(screen.baseElement).to.contain('va-alert');
     expect(screen.baseElement).to.contain.text('We’ve received your request');
     expect(screen.baseElement).to.contain.text(
-      `We’ll try to schedule your appointment in the next 2 business days.`,
+      `We’ll try to schedule your appointment soon. Check back here for updates.`,
     );
+    expect(screen.baseElement).to.contain.text(
+      `Or call your VA health facility at`,
+    );
+    expect(
+      screen.container.querySelector('va-telephone[contact="509-434-7000"'),
+    ).to.be.ok;
     expect(screen.queryByTestId('review-appointments-link')).to.exist;
     expect(screen.queryByTestId('schedule-appointment-link')).to.exist;
   });
@@ -74,8 +80,14 @@ describe('VAOS Component: StatusAlert', () => {
     );
     expect(screen.baseElement).not.to.contain('va-alert');
     expect(screen.baseElement).to.contain.text(
-      `We’ll try to schedule your appointment in the next 2 business days.`,
+      `We’ll try to schedule your appointment soon. Check back here for updates.`,
     );
+    expect(screen.baseElement).to.contain.text(
+      `Or call your VA health facility at`,
+    );
+    expect(
+      screen.container.querySelector('va-telephone[contact="509-434-7000"'),
+    ).to.be.ok;
     expect(screen.baseElement).not.to.contain.text(
       'You requested this appointment on',
     );

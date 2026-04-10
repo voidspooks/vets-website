@@ -47,7 +47,9 @@ export default function StatusAlert({ appointment, facility }) {
   const today = new Date().toISOString();
 
   if (APPOINTMENT_STATUS.proposed === status) {
+    let proposedMsg;
     if (isValidDate) {
+      // Non-Cerner requests with valid created
       const createdDate = format(new Date(created), 'MMMM dd, yyyy');
       const businessDays = differenceInBusinessDays(
         new Date(today),
@@ -65,27 +67,30 @@ export default function StatusAlert({ appointment, facility }) {
           </InfoAlert>
         );
       }
+      proposedMsg = (
+        <>
+          <p>
+            We’ll try to schedule your appointment in the next 2 business days.
+            Check back here or call your facility for updates.
+          </p>
+          <p>
+            You requested this appointment on{' '}
+            <span data-dd-privacy="mask">{createdDate}</span>.
+          </p>
+        </>
+      );
+    } else {
+      // Cerner requests without created date
+      proposedMsg = (
+        <p>
+          We’ll try to schedule your appointment soon. Check back here for
+          updates. Or call your VA health facility at{' '}
+          <FacilityPhone contact={facilityPhone} icon />
+        </p>
+      );
     }
-    const proposedMsg = (
-      <p>
-        We’ll try to schedule your appointment in the next 2 business days.
-        Check back here or call your facility for updates.
-      </p>
-    );
 
     if (!showConfirmMsg) {
-      if (isValidDate) {
-        const createdDate = format(new Date(created), 'MMMM dd, yyyy');
-        return (
-          <>
-            {proposedMsg}
-            <p>
-              You requested this appointment on{' '}
-              <span data-dd-privacy="mask">{createdDate}</span>.
-            </p>
-          </>
-        );
-      }
       return proposedMsg;
     }
 
