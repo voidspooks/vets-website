@@ -113,7 +113,7 @@ describe('Welcome to My VA Review Contact Information form', () => {
       cypressSetup({ internationalPhonesEnabled: true });
       cy.login(mockUser);
       cy.visit(formURL);
-      cy.wait(['@mockUser', '@mockVamc']);
+      cy.wait(['@mockUser', '@features', '@mockVamc']);
     });
 
     it('should be completable', () => {

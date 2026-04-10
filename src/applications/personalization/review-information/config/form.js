@@ -5,11 +5,17 @@ import profileContactInfo from 'platform/forms-system/src/js/definitions/profile
 import { getContent } from 'platform/forms-system/src/js/utilities/data/profile';
 import ContactInfo from 'platform/forms-system/src/js/components/ContactInfo';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
+import { profileContactInfoPages } from 'platform/forms-system/src/js/patterns/prefill';
 import { TITLE } from '../constants';
 import manifest from '../manifest.json';
 import ConfirmationPage from '../containers/ConfirmationPage';
 import WelcomeVAContactAdditionalInfo from '../components/WelcomeVAContactAdditionalInfo';
 
+const isPrefillOn = formData => {
+  return formData?.veteranOnboardingPrefillPattern === true;
+};
+
+// ---- Old pattern pages (shown when toggle is OFF) ----
 const allContactInformationKeys = ['address', 'email', 'phone'];
 const confirmContactInfoKeys = {
   wrapper: 'veteran',
@@ -42,6 +48,9 @@ profileContactInfoPage.confirmContactInfo.onNavBack = () => {
   window.location = `${environment.BASE_URL}/my-va/`;
 };
 
+profileContactInfoPage.confirmContactInfo.depends = formData =>
+  !isPrefillOn(formData);
+
 profileContactInfoPage.confirmContactInfo.CustomPage = props =>
   ContactInfo({
     ...props,
@@ -55,6 +64,37 @@ profileContactInfoPage.confirmContactInfo.CustomPage = props =>
     editContactInfoHeadingLevel: 'h2',
     contentBeforeButtons: WelcomeVAContactAdditionalInfo,
   });
+
+// ---- New prefill pattern pages (shown when toggle is ON) ----
+const prefillContent = getContent('form');
+prefillContent.title = '';
+prefillContent.description = null;
+prefillContent.editEmail = 'Edit email address';
+prefillContent.editMobilePhone = 'Edit mobile phone number';
+prefillContent.editMailingAddress = 'Edit mailing address';
+
+const prefillContactInfoPage = profileContactInfoPages({
+  contactInfoPageKey: 'prefillContactInfo',
+  contactPath: 'prefill-contact-information',
+  wrapperKey: 'prefillVeteran',
+  included: ['mobilePhone', 'email', 'mailingAddress'],
+  contactInfoRequiredKeys: ['mobilePhone', 'email', 'mailingAddress'],
+  content: prefillContent,
+  contactSectionHeadingLevel: 'h2',
+  editContactInfoHeadingLevel: 'h2',
+  contentBeforeButtons: WelcomeVAContactAdditionalInfo,
+  prefillPatternEnabled: false,
+  depends: isPrefillOn,
+  showProfileAlert: false,
+});
+
+const myVAURL = `${environment.BASE_URL}/my-va/`;
+prefillContactInfoPage.prefillContactInfo.onNavBack = () => {
+  window.location = myVAURL;
+};
+prefillContactInfoPage.prefillContactInfo.onNavForward = () => {
+  window.location = myVAURL;
+};
 
 /** @type {FormConfig} */
 const formConfig = {
@@ -91,7 +131,10 @@ const formConfig = {
   chapters: {
     infoPage: {
       pages: {
+        // Old pattern (toggle OFF)
         ...profileContactInfoPage,
+        // New prefill pattern (toggle ON)
+        ...prefillContactInfoPage,
       },
     },
   },

@@ -24,6 +24,14 @@ export const cypressSetup = ({ internationalPhonesEnabled = false } = {}) => {
         type: 'feature_toggles',
         features: [
           {
+            name: 'veteran_onboarding_prefill_pattern',
+            value: false,
+          },
+          {
+            name: 'veteranOnboardingPrefillPattern',
+            value: false,
+          },
+          {
             name: 'profile_international_phone_numbers',
             value: true,
           },
@@ -33,7 +41,7 @@ export const cypressSetup = ({ internationalPhonesEnabled = false } = {}) => {
           },
         ],
       },
-    });
+    }).as('features');
   } else {
     cy.intercept('GET', '/v0/feature_toggles*', mockFeatureToggles).as(
       'features',
