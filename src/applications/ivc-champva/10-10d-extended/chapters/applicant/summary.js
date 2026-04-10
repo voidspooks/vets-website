@@ -7,6 +7,8 @@ import { APPLICANTS_MAX } from '../../utils/constants';
 import { formatFullName } from '../../utils/helpers';
 import { validateApplicant } from '../../utils/validations';
 
+const yesNoOptions = { labelHeaderLevel: '' };
+
 export const applicantOptions = {
   arrayPath: 'applicants',
   nounSingular: 'applicant',
@@ -22,7 +24,11 @@ export const applicantOptions = {
 
 export default {
   uiSchema: {
-    'view:hasApplicants': arrayBuilderYesNoUI(applicantOptions),
+    'view:hasApplicants': arrayBuilderYesNoUI(
+      applicantOptions,
+      yesNoOptions,
+      yesNoOptions,
+    ),
   },
   schema: {
     type: 'object',
