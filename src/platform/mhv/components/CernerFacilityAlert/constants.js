@@ -32,13 +32,23 @@ export const CernerAlertContent = {
     warningMessage: `you won’t be able to schedule appointments online for`,
     warningGetNote: facilityText =>
       `During this time, you can still call ${facilityText} to schedule or cancel appointments.`,
-    errorPhases: ['p2', 'p3', 'p4', 'p5', 'p6'],
+    errorPhases: ['p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
     errorHeadline: `You can’t manage appointments online for some facilities right now`,
-    errorMessage: `You can’t schedule appointments online for`,
+    errorMessage: `You can’t schedule or cancel appointments online for`,
+    errorMultiPhaseNotes: [
+      {
+        text: 'You won’t be able to cancel appointments online until',
+        endDate: 'p7',
+      },
+      {
+        text: 'And you won’t be able to schedule appointments online until',
+        endDate: 'p9',
+      },
+    ],
     errorNote:
       'If you need to schedule or cancel appointments now, call the facility directly.',
     errorStartDate: 'p2',
-    errorEndDate: 'p7',
+    errorEndDate: 'p9',
   },
   MHV_LANDING_PAGE: {
     linkPath: '/pages/home',

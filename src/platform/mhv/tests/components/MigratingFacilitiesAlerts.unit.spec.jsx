@@ -32,7 +32,10 @@ describe('MigratingFacilitiesAlerts', () => {
         p3: 'April 24, 2026',
         p4: 'April 27, 2026',
         p5: 'May 1, 2026',
-        p6: 'May 8, 2026',
+        p6: 'May 3, 2026',
+        p7: 'May 8, 2026',
+        p8: 'May 30, 2026',
+        p9: 'June 14, 2026',
       },
     },
   ];
@@ -60,6 +63,8 @@ describe('MigratingFacilitiesAlerts', () => {
         p5: 'May 1, 2026',
         p6: 'May 3, 2026',
         p7: 'May 8, 2026',
+        p8: 'May 30, 2026',
+        p9: 'June 14, 2026',
       },
     },
   ];
@@ -161,7 +166,7 @@ describe('MigratingFacilitiesAlerts', () => {
       );
 
       expect(getByText(/April 27, 2026/)).to.exist;
-      expect(getByText(/May 8, 2026/)).to.exist;
+      expect(getByText(/May 3, 2026/)).to.exist;
     });
 
     it('displays "this facility" for single facility', () => {
@@ -312,7 +317,7 @@ describe('MigratingFacilitiesAlerts', () => {
         <MigratingFacilitiesAlerts {...errorProps} />,
       );
 
-      expect(getByText(/May 8, 2026/)).to.exist;
+      expect(getByText(/May 3, 2026/)).to.exist;
     });
 
     it('displays facility list in error alert', () => {
@@ -362,9 +367,134 @@ describe('MigratingFacilitiesAlerts', () => {
       // "New medical records may not appear here until ${endDate}"
       expect(
         screen.getByText(
-          /New medical records may not appear here until May 8, 2026/i,
+          /New medical records may not appear here until May 3, 2026/i,
         ),
       ).to.exist;
+    });
+  });
+
+  describe('error alerts with errorMultiPhaseNotes (APPOINTMENTS)', () => {
+    const appointmentsErrorProps = {
+      healthTool: 'APPOINTMENTS',
+      migratingFacilities: [
+        {
+          migrationDate: '2026-05-01',
+          facilities: [
+            {
+              facilityId: '528',
+              facilityName: 'VA Uptown New Orleans Medical Center',
+            },
+          ],
+          phases: {
+            current: 'p3',
+            p0: 'March 1, 2026',
+            p1: 'March 15, 2026',
+            p2: 'April 1, 2026',
+            p3: 'April 24, 2026',
+            p4: 'April 27, 2026',
+            p5: 'May 1, 2026',
+            p6: 'May 3, 2026',
+            p7: 'May 8, 2026',
+            p8: 'May 30, 2026',
+            p9: 'June 14, 2026',
+          },
+        },
+      ],
+    };
+
+    it('renders error alert for APPOINTMENTS in error phase', () => {
+      const { container } = render(
+        <MigratingFacilitiesAlerts {...appointmentsErrorProps} />,
+      );
+
+      const alert = container.querySelector('va-alert[status="error"]');
+      expect(alert).to.exist;
+    });
+
+    it('renders errorMultiPhaseNotes with correct dates', () => {
+      const { container } = render(
+        <MigratingFacilitiesAlerts {...appointmentsErrorProps} />,
+      );
+
+      const alertText = container.querySelector('va-alert').textContent;
+
+      // First note: cancel appointments until p7 date
+      expect(alertText).to.include('cancel appointments online until');
+      expect(alertText).to.include('May 8, 2026');
+
+      // Second note: schedule appointments until p9 date
+      expect(alertText).to.include('schedule appointments online until');
+      expect(alertText).to.include('June 14, 2026');
+    });
+
+    it('does not render the single "until endDate" span when errorMultiPhaseNotes is present', () => {
+      const { container } = render(
+        <MigratingFacilitiesAlerts {...appointmentsErrorProps} />,
+      );
+
+      const alertText = container.querySelector('va-alert').textContent;
+      // The single "until ${endDate}" span should NOT appear
+      // because errorMultiPhaseNotes replaces it
+      expect(alertText).to.not.include('$');
+    });
+
+    it('renders errorNote with find facility link for APPOINTMENTS', () => {
+      const { getByText, getByTestId } = render(
+        <MigratingFacilitiesAlerts {...appointmentsErrorProps} />,
+      );
+
+      expect(
+        getByText(
+          /If you need to schedule or cancel appointments now, call the facility directly/i,
+        ),
+      ).to.exist;
+      const link = getByTestId('find-facility-link');
+      expect(link).to.exist;
+    });
+
+    it('handles missing later phase dates (p8 and p9) gracefully', () => {
+      const propsWithMissingLaterPhases = {
+        healthTool: 'APPOINTMENTS',
+        migratingFacilities: [
+          {
+            migrationDate: '2026-05-01',
+            facilities: [
+              {
+                facilityId: '528',
+                facilityName: 'VA Uptown New Orleans Medical Center',
+              },
+            ],
+            phases: {
+              current: 'p3',
+              p0: 'March 1, 2026',
+              p1: 'March 15, 2026',
+              p2: 'April 1, 2026',
+              p3: 'April 24, 2026',
+              p4: 'April 27, 2026',
+              p5: 'May 1, 2026',
+              p6: 'May 3, 2026',
+              p7: 'May 8, 2026',
+            },
+          },
+        ],
+      };
+
+      const { container } = render(
+        <MigratingFacilitiesAlerts {...propsWithMissingLaterPhases} />,
+      );
+
+      const alert = container.querySelector('va-alert[status="error"]');
+      expect(alert).to.exist;
+
+      const alertText = alert.textContent;
+
+      // p7 date should still render for the first note
+      expect(alertText).to.include('cancel appointments online until');
+      expect(alertText).to.include('May 8, 2026');
+
+      // p9 is missing, so the second note's date will not appear
+      expect(alertText).to.include('schedule appointments online until');
+      expect(alertText).to.not.include('June 14, 2026');
     });
   });
 
@@ -434,8 +564,8 @@ describe('MigratingFacilitiesAlerts', () => {
             p5: 'May 1, 2026',
             p6: 'May 3, 2026',
             p7: 'May 8, 2026',
-            p8: 'May 31, 2026',
-            p9: 'June 16, 2026',
+            p8: 'May 30, 2026',
+            p9: 'June 14, 2026',
           },
         },
         {
@@ -456,6 +586,8 @@ describe('MigratingFacilitiesAlerts', () => {
             p5: 'June 1, 2026',
             p6: 'June 3, 2026',
             p7: 'June 8, 2026',
+            p8: 'June 30, 2026',
+            p9: 'July 15, 2026',
           },
         },
       ],
@@ -518,6 +650,8 @@ describe('MigratingFacilitiesAlerts', () => {
             p5: 'May 1, 2026',
             p6: 'May 3, 2026',
             p7: 'May 8, 2026',
+            p8: 'May 30, 2026',
+            p9: 'June 14, 2026',
           },
         },
         {
@@ -538,6 +672,8 @@ describe('MigratingFacilitiesAlerts', () => {
             p5: 'June 1, 2026',
             p6: 'June 3, 2026',
             p7: 'June 8, 2026',
+            p8: 'June 30, 2026',
+            p9: 'July 15, 2026',
           },
         },
         {
@@ -558,6 +694,8 @@ describe('MigratingFacilitiesAlerts', () => {
             p5: 'July 1, 2026',
             p6: 'July 3, 2026',
             p7: 'July 8, 2026',
+            p8: 'July 30, 2026',
+            p9: 'August 14, 2026',
           },
         },
       ],
@@ -806,7 +944,7 @@ describe('MigratingFacilitiesAlerts', () => {
       // errorGetHeadline for MEDICAL_RECORDS includes the end date
       expect(getByText(/New medical records may not appear here until/)).to
         .exist;
-      expect(getAllByText(/May 8, 2026/).length).to.be.greaterThan(0);
+      expect(getAllByText(/May 3, 2026/).length).to.be.greaterThan(0);
     });
   });
 

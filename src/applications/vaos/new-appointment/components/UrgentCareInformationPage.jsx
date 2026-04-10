@@ -185,6 +185,8 @@ export default function UrgentCareInformationPage() {
     'p4',
     'p5',
     'p6',
+    'p7',
+    'p8',
   ]);
 
   // Check for exclusive registration in the warning migration schedule
@@ -234,13 +236,13 @@ export default function UrgentCareInformationPage() {
         <MigrationWarning
           facilities={warningSchedule.facilities}
           startDate={warningSchedule.phases.p2}
-          endDate={warningSchedule.phases.p7}
+          endDate={warningSchedule.phases.p9}
         />
       )}
       {isInErrorPhase && (
         <MigrationInProgressError
           classNames={classNames({ 'vads-u-margin-top--2': isInWarningPhase })}
-          endDate={errorSchedule.phases.p7}
+          endDate={errorSchedule.phases.p9}
           facilities={errorSchedule.facilities}
           isMixedRegistration={isMixedRegistration}
         />

@@ -90,14 +90,31 @@ const MigratingFacilitiesAlerts = ({
                     <strong>{endDate}</strong>{' '}
                   </>
                 )}
-                {config.errorMessage} {facilityText} until{' '}
-                <strong>{endDate}</strong>:
+                {config.errorMessage} {facilityText}
+                {!config.errorMultiPhaseNotes && (
+                  <span>
+                    {' '}
+                    until <strong>{endDate}</strong>
+                  </span>
+                )}
+                :
               </p>
               <ul>
                 {migration.facilities.map((facility, i) => (
                   <li key={i}>{facility.facilityName}</li>
                 ))}
               </ul>
+
+              {config.errorMultiPhaseNotes && (
+                <>
+                  {config.errorMultiPhaseNotes.map((note, idx) => (
+                    <span key={idx}>
+                      {note.text}{' '}
+                      <strong>{migration.phases[note.endDate]}</strong>.{' '}
+                    </span>
+                  ))}
+                </>
+              )}
               {config.errorNote && (
                 <>
                   <p>{config.errorNote}</p>
@@ -178,6 +195,8 @@ MigratingFacilitiesAlerts.propTypes = {
         p5: PropTypes.string,
         p6: PropTypes.string,
         p7: PropTypes.string,
+        p8: PropTypes.string,
+        p9: PropTypes.string,
       }),
     }),
   ).isRequired,

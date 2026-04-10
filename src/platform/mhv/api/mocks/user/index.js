@@ -515,6 +515,10 @@ const transitioningUser = {
               migrationDate: '2026-05-01',
               facilities: [
                 {
+                  facilityId: '757',
+                  facilityName: 'Test Cerner VA Medical Center',
+                },
+                {
                   facilityId: '528',
                   facilityName: 'Test VA Medical Center',
                 },
@@ -533,14 +537,16 @@ const transitioningUser = {
                 p5: 'May 1, 2026',
                 p6: 'May 3, 2026',
                 p7: 'May 8, 2026',
+                p8: 'May 30, 2026',
+                p9: 'June 14, 2026',
               },
             },
             {
               migrationDate: '2026-03-01',
               facilities: [
                 {
-                  id: '565',
-                  name: 'One More VA Medical Center',
+                  facilityId: '565',
+                  facilityName: 'One More VA Medical Center',
                 },
               ],
               phases: {
@@ -553,6 +559,8 @@ const transitioningUser = {
                 p5: 'March 1, 2026',
                 p6: 'March 3, 2026',
                 p7: 'March 8, 2026',
+                p8: 'March 30, 2026',
+                p9: 'April 14, 2026',
               },
             },
           ],

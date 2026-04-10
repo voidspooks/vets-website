@@ -85,7 +85,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                 ],
                 phases: {
@@ -98,6 +98,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
                   p6: 'May 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -105,8 +107,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '565',
-                    name: 'One More VA Medical Center',
+                    facilityId: '565',
+                    facilityName: 'One More VA Medical Center',
                   },
                 ],
                 phases: {
@@ -119,6 +121,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
@@ -131,6 +135,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
         initialState,
       });
       expect(screen.getByText(/April 1, 2026 at 12:00AM ET/i)).to.be.ok;
+      expect(screen.getByText(/June 14, 2026 at 12:00AM ET/i)).to.be.ok;
       expect(
         screen.getByText(/During this time, you can still call this facility/),
       ).to.be.ok;
@@ -162,7 +167,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                 ],
                 phases: {
@@ -175,6 +180,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
                   p6: 'May 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -182,8 +189,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityId: '983',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                 ],
                 phases: {
@@ -196,6 +203,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
@@ -216,6 +225,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
       ).to.be.ok;
       expect(screen.getByText(/Scheduling online is unavailable until/i)).to.be
         .ok;
+      expect(screen.getByText(/April 14, 2026 at 12:00AM ET/i)).to.be.ok;
       expect(screen.getByText(/You.ll need to call to schedule/)).to.be.ok;
       expect(
         screen.getByRole('link', {
@@ -250,11 +260,11 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                   {
                     facilityId: '984',
-                    name: 'Test VA Medical Center 2',
+                    facilityName: 'Test VA Medical Center 2',
                   },
                 ],
                 phases: {
@@ -267,6 +277,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
                   p6: 'May 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -274,8 +286,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '565',
-                    name: 'One More VA Medical Center',
+                    facilityId: '565',
+                    facilityName: 'One More VA Medical Center',
                   },
                 ],
                 phases: {
@@ -288,6 +300,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
@@ -302,6 +316,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
 
       // Assert
       expect(screen.getByText(/April 1, 2026 at 12:00AM ET/i)).to.be.ok;
+      expect(screen.getByText(/June 14, 2026 at 12:00AM ET/i)).to.be.ok;
       expect(
         screen.getByText(
           /During this time, you can still call these facilities/,
@@ -343,11 +358,11 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                   {
                     facilityId: '984',
-                    name: 'Test VA Medical Center 2',
+                    facilityName: 'Test VA Medical Center 2',
                   },
                 ],
                 phases: {
@@ -360,6 +375,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
                   p6: 'May 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -367,12 +384,12 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityId: '983',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                   {
                     facilityId: '984',
-                    name: 'Test VA Medical Center 2',
+                    facilityName: 'Test VA Medical Center 2',
                   },
                 ],
                 phases: {
@@ -382,9 +399,11 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p2: 'February 1, 2026 at 12:00AM ET',
                   p3: 'February 24, 2026 at 12:00AM ET',
                   p4: 'February 27, 2026 at 12:00AM ET',
-                  p5: 'March 1, 2026v',
+                  p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
@@ -407,6 +426,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
       ).to.be.ok;
       expect(screen.getByText(/Scheduling online is unavailable until/i)).to.be
         .ok;
+      expect(screen.getByText(/June 14, 2026 at 12:00AM ET/i)).to.be.ok;
       expect(screen.getByText(/Test VA Medical Center 1/)).to.be.ok;
       expect(screen.getByText(/Test VA Medical Center 2/)).to.be.ok;
       expect(
@@ -444,11 +464,11 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                   {
                     facilityId: '984',
-                    name: 'Test VA Medical Center 2',
+                    facilityName: 'Test VA Medical Center 2',
                   },
                 ],
                 phases: {
@@ -461,6 +481,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
                   p6: 'May 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -468,8 +490,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '983GC',
-                    name: 'Test VA Medical Center 1',
+                    facilityId: '983GC',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                 ],
                 phases: {
@@ -482,6 +504,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
@@ -497,6 +521,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
       // Assert
       // 1st alert
       expect(screen.getByText(/April 1, 2026 at 12:00AM ET/i)).to.be.ok;
+      expect(screen.getByText(/June 14, 2026 at 12:00AM ET/i)).to.be.ok;
       expect(
         screen.getByText(
           /During this time, you can still call these facilities to schedule your appointment/,
@@ -511,6 +536,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
       ).to.be.ok;
       expect(screen.getByText(/Scheduling online is unavailable until/i)).to.be
         .ok;
+      expect(screen.getByText(/April 14, 2026 at 12:00AM ET/i)).to.be.ok;
       expect(screen.getByText(/You.ll need to call to schedule/)).to.be.ok;
       expect(
         screen.queryByText(
@@ -541,7 +567,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   facilities: [
                     {
                       facilityId: '983',
-                      name: 'Test VA Medical Center 1',
+                      facilityName: 'Test VA Medical Center 1',
                     },
                   ],
                   phases: {
@@ -552,8 +578,10 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                     p3: 'April 24, 2026 at 12:00AM ET',
                     p4: 'April 27, 2026 at 12:00AM ET',
                     p5: 'May 1, 2026 at 12:00AM ET', // Migration start
-                    p6: 'May 3, 2026v',
+                    p6: 'May 3, 2026 at 12:00AM ET',
                     p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                    p8: 'May 30, 2026 at 12:00AM ET',
+                    p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                   },
                 },
                 {
@@ -561,8 +589,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                   facilities: [
                     {
-                      id: '565',
-                      name: 'One More VA Medical Center',
+                      facilityId: '565',
+                      facilityName: 'One More VA Medical Center',
                     },
                   ],
                   phases: {
@@ -575,6 +603,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                     p5: 'March 1, 2026 at 12:00AM ET',
                     p6: 'March 3, 2026 at 12:00AM ET',
                     p7: 'March 8, 2026 at 12:00AM ET',
+                    p8: 'March 30, 2026 at 12:00AM ET',
+                    p9: 'April 14, 2026 at 12:00AM ET',
                   },
                 },
               ],
@@ -597,6 +627,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
         ).to.be.ok;
         expect(screen.getByText(/Scheduling online is unavailable until/i)).to
           .be.ok;
+        expect(screen.getByText(/June 14, 2026 at 12:00AM ET/i)).to.be.ok;
         expect(screen.getByText(/You.ll need to call to schedule/)).to.be.ok;
         expect(
           screen.getByRole('link', {
@@ -633,11 +664,11 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   facilities: [
                     {
                       facilityId: '983',
-                      name: 'Test VA Medical Center 1',
+                      facilityName: 'Test VA Medical Center 1',
                     },
                     {
                       facilityId: '983GC',
-                      name: 'Test VA Medical Center 2',
+                      facilityName: 'Test VA Medical Center 2',
                     },
                   ],
                   phases: {
@@ -648,8 +679,10 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                     p3: 'April 24, 2026 at 12:00AM ET',
                     p4: 'April 27, 2026 at 12:00AM ET',
                     p5: 'May 1, 2026 at 12:00AM ET', // Migration start
-                    p6: 'May 3, 2026v',
+                    p6: 'May 3, 2026 at 12:00AM ET',
                     p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                    p8: 'May 30, 2026 at 12:00AM ET',
+                    p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                   },
                 },
                 {
@@ -657,8 +690,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                   facilities: [
                     {
-                      id: '565',
-                      name: 'One More VA Medical Center',
+                      facilityId: '565',
+                      facilityName: 'One More VA Medical Center',
                     },
                   ],
                   phases: {
@@ -671,6 +704,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                     p5: 'March 1, 2026 at 12:00AM ET',
                     p6: 'March 3, 2026 at 12:00AM ET',
                     p7: 'March 8, 2026 at 12:00AM ET',
+                    p8: 'March 30, 2026 at 12:00AM ET',
+                    p9: 'April 14, 2026 at 12:00AM ET',
                   },
                 },
               ],
@@ -693,6 +728,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
         ).to.be.ok;
         expect(screen.getByText(/Scheduling online is unavailable until/i)).to
           .be.ok;
+        expect(screen.getByText(/April 14, 2026 at 12:00AM ET/i)).to.be.ok;
         expect(screen.getByText(/You.ll need to call to schedule/)).to.be.ok;
         expect(
           screen.getByRole('link', {
@@ -729,7 +765,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983GC',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                 ],
                 phases: {
@@ -742,6 +778,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -749,8 +787,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '565',
-                    name: 'One More VA Medical Center',
+                    facilityId: '565',
+                    facilityName: 'One More VA Medical Center',
                   },
                 ],
                 phases: {
@@ -763,6 +801,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
@@ -805,7 +845,7 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 facilities: [
                   {
                     facilityId: '983GC',
-                    name: 'Test VA Medical Center 1',
+                    facilityName: 'Test VA Medical Center 1',
                   },
                 ],
                 phases: {
@@ -816,8 +856,10 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p3: 'April 24, 2026 at 12:00AM ET',
                   p4: 'April 27, 2026 at 12:00AM ET',
                   p5: 'May 1, 2026 at 12:00AM ET', // Migration start
-                  p6: 'May 3, 2026v',
+                  p6: 'May 3, 2026 at 12:00AM ET',
                   p7: 'May 8, 2026 at 12:00AM ET', // Migration end
+                  p8: 'May 30, 2026 at 12:00AM ET',
+                  p9: 'June 14, 2026 at 12:00AM ET', // Scheduling starts
                 },
               },
               {
@@ -825,8 +867,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                 migrationStatus: 'ACTIVE', // "NOT_STARTED" | "ACTIVE" | "COMPLETE"
                 facilities: [
                   {
-                    id: '565',
-                    name: 'One More VA Medical Center',
+                    facilityId: '565',
+                    facilityName: 'One More VA Medical Center',
                   },
                 ],
                 phases: {
@@ -839,6 +881,8 @@ describe('VAOS Page: UrgentCareInformationPage', () => {
                   p5: 'March 1, 2026 at 12:00AM ET',
                   p6: 'March 3, 2026 at 12:00AM ET',
                   p7: 'March 8, 2026 at 12:00AM ET',
+                  p8: 'March 30, 2026 at 12:00AM ET',
+                  p9: 'April 14, 2026 at 12:00AM ET',
                 },
               },
             ],
