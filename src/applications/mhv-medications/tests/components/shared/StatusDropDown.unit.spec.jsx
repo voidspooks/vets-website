@@ -296,11 +296,13 @@ describe('component that displays Status', () => {
         cmopDivisionPhone: '5551234567',
       };
 
-      const screen = renderWithPrescription(prescription);
+      const screen = renderWithPrescription(prescription, {
+        mhvMedicationsManagementImprovements: true,
+      });
       const message = screen.getByTestId('active-unfilled-oh');
 
       expect(message).to.exist;
-      expect(message.textContent).to.include('refill this prescription');
+      expect(message.textContent).to.include('filled this prescription yet');
     });
 
     it('shows "phone number listed below" text (no inline phone)', () => {
@@ -345,6 +347,8 @@ describe('component that displays Status', () => {
       const message = screen.getByTestId('active-unfilled-oh');
 
       expect(message.textContent).to.include('automated refill line');
+      // Note: StatusDropdown doesn't pass page prop, so "medication details page" text won't show
+      expect(message.textContent).to.not.include('medication details page');
       expect(message.textContent).to.include('prescription label');
     });
 

@@ -864,13 +864,21 @@ describe('Medications List Card Extra Details', () => {
         dispensedDate: null,
         rxRfRecords: [],
       };
-      const screen = setup(unfilledOH, {}, true, true, pageType.LIST);
+      const screen = setup(
+        unfilledOH,
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+        true,
+        true,
+        pageType.LIST,
+      );
       const message = await screen.findByTestId('active-unfilled-oh');
       expect(message).to.exist;
-      expect(message).to.contain.text(
-        'refill this prescription online right now',
-      );
-      expect(message).to.contain.text('To refill now');
+      expect(message).to.contain.text('filled this prescription yet');
+      expect(message).to.contain.text('If you need this medication now');
       expect(screen.queryByTestId('refill-request-button')).to.not.exist;
     });
 
@@ -974,18 +982,22 @@ describe('Medications List Card Extra Details', () => {
         pharmacyPhoneNumber: null,
         dialCmopDivisionPhone: null,
       };
-      const screen = setup(unfilledOH, {}, true, true, pageType.LIST);
+      const screen = setup(
+        unfilledOH,
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+        true,
+        true,
+        pageType.LIST,
+      );
       const message = await screen.findByTestId('active-unfilled-oh');
       expect(message).to.exist;
-      expect(message).to.contain.text('online right now');
-      expect(message).to.contain.text('To refill now');
+      expect(message).to.contain.text('If you need this medication now');
       expect(message).to.contain.text('automated refill line');
-      expect(message).to.contain.text('prescription label');
-      const link = screen.getByText('Find your VA facility');
-      expect(link).to.exist;
-      expect(link.getAttribute('href')).to.equal(
-        'https://www.va.gov/find-locations',
-      );
+      expect(message).to.contain.text('medication details page');
     });
 
     it('shows pharmacy phone when available', async () => {
@@ -1003,8 +1015,7 @@ describe('Medications List Card Extra Details', () => {
       const message = await screen.findByTestId('active-unfilled-oh');
       expect(message).to.exist;
       expect(message).to.contain.text('call your VA pharmacy');
-      // CallPharmacyPhone component renders va-telephone
-      expect(screen.getByText('at', { exact: false })).to.exist;
+      expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
     });
 
     it('shows facility finder link for V1 Active when phone is null', async () => {
@@ -1018,16 +1029,21 @@ describe('Medications List Card Extra Details', () => {
         cmopDivisionPhone: null,
         pharmacyPhoneNumber: null,
       };
-      const screen = setup(unfilledOH, {}, false, false, pageType.LIST);
+      const screen = setup(
+        unfilledOH,
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+        false,
+        false,
+        pageType.LIST,
+      );
       const message = await screen.findByTestId('active-unfilled-oh');
       expect(message).to.exist;
       expect(message).to.contain.text('automated refill line');
-      expect(message).to.contain.text('prescription label');
-      const link = screen.getByText('Find your VA facility');
-      expect(link).to.exist;
-      expect(link.getAttribute('href')).to.equal(
-        'https://www.va.gov/find-locations',
-      );
+      expect(message).to.contain.text('medication details page');
     });
   });
 });

@@ -122,22 +122,6 @@ describe('UnfilledOhMessage', () => {
       expect(message.textContent).to.include('automated refill line');
       expect(message.textContent).to.include('medication details page');
     });
-
-    it('shows facility finder link when phone is not available', () => {
-      const rx = { ...cleanPrescription, cmopDivisionPhone: null };
-      const screen = setup(rx, {}, pageType.LIST, true);
-      const link = screen.queryByText('Find your VA facility');
-      expect(link).to.exist;
-      expect(link.getAttribute('href')).to.equal(
-        'https://www.va.gov/find-locations',
-      );
-    });
-
-    it('does not show facility finder link when phone is available', () => {
-      const rx = { ...cleanPrescription, cmopDivisionPhone: '(509) 434-7000' };
-      const screen = setup(rx, {}, pageType.LIST, true);
-      expect(screen.queryByText('Find your VA facility')).to.not.exist;
-    });
   });
 
   describe('testId customization', () => {
@@ -151,24 +135,6 @@ describe('UnfilledOhMessage', () => {
         testId: 'custom-test-id',
       });
       expect(screen.getByTestId('custom-test-id')).to.exist;
-    });
-  });
-
-  describe('showLinks prop', () => {
-    it('shows facility finder link when showLinks is true and phone unavailable', async () => {
-      const rx = { ...cleanPrescription, cmopDivisionPhone: null };
-      const screen = setup(rx, {}, pageType.LIST, true, { showLinks: true });
-      const link = screen.queryByText('Find your VA facility');
-      expect(link).to.exist;
-      expect(link.getAttribute('href')).to.equal(
-        'https://www.va.gov/find-locations',
-      );
-    });
-
-    it('does not show facility finder link when showLinks is false', () => {
-      const rx = { ...cleanPrescription, cmopDivisionPhone: null };
-      const screen = setup(rx, {}, pageType.LIST, true, { showLinks: false });
-      expect(screen.queryByText('Find your VA facility')).to.not.exist;
     });
   });
 

@@ -17,7 +17,6 @@ import { pageType } from '../../util/dataDogConstants';
  */
 const UnfilledOhMessage = ({
   prescription,
-  showLinks = true,
   showPhoneInline = true,
   page,
   isMedicationsImprovementsEnabled = false,
@@ -41,7 +40,7 @@ const UnfilledOhMessage = ({
                 {messageContent.withPhoneInlinePrefix}{' '}
                 <CallPharmacyPhone
                   cmopDivisionPhone={pharmacyPhone}
-                  page={pageType.LIST}
+                  page={page}
                 />
               </>
             ) : (
@@ -52,14 +51,6 @@ const UnfilledOhMessage = ({
           <>{messageContent.withoutPhone}</>
         )}
       </p>
-      {showLinks &&
-        !pharmacyPhone && (
-          <p className="vads-u-margin-y--0">
-            <a href="https://www.va.gov/find-locations">
-              Find your VA facility
-            </a>
-          </p>
-        )}
     </div>
   );
 };
@@ -67,7 +58,6 @@ const UnfilledOhMessage = ({
 UnfilledOhMessage.propTypes = {
   prescription: PropTypes.object.isRequired,
   page: PropTypes.string,
-  showLinks: PropTypes.bool,
   showPhoneInline: PropTypes.bool,
   isMedicationsImprovementsEnabled: PropTypes.bool,
   testId: PropTypes.string,

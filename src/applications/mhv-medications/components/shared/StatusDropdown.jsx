@@ -55,7 +55,6 @@ const StatusDropdown = props => {
               return (
                 <UnfilledOhMessage
                   prescription={prescription}
-                  showLinks={false}
                   showPhoneInline={false}
                   isMedicationsImprovementsEnabled={
                     isMedicationsImprovementsEnabled

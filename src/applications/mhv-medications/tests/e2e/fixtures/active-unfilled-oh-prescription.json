@@ -21,7 +21,7 @@
       "isTrackable": false,
       "cmopNdcNumber": null,
       "inCernerTransition": false,
-      "notRefillableDisplayMessage": "You can't refill this prescription online right now. If you need a refill, call your VA pharmacy's automated refill line. The phone number is on your prescription label or in your medications details page.",
+      "notRefillableDisplayMessage": "We haven't filled this prescription yet. Details may change. If you need this medication now, call your VA pharmacy's automated refill line. The phone number is in your medication details page.",
       "sig": "TAKE ONE TABLET BY MOUTH ONCE DAILY",
       "cmopDivisionPhone": null,
       "userId": 12345678,
