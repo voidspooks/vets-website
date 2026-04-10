@@ -8,7 +8,6 @@ import { VA_FORM_IDS } from '@department-of-veterans-affairs/platform-forms/cons
 
 import { externalServices as services } from 'platform/monitoring/DowntimeNotification';
 import { yesNoUI } from 'platform/forms-system/src/js/web-component-patterns/yesNoPattern';
-
 import submitFormFor from './submitForm';
 
 import IntroductionPage from '../components/IntroductionPage';
@@ -230,7 +229,7 @@ const formConfig = {
   chapters: {
     veteranDetails: {
       title: ({ onReviewPage }) =>
-        `${onReviewPage ? 'Review ' : ''}Veteran Details`,
+        `${onReviewPage ? 'Review ' : ''}Veteran details`,
       pages: {
         veteranInformation: {
           title: 'Veteran information',
