@@ -62,13 +62,6 @@ const AppointmentCard = ({
         heading="What"
         textContent="VA Solid Start"
       />
-      <CardSection
-        data-testid="who-section"
-        heading="Who"
-        textContent={
-          appointmentData?.agentNickname || 'VA Solid Start representative'
-        }
-      />
       {appointmentData?.topics &&
         appointmentData?.topics.length > 0 && (
           <CardSection

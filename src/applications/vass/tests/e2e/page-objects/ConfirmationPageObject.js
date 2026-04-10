@@ -5,11 +5,10 @@ export class ConfirmationPageObject extends PageObject {
   /**
    * Assert the Confirmation page is displayed with all appointment card details
    * @param {Object} options - Options
-   * @param {string} options.agentName - Expected agent name (defaults to 'Agent Smith')
    * @param {string[]} options.topics - Expected topic names to verify
    * @returns {ConfirmationPageObject}
    */
-  assertConfirmationPage({ agentName = 'Agent Smith', topics = [] } = {}) {
+  assertConfirmationPage({ topics = [] } = {}) {
     // Assert the URL is correct
     this.assertUrl(URLS.CONFIRMATION);
 
@@ -50,9 +49,6 @@ export class ConfirmationPageObject extends PageObject {
     // What section
     this.assertElement('what-section', { containsText: 'VA Solid Start' });
 
-    // Who section with agent name
-    this.assertElement('who-section', { containsText: agentName });
-
     // Topics section (if topics provided)
     if (topics.length > 0) {
       this.assertElement('topics-section');
@@ -74,11 +70,10 @@ export class ConfirmationPageObject extends PageObject {
   /**
    * Assert the Confirmation page is displayed in details-only mode (no heading/message)
    * @param {Object} options - Options
-   * @param {string} options.agentName - Expected agent name
    * @param {string[]} options.topics - Expected topic names to verify
    * @returns {ConfirmationPageObject}
    */
-  assertDetailsOnlyPage({ agentName = 'Agent Smith', topics = [] } = {}) {
+  assertDetailsOnlyPage({ topics = [] } = {}) {
     // Assert the URL is correct
     this.assertUrl(URLS.CONFIRMATION);
 
@@ -112,9 +107,6 @@ export class ConfirmationPageObject extends PageObject {
 
     // What section
     this.assertElement('what-section', { containsText: 'VA Solid Start' });
-
-    // Who section with agent name
-    this.assertElement('who-section', { containsText: agentName });
 
     // Topics section (if topics provided)
     if (topics.length > 0) {

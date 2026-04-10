@@ -1133,9 +1133,7 @@ describe('VASS Error Paths', () => {
 
         CancelAppointmentPageObject.clickNoDontCancel();
 
-        ConfirmationPageObject.assertDetailsOnlyPage({
-          agentName: 'Agent Smith',
-        });
+        ConfirmationPageObject.assertDetailsOnlyPage();
         cy.injectAxeThenAxeCheck();
         saveScreenshot('vass_error_navigation_noCancelAppointment');
       });
@@ -1174,9 +1172,7 @@ describe('VASS Error Paths', () => {
 
         // No don't cancel -> Confirmation (details-only, schedule flow)
         CancelAppointmentPageObject.clickNoDontCancel();
-        ConfirmationPageObject.assertDetailsOnlyPage({
-          agentName: 'Agent Smith',
-        });
+        ConfirmationPageObject.assertDetailsOnlyPage();
 
         // Cancel again -> CancelAppointment (cancel flow)
         ConfirmationPageObject.clickCancelAppointment();
@@ -1224,18 +1220,14 @@ describe('VASS Error Paths', () => {
         CancelAppointmentPageObject.assertCancelAppointmentPage();
 
         CancelAppointmentPageObject.clickNoDontCancel();
-        ConfirmationPageObject.assertDetailsOnlyPage({
-          agentName: 'Agent Smith',
-        });
+        ConfirmationPageObject.assertDetailsOnlyPage();
 
         ConfirmationPageObject.clickCancelAppointment();
         CancelAppointmentPageObject.assertCancelAppointmentPage();
 
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
-        CancelConfirmationPageObject.assertCancelConfirmationPage({
-          agentName: 'Agent Smith',
-        });
+        CancelConfirmationPageObject.assertCancelConfirmationPage();
         cy.injectAxeThenAxeCheck();
       });
     });
@@ -1362,9 +1354,7 @@ describe('VASS Error Paths', () => {
 
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
-        CancelConfirmationPageObject.assertCancelConfirmationPage({
-          agentName: 'Agent Smith',
-        });
+        CancelConfirmationPageObject.assertCancelConfirmationPage();
         cy.injectAxeThenAxeCheck();
         saveScreenshot(
           'vass_error_navigation_alreadyScheduledThenCancelSuccess',

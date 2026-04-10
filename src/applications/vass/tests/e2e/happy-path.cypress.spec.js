@@ -90,7 +90,6 @@ describe('VASS Schedule Appointment', () => {
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
-        agentName: 'Agent Smith',
         topics: ['General VA benefits'],
       });
       cy.injectAxeThenAxeCheck();
@@ -190,7 +189,6 @@ describe('VASS Schedule Appointment', () => {
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
-        agentName: 'Agent Smith',
         topics: [topic],
       });
       ConfirmationPageObject.assertWhenSectionContainsDateTime(expectedDate);
@@ -249,7 +247,6 @@ describe('VASS Schedule Appointment', () => {
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
-        agentName: 'Agent Smith',
         topics: [secondTopic],
       });
       cy.injectAxeThenAxeCheck();
@@ -298,24 +295,19 @@ describe('VASS Schedule Appointment', () => {
       cy.wait('@vass:get:appointment-details');
 
       ConfirmationPageObject.assertConfirmationPage({
-        agentName: 'Agent Smith',
         topics: ['General VA benefits'],
       });
       cy.injectAxeThenAxeCheck();
       ConfirmationPageObject.clickCancelAppointment();
 
-      CancelAppointmentPageObject.assertCancelAppointmentPage({
-        agentName: 'Agent Smith',
-      });
+      CancelAppointmentPageObject.assertCancelAppointmentPage();
       cy.injectAxeThenAxeCheck();
       saveScreenshot('vass_cancel_cancelAppointmentPage');
 
       CancelAppointmentPageObject.clickYesCancelAppointment();
       cy.wait('@vass:post:cancel-appointment');
 
-      CancelConfirmationPageObject.assertCancelConfirmationPage({
-        agentName: 'Agent Smith',
-      });
+      CancelConfirmationPageObject.assertCancelConfirmationPage();
       cy.injectAxeThenAxeCheck();
       saveScreenshot('vass_cancel_cancelConfirmation');
     });
@@ -346,18 +338,14 @@ describe('VASS Schedule Appointment', () => {
 
       cy.wait('@vass:get:appointment-availability');
 
-      CancelAppointmentPageObject.assertCancelAppointmentPage({
-        agentName: 'Agent Smith',
-      });
+      CancelAppointmentPageObject.assertCancelAppointmentPage();
       cy.injectAxeThenAxeCheck();
       saveScreenshot('vass_cancel_cancelAppointmentPage_fromLink');
 
       CancelAppointmentPageObject.clickYesCancelAppointment();
       cy.wait('@vass:post:cancel-appointment');
 
-      CancelConfirmationPageObject.assertCancelConfirmationPage({
-        agentName: 'Agent Smith',
-      });
+      CancelConfirmationPageObject.assertCancelConfirmationPage();
       cy.injectAxeThenAxeCheck();
       saveScreenshot('vass_cancel_cancelConfirmation_fromLink');
     });
@@ -434,18 +422,14 @@ describe('VASS Schedule Appointment', () => {
         cy.injectAxeThenAxeCheck();
         AlreadyScheduledPageObject.clickCancelAppointment();
 
-        CancelAppointmentPageObject.assertCancelAppointmentPage({
-          agentName: 'Agent Smith',
-        });
+        CancelAppointmentPageObject.assertCancelAppointmentPage();
         cy.injectAxeThenAxeCheck();
         saveScreenshot('vass_alreadyScheduled_cancelAppointmentPage');
 
         CancelAppointmentPageObject.clickYesCancelAppointment();
         cy.wait('@vass:post:cancel-appointment');
 
-        CancelConfirmationPageObject.assertCancelConfirmationPage({
-          agentName: 'Agent Smith',
-        });
+        CancelConfirmationPageObject.assertCancelConfirmationPage();
         cy.injectAxeThenAxeCheck();
         saveScreenshot('vass_alreadyScheduled_cancelConfirmation');
       });

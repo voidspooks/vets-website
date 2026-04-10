@@ -5,10 +5,9 @@ export class CancelAppointmentPageObject extends PageObject {
   /**
    * Assert the Cancel Appointment page is displayed with all appointment card details
    * @param {Object} options - Options
-   * @param {string} options.agentName - Expected agent name (defaults to 'Agent Smith')
    * @returns {CancelAppointmentPageObject}
    */
-  assertCancelAppointmentPage({ agentName = 'Agent Smith' } = {}) {
+  assertCancelAppointmentPage() {
     // Assert the URL is correct
     this.assertUrl(URLS.CANCEL_APPOINTMENT);
 
@@ -37,11 +36,6 @@ export class CancelAppointmentPageObject extends PageObject {
     // What section
     this.assertElement('what-section', {
       containsText: 'VA Solid Start',
-    });
-
-    // Who section with agent name
-    this.assertElement('who-section', {
-      containsText: agentName,
     });
 
     // Cancel/print buttons should NOT be present on this page (different from Confirmation)

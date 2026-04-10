@@ -34,7 +34,6 @@ describe('VASS Component: AppointmentCard', () => {
     expect(getByTestId('how-to-join-section')).to.exist;
     expect(getByTestId('when-section')).to.exist;
     expect(getByTestId('what-section')).to.exist;
-    expect(getByTestId('who-section')).to.exist;
     expect(getByTestId('topics-section').textContent).to.contain(
       'Benefits, Health care',
     );
