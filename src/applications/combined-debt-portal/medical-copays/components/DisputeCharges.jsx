@@ -1,7 +1,11 @@
 import React from 'react';
 
 const DisputeCharges = () => (
-  <article className="vads-u-padding--0" data-testid="dispute-charges">
+  <article
+    className="vads-u-padding--0"
+    data-testid="dispute-charges"
+    role="none"
+  >
     <h2 id="dispute-charges">How to dispute your copay charges</h2>
     <p>
       You have the right to dispute all or part of your VA copay charges. You’ll

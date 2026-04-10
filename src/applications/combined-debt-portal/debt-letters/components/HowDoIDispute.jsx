@@ -22,7 +22,7 @@ const HowDoIDispute = () => {
         text="Dispute an overpayment online"
         type="secondary"
       />
-      <va-accordion open-single>
+      <va-accordion open-single section-heading="3">
         <va-accordion-item
           header="Other ways to dispute an overpayment"
           subheader="You can also dispute charges for an overpayment online through Ask
@@ -31,9 +31,9 @@ const HowDoIDispute = () => {
           class="vads-u-margin-top--2"
           bordered
         >
-          <h3 className="vads-u-margin-top--0">
+          <h4 className="vads-u-margin-top--0">
             Dispute online through Ask VA
-          </h3>
+          </h4>
           <p>Follow these steps to dispute overpayment debt through Ask VA:</p>
           <ol>
             <li>
@@ -59,7 +59,7 @@ const HowDoIDispute = () => {
             </li>
             <li>Upload your written statement and any supporting evidence</li>
           </ol>
-          <h3>Dispute by mail</h3>
+          <h4>Dispute by mail</h4>
           <p>Send your written statement to this address:</p>
           <p className="va-address-block vads-u-margin-left--4 vads-u-margin-bottom--0">
             U.S. Department of Veterans Affairs

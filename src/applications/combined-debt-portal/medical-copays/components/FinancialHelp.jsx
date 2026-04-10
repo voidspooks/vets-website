@@ -5,7 +5,11 @@ const EFT_ENROLLMENT_URL =
 
 export const FinancialHelp = () => {
   return (
-    <article className="vads-u-padding--0" data-testid="financial-help">
+    <article
+      className="vads-u-padding--0"
+      data-testid="financial-help"
+      role="none"
+    >
       <h2 id="how-to-get-financial-help">How to request financial help</h2>
       <h3>Request help for your current bills</h3>
       <p>You can request these relief options:</p>

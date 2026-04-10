@@ -237,26 +237,26 @@ const CombinedStatements = () => {
               className="vads-u-margin-top--0 vads-u-margin-bottom--1"
             >
               {getFormattedName()}
-              <br />
+              <br aria-hidden="true" />
               {veteranContactInformation.addressLine1}
               {veteranContactInformation.addressLine2 ? (
                 <>
-                  <br />
+                  <br aria-hidden="true" />
                   {veteranContactInformation.addressLine2}
                 </>
               ) : null}
               {veteranContactInformation.addressLine3 ? (
                 <>
-                  <br />
+                  <br aria-hidden="true" />
                   {veteranContactInformation.addressLine3}
                 </>
               ) : null}
-              <br />
+              <br aria-hidden="true" />
               {getFormattedCityStateZip()}
             </p>
             <p className="vads-u-margin-top--2  vads-u-margin-bottom--2">
               File number: {fileNumber}
-              <br />
+              <br aria-hidden="true" />
               Today’s date: {todaysDate}
             </p>
             {showOneVADebtLetterDownloadButton ? (

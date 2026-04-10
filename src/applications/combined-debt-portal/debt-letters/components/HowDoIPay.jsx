@@ -136,7 +136,7 @@ const HowDoIPay = ({ userData }) => {
         </va-accordion-item>
       </va-accordion>
 
-      <br />
+      <br aria-hidden="true" />
       <va-icon icon="navigate_next" class="icon-action" size="3" />
       <va-link
         aria-label="Opens pay.va.gov in a new tab"
@@ -168,13 +168,13 @@ const HowDoIPay = ({ userData }) => {
       <p>Mail to this address:</p>
       <p className="va-address-block">
         U.S. Department of Veterans Affairs
-        <br />
+        <br aria-hidden="true" />
         Debt Management Center
-        <br />
+        <br aria-hidden="true" />
         P.O. Box 11930
-        <br />
+        <br aria-hidden="true" />
         St. Paul, MN 55111
-        <br />
+        <br aria-hidden="true" />
         USA
       </p>
     </section>

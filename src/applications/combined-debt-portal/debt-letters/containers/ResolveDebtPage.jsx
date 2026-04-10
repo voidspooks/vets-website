@@ -42,7 +42,7 @@ const ResolveDebtPage = ({ match }) => {
   }, []);
 
   return (
-    <article>
+    <article role="none">
       <VaBreadcrumbs
         breadcrumbList={[
           { href: '/', label: 'VA.gov Home' },

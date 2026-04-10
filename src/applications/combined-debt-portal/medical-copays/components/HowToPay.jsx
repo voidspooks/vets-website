@@ -31,7 +31,7 @@ export const HowToPay = ({
   const accountParts = splitAccountNumber(acctNum);
 
   return (
-    <article className="vads-u-padding--0" data-testid="how-to-pay">
+    <article className="vads-u-padding--0" data-testid="how-to-pay" role="none">
       <h2 id="how-to-pay">How to make a payment</h2>
       <h3>Pay online</h3>
       <p>
@@ -115,11 +115,11 @@ export const HowToPay = ({
       </p>
       <p className="va-address-block">
         Department of Veterans Affairs
-        <br />
+        <br aria-hidden="true" />
         PO Box 3978
-        <br />
+        <br aria-hidden="true" />
         Portland, OR 97208-3978
-        <br />
+        <br aria-hidden="true" />
       </p>
       <p>
         <strong>Note: </strong> You’ll find these stubs at the bottom of each
