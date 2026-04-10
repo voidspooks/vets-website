@@ -1,0 +1,53 @@
+{
+  "title": "VA.gov Form Patterns Catalog",
+  "description": "Catalog of page-level form patterns for VA.gov applications. Auto-generated from YAML frontmatter in each pattern README.md.",
+  "maturityScale": "https://design.va.gov/about/maturity-scale",
+  "totalPatterns": 3,
+  "patterns": [
+    {
+      "slug": "array-builder",
+      "name": "Array Builder",
+      "importPath": "platform/forms-system/src/js/patterns/array-builder",
+      "codePaths": [
+        "src/platform/forms-system/src/js/patterns/array-builder/",
+        "src/platform/forms-system/src/js/patterns/array-builder/README.md"
+      ],
+      "maturityCategory": "use",
+      "maturityLevel": "best_practice",
+      "guidanceHref": "https://design.va.gov/patterns/ask-users-for/multiple-responses",
+      "figmaHref": "https://www.figma.com/file/4A3O3mVx4xDAKfHE7fPF1U/VADS-Templates%2C-Patterns%2C-and-Forms?type=design&node-id=5751%3A10777&mode=design&t=FYk7L3PJ9a16WGP9-1",
+      "stagingHref": "https://staging.va.gov/mock-form-patterns-v3/treatment-records",
+      "mockFormPath": "src/applications/simple-forms/mock-simple-forms-patterns-v3"
+    },
+    {
+      "slug": "minimal-header",
+      "name": "Minimal header",
+      "importPath": "platform/forms-system/src/js/patterns/minimal-header",
+      "codePaths": [
+        "src/platform/forms-system/src/js/patterns/minimal-header/",
+        "src/platform/forms-system/src/js/patterns/minimal-header/README.md"
+      ],
+      "guidanceHref": "https://design.va.gov/templates/forms/form-step-minimal",
+      "figmaHref": "https://www.figma.com/design/WzqnYSC2B42aFaSCu7L3Dk/Minimal-Form-Flow-Template?node-id=2-13012&p=f&t=fZNwev1s278eOOft-0",
+      "stagingHref": "https://staging.va.gov/mock-form-minimal-header"
+    },
+    {
+      "slug": "prefill",
+      "name": "Prefill",
+      "importPath": "platform/forms-system/src/js/patterns/prefill",
+      "codePaths": [
+        "src/platform/forms-system/src/js/patterns/prefill/",
+        "src/platform/forms-system/src/js/patterns/prefill/README.md"
+      ],
+      "maturityCategory": "caution",
+      "maturityLevel": "available",
+      "guidanceHref": [
+        "https://design.va.gov/patterns/help-users-to/know-when-their-information-is-prefilled",
+        "https://design.va.gov/patterns/help-users-to/update-prefilled-information"
+      ],
+      "figmaHref": "https://www.figma.com/design/4A3O3mVx4xDAKfHE7fPF1U/VADS-Templates--Patterns--and-Forms?node-id=2988-29744&p=f&t=0EIrWzRybF3KIHYq-0",
+      "stagingHref": "https://staging.va.gov/mock-form-prefill/introduction",
+      "mockFormPath": "src/applications/simple-forms/mock-form-prefill"
+    }
+  ]
+}

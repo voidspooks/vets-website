@@ -129,6 +129,9 @@ export const relationshipToVeteranSchema = {
   required: ['relationshipToVeteran'],
 };
 
+/**
+ * Schema for relationshipToVeteranSpouseOrChildUI
+ */
 export const relationshipToVeteranSpouseOrChildSchema = {
   type: 'object',
   properties: {

@@ -1,3 +1,16 @@
+---
+slug: prefill
+name: Prefill
+maturityCategory: caution
+maturityLevel: available
+guidanceHref:
+  - https://design.va.gov/patterns/help-users-to/know-when-their-information-is-prefilled
+  - https://design.va.gov/patterns/help-users-to/update-prefilled-information
+figmaHref: https://www.figma.com/design/4A3O3mVx4xDAKfHE7fPF1U/VADS-Templates--Patterns--and-Forms?node-id=2988-29744&p=f&t=0EIrWzRybF3KIHYq-0
+stagingHref: https://staging.va.gov/mock-form-prefill/introduction
+mockFormPath: src/applications/simple-forms/mock-form-prefill
+---
+
 # Prefill Pattern
 
 ## Overview

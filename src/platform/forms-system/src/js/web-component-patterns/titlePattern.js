@@ -220,7 +220,8 @@ export const descriptionUI = (text, uiOptions = {}) => {
  * ```
  * @param {string | JSX.Element} [title] 'ui:title'
  * @param {string | JSX.Element} [description] 'ui:description'
- *
+ * @maturityCategory caution
+ * @maturityLevel available
  * @returns {UISchemaOptions}
  */
 export const inlineTitleUI = (title, description) => {
@@ -242,5 +243,14 @@ export const titleSchema = {
   properties: {},
 };
 
+/**
+ * Schema for inlineTitleUI
+ * @maturityCategory caution
+ * @maturityLevel available
+ */
 export const inlineTitleSchema = titleSchema;
+
+/**
+ * Schema for descriptionUI
+ */
 export const descriptionSchema = titleSchema;

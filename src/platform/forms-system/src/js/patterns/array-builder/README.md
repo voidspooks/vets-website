@@ -1,3 +1,14 @@
+---
+slug: array-builder
+name: Array Builder
+maturityCategory: use
+maturityLevel: best_practice
+guidanceHref: https://design.va.gov/patterns/ask-users-for/multiple-responses
+figmaHref: https://www.figma.com/file/4A3O3mVx4xDAKfHE7fPF1U/VADS-Templates%2C-Patterns%2C-and-Forms?type=design&node-id=5751%3A10777&mode=design&t=FYk7L3PJ9a16WGP9-1
+stagingHref: https://staging.va.gov/mock-form-patterns-v3/treatment-records
+mockFormPath: src/applications/simple-forms/mock-simple-forms-patterns-v3
+---
+
 # Array Builder Pattern (Multiple responses list & loop)
 
 Array builder pattern features an intro page (for required flow), a yes/no question if they have items to add, a loop of page(s) to fill out data for an item, and cards displayed for each item to review/edit/remove items. The user can add items until `maxItems` is reached.

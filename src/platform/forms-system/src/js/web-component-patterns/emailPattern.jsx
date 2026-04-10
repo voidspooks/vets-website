@@ -117,7 +117,7 @@ const emailSchema = {
 
 /**
  * schema for emailToSendNotificationsUI
- * */
+ */
 const emailToSendNotificationsSchema = emailSchema;
 
 export {

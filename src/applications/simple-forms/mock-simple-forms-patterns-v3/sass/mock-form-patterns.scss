@@ -13,3 +13,11 @@
 .form-progress-buttons {
   margin-top: 2.5rem !important;
 }
+
+// Override two-thirds width constraint on intro page only
+.row:has(.schemaform-intro) {
+  .usa-width-two-thirds {
+    width: 100%;
+    max-width: 100%;
+  }
+}

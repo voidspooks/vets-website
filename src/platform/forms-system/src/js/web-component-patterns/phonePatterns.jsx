@@ -64,6 +64,8 @@ const phoneUI = options => {
  *   title?: UISchemaOptions['ui:title'],
  *   hint?: string,
  * }} [options] accepts a single string for title, or an object of options
+ * @maturityCategory don't use
+ * @maturityLevel deprecated
  * @returns {UISchemaOptions}
  */
 const internationalPhoneDeprecatedUI = options => {
@@ -92,9 +94,15 @@ const phoneSchema = {
   pattern: '^\\d{3}-?\\d{3}-?\\d{4}$',
 };
 
-// The regex pattern allows starting with a plus sign
-// It allows up to 15 digits (max digits in an international phone number)
-// It allows optional dashes in between
+/**
+ * Schema for internationalPhoneDeprecatedUI
+ *
+ * The regex pattern allows starting with a plus sign.
+ * It allows up to 15 digits (max digits in an international phone number).
+ * It allows optional dashes in between.
+ * @maturityCategory don't use
+ * @maturityLevel deprecated
+ */
 const internationalPhoneDeprecatedSchema = {
   type: 'string',
   pattern: '^\\+?[0-9](?:-?[0-9]){0,14}$',

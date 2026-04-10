@@ -1,3 +1,11 @@
+---
+slug: minimal-header
+name: Minimal header
+guidanceHref: https://design.va.gov/templates/forms/form-step-minimal
+figmaHref: https://www.figma.com/design/WzqnYSC2B42aFaSCu7L3Dk/Minimal-Form-Flow-Template?node-id=2-13012&p=f&t=fZNwev1s278eOOft-0
+stagingHref: https://staging.va.gov/mock-form-minimal-header
+---
+
 # Minimal header (minimal form flow) pattern
 
 - [Minimal header (minimal form flow) pattern](#minimal-header-minimal-form-flow-pattern)

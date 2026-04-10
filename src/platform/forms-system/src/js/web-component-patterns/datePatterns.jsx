@@ -374,6 +374,9 @@ const monthYearDateSchema = {
   pattern: '^(\\d{4}|XXXX)-(0[1-9]|1[0-2]|XX)$',
 };
 
+/**
+ * Schema for currentOrPastMonthYearDateUI
+ */
 const currentOrPastMonthYearDateSchema = monthYearDateSchema;
 
 /**

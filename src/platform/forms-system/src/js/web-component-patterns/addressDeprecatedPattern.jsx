@@ -228,6 +228,8 @@ export const updateFormDataDeprecatedAddress = (
  * @param {Array<AddressSchemaKey>} [options.omit] - If not omitting country but omitting street, city, or postalCode
  * you will need to include in your `submitTransformer` the `allowPartialAddress` option
  * @param {boolean | Record<AddressSchemaKey, (formData:any) => boolean>} [options.required]
+ * @maturityCategory don't use
+ * @maturityLevel deprecated
  * @returns {UISchemaOptions}
  */
 export function addressDeprecatedUI(options) {
@@ -653,6 +655,8 @@ export const addressDeprecatedSchema = options => {
  * @param {Array<AddressSchemaKey>} [options.omit] - If not omitting country but omitting street, city, or postalCode
  * you will need to include in your `submitTransformer` the `allowPartialAddress` option
  * @param {boolean | Record<AddressSchemaKey, (formData:any) => boolean>} [options.required]
+ * @maturityCategory don't use
+ * @maturityLevel deprecated
  * @returns {UISchemaOptions}
  */
 export const addressNoMilitaryDeprecatedUI = options =>
@@ -670,6 +674,8 @@ export const addressNoMilitaryDeprecatedUI = options =>
  *   simpleAddress: addressNoMilitarySchema({ omit: ['street2', 'street3'] })
  * }
  * ```
+ * @maturityCategory don't use
+ * @maturityLevel deprecated
  */
 export const addressNoMilitaryDeprecatedSchema = options =>
   addressDeprecatedSchema({

@@ -29,7 +29,9 @@
       "uiSchemaDescription": "Web component v3 uiSchema for address",
       "schema": "addressDeprecatedSchema",
       "schemaType": "function",
-      "schemaDescription": "Web component schema for address"
+      "schemaDescription": "Web component schema for address",
+      "maturityCategory": "don't use",
+      "maturityLevel": "deprecated"
     },
     {
       "category": "AddressDeprecated",
@@ -38,7 +40,9 @@
       "uiSchemaDescription": "Web component v3 uiSchema for address",
       "schema": "addressNoMilitaryDeprecatedSchema",
       "schemaType": "function",
-      "schemaDescription": "Web component schema for address"
+      "schemaDescription": "Web component schema for address",
+      "maturityCategory": "don't use",
+      "maturityLevel": "deprecated"
     },
     {
       "category": "Arn",
@@ -101,7 +105,7 @@
       "uiSchemaDescription": null,
       "schema": "checkboxRequiredSchema",
       "schemaType": "object",
-      "schemaDescription": null
+      "schemaDescription": "Schema for required checkbox (must be checked)"
     },
     {
       "category": "Checkbox",
@@ -182,7 +186,7 @@
       "uiSchemaDescription": "uiSchema for a current or past month and year",
       "schema": "currentOrPastMonthYearDateSchema",
       "schemaType": "object",
-      "schemaDescription": null
+      "schemaDescription": "Schema for currentOrPastMonthYearDateUI"
     },
     {
       "category": "Date",
@@ -308,7 +312,9 @@
       "uiSchemaDescription": "Web component v3 uiSchema for international phone number",
       "schema": "internationalPhoneDeprecatedSchema",
       "schemaType": "object",
-      "schemaDescription": "It allows optional dashes in between"
+      "schemaDescription": "Schema for internationalPhoneDeprecatedUI",
+      "maturityCategory": "don't use",
+      "maturityLevel": "deprecated"
     },
     {
       "category": "Phone",
@@ -344,7 +350,7 @@
       "uiSchemaDescription": "uiSchema for relationship to veteran, specifically for spouse or child",
       "schema": "relationshipToVeteranSpouseOrChildSchema",
       "schemaType": "object",
-      "schemaDescription": null
+      "schemaDescription": "Schema for relationshipToVeteranSpouseOrChildUI"
     },
     {
       "category": "RelationshipToVeteran",
@@ -452,7 +458,7 @@
       "uiSchemaDescription": "uiSchema for a description. Prefer to use second argument of titleUI instead.",
       "schema": "descriptionSchema",
       "schemaType": "object",
-      "schemaDescription": null
+      "schemaDescription": "Schema for descriptionUI"
     },
     {
       "category": "Title",
@@ -461,7 +467,9 @@
       "uiSchemaDescription": "uiSchema for an inline title for (in the middle of) a form page. Try not to use this.",
       "schema": "inlineTitleSchema",
       "schemaType": "object",
-      "schemaDescription": null
+      "schemaDescription": "Schema for inlineTitleUI",
+      "maturityCategory": "caution",
+      "maturityLevel": "available"
     },
     {
       "category": "Title",

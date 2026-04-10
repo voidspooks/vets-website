@@ -4,6 +4,9 @@ export const checkboxSchema = {
   type: 'boolean',
 };
 
+/**
+ * Schema for required checkbox (must be checked)
+ */
 export const checkboxRequiredSchema = {
   type: 'boolean',
   enum: [true],
