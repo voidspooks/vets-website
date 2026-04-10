@@ -5,7 +5,12 @@ import { getFormNumber } from '../helpers';
 
 const SupportingEvidenceViewField = props => {
   const { formData } = props;
-  const { supportingDocuments, uploadBdd, uploadedFile } = formData;
+  const {
+    supportingDocuments,
+    uploadBdd,
+    uploadedFile,
+    selectBddClaim,
+  } = formData;
 
   return (
     <div className="form-review-panel-page form-review-panel-page-representative-form-upload">
@@ -25,13 +30,13 @@ const SupportingEvidenceViewField = props => {
         </dl>
       </div>
 
-      {uploadBdd && (
+      {selectBddClaim?.BDD && (
         <div className="form-review-panel-page-header-row vads-u-justify-content--space-between">
           <h4 className="vads-u-font-size--h5 vads-u-margin-top--3 vads-u-margin-bottom--1">
             Upload Separation Health Assessment - Part A
           </h4>
           <dl className="review vads-u-margin-top--2 vads-u-width--full">
-            {uploadedFile && (
+            {uploadBdd?.name && (
               <div className="review-row vads-u-display--flex vads-u-justify-content--space-between vads-u-padding-y--1 vads-u-width--full">
                 <dt className="vads-u-font-weight--normal">
                   Separation Health Assessment - Part A Self Assessment
