@@ -375,6 +375,30 @@ describe('RecipientsSelect', () => {
               healthCareSystemName: 'VA Facility 552',
               stationNumber: '552',
             },
+            {
+              triageTeamId: 6,
+              name: 'Dermatology Team',
+              healthCareSystemName: 'VA Facility 402',
+              stationNumber: '402',
+            },
+            {
+              triageTeamId: 7,
+              name: 'Endocrinology Team',
+              healthCareSystemName: 'VA Facility 552',
+              stationNumber: '552',
+            },
+            {
+              triageTeamId: 8,
+              name: 'Neurology Team',
+              healthCareSystemName: 'VA Facility 402',
+              stationNumber: '402',
+            },
+            {
+              triageTeamId: 9,
+              name: 'Pulmonology Team',
+              healthCareSystemName: 'VA Facility 552',
+              stationNumber: '552',
+            },
           ],
         },
       },
@@ -392,7 +416,8 @@ describe('RecipientsSelect', () => {
       const optgroups = comboBox.querySelectorAll('optgroup');
       expect(optgroups.length).to.equal(3);
       expect(optgroups[0].getAttribute('label')).to.equal('Recent care teams');
-      expect(optgroups[0].querySelectorAll('option').length).to.equal(2);
+      // 6 recent care teams should render in the optgroup
+      expect(optgroups[0].querySelectorAll('option').length).to.equal(6);
       expect(optgroups[0].querySelectorAll('option')[0].textContent).to.equal(
         'Recipient 2',
       );

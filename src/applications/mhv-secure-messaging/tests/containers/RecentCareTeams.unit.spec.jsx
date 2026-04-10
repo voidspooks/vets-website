@@ -35,6 +35,24 @@ describe('RecentCareTeams component', () => {
       healthCareSystemName: 'VA Hospital',
       stationNumber: '648',
     },
+    {
+      triageTeamId: 4,
+      name: 'Dermatology Team',
+      healthCareSystemName: 'VA Medical Center',
+      stationNumber: '442',
+    },
+    {
+      triageTeamId: 5,
+      name: 'Endocrinology Team',
+      healthCareSystemName: 'VA Clinic',
+      stationNumber: '442',
+    },
+    {
+      triageTeamId: 6,
+      name: 'Neurology Team',
+      healthCareSystemName: 'VA Hospital',
+      stationNumber: '648',
+    },
   ];
 
   const mockAllRecipients = [
@@ -113,12 +131,17 @@ describe('RecentCareTeams component', () => {
 
       // Check for va-radio-option elements with label attributes
       const radioOptions = document.querySelectorAll('va-radio-option');
+      // 6 recent recipients + 1 "A different care team" option = 7 total
+      expect(radioOptions).to.have.lengthOf(7);
       const labels = Array.from(radioOptions).map(option =>
         option.getAttribute('label'),
       );
       expect(labels).to.include('Primary Care Team');
       expect(labels).to.include('Mental Health Team');
       expect(labels).to.include('Cardiology Team');
+      expect(labels).to.include('Dermatology Team');
+      expect(labels).to.include('Endocrinology Team');
+      expect(labels).to.include('Neurology Team');
       expect(labels).to.include('A different care team');
 
       // Check for continue button

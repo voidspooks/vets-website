@@ -113,7 +113,7 @@ export const recipientsReducer = (state = initialState, action) => {
           triageTeamId: id,
           ...allowedMap.get(id),
         }))
-        .slice(0, 4);
+        .slice(0, 6);
       return {
         ...state,
         recentRecipients: filteredRecent || null,

@@ -7,7 +7,7 @@ import { Actions } from '../../util/actionTypes';
 // Minimal smoke tests to ensure reducer tolerates new actions
 
 describe('reducers: recipients recent actions', () => {
-  const mockStore = (initialState = {}) =>
+  const mockStore = initialState =>
     createStore(recipientsReducer, initialState, applyMiddleware(thunk));
 
   it('ignores GET_RECENT by default (no state changes unless handled)', () => {
@@ -27,5 +27,49 @@ describe('reducers: recipients recent actions', () => {
     store.dispatch({ type: Actions.AllRecipients.GET_RECENT_ERROR });
     const state = store.getState();
     expect(state).to.be.an('object');
+  });
+
+  it('truncates recentRecipients to 6 when more than 6 allowed IDs are dispatched', () => {
+    const allowedRecipients = Array.from({ length: 8 }, (_, i) => ({
+      triageTeamId: i + 1,
+      name: `Team ${i + 1}`,
+      stationNumber: '442',
+    }));
+
+    const store = mockStore({ allowedRecipients });
+
+    store.dispatch({
+      type: Actions.AllRecipients.GET_RECENT,
+      response: [1, 2, 3, 4, 5, 6, 7, 8],
+    });
+
+    const { recentRecipients } = store.getState();
+    expect(recentRecipients).to.have.lengthOf(6);
+    expect(recentRecipients.map(r => r.triageTeamId)).to.deep.equal([
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+    ]);
+  });
+
+  it('returns all recentRecipients when fewer than 6 allowed IDs are dispatched', () => {
+    const allowedRecipients = Array.from({ length: 4 }, (_, i) => ({
+      triageTeamId: i + 1,
+      name: `Team ${i + 1}`,
+      stationNumber: '442',
+    }));
+
+    const store = mockStore({ allowedRecipients });
+
+    store.dispatch({
+      type: Actions.AllRecipients.GET_RECENT,
+      response: [1, 2, 3, 4],
+    });
+
+    const { recentRecipients } = store.getState();
+    expect(recentRecipients).to.have.lengthOf(4);
   });
 });
