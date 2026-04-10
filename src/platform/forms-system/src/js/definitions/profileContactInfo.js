@@ -1,3 +1,11 @@
+// Deprecated
+//
+// Use these instead:
+// import {
+//   profilePersonalInfoPage,
+//   profileContactInfoPages,
+// } from 'platform/forms-system/src/js/patterns/prefill';
+
 import { focusElement } from 'platform/utilities/ui/focus';
 import { scrollTo } from 'platform/utilities/scroll';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
@@ -20,12 +28,6 @@ import {
   getReturnState,
   clearReturnState,
 } from '../utilities/data/profile';
-
-// New patterns - use these instead of profileContactInfo():
-// import {
-//   profilePersonalInfoPage,
-//   profileContactInfoPages,
-// } from 'platform/forms-system/src/js/patterns/prefill';
 
 /**
  * Profile settings

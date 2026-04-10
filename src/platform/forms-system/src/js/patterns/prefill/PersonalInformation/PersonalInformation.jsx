@@ -1,3 +1,10 @@
+// Likely you don't want to import this file directly.
+// Instead prefer:
+//   import {
+//     profilePersonalInfoPage,
+//     profileContactInfoPages,
+//   } from 'platform/forms-system/src/js/patterns/prefill';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';

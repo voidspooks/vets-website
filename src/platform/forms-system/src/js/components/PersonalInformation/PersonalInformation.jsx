@@ -1,3 +1,11 @@
+// Deprecated
+//
+// Use these instead:
+// import {
+//   profilePersonalInfoPage,
+//   profileContactInfoPages,
+// } from 'platform/forms-system/src/js/patterns/prefill';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';

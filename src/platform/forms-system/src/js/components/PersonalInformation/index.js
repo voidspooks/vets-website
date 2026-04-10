@@ -1,4 +1,6 @@
-// New patterns - use these instead of personalInformationPage():
+// Deprecated
+//
+// Use these instead:
 // import {
 //   profilePersonalInfoPage,
 //   profileContactInfoPages,

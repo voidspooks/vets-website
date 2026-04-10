@@ -1,4 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
+// Likely you don't want to import this file directly.
+// Instead prefer:
+//   import {
+//     profilePersonalInfoPage,
+//     profileContactInfoPages,
+//   } from 'platform/forms-system/src/js/patterns/prefill';
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
