@@ -48,7 +48,7 @@ describe('Previous marriages page', () => {
 
     expect(errors.addError.calledOnce).to.be.true;
     expect(errors.addError.firstCall.args[0]).to.equal(
-      'Select previous marriage options or select We were never married before, but not both.',
+      'Select a previous marriage option or “We were never married before”, but not both.',
     );
   });
 

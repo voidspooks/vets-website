@@ -15,12 +15,12 @@ export const validations = {
   previousMarriageSelections: (errors, values) => {
     if (values?.neither && (values?.claimant || values?.veteran)) {
       errors.addError(
-        'Select previous marriage options or select We were never married before, but not both.',
+        'Select a previous marriage option or “We were never married before”, but not both.',
       );
     }
     if (!values?.neither && !values?.claimant && !values?.veteran) {
       errors.addError(
-        'Select at least one previous marriage option or select We were never married before.',
+        'Select at least one previous marriage option or select “We were never married before”.',
       );
     }
   },
