@@ -9,6 +9,7 @@ import { setData } from 'platform/forms-system/src/js/actions';
 import { scrollTo } from 'platform/utilities/scroll';
 import {
   VaAlert,
+  VaLink,
   VaRadio,
   VaRadioOption,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
@@ -108,23 +109,19 @@ const ConfirmationQuestion = ({
         <p>
           Let’s get you to the right place! Visit our forms page to find the
           right one for your needs. Remember, you can always get help from a{' '}
-          <a
+          <VaLink
+            external
             href="/disability/get-help-filing-claim/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Veteran Service Organization
-          </a>
+            text="Veteran Service Organization"
+          />
           .
         </p>
         <p>
-          <a
+          <VaLink
+            external
             href="https://www.va.gov/find-forms/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Find a VA Form
-          </a>
+            text="Find a VA Form"
+          />
         </p>
       </VaAlert>
     );
@@ -138,13 +135,11 @@ const ConfirmationQuestion = ({
           to complete the Form 21-526EZ if you haven’t done so already.
         </p>
         <p>
-          <a
+          <VaLink
+            external
             href="/disability/file-disability-claim-form-21-526ez/introduction"
-            target="_blank"
-            rel="noreferrer"
-          >
-            VA Form 21-526EZ
-          </a>
+            text="VA Form 21-526EZ"
+          />
         </p>
       </VaAlert>
     );

@@ -37,12 +37,14 @@ export default {
             <ul>
               <li>
                 <va-link
+                  external
                   href="/supporting-forms-for-claims/release-information-to-va-form-21-4142/introduction"
                   text="VA Form 21-4142 - Authorization to Disclose Information to the Department of Veterans Affairs"
                 />
               </li>
               <li>
                 <va-link
+                  external
                   href="/find-forms/about-form-21-4142a/"
                   text="VA Form 21-4142a - General Release for Medical Provider Information to the Department of Veterans Affairs"
                 />
