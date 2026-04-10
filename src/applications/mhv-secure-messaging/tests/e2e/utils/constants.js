@@ -501,7 +501,7 @@ export const Data = {
     SAVE_DRAFT_WO_ATTCH: `Save draft without attachments`,
   },
   LINKS: {
-    PROFILE_SIGNATURE: `/profile/message-signature`,
+    PROFILE_SIGNATURE: `/profile/health-care-settings/messages-signature`,
     HOME: '/my-health/secure-messages/',
     CONTACT_LIST: '/my-health/secure-messages/contact-list/',
     RECENT_CARE_TEAMS: '/my-health/secure-messages/new-message/recent/',

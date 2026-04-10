@@ -12,7 +12,7 @@ const EditSignatureLink = () => {
     return (
       <div className="vads-u-margin-top--2">
         <VaLink
-          href="/profile/message-signature"
+          href="/profile/health-care-settings/messages-signature"
           data-dd-action-name="Edit Signature"
           data-testid="edit-signature-link"
           text="Edit signature for all messages"

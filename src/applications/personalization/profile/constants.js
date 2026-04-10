@@ -82,7 +82,7 @@ export const PROFILE_OLD_PATHS = Object.freeze({
   SERVICE_HISTORY_INFORMATION: '/profile/military-information',
   DIRECT_DEPOSIT: '/profile/direct-deposit',
   HEALTH_CARE_CONTACTS: '/profile/contacts',
-  MESSAGES_SIGNATURE: '/profile/message-signature',
+  MESSAGES_SIGNATURE: '/profile/health-care-settings/messages-signature',
   ACCREDITED_REPRESENTATIVE: '/profile/accredited-representative',
   VETERAN_STATUS_CARD: '/profile/veteran-status-card',
   CONNECTED_APPLICATIONS: '/profile/connected-applications',
