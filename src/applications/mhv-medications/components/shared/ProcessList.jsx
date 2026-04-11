@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { dateFormat } from '../../util/helpers';
+import { dateFormat, isOracleHealthPrescription } from '../../util/helpers';
 import {
   DATETIME_FORMATS,
   trackingConfig,
@@ -52,6 +52,24 @@ const ProcessList = ({ stepGuideProps }) => {
   };
   const isCriteriaMetToDisplayProcessList = () => {
     const hasTrackingList = Boolean(trackingList);
+
+    // When prescriptions are migrated from VistA to Oracle Health (OH),
+    // the initial fill will never have tracking info. Hide the process
+    // list for these migrated prescriptions so we don't show a misleading
+    // refill-status widget with no actionable tracking data.
+    // Condition: not a static processSteps guide (i.e. only on the
+    // details page), OH source, Active status, exactly one completed
+    // dispense record, and no tracking information.
+    const isOhMigratedWithNoTracking =
+      !processSteps &&
+      isOracleHealthPrescription(prescription) &&
+      dispStatus === DISPENSE_STATUS.ACTIVE &&
+      Array.isArray(prescription?.rxRfRecords) &&
+      prescription.rxRfRecords.length === 1 &&
+      prescription.rxRfRecords[0]?.status?.toLowerCase() === 'completed' &&
+      (!trackingList || trackingList.length === 0);
+
+    if (isOhMigratedWithNoTracking) return false;
 
     return (
       processSteps ||

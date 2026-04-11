@@ -176,4 +176,76 @@ describe('ProcessList Component', () => {
     });
     expect(headerElement).to.exist;
   });
+
+  it('does not render when OH prescription is Active with a single completed dispense and no tracking', () => {
+    const options = {
+      prescription: {
+        prescriptionName: 'testRx',
+        sourceEhr: 'OH',
+        refillDate: '2025-02-24T03:39:11Z',
+        refillSubmitDate: '2025-02-24T03:39:11Z',
+        dispStatus: 'Active',
+        trackingList: [],
+        rxRfRecords: [
+          { status: 'completed', dispensedDate: null, whenHandedOver: null },
+        ],
+      },
+      showTrackingAlert: false,
+      pharmacyPhone: '123-456-7890',
+      isRefillRunningLate: false,
+    };
+
+    const screen = renderProcessList(stepGuideProps(options));
+    expect(screen.queryByTestId('progress-list-header')).to.not.exist;
+  });
+
+  it('renders when OH prescription is Active with a single completed dispense and tracking info', () => {
+    const shippedToday = new Date();
+    const options = {
+      prescription: {
+        prescriptionName: 'testRx',
+        sourceEhr: 'OH',
+        refillDate: '2025-02-24T03:39:11Z',
+        refillSubmitDate: '2025-02-24T03:39:11Z',
+        dispStatus: 'Active',
+        trackingList: [
+          {
+            trackingNumber: '1234567890',
+            carrier: 'UPS',
+            completeDateTime: shippedToday,
+          },
+        ],
+        rxRfRecords: [
+          { status: 'completed', dispensedDate: null, whenHandedOver: null },
+        ],
+      },
+      showTrackingAlert: true,
+      pharmacyPhone: '123-456-7890',
+      isRefillRunningLate: false,
+    };
+
+    const screen = renderProcessList(stepGuideProps(options));
+    expect(screen.getByTestId('progress-step-one')).to.exist;
+  });
+
+  it('renders for non-OH prescription that is Active with a single completed dispense and no tracking', () => {
+    const options = {
+      prescription: {
+        prescriptionName: 'testRx',
+        refillDate: '2025-02-24T03:39:11Z',
+        refillSubmitDate: '2025-02-24T03:39:11Z',
+        dispStatus: 'Active',
+        trackingList: [],
+        rxRfRecords: [
+          { status: 'completed', dispensedDate: null, whenHandedOver: null },
+        ],
+      },
+      showTrackingAlert: false,
+      pharmacyPhone: '123-456-7890',
+      isRefillRunningLate: false,
+    };
+
+    const screen = renderProcessList(stepGuideProps(options));
+    expect(screen.getByTestId('active-step-two')).to.exist;
+  });
 });
