@@ -141,6 +141,7 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 - Loading: `retrieveMessageThread(messageId)` → decode HTML entities, set `cannotReply`, determine `replyToName`
 - Reply drafts: Multiple per thread, each with unique `messageId`; use `createReplyDraft()`/`updateReplyDraft()`
 - Key metadata: `messageId`, `threadId`, `folderId`, `sentDate`/`draftDate`, `body` (must decode), `hasAttachments`, `readReceipt`
+- **Triage group identification**: **CRITICAL** — to get the care team associated with a message, always use `message.triageGroup` (contains `triageTeamId`, `name`, `stationNumber`, etc.), NOT `message.recipientId`. On incoming messages, `recipientId` is the patient's ID, not the care team. `recipientId` is only reliable for outgoing (sent) messages.
 
 ### EHR Crosswalk / Care Team Name Changes
 
@@ -156,6 +157,7 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 - **Recency filtering**: `CareTeamNameChangeAlert` filters crosswalk entries against raw Sent folder recipient IDs (bypasses `allowedRecipients` filter since VISTA IDs are removed post-migration), preserving recency order
 - **Dismiss persistence**: Uses tooltip API with local component state (NOT Redux tooltip slice) to avoid conflicts with `DismissibleAlert` on the same page — see "Tooltip Single-Instance Limitation" in redux instructions
 - **Alert suppression**: `CareTeamNameChangeAlert` hides when active error/warning alerts are present (`hasActiveErrorOrWarning` check)
+- **Crosswalk matching**: Use `message.triageGroup.triageTeamId` for lookups, check both `vistaTriageGroupId` and `ohTriageGroupId` since post-migration messages may reference either ID.
 - **Error behavior**: Reducer clears `changes` to `[]` on fetch error (prevents stale mappings)
 
 ### Search Functionality
@@ -261,6 +263,7 @@ import { dateFormat, decodeHtmlEntities, sortRecipients } from '../util/helpers'
 - ❌ Access Redux state without `state.sm.` prefix
 - ❌ Use `onChange` on VA web components — use proper custom events
 - ❌ Allow replies without checking 45-day rule
+- ❌ Use `message.recipientId` to identify the care team — use `message.triageGroup.triageTeamId` instead (`recipientId` is the patient on incoming messages)
 - ❌ Skip error handling in async actions
 - ❌ Forget `setThreadRefetchRequired(true)` after state-changing operations
 - ❌ Build one-off dismissible alerts — use `DismissibleAlert` shared component with tooltip API

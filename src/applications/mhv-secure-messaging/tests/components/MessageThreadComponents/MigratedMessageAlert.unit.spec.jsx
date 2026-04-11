@@ -17,6 +17,11 @@ describe('MigratedMessageAlert', () => {
     subject: 'Test Subject',
     sentDate: new Date().toISOString(),
     recipientId: 7107671,
+    triageGroup: {
+      triageTeamId: 7107671,
+      name: 'Test Team',
+      stationNumber: '442',
+    },
     isOhMessage: false,
   };
 
@@ -112,7 +117,7 @@ describe('MigratedMessageAlert', () => {
       const migratedMessage = {
         ...defaultMessage,
         migratedToOracleHealth: true,
-        triageGroup: { stationNumber: '442' },
+        triageGroup: { triageTeamId: 7107671, stationNumber: '442' },
         ohMigrationPhase: 'p6',
       };
       const state = {
@@ -140,7 +145,7 @@ describe('MigratedMessageAlert', () => {
       const nonMigratedMessage = {
         ...defaultMessage,
         migratedToOracleHealth: false,
-        triageGroup: { stationNumber: '442' },
+        triageGroup: { triageTeamId: 7107671, stationNumber: '442' },
         ohMigrationPhase: 'p6',
       };
       const state = {
@@ -166,14 +171,14 @@ describe('MigratedMessageAlert', () => {
       const message1 = {
         ...defaultMessage,
         migratedToOracleHealth: true,
-        triageGroup: { stationNumber: '983' },
+        triageGroup: { triageTeamId: 7107671, stationNumber: '983' },
         ohMigrationPhase: 'p5',
       };
       const message2 = {
         ...defaultMessage,
         messageId: 99999,
         migratedToOracleHealth: false,
-        triageGroup: { stationNumber: '984' },
+        triageGroup: { triageTeamId: 9999999, stationNumber: '984' },
         ohMigrationPhase: 'p3',
       };
       const state = {

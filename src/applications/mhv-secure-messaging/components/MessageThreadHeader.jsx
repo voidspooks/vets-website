@@ -151,7 +151,8 @@ const MessageThreadHeader = props => {
                 cannotReply &&
                 replyDisabled &&
                 !showBlockedTriageGroupAlert &&
-                !isInMigrationPhase
+                !isInMigrationPhase &&
+                !messagePostMigration
               }
               isOhMessage={isOhMessage}
             />
@@ -161,7 +162,8 @@ const MessageThreadHeader = props => {
                 isStale &&
                 !replyDisabled &&
                 !showBlockedTriageGroupAlert &&
-                !isInMigrationPhase
+                !isInMigrationPhase &&
+                !messagePostMigration
               }
               isOhMessage={isOhMessage}
             />
@@ -172,7 +174,8 @@ const MessageThreadHeader = props => {
               cannotReply &&
               isStale &&
               !showBlockedTriageGroupAlert &&
-              !isInMigrationPhase
+              !isInMigrationPhase &&
+              !messagePostMigration
             }
             isOhMessage={isOhMessage}
           />

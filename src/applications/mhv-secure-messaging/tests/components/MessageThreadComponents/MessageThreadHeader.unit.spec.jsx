@@ -497,4 +497,51 @@ describe('MessageThreadHeader component', () => {
       expect(screen.queryByTestId('reply-button-body')).to.not.exist;
     });
   });
+
+  describe('StaleMessageAlert and CannotReplyAlert hidden when message is migrated', () => {
+    it('hides StaleMessageAlert when message has migratedToOracleHealth', () => {
+      const migratedMessage = {
+        ...defaultMessage,
+        migratedToOracleHealth: true,
+      };
+      const state = {
+        ...defaultState,
+        sm: {
+          ...defaultState.sm,
+          threadDetails: {
+            ...defaultState.sm.threadDetails,
+            messages: [migratedMessage],
+            isStale: true,
+          },
+        },
+      };
+      const props = { ...defaultProps, cannotReply: true };
+      const screen = setup(state, props);
+      expect(screen.queryByTestId('expired-alert-message')).to.not.exist;
+    });
+
+    it('hides CannotReplyAlert when message has migratedToOracleHealth and useCanReplyField is on', () => {
+      const migratedMessage = {
+        ...defaultMessage,
+        migratedToOracleHealth: true,
+      };
+      const state = {
+        ...defaultState,
+        sm: {
+          ...defaultState.sm,
+          threadDetails: {
+            ...defaultState.sm.threadDetails,
+            messages: [migratedMessage],
+            replyDisabled: true,
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingCanReplyField]: true,
+        },
+      };
+      const props = { ...defaultProps, cannotReply: true };
+      const screen = setup(state, props);
+      expect(screen.queryByTestId('cannot-reply-alert-message')).to.not.exist;
+    });
+  });
 });

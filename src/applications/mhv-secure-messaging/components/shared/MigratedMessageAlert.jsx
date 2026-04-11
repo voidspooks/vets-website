@@ -29,7 +29,7 @@ const MigratedMessageAlert = () => {
       if (!userMessagePostMigration || crosswalkChanges.length === 0) {
         return null;
       }
-      const recipientId = messages?.[0]?.recipientId;
+      const recipientId = messages?.[0]?.triageGroup?.triageTeamId;
       return crosswalkChanges.find(
         change => change.vistaTriageGroupId === recipientId,
       );
