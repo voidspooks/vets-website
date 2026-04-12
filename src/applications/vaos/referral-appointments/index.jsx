@@ -72,7 +72,7 @@ export default function ReferralAppointments() {
         <ChooseDateAndTime currentReferral={referral} />
       </Route>
       <Route path={`${basePath.url}/provider-selection`} search={id}>
-        <ProviderSelection />
+        <ProviderSelection currentReferral={referral} />
       </Route>
       <Route path={`${basePath.url}`} search={id}>
         <ScheduleReferral currentReferral={referral} />

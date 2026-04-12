@@ -213,6 +213,71 @@ export function mockAppointmentDetailsApi({
 }
 
 /**
+ * Function to mock the 'GET' referral providers endpoint.
+ *
+ * @example GET '/vaos/v2/referrals/:referralId/providers'
+ *
+ * @export
+ * @param {Object} arguments - Function arguments.
+ * @param {string} [arguments.referralId] - The id of the referral to mock providers for.
+ * @param {Object} [arguments.response] - The response to return from the mock api call.
+ * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
+ */
+export function mockReferralProvidersApi({
+  referralId = '*',
+  response: data,
+  responseCode = 200,
+} = {}) {
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: `/vaos/v2/referrals/${referralId}/providers`,
+    },
+    req => {
+      req.reply({
+        statusCode: responseCode,
+        body: data,
+      });
+    },
+  ).as('v2:get:referral:providers');
+}
+
+/**
+ * Function to mock the 'GET' referral providers endpoint with paginated responses.
+ * Returns different responses based on the page query parameter.
+ *
+ * @example GET '/vaos/v2/referrals/:referralId/providers?page=1&perPage=5'
+ *
+ * @export
+ * @param {Object} arguments - Function arguments.
+ * @param {string} [arguments.referralId] - The id of the referral to mock providers for.
+ * @param {Object} [arguments.responses] - Map of page number to response object.
+ * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
+ */
+export function mockReferralProvidersApiPaginated({
+  referralId = '*',
+  responses = {},
+  responseCode = 200,
+} = {}) {
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: `/vaos/v2/referrals/${referralId}/providers`,
+    },
+    req => {
+      const url = new URL(req.url, 'http://localhost');
+      const page = url.searchParams.get('page') || '1';
+      const body = responses[page] || responses['1'];
+
+      req.reply({
+        statusCode: responseCode,
+        body,
+      });
+    },
+  ).as('v2:get:referral:providers');
+}
+
+/**
  * Selector for the main scrollable container element.
  * Used to manipulate scroll behavior for full-page screenshots.
  */

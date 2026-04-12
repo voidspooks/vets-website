@@ -6,9 +6,10 @@ import { startReferralTimer } from './utils/timer';
  * @export
  * @param {string} referralId - The referral unique identifier
  * @param {string} appointmentId - The appointment unique identifier
+ * @param {string} providerId = The provider for appointment slots
  * @returns {object} Referral appointment workflow object
  */
-export function getPageFlow(referralId, appointmentId) {
+export function getPageFlow(referralId, appointmentId, providerId = null) {
   return {
     error: {
       url: '/',
@@ -41,7 +42,7 @@ export function getPageFlow(referralId, appointmentId) {
       previous: 'scheduleReferral',
     },
     scheduleAppointment: {
-      url: `/schedule-referral/date-time?id=${referralId}`,
+      url: `/schedule-referral/date-time?id=${referralId}&providerId=${providerId}`,
       label: 'Schedule an appointment with your provider',
       next: 'reviewAndConfirm',
       previous: 'providerSelection',
@@ -74,8 +75,9 @@ export function routeToPageInFlow(
   action,
   referralId,
   appointmentId,
+  providerId,
 ) {
-  const pageFlow = getPageFlow(referralId, appointmentId);
+  const pageFlow = getPageFlow(referralId, appointmentId, providerId);
   // if there is no current page meaning there was an error fetching referral data
   // then we are on an error state in the form and back should go back to appointments.
   const nextPageString = current
@@ -115,8 +117,16 @@ export function routeToNextReferralPage(
   current,
   referralId = null,
   appointmentId = null,
+  providerId = null,
 ) {
-  return routeToPageInFlow(history, current, 'next', referralId, appointmentId);
+  return routeToPageInFlow(
+    history,
+    current,
+    'next',
+    referralId,
+    appointmentId,
+    providerId,
+  );
 }
 
 export function routeToCCPage(history, page, referralId = null) {

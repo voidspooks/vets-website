@@ -98,6 +98,38 @@ export const vaosApi = createApi({
         }
       },
     }),
+    getReferralProviders: builder.query({
+      async queryFn({ referralId, page = 1, perPage = 5 }) {
+        try {
+          const response = await apiRequestWithUrl(
+            `/vaos/v2/referrals/${referralId}/providers?page=${page}&perPage=${perPage}`,
+          );
+          return {
+            data: {
+              providers: response.data,
+              totalEntries: response.meta?.pagination?.totalEntries || 0,
+            },
+          };
+        } catch (error) {
+          captureError(error, false, 'fetch referral providers');
+          return {
+            error: { status: error.status || 500, message: error.message },
+          };
+        }
+      },
+      serializeQueryArgs({ queryArgs }) {
+        return queryArgs.referralId;
+      },
+      merge(currentCache, newResponse) {
+        currentCache.providers.push(...newResponse.providers);
+        // Immer-backed merge — mutation is intentional
+        // eslint-disable-next-line no-param-reassign
+        currentCache.totalEntries = newResponse.totalEntries;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg?.page !== previousArg?.page;
+      },
+    }),
     postReferralAppointment: builder.mutation({
       async queryFn(bookingPayload) {
         try {
@@ -124,6 +156,7 @@ export const {
   useGetPatientReferralsQuery,
   useGetAppointmentInfoQuery,
   usePollAppointmentInfoQuery,
+  useGetReferralProvidersQuery,
   usePostReferralAppointmentMutation,
   useGetProviderSlotsQuery,
 } = vaosApi;

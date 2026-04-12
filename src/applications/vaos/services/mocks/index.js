@@ -186,6 +186,7 @@ const MockReferralDetailResponse = require('../../tests/fixtures/MockReferralDet
 const MockReferralDraftAppointmentResponse = require('../../tests/fixtures/MockReferralDraftAppointmentResponse');
 const MockReferralAppointmentDetailsResponse = require('../../tests/fixtures/MockReferralAppointmentDetailsResponse');
 const MockUnifiedBookingResponse = require('../../tests/fixtures/MockUnifiedBookingResponse');
+const MockReferralProvidersResponse = require('../../tests/fixtures/MockReferralProvidersResponse');
 
 // Returns the meta object without any backend service errors
 const meta = require('./v2/meta.json');
@@ -667,6 +668,19 @@ const responses = {
       }),
     );
   },
+  'GET /vaos/v2/referrals/:referralId/providers': (req, res) => {
+    const page = parseInt(req.query.page || '1', 10);
+    const perPage = parseInt(req.query.perPage || '5', 10);
+    const totalEntries = 8;
+
+    return res.json(
+      MockReferralProvidersResponse.createSuccessResponse({
+        page,
+        perPage,
+        totalEntries,
+      }),
+    );
+  },
   'GET /vaos/v2/provider-slots': (req, res) => {
     const referralId = req.query.referral_id;
     if (!referralId) {
@@ -680,6 +694,15 @@ const responses = {
           },
         ],
       });
+    }
+    // empty referral number throws error
+    if (referralId === '') {
+      return res.status(500).json(
+        new MockReferralDraftAppointmentResponse({
+          referralNumber: referralId,
+          serverError: true,
+        }),
+      );
     }
     if (referralId === 'draft-no-slots-error') {
       return res.json(

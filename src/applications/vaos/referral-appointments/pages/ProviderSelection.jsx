@@ -1,42 +1,93 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import ReferralLayout from '../components/ReferralLayout';
 import ProviderSelectionCard from '../components/ProviderSelectionCard';
-import { mockProviderDetails } from '../utils/mocks';
 import FindCCFacilityLink from '../components/FindCCFacilityLink';
+import { useGetReferralProvidersQuery } from '../../redux/api/vaosApi';
+import { setFormCurrentPage } from '../redux/actions';
 
-export default function ProviderSelection() {
-  const providers = Array(5).fill(mockProviderDetails);
-  const moreProviders = 5;
-  const facilityDetails = {
-    name: 'Portland VA Medical Center',
-    phone: '###-###-####',
-    tty: '###',
-  };
+const PER_PAGE = 5;
+
+export default function ProviderSelection({ currentReferral }) {
+  const { attributes: referralAttributes } = currentReferral;
+  const referralId = referralAttributes.uuid;
+  const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
+
+  const {
+    data: providersData,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetReferralProvidersQuery({ referralId, page, perPage: PER_PAGE });
+
+  useEffect(
+    () => {
+      dispatch(setFormCurrentPage('providerSelection'));
+    },
+    [dispatch],
+  );
+
+  const providers =
+    providersData?.providers?.map(p => ({
+      ...p.attributes,
+      id: p.id,
+    })) || [];
+
+  const totalEntries = providersData?.totalEntries || 0;
+  const remainingCount = totalEntries - providers.length;
+
+  const facilityDetails = referralAttributes.referringFacility || {};
+
+  if (isLoading) {
+    return (
+      <ReferralLayout
+        loadingMessage="Loading available providers..."
+        hasEyebrow
+        heading="Which provider do you want to schedule with?"
+      />
+    );
+  }
+
   return (
     <ReferralLayout
       hasEyebrow
-      heading="Which provider or clinic do you want to schedule with?"
+      apiFailure={isError}
+      heading="Which provider do you want to schedule with?"
     >
       <div>
         <p>
-          You can schedule into VA or CC care within 25 miles of your home
-          address.
+          You can schedule an appointment at VA or community care locations
+          within 25 miles of your home address.
+        </p>
+        <p>
+          <strong>Note:</strong> You can request travel pay for appointments at
+          any of these locations. But we'll only pay you back for travel up to
+          the distance to your nearest VA health facility.
         </p>
         <ul className="usa-unstyled-list vaos-appts__list">
           {providers.map((provider, index) => (
             <ProviderSelectionCard
-              key={index}
+              key={provider.id}
               provider={provider}
               index={index}
+              referralId={referralId}
             />
           ))}
         </ul>
-        {moreProviders > 0 && (
+        {remainingCount > 0 && (
           <va-button
             class="vads-u-margin-top--4"
             data-testid="show-more-providers-button"
             secondary
-            text={`Show ${moreProviders} more providers`}
+            text={
+              isFetching
+                ? 'Loading...'
+                : `Show ${remainingCount} more providers`
+            }
+            disabled={isFetching}
+            onClick={() => setPage(prev => prev + 1)}
           />
         )}
         <div
@@ -48,7 +99,8 @@ export default function ProviderSelection() {
           </h3>
           <p className="vads-u-margin--0">
             For appointments at a VA health facility, call us at{' '}
-            {facilityDetails.phone} (TTY: {facilityDetails.tty}
+            {facilityDetails.phone || '###-###-####'} (TTY:{' '}
+            {facilityDetails.tty || '711'}
             ).
           </p>
           <p className="vads-u-margin--0">
@@ -64,3 +116,7 @@ export default function ProviderSelection() {
     </ReferralLayout>
   );
 }
+
+ProviderSelection.propTypes = {
+  currentReferral: PropTypes.object.isRequired,
+};
