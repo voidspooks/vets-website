@@ -39,10 +39,18 @@ describe('SeparationHealthAssessment', () => {
     const question = container.querySelector('va-radio');
     expect(question).to.have.attribute(
       'label',
-      'Do you want to upload your Separation Health Assessment Part A?',
+      'Do you want to upload your Separation Health Assessment with this claim submission?',
     );
-    expect(container.querySelector('va-radio-option[label="Yes"]')).to.exist;
-    expect(container.querySelector('va-radio-option[label="No"]')).to.exist;
+    expect(
+      container.querySelector(
+        'va-radio-option[label="Yes, I\'ll submit it now"]',
+      ),
+    ).to.exist;
+    expect(
+      container.querySelector(
+        'va-radio-option[label="No, I\'ll submit it later"]',
+      ),
+    ).to.exist;
   });
 
   it('should set form data when selecting Yes', async () => {

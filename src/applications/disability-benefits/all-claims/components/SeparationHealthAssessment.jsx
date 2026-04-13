@@ -181,7 +181,7 @@ export const SeparationHealthAssessment = ({
       )}
       <form onSubmit={handlers.onSubmit}>
         <VaRadio
-          label="Do you want to upload your Separation Health Assessment Part A?"
+          label="Do you want to upload your Separation Health Assessment with this claim submission?"
           required
           uswds="true"
           class="rjsf-web-component-field hydrated"
@@ -190,13 +190,13 @@ export const SeparationHealthAssessment = ({
           error={hasError}
         >
           <va-radio-option
-            label="Yes"
+            label="Yes, I'll submit it now"
             name="separation-health-assessment"
             checked={hasSeparationHealthAssessment === true}
             value="true"
           />
           <va-radio-option
-            label="No"
+            label="No, I'll submit it later"
             name="separation-health-assessment"
             checked={hasSeparationHealthAssessment === false}
             value="false"

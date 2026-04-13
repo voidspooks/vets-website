@@ -622,7 +622,7 @@ const formConfig = {
         },
         separationHealthAssessment: {
           title:
-            'Separation Health Asessment that supports your disability claim',
+            'Separation Health Assessment that supports your disability claim',
           path: 'supporting-evidence/separation-health-assessment',
           depends: isBddShaWorkflowActive,
           CustomPage: SeparationHealthAssessment,
