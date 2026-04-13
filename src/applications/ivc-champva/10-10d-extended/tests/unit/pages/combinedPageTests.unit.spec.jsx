@@ -17,9 +17,9 @@ testNumberOfWebComponentFields(
   formConfig,
   signerPages.certifierRelationship.schema,
   signerPages.certifierRelationship.uiSchema,
-  6,
+  5,
   'Certifier Information - Relationship',
-  { certifierRelationship: { relationshipToVeteran: { other: true } } },
+  {},
 );
 
 testNumberOfWebComponentFields(

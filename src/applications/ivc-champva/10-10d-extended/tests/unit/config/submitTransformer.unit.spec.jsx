@@ -64,11 +64,9 @@ describe('10-10d-extended transform for submit', () => {
         data: {
           certifierRole: 'other',
           certifierRelationship: {
-            relationshipToVeteran: {
-              spouse: true,
-              parent: true,
-              thirdParty: false,
-            },
+            spouse: true,
+            parent: true,
+            thirdParty: false,
           },
         },
       }),
@@ -551,9 +549,7 @@ describe('10-10d-extended transform for submit', () => {
         postalCode,
         country: 'USA',
       },
-      relationship: relationship
-        ? { relationshipToVeteran: { [relationship]: true } }
-        : undefined,
+      relationship: relationship ? { [relationship]: true } : undefined,
     });
 
     const buildFormData = ({ certifierRole, sponsor, certifier }) => ({

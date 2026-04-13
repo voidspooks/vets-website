@@ -15,9 +15,7 @@
     "certifierPhone": "1231231234",
     "certifierEmail": "certifier@email.gov",
     "certifierRelationship": {
-      "relationshipToVeteran": {
-        "spouse": true
-      }
+      "spouse": true
     },
     "sponsorName": {
       "first": "Joe",

@@ -8,7 +8,7 @@ import ConfirmationPage from '../containers/ConfirmationPage';
 import SubmissionError from '../../shared/components/SubmissionError';
 import FormFooter from '../components/FormFooter';
 import content from '../locales/en/content.json';
-
+import migrations from './migrations';
 import transformForSubmit from './submitTransformer';
 import { medicarePages } from '../chapters/medicare';
 import { signerPages } from '../chapters/signer';
@@ -83,7 +83,8 @@ const formConfig = {
       saved: 'Your CHAMPVA benefits application has been saved.',
     },
   },
-  version: 0,
+  migrations,
+  version: migrations.length,
   prefillEnabled: false,
   savedFormMessages: {
     notFound:

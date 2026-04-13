@@ -28,8 +28,7 @@ const getRoleValue = (data = {}, role, suffix) => {
 const getTrueKeys = (obj = {}) =>
   Object.keys(obj).filter(key => obj[key] === true);
 
-const getRelationship = relationship =>
-  getTrueKeys(relationship?.relationshipToVeteran).join('; ');
+const getRelationship = relationship => getTrueKeys(relationship).join('; ');
 
 /**
  * Formats a date string from YYYY-MM-DD to MM-DD-YYYY
