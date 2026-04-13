@@ -24,7 +24,9 @@ describe('DIC Benefits Page', () => {
     const vaAccordionItems = $$('va-accordion-item', formDOM);
     const vaLinks = $$('va-link', formDOM);
 
-    expect(form.getByRole('heading')).to.have.text('DIC benefits');
+    expect(form.getByRole('heading', { level: 3 })).to.have.text(
+      'DIC benefits',
+    );
     expect(vaRadio.getAttribute('label')).to.equal(
       'What DIC benefit are you claiming?',
     );

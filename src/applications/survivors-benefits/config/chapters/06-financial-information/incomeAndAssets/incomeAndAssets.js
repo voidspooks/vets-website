@@ -6,6 +6,9 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 
+const h5Style =
+  'vads-u-margin-y--1 vads-u-font-family--sans vads-u-font-size--md';
+
 const Description = () => {
   const DEFAULT_ASSET_LIMIT = '25';
   const VERSION_2025_ASSET_LIMIT = '75';
@@ -45,9 +48,9 @@ const WhatWeConsiderAsset = () => (
           <li>Antique furniture</li>
           <li>Boats</li>
         </ul>
-        <p className="vads-u-font-weight--bold">
+        <h5 className={h5Style}>
           We don’t include items like these in your assets:
-        </p>
+        </h5>
         <ul>
           <li>
             Your primary residence (the home where you live most or all of your
@@ -64,7 +67,7 @@ const WhatWeConsiderAsset = () => (
 
     <va-accordion-item level={4} header="Who we consider a dependent">
       <div>
-        <p className="vads-u-font-weight--bold">A dependent is:</p>
+        <h5 className={h5Style}>A dependent is:</h5>
         <ul>
           <li>
             A spouse (<strong>Note:</strong> We recognize same-sex and common
@@ -75,10 +78,10 @@ const WhatWeConsiderAsset = () => (
             meets 1 of the eligibility requirements listed here
           </li>
         </ul>
-        <p className="vads-u-font-weight--bold">
+        <h5 className={h5Style}>
           To be considered a dependent, one of these must be true of an
           unmarried child:
-        </p>
+        </h5>
         <ul>
           <li>
             They’re under 18 years old, <strong>or</strong>
@@ -94,17 +97,13 @@ const WhatWeConsiderAsset = () => (
 
     <va-accordion-item level={4} header="Whose assets you need to report">
       <div>
-        <p className="vads-u-font-weight--bold">
-          If you’re a surviving spouse claimant:
-        </p>
+        <h5 className={h5Style}>If you’re a surviving spouse claimant:</h5>
         <p>
           You must report income and assets for yourself and for any child of
           the veteran who lives with you or for whom you are responsible, unless
           a court has decided you do not have custody of the child.
         </p>
-        <p className="vads-u-font-weight--bold">
-          If you’re a surviving child claimant:
-        </p>
+        <h5 className={h5Style}>If you’re a surviving child claimant:</h5>
         <p>
           This means that the child isn’t in the custody of a surviving spouse.
           You must report income and assets for yourself, your custodian, and

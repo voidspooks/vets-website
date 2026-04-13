@@ -1,6 +1,9 @@
 import React from 'react';
 import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
 
+const h6BoldStyle =
+  'vads-u-margin-y--2 vads-u-font-size--md vads-u-font-family--sans vads-u-font-weight--bold';
+
 const Intro = () => (
   <div>
     <p>
@@ -117,11 +120,10 @@ const Documents = () => (
           If any of these circumstances apply to you, you’ll need to submit the
           documents listed:
         </p>
-
-        <p className="vads-u-font-weight--bold">
+        <h6 className={h6BoldStyle}>
           Claim for Special Monthly Pension (SMP) - Aid and Attendance or
           Housebound Status
-        </p>
+        </h6>
         <p>
           Examination for Housebound Status or Permanent Need for Regular Aid
           and Attendance (VA Form 21-2680)
@@ -133,9 +135,9 @@ const Documents = () => (
             text="Get VA Form 21-2680 to download"
           />
         </span>
-        <p className="vads-u-font-weight--bold">
+        <h6 className={h6BoldStyle}>
           Claim for Medicare Nursing Home and/or $90.00 Rate Reduction Request
-        </p>
+        </h6>
         <p>
           Request for Nursing Home Information in Connection with Claim for Aid
           and Attendance (VA Form 21-0779)
@@ -147,9 +149,7 @@ const Documents = () => (
             text="Get VA Form 21-0779 to download"
           />
         </span>
-        <p className="vads-u-font-weight--bold">
-          Claim for Fiduciary Assistance
-        </p>
+        <h6 className={h6BoldStyle}>Claim for Fiduciary Assistance</h6>
         <p>
           Examination for Housebound Status or Permanent Need for Regular Aid
           and Attendance (VA Form 21-2680)
@@ -161,7 +161,7 @@ const Documents = () => (
             text="Get VA Form 21-2680 to download"
           />
         </span>
-        <p className="vads-u-font-weight--bold">Statement of Medical Care</p>
+        <h6 className={h6BoldStyle}>Statement of Medical Care</h6>
         <ul>
           <li>
             If you’re claiming expenses for a residential care facility, you’ll

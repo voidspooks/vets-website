@@ -41,7 +41,9 @@ describe('Income and assets page', () => {
         formDOM,
       );
 
-      expect(form.getByRole('heading')).to.have.text('Income and assets');
+      expect(form.getByRole('heading', { level: 3 })).to.have.text(
+        'Income and assets',
+      );
 
       expect(vaRadios.length).to.equal(1);
       expect(vaAssetsThresholdRadio.getAttribute('required')).to.equal('true');
@@ -82,7 +84,9 @@ describe('Income and assets page', () => {
         formDOM,
       );
 
-      expect(form.getByRole('heading')).to.have.text('Income and assets');
+      expect(form.getByRole('heading', { level: 3 })).to.have.text(
+        'Income and assets',
+      );
 
       expect(vaRadios.length).to.equal(1);
       expect(vaAssetsThresholdRadio.getAttribute('required')).to.equal('true');

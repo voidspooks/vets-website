@@ -8,6 +8,8 @@ import { dicOptions } from '../../../utils/labels';
 import { radioQuestions } from '../../../utils/constants';
 
 const { CHAPTER_5 } = radioQuestions;
+const h5Style =
+  'vads-u-margin-y--1 vads-u-font-family--sans vads-u-font-size--md';
 
 const Description = () => (
   <div>
@@ -23,7 +25,7 @@ const DicAccordion = () => (
   <div>
     <va-accordion>
       <va-accordion-item level={4} header="When to claim DIC">
-        <p className="vads-u-font-weight--bold">Claim DIC if you’re:</p>
+        <h5 className={h5Style}>Claim DIC if you’re:</h5>
         <ul>
           <li>
             The survivor of a service member who died in the line of duty,{' '}
@@ -36,10 +38,13 @@ const DicAccordion = () => (
         </ul>
       </va-accordion-item>
 
-      <va-accordion-item header="When to claim DIC under Title 38 U.S.C. 1151">
-        <p className="vads-u-font-weight--bold">
+      <va-accordion-item
+        level={4}
+        header="When to claim DIC under Title 38 U.S.C. 1151"
+      >
+        <h5 className={h5Style}>
           The Veteran died in one of these situations:
-        </p>
+        </h5>
         <ul>
           <li>
             While receiving care at a VA hospital, <strong>or</strong>
@@ -54,9 +59,9 @@ const DicAccordion = () => (
           <li>During VA training</li>
         </ul>
 
-        <p className="vads-u-font-weight--bold">
+        <h5 className={h5Style}>
           And one of these must have led to the Veteran’s death:
-        </p>
+        </h5>
         <ul>
           <li>
             Something we’re at fault for, <strong>or</strong>
@@ -80,7 +85,10 @@ const DicAccordion = () => (
         </p>
       </va-accordion-item>
 
-      <va-accordion-item header="When to claim DIC re-evaluation based on the PACT Act">
+      <va-accordion-item
+        level={4}
+        header="When to claim DIC re-evaluation based on the PACT Act"
+      >
         <ul>
           <li>
             A claim was submitted and denied prior to August 10, 2022, the date
