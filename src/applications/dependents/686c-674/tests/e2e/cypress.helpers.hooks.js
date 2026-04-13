@@ -487,7 +487,7 @@ export const pageHooks = {
           if (value === 'OTHER') {
             cy.fillVaTextInput(
               'root_doesLiveWithSpouse_other',
-              data.doesLiveWithSpouse?.currentSpouseOtherReasonForSeparation,
+              data.doesLiveWithSpouse?.other,
             );
           }
         }

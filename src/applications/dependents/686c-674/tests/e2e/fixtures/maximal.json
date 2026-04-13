@@ -80,8 +80,8 @@
   "doesLiveWithSpouse": {
     "spouseIncome": "N",
     "spouseDoesLiveWithVeteran": false,
-    "currentSpouseReasonForSeparation": "Other",
-    "currentSpouseOtherReasonForSeparation": "other way",
+    "currentSpouseReasonForSeparation": "OTHER",
+    "other": "other way",
     "address": {
       "country": "USA",
       "street": "123 Fake St.",
@@ -405,6 +405,8 @@
   "vaDependentsDuplicateModals": true,
   "vaDependentsV3": true,
   "view:checkVeteranPension": true,
+  "view:householdIncome": "N",
   "householdIncome": false,
-  "netWorthLimit": 163699
+  "netWorthLimit": 163699,
+  "statementOfTruthSignature": "John Doe"
 }

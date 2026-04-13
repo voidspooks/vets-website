@@ -42,6 +42,7 @@
     "emailAddress": "nope@nope.com"
   },
   "statementOfTruthCertified": true,
+  "statementOfTruthSignature": "John Doe",
 
   "currentMarriageInformation": {
     "typeOfMarriage": "CIVIL",
@@ -54,8 +55,8 @@
   },
   "doesLiveWithSpouse": {
     "spouseIncome": "N",
-    "currentSpouseOtherReasonForSeparation": "other way",
-    "currentSpouseReasonForSeparation": "Other",
+    "other": "other way",
+    "currentSpouseReasonForSeparation": "OTHER",
     "spouseDoesLiveWithVeteran": false,
     "address": {
       "country": "USA",

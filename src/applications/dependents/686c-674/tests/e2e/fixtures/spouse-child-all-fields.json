@@ -22,7 +22,7 @@
   "doesLiveWithSpouse": {
     "spouseIncome": "Y",
     "currentSpouseReasonForSeparation": "OTHER",
-    "currentSpouseOtherReasonForSeparation": "Work and property management reasons",
+    "other": "Work and property management reasons",
     "address": {
       "view:militaryBaseDescription": {},
       "country": "USA",
