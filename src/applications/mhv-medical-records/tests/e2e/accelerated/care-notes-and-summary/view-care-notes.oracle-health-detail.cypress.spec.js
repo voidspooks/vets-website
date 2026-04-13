@@ -67,7 +67,7 @@ describe('Medical Records View Care Summary and Notes - Oracle Health Note Detai
       headerDate: 'July 29, 2025',
       location: '668 Mann-Grandstaff WA VA Medical Center',
       dateAdmitted: 'July 29, 2025',
-      dateDischarged: 'N/A',
+      dateDischarged: 'July 29, 2025',
       dischargedBy: 'Victoria A Borland',
       summaryText: 'Clinical Summary * Final Report * Name:SILVA, ALEXANDER',
     });

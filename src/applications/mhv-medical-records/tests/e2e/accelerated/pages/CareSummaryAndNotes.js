@@ -121,6 +121,12 @@ class CareSummaryAndNotes {
       .click({ waitForAnimations: true });
   };
 
+  selectCareSummaryOrNoteByTitle = title => {
+    cy.get('ul.record-list-items.no-print [data-testid="note-name"]')
+      .contains(title)
+      .click({ waitForAnimations: true });
+  };
+
   loadVAPaginationNext = () => {
     cy.get('va-pagination')
       .shadow()
@@ -135,6 +141,13 @@ class CareSummaryAndNotes {
     cy.get(
       `ul.record-list-items.no-print > :nth-child(${index}) .vads-u-font-weight--bold`,
     ).should('contain.text', title);
+  };
+
+  checkDischargeListItemByTitle = title => {
+    cy.get('ul.record-list-items.no-print [data-testid="record-list-item"]')
+      .contains(title)
+      .closest('[data-testid="record-list-item"]')
+      .should('contain.text', 'Discharged');
   };
 
   checkNoteListItem = ({
@@ -179,7 +192,7 @@ class CareSummaryAndNotes {
     headerDate = 'July 29, 2025',
     location = '668 Mann-Grandstaff WA VA Medical Center',
     dateAdmitted = 'July 29, 2025',
-    dateDischarged = 'N/A',
+    dateDischarged = 'July 29, 2025',
     dischargedBy = 'Victoria A Borland',
     summaryText = 'Clinical Summary * Final Report * Name:SILVA, ALEXANDER',
   } = {}) => {

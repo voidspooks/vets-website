@@ -30,9 +30,9 @@ describe('Medical Records View Care Summary and Notes', () => {
     cy.get(
       'ul.record-list-items.no-print [data-testid="record-list-item"]',
     ).should('have.length', CARDS_PER_PAGE);
-    const DISCHARGE_INDEX = 1;
-    CareSummaryAndNotes.checkDischargeListItem({ index: DISCHARGE_INDEX });
-    CareSummaryAndNotes.selectCareSummaryOrNote({ index: DISCHARGE_INDEX });
+    const DISCHARGE_TITLE = 'Clinical Summary';
+    CareSummaryAndNotes.checkDischargeListItemByTitle(DISCHARGE_TITLE);
+    CareSummaryAndNotes.selectCareSummaryOrNoteByTitle(DISCHARGE_TITLE);
     CareSummaryAndNotes.validateDischargeDetailPage();
   });
 });

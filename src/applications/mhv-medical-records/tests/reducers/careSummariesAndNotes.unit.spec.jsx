@@ -541,7 +541,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
         location: 'Test Hospital',
         note: 'VGVzdCBub3RlIGNvbnRlbnQ=', // Base64 encoded "Test note content"
         admissionDate: '2025-01-13T08:00:00.000+00:00',
-        dischargedDate: '2025-01-15T16:30:00.000+00:00',
+        dischargeDate: '2025-01-15T16:30:00.000+00:00',
         dateEntered: '2025-01-14T10:00:00.000+00:00',
         dateSigned: '2025-01-14T11:00:00.000+00:00',
       },
@@ -561,7 +561,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
     expect(result.dischargedBy).to.equal('Dr. Jane Smith'); // Maps to writtenBy
     expect(result.summary).to.equal('Test note content'); // Decoded note attribute
     expect(result.admissionDate).to.contain('January 13');
-    expect(result.dischargedDate).to.contain('January 15');
+    expect(result.dischargeDate).to.contain('January 15');
     expect(result.dateEntered).to.contain('January 14');
     expect(result.dateSigned).to.contain('January 14');
   });
@@ -597,7 +597,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
     expect(result.summary).to.equal('None recorded');
     expect(result.admittedBy).to.equal('None recorded');
     expect(result.admissionDate).to.equal('None recorded');
-    expect(result.dischargedDate).to.equal('None recorded');
+    expect(result.dischargeDate).to.equal('None recorded');
     expect(result.dateEntered).to.equal('None recorded');
     expect(result.dateSigned).to.equal('None recorded');
   });
@@ -610,7 +610,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
         noteType: 'Discharge Summary',
         date: 'invalid-date',
         admissionDate: 'not-a-date',
-        dischargedDate: 'also-invalid',
+        dischargeDate: 'also-invalid',
         dateEntered: '',
         dateSigned: undefined,
         note: 'VGVzdA==', // Base64 for "Test"
@@ -621,7 +621,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
 
     expect(result.date).to.equal('None recorded');
     expect(result.admissionDate).to.equal('None recorded');
-    expect(result.dischargedDate).to.equal('None recorded');
+    expect(result.dischargeDate).to.equal('None recorded');
     expect(result.dateEntered).to.equal('None recorded');
     expect(result.dateSigned).to.equal('None recorded');
     expect(result.note).to.equal('Test');
@@ -671,7 +671,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
       attributes: {
         name: 'Timezone Test Note',
         date: '2024-10-18T11:52:00+00:00', // Timezone offset format
-        dischargedDate: '2024-10-19T14:30:00-05:00', // Different timezone
+        dischargeDate: '2024-10-19T14:30:00-05:00', // Different timezone
         writtenBy: 'Dr. Timezone',
       },
     };
@@ -679,7 +679,7 @@ describe('convertUnifiedCareSummariesAndNotesRecord', () => {
     const result = convertUnifiedCareSummariesAndNotesRecord(mockRecord);
 
     expect(result.date).to.contain('October 18');
-    expect(result.dischargedDate).to.contain('October 19');
+    expect(result.dischargeDate).to.contain('October 19');
   });
 });
 

@@ -279,7 +279,7 @@ export const convertUnifiedCareSummariesAndNotesRecord = record => {
   );
 
   const formattedDischargeDate = formatDateTimeInUserTimezone(
-    record.attributes.dischargedDate,
+    record.attributes.dischargeDate,
   );
 
   const formattedDateEntered = formatDateTimeInUserTimezone(
@@ -303,7 +303,7 @@ export const convertUnifiedCareSummariesAndNotesRecord = record => {
     dischargedBy: record.attributes.writtenBy || EMPTY_FIELD, // This is mapped to the author
     summary: note || EMPTY_FIELD,
     admittedBy: getAttending(note) || EMPTY_FIELD,
-    dischargedDate: formattedDischargeDate || EMPTY_FIELD,
+    dischargeDate: formattedDischargeDate || EMPTY_FIELD,
     admissionDate: formattedAdmissionDate || EMPTY_FIELD,
     dateSigned: formattedDateSigned || EMPTY_FIELD,
     dateEntered: formattedDateEntered || formattedNoteDate || EMPTY_FIELD,
