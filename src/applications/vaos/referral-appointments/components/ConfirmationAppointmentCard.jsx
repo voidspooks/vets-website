@@ -4,18 +4,7 @@ import { titleCase } from '../../utils/formatters';
 import AppointmentDate from '../../components/AppointmentDate';
 import AppointmentTime from '../../components/AppointmentTime';
 import ProviderAddress from './ProviderAddress';
-
-const MODALITY_CONFIG = {
-  communityCareEps: { text: 'In-person', icon: 'location_city' },
-  communityCare: { text: 'In-person', icon: 'location_city' },
-  vaInPerson: { text: 'In-person', icon: 'location_city' },
-  vaInPersonVaccine: { text: 'In-person', icon: 'location_city' },
-  vaPhone: { text: 'Phone', icon: 'phone' },
-  vaVideoCareAtHome: { text: 'Video', icon: 'videocam' },
-  vaVideoCareAtAnAtlasLocation: { text: 'Video', icon: 'videocam' },
-};
-
-const DEFAULT_MODALITY = { text: 'In-person', icon: 'location_city' };
+import { getModalityDisplay } from '../utils/modality';
 
 export default function ConfirmationAppointmentCard({
   date,
@@ -31,8 +20,9 @@ export default function ConfirmationAppointmentCard({
   detailsLink,
   onDetailsClick,
 }) {
-  const { text: modalityText, icon: modalityIcon } =
-    MODALITY_CONFIG[modality] || DEFAULT_MODALITY;
+  const { text: modalityText, icon: modalityIcon } = getModalityDisplay(
+    modality,
+  );
 
   return (
     <div

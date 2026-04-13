@@ -221,6 +221,16 @@ const getReferralSlotKey = id => {
 };
 
 /**
+ * Returns the session key for a stored provider id by referral id.
+ *
+ * @param {String} id The id of the referral.
+ * @returns {String} The storage key.
+ */
+const getReferralProviderKey = id => {
+  return `selected-provider-referral-${id}`;
+};
+
+/**
  * Filters referrals by category of care.
  * @param {Array} referrals The referrals to filter
  * @returns {Array} The filtered referrals
@@ -270,6 +280,7 @@ module.exports = {
   createReferralListItem,
   createReferrals,
   getReferralSlotKey,
+  getReferralProviderKey,
   filterReferrals,
   expiredUUIDBase,
   getAddressString,

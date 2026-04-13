@@ -693,6 +693,7 @@ const responses = {
   },
   'GET /vaos/v2/provider-slots': (req, res) => {
     const referralId = req.query.referral_id;
+    const providerId = req.query.provider_id;
     if (!referralId) {
       return res.status(422).json({
         errors: [
@@ -723,6 +724,63 @@ const responses = {
           noSlotsError: true,
         }),
       );
+    }
+
+    if (providerId && providerId.startsWith('va-')) {
+      const rawVaSlots = getMockSlots({
+        existingAppointments: getMockConfirmedAppointments().data,
+        futureMonths: 2,
+        pastMonths: 0,
+        conflictRate: 0,
+        forceConflictWithAppointments: [],
+      }).data;
+      const vaSlots = rawVaSlots.map(slot => ({
+        ...slot.attributes,
+        end: undefined,
+      }));
+
+      return res.json({
+        data: {
+          id: providerId,
+          type: 'provider_slots',
+          attributes: {
+            careType: 'VA',
+            provider: {
+              id: providerId,
+              name: 'Primary Care Clinic A',
+              careType: 'VA',
+              facilityName: 'Portland VA Medical Center',
+              phone: '(503) 555-0100',
+              visitMode: 'inPerson',
+              locationId: '648',
+              clinicId: providerId,
+              serviceType: 'primaryCare',
+              providerServiceId: null,
+              networkId: null,
+              networkIds: [],
+              appointmentTypes: null,
+              location: {
+                name: 'Portland VA Medical Center',
+                address: '3710 SW US Veterans Hospital Rd, Portland, OR 97239',
+                latitude: 45.4977,
+                longitude: -122.6834,
+                timezone: 'America/Los_Angeles',
+              },
+            },
+            slots: vaSlots,
+            drivetime: {
+              origin: { latitude: 45.5152, longitude: -122.6784 },
+              destination: {
+                distanceInMiles: 3,
+                driveTimeInSecondsWithoutTraffic: 600,
+                driveTimeInSecondsWithTraffic: 900,
+                latitude: 45.4977,
+                longitude: -122.6834,
+              },
+            },
+          },
+        },
+      });
     }
 
     return res.json(
@@ -804,9 +862,9 @@ const responses = {
     return res.json(mockAppointment);
   },
   'POST /vaos/v2/unified_bookings': (req, res) => {
-    const { provider_type: providerType, slot_id: slotId } = req.body;
+    const { providerType, slotId, providerServiceId } = req.body;
 
-    if (!providerType || !slotId) {
+    if ((!providerType && !providerServiceId) || !slotId) {
       return res.status(400).json(
         new MockUnifiedBookingResponse({
           appointmentId: null,

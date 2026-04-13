@@ -132,8 +132,14 @@ export function routeToNextReferralPage(
 export function routeToCCPage(history, page, referralId = null) {
   const pageFlow = getPageFlow(referralId);
   const nextPage = pageFlow[page];
-
-  return history.push(nextPage.url);
+  let { url } = nextPage;
+  const currentParams = new URLSearchParams(history.location?.search);
+  const providerId = currentParams.get('providerId');
+  if (providerId && !url.includes('providerId=')) {
+    const separator = url.includes('?') ? '&' : '?';
+    url = `${url}${separator}providerId=${providerId}`;
+  }
+  return history.push(url);
 }
 
 /* Function to get label from the flow

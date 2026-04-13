@@ -58,6 +58,40 @@ export function createMockProvidersResponse({
   };
 }
 
+export const mockProviders = [
+  {
+    id: 'va-provider-1',
+    name: 'Primary Care Clinic A',
+    careType: 'VA',
+    facilityName: 'Portland VA Medical Center',
+    driveTime: '12 min',
+    driveTimeInSeconds: 720,
+    distanceInMiles: 5,
+    nextAvailableDate: '2026-04-02',
+  },
+  mockProviderDetails,
+  {
+    id: 'va-provider-2',
+    name: 'Cardiology Clinic B',
+    careType: 'VA',
+    facilityName: 'Vancouver VA Clinic',
+    driveTime: '18 min',
+    driveTimeInSeconds: 1080,
+    distanceInMiles: 8,
+    nextAvailableDate: '2026-04-05',
+  },
+  {
+    ...mockProviderDetails,
+    id: '654321',
+    name: 'Dr. Emily Carter',
+  },
+  {
+    ...mockProviderDetails,
+    id: '789012',
+    name: 'Dr. Robert Kim',
+  },
+];
+
 export const vaClinicInfo = {
   clinicName: 'VA Clinic Name',
   vaFacilityName: 'VA Facility Name',

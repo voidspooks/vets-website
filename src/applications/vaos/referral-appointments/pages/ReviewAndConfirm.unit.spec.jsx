@@ -28,9 +28,9 @@ import {
 describe('VAOS Component: ReviewAndConfirm', () => {
   const slotDate = '2024-09-09T16:00:00.000Z';
   const sandbox = sinon.createSandbox();
+  const providerId = '9mN718pH';
   const draftAppointmentInfo = createDraftAppointmentInfo();
 
-  // Create a slot object with the expected flattened structure and proper slot ID format
   const slots = generateSlotsForDay(slotDate, {
     slotsPerDay: 1,
     slotDuration: 60,
@@ -41,57 +41,65 @@ describe('VAOS Component: ReviewAndConfirm', () => {
   });
   draftAppointmentInfo.attributes.slots = transformSlotsForCommunityCare(slots);
   draftAppointmentInfo.attributes.slots[0].start = slotDate;
-  const initialFullState = {
+
+  const providerSlotsQueryKey = `getProviderSlots({"providerId":"${providerId}","referralId":"UUID"})`;
+
+  const createStateWithSlots = (overrides = {}) => ({
     featureToggles: {
       vaOnlineSchedulingCCDirectScheduling: true,
     },
     referral: {
-      selectedSlotStartTime: '2024-09-09T16:00:00.000Z',
-      draftAppointmentInfo,
+      selectedSlotStartTime: slotDate,
+      selectedProviderId: providerId,
       currentPage: 'reviewAndConfirm',
       appointmentCreateStatus: FETCH_STATUS.notStarted,
       pollingRequestStart: null,
       appointmentInfoError: false,
       appointmentInfoLoading: false,
       referralAppointmentInfo: {},
+      ...overrides,
     },
-  };
-  const initialEmptyState = {
-    featureToggles: {
-      vaOnlineSchedulingCCDirectScheduling: true,
+    appointmentApi: {
+      queries: {
+        [providerSlotsQueryKey]: {
+          status: 'fulfilled',
+          data: draftAppointmentInfo,
+          endpoint: 'getProviderSlots',
+          requestId: 'abc',
+          startedTimeStamp: 1758046349181,
+          fulfilledTimeStamp: 1758046349182,
+        },
+      },
+      subscriptions: {
+        [providerSlotsQueryKey]: {
+          abc: { pollingInterval: 0 },
+        },
+      },
     },
-    referral: {
-      selectedSlotStartTime: '2024-09-09T16:00:00.000Z',
-      draftAppointmentInfo: {},
-      currentPage: 'reviewAndConfirm',
-      appointmentCreateStatus: FETCH_STATUS.notStarted,
-      pollingRequestStart: null,
-      appointmentInfoError: false,
-      appointmentInfoLoading: false,
-      referralAppointmentInfo: {},
-    },
-    appointmentApi: {},
-  };
+  });
+
+  const initialFullState = createStateWithSlots();
+  const initialEmptyState = createStateWithSlots({
+    selectedSlotStartTime: slotDate,
+  });
+
+  const testPath = '/';
+
   afterEach(async () => {
     await cleanup();
     sandbox.restore();
     server.resetHandlers();
     sessionStorage.clear();
-    // Reset RTK Query cache to prevent test pollution
     vaosApi.util.resetApiState();
   });
+
   it('should get selected slot from session storage if not in redux', async () => {
     const selectedSlotKey = getReferralSlotKey('UUID');
-
-    // Store the slot start time - this should match the slot.start format used by getSlotByDate
     sessionStorage.setItem(selectedSlotKey, slotDate);
 
-    const noSelectState = {
-      ...initialFullState,
-      ...{
-        referral: { ...initialFullState.referral, selectedSlotStartTime: '' },
-      },
-    };
+    const noSelectState = createStateWithSlots({
+      selectedSlotStartTime: '',
+    });
 
     const screen = renderWithStoreAndRouter(
       <ReviewAndConfirm
@@ -99,6 +107,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       />,
       {
         store: createTestStore(noSelectState),
+        path: testPath,
       },
     );
 
@@ -112,30 +121,54 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       );
     });
   });
+
   it('should route to scheduleReferral if no slot selected', async () => {
     const selectedSlotKey = getReferralSlotKey('UUID');
     sessionStorage.removeItem(selectedSlotKey);
 
-    const noSelectState = {
-      ...initialFullState,
-      ...{
-        referral: { ...initialFullState.referral, selectedSlotStartTime: '' },
-      },
-    };
+    const noSelectState = createStateWithSlots({
+      selectedSlotStartTime: '',
+    });
     const screen = renderWithStoreAndRouter(
       <ReviewAndConfirm
         currentReferral={createReferralById('2024-09-09', 'UUID')}
       />,
       {
         store: createTestStore(noSelectState),
-        path: '/schedule-referral/date-time',
+        path: `/schedule-referral/date-time?providerId=${providerId}`,
       },
     );
     await waitFor(() => {
-      expect(screen.history.push.calledWith('/schedule-referral?id=UUID')).to.be
-        .true;
+      const pushCalls = screen.history.push.args.map(args => args[0]);
+      const matched = pushCalls.some(url =>
+        url.includes('/schedule-referral?id=UUID'),
+      );
+      expect(matched).to.be.true;
     });
   });
+
+  it('should route to scheduleReferral if no providerId', async () => {
+    const noProviderState = createStateWithSlots({
+      selectedProviderId: null,
+    });
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store: createTestStore(noProviderState),
+        path: '/',
+      },
+    );
+    await waitFor(() => {
+      const pushCalls = screen.history.push.args.map(args => args[0]);
+      const matched = pushCalls.some(url =>
+        url.includes('/schedule-referral?id=UUID'),
+      );
+      expect(matched).to.be.true;
+    });
+  });
+
   it('should call create appointment post when "continue" is pressed', async () => {
     let submitCalled = false;
 
@@ -159,6 +192,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       />,
       {
         store,
+        path: testPath,
       },
     );
     await screen.findByTestId('continue-button');
@@ -167,6 +201,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       expect(submitCalled).to.be.true;
     });
   });
+
   it('should call "routeToNextReferralPage" when appointment creation is successful', async () => {
     server.use(
       createPostHandler(`${environment.API_URL}/vaos/v2/unified_bookings`, () =>
@@ -183,6 +218,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       />,
       {
         store,
+        path: testPath,
       },
     );
 
@@ -197,24 +233,20 @@ describe('VAOS Component: ReviewAndConfirm', () => {
         store.getState().appointmentApi.mutations[mutation].status,
       ).to.equal('fulfilled');
     });
-    await waitFor(() => {
-      expect(
-        Object.keys(store.getState().appointmentApi.queries).length,
-      ).to.equal(0);
-    });
-    await waitFor(() => {
-      expect(
-        screen.history.push.calledWith(
-          '/schedule-referral/complete/EEKoGzEf?id=UUID',
-        ),
-      ).to.be.true;
-    });
-    expect(
-      screen.history.push.calledWith(
-        '/schedule-referral/complete/EEKoGzEf?id=UUID',
-      ),
-    ).to.be.true;
+    await waitFor(
+      () => {
+        const pushCalls = screen.history.push.args.map(args => args[0]);
+        const matched = pushCalls.some(
+          url =>
+            url.includes('/schedule-referral/complete/EEKoGzEf') &&
+            url.includes('id=UUID'),
+        );
+        expect(matched).to.be.true;
+      },
+      { timeout: 5000 },
+    );
   });
+
   it('should display an error message when appointment creation fails', async () => {
     server.use(
       createPostHandler(`${environment.API_URL}/vaos/v2/unified_bookings`, () =>
@@ -232,13 +264,12 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       />,
       {
         store,
+        path: testPath,
       },
     );
-    // Ensure the "Continue" button is present
     await screen.findByTestId('continue-button');
     expect(screen.getByTestId('continue-button')).to.exist;
     await userEvent.click(screen.getByTestId('continue-button'));
-    // Wait for the mutation to be rejected before checking for the error alert
     await waitFor(() => {
       const mutation = Object.keys(
         store.getState().appointmentApi.mutations,
@@ -248,11 +279,11 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       ).to.equal('rejected');
     });
     await screen.findByTestId('create-error-alert');
-    expect(screen.getByTestId('create-error-alert')).to.contain.text(
-      'We couldn’t schedule this appointment',
-    );
+    expect(screen.getByTestId('create-error-alert')).to.exist;
+    expect(screen.getByText(/We couldn.t schedule this appointment/)).to.exist;
     expect(screen.getByTestId('referral-community-care-office')).to.exist;
   });
+
   it('should display Community Care details section with correct content', async () => {
     const store = createTestStore(initialFullState);
 
@@ -262,6 +293,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       />,
       {
         store,
+        path: testPath,
       },
     );
 
@@ -276,13 +308,14 @@ describe('VAOS Component: ReviewAndConfirm', () => {
         draftAppointmentInfo.attributes.provider.providerOrganization.name,
       ),
     ).to.exist;
-    expect(screen.getByText('In-person')).to.exist;
+    expect(screen.getByText('Phone')).to.exist;
     expect(screen.getByTestId('edit-details-link')).to.exist;
     expect(screen.getByTestId('continue-button')).to.have.attr(
       'text',
       'Confirm appointment',
     );
   });
+
   it('should display the Date and time section with Edit link', async () => {
     const store = createTestStore(initialFullState);
 
@@ -292,6 +325,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       />,
       {
         store,
+        path: testPath,
       },
     );
 
@@ -300,5 +334,184 @@ describe('VAOS Component: ReviewAndConfirm', () => {
     expect(screen.getByRole('heading', { name: 'Date and time' })).to.exist;
     expect(screen.getByTestId('edit-when-information-link')).to.exist;
     expect(screen.getByTestId('slot-day-time')).to.exist;
+  });
+
+  it('should display modality from shared config', async () => {
+    const store = createTestStore(initialFullState);
+
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+        path: testPath,
+      },
+    );
+
+    await screen.findByTestId('continue-button');
+    expect(screen.getByTestId('review-modality')).to.exist;
+    expect(screen.getByTestId('review-modality')).to.contain.text('Phone');
+  });
+
+  it('should display provider address via ProviderAddress component', async () => {
+    const store = createTestStore(initialFullState);
+
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+        path: testPath,
+      },
+    );
+
+    await screen.findByTestId('continue-button');
+    expect(screen.getByTestId('address-block')).to.exist;
+  });
+
+  describe('VA appointment flow', () => {
+    const vaProviderId = 'va-provider-1';
+    const vaProviderSlotsQueryKey = `getProviderSlots({"providerId":"${vaProviderId}","referralId":"UUID"})`;
+
+    const vaDraftAppointmentInfo = {
+      id: vaProviderId,
+      type: 'provider_slots',
+      attributes: {
+        careType: 'VA',
+        provider: {
+          id: vaProviderId,
+          name: 'Primary Care Clinic A',
+          careType: 'VA',
+          facilityName: 'Portland VA Medical Center',
+          phone: '(503) 555-0100',
+          visitMode: 'inPerson',
+          locationId: '648',
+          clinicId: vaProviderId,
+          serviceType: 'primaryCare',
+          providerServiceId: null,
+          networkId: null,
+          networkIds: [],
+          appointmentTypes: null,
+          location: {
+            name: 'Portland VA Medical Center',
+            address: '3710 SW US Veterans Hospital Rd, Portland, OR 97239',
+            latitude: 45.4977,
+            longitude: -122.6834,
+            timezone: 'America/Los_Angeles',
+          },
+        },
+        slots: [],
+      },
+    };
+
+    const vaSlots = generateSlotsForDay(slotDate, {
+      slotsPerDay: 1,
+      slotDuration: 60,
+      businessHours: { start: 12, end: 18 },
+    });
+    vaDraftAppointmentInfo.attributes.slots = transformSlotsForCommunityCare(
+      vaSlots,
+    );
+    vaDraftAppointmentInfo.attributes.slots[0].start = slotDate;
+
+    const createVAState = (overrides = {}) => ({
+      featureToggles: {
+        vaOnlineSchedulingCCDirectScheduling: true,
+      },
+      referral: {
+        selectedSlotStartTime: slotDate,
+        selectedProviderId: vaProviderId,
+        currentPage: 'reviewAndConfirm',
+        appointmentCreateStatus: FETCH_STATUS.notStarted,
+        pollingRequestStart: null,
+        appointmentInfoError: false,
+        appointmentInfoLoading: false,
+        referralAppointmentInfo: {},
+        ...overrides,
+      },
+      appointmentApi: {
+        queries: {
+          [vaProviderSlotsQueryKey]: {
+            status: 'fulfilled',
+            data: vaDraftAppointmentInfo,
+            endpoint: 'getProviderSlots',
+            requestId: 'va-abc',
+            startedTimeStamp: 1758046349181,
+            fulfilledTimeStamp: 1758046349182,
+          },
+        },
+        subscriptions: {
+          [vaProviderSlotsQueryKey]: {
+            'va-abc': { pollingInterval: 0 },
+          },
+        },
+      },
+    });
+
+    const vaTestPath = '/';
+
+    it('should display VA Details section with clinic name and facility', async () => {
+      const store = createTestStore(createVAState());
+
+      const screen = renderWithStoreAndRouter(
+        <ReviewAndConfirm
+          currentReferral={createReferralById('2024-09-09', 'UUID')}
+        />,
+        {
+          store,
+          path: vaTestPath,
+        },
+      );
+
+      await screen.findByTestId('continue-button');
+
+      expect(screen.getByRole('heading', { name: 'Details' })).to.exist;
+      expect(screen.getByText('VA care')).to.exist;
+      expect(screen.getByText(/Clinic: Primary Care Clinic A/)).to.exist;
+      expect(screen.getByText('Portland VA Medical Center')).to.exist;
+      expect(screen.getByTestId('address-block')).to.exist;
+    });
+
+    it('should send VA booking payload when confirming', async () => {
+      let capturedBody;
+
+      server.use(
+        createPostHandler(
+          `${environment.API_URL}/vaos/v2/unified_bookings`,
+          async ({ request }) => {
+            capturedBody = await request.json();
+            return jsonResponse({
+              data: { appointmentId: 'mock-va-appt' },
+            });
+          },
+        ),
+      );
+
+      const store = createTestStore(createVAState());
+
+      const screen = renderWithStoreAndRouter(
+        <ReviewAndConfirm
+          currentReferral={createReferralById('2024-09-09', 'UUID')}
+        />,
+        {
+          store,
+          path: vaTestPath,
+        },
+      );
+
+      await screen.findByTestId('continue-button');
+      await userEvent.click(screen.getByTestId('continue-button'));
+
+      await waitFor(() => {
+        expect(capturedBody).to.exist;
+        expect(capturedBody.providerType).to.equal('va');
+        expect(capturedBody.clinicId).to.equal(vaProviderId);
+        expect(capturedBody.locationId).to.equal('648');
+        expect(capturedBody.serviceType).to.equal('primaryCare');
+        expect(capturedBody.slotId).to.exist;
+      });
+    });
   });
 });

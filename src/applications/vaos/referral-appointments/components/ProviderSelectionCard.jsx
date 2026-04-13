@@ -91,7 +91,7 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
             <va-link
               class="vads-u-margin-top--2"
               active
-              href={`date-time?id=${referralId}&provider=${provider.id}`}
+              href={`date-time?id=${referralId}&providerId=${provider.id}`}
               text="Review available appointments"
               onClick={goToNextPage}
             />

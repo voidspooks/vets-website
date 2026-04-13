@@ -40,7 +40,8 @@ export const DateAndTimeContent = props => {
   const [error, setError] = useState('');
 
   const providerTimeZone =
-    draftAppointmentInfo.attributes.provider.location.timezone;
+    draftAppointmentInfo.attributes.provider.location?.timezone ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone;
   const timezoneDescription = getTimezoneDescByTimeZoneString(providerTimeZone);
   const selectedSlotKey = getReferralSlotKey(currentReferral.uuid);
   const latestAvailableSlot = new Date(

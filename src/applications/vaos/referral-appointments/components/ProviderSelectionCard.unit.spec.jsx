@@ -131,7 +131,7 @@ describe('VAOS Component: ProviderSelectionCard', () => {
     const link = screen.container.querySelector('va-link');
     expect(link).to.exist;
     expect(link.getAttribute('href')).to.equal(
-      'date-time?id=ref-1&provider=9mN718pH',
+      'date-time?id=ref-1&providerId=9mN718pH',
     );
   });
 

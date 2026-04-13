@@ -4,115 +4,110 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  getAppointmentCreateStatus,
-  // getSelectedProviderId,
   getSelectedSlotStartTime,
+  getSelectedProviderId,
 } from '../redux/selectors';
-import { setFormCurrentPage, setSelectedSlotStartTime } from '../redux/actions';
-import { usePostReferralAppointmentMutation } from '../../redux/api/vaosApi';
+import {
+  setFormCurrentPage,
+  setSelectedSlotStartTime,
+  setSelectedProviderId,
+} from '../redux/actions';
+import {
+  usePostReferralAppointmentMutation,
+  useGetProviderSlotsQuery,
+} from '../../redux/api/vaosApi';
 
 import ReferralLayout from '../components/ReferralLayout';
+import ProviderAddress from '../components/ProviderAddress';
 import {
   routeToPreviousReferralPage,
   routeToCCPage,
   routeToNextReferralPage,
 } from '../flow';
 
-import { getReferralSlotKey } from '../utils/referrals';
-import { createDraftAppointmentInfo, getSlotByDate } from '../utils/provider';
+import { getReferralSlotKey, getReferralProviderKey } from '../utils/referrals';
+import { getSlotByDate } from '../utils/provider';
 import { stripDST } from '../../utils/timezone';
 import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
 import { titleCase } from '../../utils/formatters';
-
-function useMockDraftData() {
-  const data = createDraftAppointmentInfo();
-  data.attributes.slots = [
-    {
-      id: 'mock-slot|2024-09-09T16:00:00.000Z|60m',
-      start: '2024-09-09T16:00:00.000Z',
-    },
-  ];
-  return {
-    data,
-    isLoading: false,
-    isError: false,
-    isSuccess: true,
-    isUninitialized: false,
-  };
-}
+import { getModalityDisplay } from '../utils/modality';
 
 const ReviewAndConfirm = props => {
   const { attributes: currentReferral } = props.currentReferral;
-  // TODO: wire up real VA/CC determination from referral data
-  const isCommunityCare = true;
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const selectedProviderId = useSelector(getSelectedProviderId);
+  const savedProviderId = sessionStorage.getItem(
+    getReferralProviderKey(currentReferral.uuid),
+  );
+  const providerId = selectedProviderId || savedProviderId;
+
   const selectedSlot = useSelector(state => getSelectedSlotStartTime(state));
-  // const providerId = useSelector(getSelectedProviderId);
-
-  const appointmentCreateStatus = useSelector(getAppointmentCreateStatus);
-  const [failed, setFailed] = useState(false);
-
-  // const [skipDraft, setSkipDraft] = useState(false);
   const [createFailed, setCreateFailed] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const savedSelectedSlot = sessionStorage.getItem(
     getReferralSlotKey(currentReferral.uuid),
   );
+
   const {
     data: draftAppointmentInfo,
     isLoading: isDraftLoading,
     isError: isDraftError,
     isSuccess: isDraftSuccess,
-    isUninitialized: isDraftUninitialized,
-  } = useMockDraftData();
-  // Use savedSelectedSlot as fallback to handle sessionStorage restoration timing
+  } = useGetProviderSlotsQuery(
+    {
+      referralId: currentReferral.uuid,
+      providerId,
+    },
+    { skip: !providerId },
+  );
+
+  const isCommunityCare = draftAppointmentInfo?.attributes?.careType !== 'VA';
+
   const slotDetails = getSlotByDate(
     draftAppointmentInfo?.attributes?.slots,
     selectedSlot || savedSelectedSlot,
   );
-  const [
-    postReferralAppointment,
-    {
-      data: appointmentInfo,
-      isError: isAppointmentError,
-      isLoading: isAppointmentLoading,
-      isSuccess: isAppointmentSuccess,
-    },
-  ] = usePostReferralAppointmentMutation();
+
+  const providerTimezone =
+    draftAppointmentInfo?.attributes?.provider?.location?.timezone ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const { text: modalityText, icon: modalityIcon } = getModalityDisplay(
+    draftAppointmentInfo?.attributes?.provider?.visitMode,
+  );
+
+  const [postReferralAppointment] = usePostReferralAppointmentMutation();
+
   useEffect(
     () => {
       dispatch(setFormCurrentPage('reviewAndConfirm'));
     },
     [dispatch],
   );
+
   useEffect(
     () => {
-      if (!selectedSlot && !savedSelectedSlot) {
-        routeToCCPage(history, 'scheduleReferral', currentReferral.uuid);
+      if (!selectedProviderId && savedProviderId) {
+        dispatch(setSelectedProviderId(savedProviderId));
       }
     },
-    [currentReferral.uuid, history, savedSelectedSlot, selectedSlot],
+    [dispatch, selectedProviderId, savedProviderId],
   );
 
   useEffect(
     () => {
-      if (!isDraftLoading && !isDraftUninitialized) {
-        // setSkipDraft(true);
-      }
-      if (isDraftError) {
-        setFailed(true);
+      if (!providerId || (!selectedSlot && !savedSelectedSlot)) {
+        routeToCCPage(history, 'scheduleReferral', currentReferral.uuid);
       }
     },
     [
-      draftAppointmentInfo,
-      currentReferral.referralNumber,
-      dispatch,
-      isDraftError,
-      isDraftSuccess,
-      isDraftLoading,
-      isDraftUninitialized,
-      currentReferral.referralConsultId,
+      currentReferral.uuid,
+      history,
+      providerId,
+      savedSelectedSlot,
+      selectedSlot,
     ],
   );
 
@@ -149,48 +144,44 @@ const ReviewAndConfirm = props => {
     );
   };
 
-  // handle routing to the next page once the appointment is created
-  // or show error message if the appointment creation failed
-  useEffect(
-    () => {
-      if (isAppointmentLoading) {
-        setCreateLoading(true);
-        setCreateFailed(false);
-      }
-      if (isAppointmentSuccess && draftAppointmentInfo?.id) {
-        setCreateLoading(false);
-        routeToNextReferralPage(
-          history,
-          'reviewAndConfirm',
-          currentReferral.uuid,
-          draftAppointmentInfo.id,
-        );
-        // CI-FIX: Removed draftAppointmentInfo?.id check from error condition.
-        // When isAppointmentError is true (submit failed), draftAppointmentInfo.id
-        // is guaranteed to exist because the user can only click "Continue" after
-        // the draft appointment loads. The extra check was defensive but unnecessary.
-      } else if (isAppointmentError) {
-        setCreateLoading(false);
-        setCreateFailed(true);
-      }
-    },
-    [
-      isAppointmentSuccess,
-      isAppointmentLoading,
-      isAppointmentError,
-      appointmentCreateStatus,
-      appointmentInfo?.id,
-      draftAppointmentInfo?.id,
-      currentReferral.uuid,
-      isDraftSuccess,
-      history,
-      draftAppointmentInfo,
-      dispatch,
-    ],
-  );
+  const onSubmit = async e => {
+    e.preventDefault();
+    setCreateLoading(true);
+    setCreateFailed(false);
 
-  // Check for error state before showing loading indicator to prevent race condition
-  // where isDraftError becomes true while isDraftLoading is still true
+    const { provider } = draftAppointmentInfo.attributes;
+    const bookingPayload = isCommunityCare
+      ? {
+          providerType: 'community_care',
+          appointmentId: draftAppointmentInfo.id,
+          referralNumber: currentReferral.referralNumber,
+          slotId: slotDetails.id,
+          networkId: provider.networkIds[0],
+          providerServiceId: provider.id,
+        }
+      : {
+          providerType: 'va',
+          clinicId: provider.clinicId,
+          locationId: provider.locationId,
+          serviceType: provider.serviceType,
+          slotId: slotDetails.id,
+        };
+
+    try {
+      await postReferralAppointment(bookingPayload).unwrap();
+      routeToNextReferralPage(
+        history,
+        'reviewAndConfirm',
+        currentReferral.uuid,
+        draftAppointmentInfo.id,
+      );
+    } catch {
+      setCreateFailed(true);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   if (isDraftLoading && !isDraftError) {
     return (
       <ReferralLayout
@@ -201,12 +192,14 @@ const ReviewAndConfirm = props => {
       />
     );
   }
+
   const headingStyles = 'vads-u-margin-top--0 ';
+
   return (
     <ReferralLayout
       hasEyebrow
       heading="Review your appointment details"
-      apiFailure={failed || isDraftError}
+      apiFailure={isDraftError}
       loadingMessage={
         isDraftLoading && !isDraftError
           ? 'Loading your appointment details'
@@ -215,7 +208,6 @@ const ReviewAndConfirm = props => {
     >
       <div>
         <hr className="vads-u-margin-y--2" />
-        {isAppointmentSuccess && <p data-testid="success-text">success</p>}
         {draftAppointmentInfo?.attributes && (
           <>
             <div className="vads-l-grid-container vads-u-padding--0">
@@ -227,7 +219,7 @@ const ReviewAndConfirm = props => {
                   <va-link
                     href={`/my-health/appointments/schedule-referral/date-time?id=${
                       currentReferral.uuid
-                    }`}
+                    }${providerId ? `&providerId=${providerId}` : ''}`}
                     label="Edit date and time"
                     text="Edit"
                     data-testid="edit-when-information-link"
@@ -243,7 +235,7 @@ const ReviewAndConfirm = props => {
                 <>
                   {formatInTimeZone(
                     new Date(slotDetails.start),
-                    draftAppointmentInfo.attributes.provider.location.timezone,
+                    providerTimezone,
                     'EEEE, LLLL d, yyyy',
                   )}
                 </>
@@ -252,8 +244,7 @@ const ReviewAndConfirm = props => {
                   {stripDST(
                     formatInTimeZone(
                       new Date(slotDetails.start),
-                      draftAppointmentInfo.attributes.provider.location
-                        .timezone,
+                      providerTimezone,
                       'h:mm aaaa zzz',
                     ),
                   )}
@@ -296,24 +287,31 @@ const ReviewAndConfirm = props => {
                   VA care
                   <br />
                   <span data-dd-privacy="mask">
-                    Clinic: Primary Care Clinic
+                    Clinic: {draftAppointmentInfo.attributes.provider.name}
                   </span>
                 </>
               )}
             </p>
-            <p className="vads-u-margin-top--0p5 vads-u-margin-bottom--0p5">
-              <va-icon icon="location_city" size={3} />{' '}
-              <span data-dd-privacy="mask">In-person</span>
+            <p
+              className="vads-u-margin-top--0p5 vads-u-margin-bottom--0p5"
+              data-testid="review-modality"
+            >
+              <va-icon icon={modalityIcon} size={3} />{' '}
+              <span data-dd-privacy="mask">{modalityText}</span>
             </p>
             <p className="vads-u-margin--0">
               <span data-dd-privacy="mask">
                 {isCommunityCare
                   ? draftAppointmentInfo.attributes.provider
                       .providerOrganization.name
-                  : 'Cheyenne VA Medical Center'}
+                  : draftAppointmentInfo.attributes.provider.location.name}
               </span>
             </p>
-            {draftAppointmentInfo.attributes.provider.location.address}
+            <ProviderAddress
+              address={
+                draftAppointmentInfo.attributes.provider.location.address
+              }
+            />
             <hr className="vads-u-margin-y--2" />
             <div className="vads-u-margin-top--4">
               <va-button
@@ -332,26 +330,12 @@ const ReviewAndConfirm = props => {
                 label="Confirm appointment"
                 text="Confirm appointment"
                 uswds
-                onClick={e => {
-                  e.preventDefault();
-                  postReferralAppointment({
-                    draftApppointmentId: draftAppointmentInfo.id,
-                    referralNumber: currentReferral.referralNumber,
-                    slotId: slotDetails.id,
-                    networkId:
-                      draftAppointmentInfo.attributes.provider.networkIds[0],
-                    providerServiceId:
-                      draftAppointmentInfo.attributes.provider.id,
-                  });
-                }}
+                onClick={onSubmit}
               />
             </div>
           </>
         )}
-        {/* CI-FIX: Also check isAppointmentError directly to handle race condition where
-            RTK Query sets isAppointmentError=true before useEffect updates createFailed state.
-            This ensures error alert shows immediately when the mutation fails. */}
-        {(createFailed || isAppointmentError) &&
+        {createFailed &&
           !createLoading && (
             <va-alert
               status="error"
