@@ -41,7 +41,6 @@ const Balances = () => {
 
   const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
 
-  // Single out errors
   const billError = mcp.error;
   const debtError = debtLetters.errors?.length > 0;
   const isEnrolledInHealthCare = billError?.code !== '403';

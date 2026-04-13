@@ -52,6 +52,9 @@ export const showVHAPaymentHistory = state =>
 export const selectUseLighthouseCopays = state =>
   state.combinedPortal.mcp.shouldUseLighthouseCopays;
 
+export const selectCopayDetailFetchError = state =>
+  state.combinedPortal.mcp.detailFetchError ?? null;
+
 /**
  * Helper function to consisently format date strings
  *

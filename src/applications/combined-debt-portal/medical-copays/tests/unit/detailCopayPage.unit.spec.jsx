@@ -1,11 +1,18 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import { expect } from 'chai';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers, createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import sinon from 'sinon';
+import { I18nextProvider } from 'react-i18next';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
+import i18nCombinedDebtPortal from '../../../i18n';
+import eng from '../../../eng.json';
 import DetailCopayPage from '../../containers/DetailCopayPage';
+
+const RESOLVE_PAGE_ERROR = eng['combined-debt-portal'].mcp['resolve-page'];
 
 describe('DetailCopayPage', () => {
   const registerMockElement = name => {
@@ -19,6 +26,7 @@ describe('DetailCopayPage', () => {
     registerMockElement('va-breadcrumbs');
     registerMockElement('va-loading-indicator');
     registerMockElement('va-link');
+    registerMockElement('va-alert');
   });
 
   const renderWithStore = (component, initialState) => {
@@ -37,6 +45,29 @@ describe('DetailCopayPage', () => {
         <Router>{component}</Router>
       </Provider>,
     );
+  };
+
+  const renderWithThunkStore = (component, initialState) => {
+    const store = createStore(
+      combineReducers({
+        combinedPortal: (state = initialState.combinedPortal || {}) => state,
+        user: (state = initialState.user || {}) => state,
+        featureToggles: (
+          state = initialState.featureToggles || { loading: false },
+        ) => state,
+      }),
+      applyMiddleware(thunk),
+    );
+    const dispatchSpy = sinon.spy(store, 'dispatch');
+
+    return {
+      ...render(
+        <Provider store={store}>
+          <Router>{component}</Router>
+        </Provider>,
+      ),
+      dispatchSpy,
+    };
   };
 
   const mockMatch = { params: { id: '123' } };
@@ -244,6 +275,151 @@ describe('DetailCopayPage', () => {
     );
 
     expect(container.textContent).to.include('516 0000 0000 24571 JONES');
+  });
+
+  describe('copay detail request on mount (container)', () => {
+    it('requests copay statement detail once when VHA payment history is enabled and the store has no matching statement', async () => {
+      const state = {
+        user: { profile: { userFullName: { first: 'John', last: 'Doe' } } },
+        combinedPortal: {
+          mcp: {
+            selectedStatement: {},
+            statements: { data: [], meta: null },
+            shouldUseLighthouseCopays: true,
+            isCopayDetailLoading: false,
+            detailFetchError: null,
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
+          loading: false,
+        },
+      };
+
+      const { dispatchSpy } = renderWithThunkStore(
+        <DetailCopayPage match={mockMatch} />,
+        state,
+      );
+
+      await waitFor(() => {
+        const thunkCalls = dispatchSpy
+          .getCalls()
+          .filter(call => typeof call.args[0] === 'function');
+        expect(thunkCalls.length).to.equal(1);
+      });
+    });
+
+    it('does not request copay statement detail when VHA payment history is disabled', async () => {
+      const state = {
+        user: { profile: { userFullName: { first: 'John', last: 'Doe' } } },
+        combinedPortal: {
+          mcp: {
+            selectedStatement: {},
+            statements: { data: [], meta: null },
+            shouldUseLighthouseCopays: true,
+            isCopayDetailLoading: false,
+            detailFetchError: null,
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: false,
+          loading: false,
+        },
+      };
+
+      const { dispatchSpy } = renderWithThunkStore(
+        <DetailCopayPage match={mockMatch} />,
+        state,
+      );
+
+      await waitFor(() => {
+        const thunkCalls = dispatchSpy
+          .getCalls()
+          .filter(call => typeof call.args[0] === 'function');
+        expect(thunkCalls.length).to.equal(0);
+      });
+    });
+
+    it('does not request copay statement detail again when a prior detail request failed and the store still has no statement id', async () => {
+      const state = {
+        user: { profile: { userFullName: { first: 'John', last: 'Doe' } } },
+        combinedPortal: {
+          mcp: {
+            selectedStatement: {},
+            statements: { data: [], meta: null },
+            shouldUseLighthouseCopays: true,
+            isCopayDetailLoading: false,
+            detailFetchError: {
+              title: 'Not found',
+              detail: 'No statement',
+            },
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
+          loading: false,
+        },
+      };
+
+      const { dispatchSpy } = renderWithThunkStore(
+        <DetailCopayPage match={mockMatch} />,
+        state,
+      );
+
+      await waitFor(() => {
+        const thunkCalls = dispatchSpy
+          .getCalls()
+          .filter(call => typeof call.args[0] === 'function');
+        expect(thunkCalls.length).to.equal(0);
+      });
+    });
+
+    it('shows the translated copay detail error when detailFetchError is set and the store has no statement id', () => {
+      const state = {
+        user: { profile: { userFullName: { first: 'John', last: 'Doe' } } },
+        combinedPortal: {
+          mcp: {
+            selectedStatement: {},
+            statements: { data: [], meta: null },
+            shouldUseLighthouseCopays: true,
+            isCopayDetailLoading: false,
+            detailFetchError: {
+              title: 'Record not found',
+              detail: 'No copay matches this id.',
+            },
+          },
+        },
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: true,
+          loading: false,
+        },
+      };
+
+      const store = createStore(
+        combineReducers({
+          combinedPortal: (s = state.combinedPortal || {}) => s,
+          user: (s = state.user || {}) => s,
+          featureToggles: (s = state.featureToggles || { loading: false }) => s,
+        }),
+      );
+
+      const { container } = render(
+        <I18nextProvider i18n={i18nCombinedDebtPortal}>
+          <Provider store={store}>
+            <Router>
+              <DetailCopayPage match={mockMatch} />
+            </Router>
+          </Provider>
+        </I18nextProvider>,
+      );
+
+      expect(container.textContent).to.include(
+        RESOLVE_PAGE_ERROR['error-title'],
+      );
+      expect(container.textContent).to.include(
+        RESOLVE_PAGE_ERROR['error-body'],
+      );
+    });
   });
 
   describe('legacy previous statements (getCopaysForPriorMonthlyStatements)', () => {

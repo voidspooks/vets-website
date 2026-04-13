@@ -47,6 +47,7 @@ export const medicalCopaysReducer = (state = mcpInitialState, action) => {
         ...state,
         selectedStatement: null,
         isCopayDetailLoading: true,
+        error: null,
       };
     case MCP_STATEMENTS_FETCH_INIT:
       return {
@@ -75,7 +76,7 @@ export const medicalCopaysReducer = (state = mcpInitialState, action) => {
       return {
         ...state,
         isCopayDetailLoading: false,
-        error: action.error,
+        detailFetchError: action.error,
       };
     case MCP_STATEMENTS_FETCH_FAILURE:
       return {

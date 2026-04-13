@@ -7,6 +7,7 @@ import {
   MCP_STATEMENTS_FETCH_FAILURE,
   MCP_DETAIL_FETCH_INIT,
   MCP_DETAIL_FETCH_SUCCESS,
+  MCP_DETAIL_FETCH_FAILURE,
 } from '../../../combined/actions/copays';
 
 describe('Medical Copays Reducer', () => {
@@ -27,6 +28,17 @@ describe('Medical Copays Reducer', () => {
     const afterInit = reducer(withSelection, { type: MCP_DETAIL_FETCH_INIT });
     expect(afterInit.selectedStatement).to.be.null;
     expect(afterInit.isCopayDetailLoading).to.be.true;
+  });
+
+  it('MCP_DETAIL_FETCH_FAILURE sets detailFetchError', () => {
+    const loading = reducer(undefined, { type: MCP_DETAIL_FETCH_INIT });
+    const errorResponse = { title: 'Not found', detail: 'Record not found' };
+    const afterFailure = reducer(loading, {
+      type: MCP_DETAIL_FETCH_FAILURE,
+      error: errorResponse,
+    });
+    expect(afterFailure.isCopayDetailLoading).to.be.false;
+    expect(afterFailure.detailFetchError).to.deep.equal(errorResponse);
   });
 
   it('MCP_STATEMENTS_FETCH_INIT', () => {

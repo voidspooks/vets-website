@@ -28,6 +28,10 @@
           "facility-city": "{{ facility }} - {{ city }}",
           "no-payment-needed": "You don’t need to make a payment at this time. Your balance is {{ amount }} and was updated on <strong>{{ date }}</strong>."
         }
+      },
+      "resolve-page": {
+        "error-title": "We can't access your current copay right now.",
+        "error-body": "We're sorry. Something went wrong on our end. Check back soon."
       }
     },
     "diaryCodes": {

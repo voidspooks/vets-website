@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { VaBreadcrumbs } from '@department-of-veterans-affairs/web-components/react-bindings';
 import { VaLoadingIndicator } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import { useTranslation } from 'react-i18next';
 import Modals from '../../combined/components/Modals';
 import StatementTable from '../components/StatementTable';
 import DownloadStatement from '../components/DownloadStatement';
@@ -12,6 +13,7 @@ import NeedHelpCopay from '../components/NeedHelpCopay';
 import {
   selectUseLighthouseCopays,
   showVHAPaymentHistory,
+  selectCopayDetailFetchError,
   formatDate,
   verifyCurrentBalance,
   setPageFocus,
@@ -26,8 +28,33 @@ import CopayAlertContainer from '../components/CopayAlertContainer';
 import { splitAccountNumber } from '../components/HowToPay';
 import { getCopaysForPriorMonthlyStatements } from '../../combined/utils/vbsCopayStatements';
 
+const getDetailCopayBreadcrumbList = (selectedId, copayAttributes) => [
+  { href: '/', label: 'VA.gov Home' },
+  {
+    href: '/manage-va-debt/summary',
+    label: 'Overpayments and copay bills',
+  },
+  {
+    href: '/manage-va-debt/summary/copay-balances',
+    label: 'Copay balances',
+  },
+  {
+    href: `/manage-va-debt/summary/copay-balances/${selectedId}`,
+    label: copayAttributes.TITLE,
+  },
+];
+
+const DetailCopayBreadcrumbs = ({ selectedId, copayAttributes }) => (
+  <VaBreadcrumbs
+    breadcrumbList={getDetailCopayBreadcrumbList(selectedId, copayAttributes)}
+    label="Breadcrumb"
+    wrapping
+  />
+);
+
 const DetailCopayPage = ({ match }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [alert, setAlert] = useState('status');
   const shouldUseVHAPaymentHistory = useSelector(showVHAPaymentHistory);
@@ -42,6 +69,20 @@ const DetailCopayPage = ({ match }) => {
     useSelector(state => state.combinedPortal.mcp.statements?.data) || [];
 
   const selectedId = match.params.id;
+  const detailFetchError = useSelector(selectCopayDetailFetchError);
+
+  const hasStoredCopayDetailId = !!copayDetail?.id;
+  const isBlockedAfterDetailFetchError =
+    !!detailFetchError && !hasStoredCopayDetailId;
+  const isMissingStoredStatementForRoute =
+    !hasStoredCopayDetailId && copayDetail?.id !== selectedId;
+
+  const shouldFetchCopayDetails =
+    shouldUseVHAPaymentHistory &&
+    !isCopayDetailLoading &&
+    !isBlockedAfterDetailFetchError &&
+    isMissingStoredStatementForRoute;
+
   const selectedCopay = shouldUseLighthouseCopays
     ? copayDetail
     : allStatements?.find(({ id }) => id === selectedId);
@@ -118,12 +159,7 @@ const DetailCopayPage = ({ match }) => {
     () => {
       if (!isAnyElementFocused()) setPageFocus();
 
-      if (
-        !copayDetail?.id &&
-        copayDetail.id !== selectedId &&
-        !isCopayDetailLoading &&
-        shouldUseVHAPaymentHistory
-      ) {
+      if (shouldFetchCopayDetails) {
         dispatch(getCopayDetailStatement(`${selectedId}`));
       }
     },
@@ -133,6 +169,7 @@ const DetailCopayPage = ({ match }) => {
       copayDetail?.id,
       isCopayDetailLoading,
       shouldUseVHAPaymentHistory,
+      detailFetchError,
     ],
   );
 
@@ -172,33 +209,35 @@ const DetailCopayPage = ({ match }) => {
 
   useHeaderPageTitle(copayAttributes.TITLE);
 
-  if (!selectedCopay?.id || isCopayDetailLoading) {
+  if (
+    !isBlockedAfterDetailFetchError &&
+    (!selectedCopay?.id || isCopayDetailLoading)
+  ) {
     return <VaLoadingIndicator message="Loading features..." />;
+  }
+
+  if (isBlockedAfterDetailFetchError) {
+    return (
+      <>
+        <DetailCopayBreadcrumbs
+          selectedId={selectedId}
+          copayAttributes={copayAttributes}
+        />
+        <div className="medium-screen:vads-l-col--12 small-desktop-screen:vads-l-col--8">
+          <va-alert status="error" visible>
+            <h2 slot="headline">{t('mcp.resolve-page.error-title')}</h2>
+            <p>{t('mcp.resolve-page.error-body')}</p>
+          </va-alert>
+        </div>
+      </>
+    );
   }
 
   return (
     <>
-      <VaBreadcrumbs
-        breadcrumbList={[
-          {
-            href: '/',
-            label: 'VA.gov Home',
-          },
-          {
-            href: '/manage-va-debt/summary',
-            label: 'Overpayments and copay bills',
-          },
-          {
-            href: '/manage-va-debt/summary/copay-balances',
-            label: 'Copay balances',
-          },
-          {
-            href: `/manage-va-debt/summary/copay-balances/${selectedId}`,
-            label: copayAttributes.TITLE,
-          },
-        ]}
-        label="Breadcrumb"
-        wrapping
+      <DetailCopayBreadcrumbs
+        selectedId={selectedId}
+        copayAttributes={copayAttributes}
       />
       <div className="medium-screen:vads-l-col--10 small-desktop-screen:vads-l-col--8">
         <h1
@@ -305,4 +344,5 @@ const DetailCopayPage = ({ match }) => {
   );
 };
 
+export { getDetailCopayBreadcrumbList };
 export default DetailCopayPage;

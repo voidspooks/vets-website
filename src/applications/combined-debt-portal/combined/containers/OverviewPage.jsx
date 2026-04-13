@@ -35,7 +35,6 @@ const OverviewPage = () => {
     ({ combinedPortal }) => combinedPortal,
   );
 
-  // Get errors
   const billError = mcp.error;
   const debtError = debtLetters.errors?.length > 0;
   const bothError = billError && debtError;
