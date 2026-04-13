@@ -368,8 +368,8 @@ export const ancillaryFormUploadUi = (
 ) => {
   const findAndFocusLastSelect = () => {
     const uploadList = document.getElementsByClassName('schemaform-file-list');
-    const deleteButton = uploadList[0]?.lastChild?.querySelector('va-button');
-    if (deleteButton) focusElement(deleteButton);
+    const selectField = uploadList[0]?.lastChild?.querySelector('select');
+    if (selectField) focusElement(selectField);
   };
 
   return fileUploadUI(label, {
