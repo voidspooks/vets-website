@@ -7,11 +7,10 @@ import formConfig from '../../../config/form';
 const {
   schema,
   uiSchema,
-} = formConfig.chapters.identificationInformation.pages.identificationInformation;
+} = formConfig.chapters.vhaMedicalFacilityChapter.pages.vhaMedicalFacility;
 
-const pageTitle = 'identificationInformation';
+const pageTitle = 'vhaMedicalFacility';
 
-// 1 field: ssn
 const numberOfWebComponentFields = 1;
 testNumberOfWebComponentFields(
   formConfig,
@@ -21,7 +20,6 @@ testNumberOfWebComponentFields(
   pageTitle,
 );
 
-// ssn is required = 1 error
 const numberOfWebComponentErrors = 1;
 testNumberOfErrorsOnSubmitForWebComponents(
   formConfig,

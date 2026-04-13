@@ -7,11 +7,11 @@ import formConfig from '../../../config/form';
 const {
   schema,
   uiSchema,
-} = formConfig.chapters.clothingItemsChapter.pages.clothingItemsPage;
+} = formConfig.chapters.deviceApplianceMedicationChapter.pages.deviceApplianceMedicationDetailsPage;
 
-const pageTitle = 'clothingItemsPage';
+const pageTitle = 'deviceApplianceMedicationDetailsPage';
 
-const numberOfWebComponentFields = 10;
+const numberOfWebComponentFields = 7;
 testNumberOfWebComponentFields(
   formConfig,
   schema,
@@ -20,8 +20,7 @@ testNumberOfWebComponentFields(
   pageTitle,
 );
 
-// Required fields: itemType, serviceConnectedDisability, issuingFacility
-const numberOfWebComponentErrors = 3;
+const numberOfWebComponentErrors = 4;
 testNumberOfErrorsOnSubmitForWebComponents(
   formConfig,
   schema,

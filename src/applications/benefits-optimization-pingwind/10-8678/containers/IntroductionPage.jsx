@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import { connect } from 'react-redux';
+
 import { isLOA3, isLoggedIn } from 'platform/user/selectors';
 import { IntroductionPageView } from '../../shared/components/IntroductionPageView';
+import { FORM_10_8678 } from '../definitions/constants';
 
 const ombInfo = {
   resBurden: '10',
@@ -10,41 +13,75 @@ const ombInfo = {
   expDate: '03/31/2026',
 };
 
+const { INTRODUCTION: I } = FORM_10_8678;
+
+const boldTrailingConjunction = text => {
+  const parts = text.match(/^(.*?)(,?\s(?:or|and))$/);
+
+  if (!parts) return text;
+
+  return (
+    <>
+      {parts[1]}
+      <strong>{parts[2]}</strong>
+    </>
+  );
+};
+
 export const IntroductionPage = ({ route, userIdVerified, userLoggedIn }) => {
   const content = {
-    formTitle: 'Application for Annual Clothing Allowance',
-    formSubTitle: 'VA Form 10-8678',
-    authStartFormText: 'Start the application',
-    saveInProgressText:
-      'Please complete the 10-8678 form to apply for your annual clothing allowance.',
-    displayNonVeteranMessaging: false,
+    formTitle: I.FORM_TITLE,
+    formSubTitle: I.FORM_SUBTITLE,
+    authStartFormText: I.AUTH_START_FORM_TEXT,
+    saveInProgressText: I.SAVE_IN_PROGRESS_TEXT,
+    displayNonVeteranMessaging: true,
     hideSipIntro: userLoggedIn && !userIdVerified,
   };
 
   const childContent = (
     <>
-      <p>
-        Use this form to apply for an annual clothing allowance if your
-        service-connected disability requires a prosthetic, orthopedic
-        appliance, or skin medication that damages your clothing.
-      </p>
+      <div className="vads-u-margin-top--3 vads-u-margin-bottom--3">
+        <p className="va-introtext">{I.INTRO}</p>
+        <p className="va-introtext">{I.INTRO_FOLLOWUP}</p>
+      </div>
 
-      <h2>What to know before you fill out this form</h2>
-      <ul>
-        <li>
-          You must submit this application on or before{' '}
-          <strong>August 1</strong> of the benefit year you’re applying for.
-        </li>
-        <li>You’ll need your Social Security number.</li>
-        <li>
-          You’ll need details about each appliance or skin medication and the VA
-          facility that issued it.
-        </li>
-        <li>
-          In some cases, you may be eligible for more than one clothing
-          allowance.
-        </li>
-      </ul>
+      <va-process-list>
+        <va-process-list-item header={I.STEP_ELIGIBILITY_TITLE} level={2}>
+          <p>{I.STEP_ELIGIBILITY_INTRO}</p>
+          <p>{I.STEP_ELIGIBILITY_CONDITION_INTRO}</p>
+          <ul>
+            {I.STEP_ELIGIBILITY_BULLETS.map(item => (
+              <li key={item}>{boldTrailingConjunction(item)}</li>
+            ))}
+          </ul>
+
+          <h3 className="vads-u-font-size--h4 vads-u-margin-bottom--1">
+            {I.STEP_ELIGIBILITY_ADDITIONAL_INFO_TITLE}
+          </h3>
+          <p>{I.STEP_ELIGIBILITY_ADDITIONAL_INFO_INTRO}</p>
+          <ul>
+            {I.STEP_ELIGIBILITY_ADDITIONAL_INFO_BULLETS.map(item => (
+              <li key={item}>{boldTrailingConjunction(item)}</li>
+            ))}
+          </ul>
+        </va-process-list-item>
+
+        <va-process-list-item header={I.STEP_GATHER_TITLE} level={2}>
+          <p>{I.STEP_GATHER_INTRO}</p>
+          <ul>
+            {I.STEP_GATHER_BULLETS.map(item => (
+              <li key={item.label}>
+                <strong>{item.label}:</strong> {item.body}
+              </li>
+            ))}
+          </ul>
+        </va-process-list-item>
+
+        <va-process-list-item header={I.STEP_START_TITLE} level={2}>
+          <p>{I.STEP_START_BODY}</p>
+          <p>{I.STEP_START_FOLLOWUP}</p>
+        </va-process-list-item>
+      </va-process-list>
     </>
   );
 

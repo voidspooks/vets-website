@@ -7,11 +7,11 @@ import formConfig from '../../../config/form';
 const {
   schema,
   uiSchema,
-} = formConfig.chapters.personalInformationChapter.pages.personalInformation;
+} = formConfig.chapters.applicationCertificationChapter.pages.applicationCertification;
 
-const pageTitle = 'personalInformation';
+const pageTitle = 'applicationCertification';
 
-const numberOfWebComponentFields = 4;
+const numberOfWebComponentFields = 1;
 testNumberOfWebComponentFields(
   formConfig,
   schema,
@@ -20,7 +20,7 @@ testNumberOfWebComponentFields(
   pageTitle,
 );
 
-const numberOfWebComponentErrors = 3;
+const numberOfWebComponentErrors = 1;
 testNumberOfErrorsOnSubmitForWebComponents(
   formConfig,
   schema,

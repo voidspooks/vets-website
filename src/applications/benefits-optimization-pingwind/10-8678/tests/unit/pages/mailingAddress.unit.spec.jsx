@@ -11,8 +11,7 @@ const {
 
 const pageTitle = 'mailingAddress';
 
-// address fields: militaryBaseOutsideUS, country, street, street2, city, state, postalCode + isNewAddress = 8
-const numberOfWebComponentFields = 8;
+const numberOfWebComponentFields = 7;
 testNumberOfWebComponentFields(
   formConfig,
   schema,

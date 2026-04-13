@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { expect } from 'chai';
 import formConfig from '../../../config/form';
 import IntroductionPage from '../../../containers/IntroductionPage';
+import { FORM_10_8678 } from '../../../definitions/constants';
 
 const mockStore = {
   getState: () => ({
@@ -55,12 +56,16 @@ const props = {
 };
 
 describe('IntroductionPage', () => {
-  it('should render', () => {
-    const { container } = render(
+  it('renders the introduction content', () => {
+    const { container, getByText } = render(
       <Provider store={mockStore}>
         <IntroductionPage {...props} />
       </Provider>,
     );
+
     expect(container).to.exist;
+    getByText(FORM_10_8678.INTRODUCTION.FORM_TITLE);
+    getByText(FORM_10_8678.INTRODUCTION.FORM_SUBTITLE);
+    expect(container.querySelector('va-process-list')).to.exist;
   });
 });

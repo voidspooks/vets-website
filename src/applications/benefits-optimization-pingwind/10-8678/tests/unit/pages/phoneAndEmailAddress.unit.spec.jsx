@@ -11,7 +11,6 @@ const {
 
 const pageTitle = 'phoneAndEmailAddress';
 
-// 3 fields: daytimePhone, eveningPhone, emailAddress
 const numberOfWebComponentFields = 3;
 testNumberOfWebComponentFields(
   formConfig,
@@ -21,7 +20,6 @@ testNumberOfWebComponentFields(
   pageTitle,
 );
 
-// daytimePhone and emailAddress are required = 2 errors
 const numberOfWebComponentErrors = 2;
 testNumberOfErrorsOnSubmitForWebComponents(
   formConfig,

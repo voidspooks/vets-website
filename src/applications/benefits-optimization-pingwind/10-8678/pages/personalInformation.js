@@ -2,36 +2,62 @@
 import {
   fullNameNoSuffixSchema,
   fullNameNoSuffixUI,
+  ssnSchema,
+  ssnUI,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
-const fullNameUISchema = fullNameNoSuffixUI();
-fullNameUISchema.first = {
-  ...fullNameUISchema.first,
-  'ui:errorMessages': {
-    ...fullNameUISchema.first['ui:errorMessages'],
+const createFullNameUi = () => {
+  const ui = fullNameNoSuffixUI();
+
+  ui.first['ui:title'] = 'First name';
+  ui.middle['ui:title'] = 'Middle initial';
+  ui.last['ui:title'] = 'Last name';
+
+  ui.first['ui:errorMessages'] = {
     required: 'Please enter your first name',
-  },
-};
-fullNameUISchema.last = {
-  ...fullNameUISchema.last,
-  'ui:errorMessages': {
-    ...fullNameUISchema.last['ui:errorMessages'],
+  };
+
+  ui.last['ui:errorMessages'] = {
     required: 'Please enter your last name',
-  },
+  };
+
+  return ui;
 };
 
 /** @type {PageSchema} */
 export default {
   uiSchema: {
-    ...titleUI('Personal Information'),
-    fullName: fullNameUISchema,
+    ...titleUI(
+      'Basic information',
+      'We need to collect some basic information about you first.',
+    ),
+    fullName: createFullNameUi(),
+    ssn: {
+      ...ssnUI('Social Security number'),
+      'ui:errorMessages': {
+        required: 'Please enter your Social Security number',
+        pattern:
+          'Please enter a valid 9 digit Social Security number (dashes allowed)',
+      },
+    },
   },
+
   schema: {
     type: 'object',
+    required: ['fullName', 'ssn'],
     properties: {
-      fullName: fullNameNoSuffixSchema,
+      fullName: {
+        ...fullNameNoSuffixSchema,
+        properties: {
+          ...fullNameNoSuffixSchema.properties,
+          middle: {
+            ...fullNameNoSuffixSchema.properties.middle,
+            maxLength: 1,
+          },
+        },
+      },
+      ssn: ssnSchema,
     },
-    required: ['fullName'],
   },
 };

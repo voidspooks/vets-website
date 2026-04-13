@@ -9,12 +9,14 @@ import getHelp from '../../shared/components/GetFormHelp';
 import transformForSubmit from '../../shared/config/submit-transformer';
 import { TITLE, SUBTITLE, FORM_ID } from '../definitions/constants';
 
-import identificationInformation from '../pages/identificationInformation';
 import mailingAddress from '../pages/mailingAddress';
 import phoneAndEmailAddress from '../pages/phoneAndEmailAddress';
-import applicationInformation from '../pages/applicationInformation';
-import clothingItemsPage from '../pages/clothingItemsPage';
+import benefitStatus from '../pages/benefitStatus';
+import vhaMedicalFacility from '../pages/vhaMedicalFacility';
+import deviceApplianceMedicationDetails from '../pages/deviceApplianceMedicationDetails';
 import personalInformation from '../pages/personalInformation';
+import benefitTerminationCertification from '../pages/benefitTerminationCertification';
+import applicationCertification from '../pages/applicationCertification';
 
 /** @type {FormConfig} */
 const formConfig = {
@@ -54,7 +56,7 @@ const formConfig = {
   defaultDefinitions: {},
   chapters: {
     personalInformationChapter: {
-      title: 'Section I: Your identification information',
+      title: 'Veteran ID Information',
       pages: {
         personalInformation: {
           path: 'personal-information',
@@ -64,19 +66,8 @@ const formConfig = {
         },
       },
     },
-    identificationInformation: {
-      title: 'Section I: Your identification information',
-      pages: {
-        identificationInformation: {
-          path: 'identification-information',
-          title: 'Social Security number',
-          uiSchema: identificationInformation.uiSchema,
-          schema: identificationInformation.schema,
-        },
-      },
-    },
     mailingInformationChapter: {
-      title: 'Section I: Your mailing information',
+      title: 'Mailing Address',
       pages: {
         mailingAddress: {
           path: 'mailing-address',
@@ -87,7 +78,7 @@ const formConfig = {
       },
     },
     contactInformationChapter: {
-      title: 'Section I: Your contact information',
+      title: 'Contact Information',
       pages: {
         phoneAndEmailAddress: {
           path: 'phone-and-email-address',
@@ -97,29 +88,68 @@ const formConfig = {
         },
       },
     },
-    applicationInformationChapter: {
-      title: 'Section I: Application details',
+    benefitStatusChapter: {
+      title: 'Benefit Status',
       pages: {
-        applicationInformation: {
-          path: 'application-details',
-          title: 'Application details',
-          uiSchema: applicationInformation.uiSchema,
-          schema: applicationInformation.schema,
+        benefitStatus: {
+          path: 'benefit-status',
+          title: 'No longer need a clothing allowance?',
+          uiSchema: benefitStatus.uiSchema,
+          schema: benefitStatus.schema,
         },
       },
     },
-    clothingItemsChapter: {
-      title: 'Section II: Appliances and skin medications',
+    vhaMedicalFacilityChapter: {
+      title: 'VHA Medical Facility',
       pages: {
-        clothingItemsPage: {
+        vhaMedicalFacility: {
+          path: 'vha-medical-facility',
+          title: 'Select your local Prosthetic and Sensory Aids Service',
+          uiSchema: vhaMedicalFacility.uiSchema,
+          schema: vhaMedicalFacility.schema,
+        },
+      },
+    },
+    deviceApplianceMedicationChapter: {
+      title: 'Device, appliance and medication details',
+      pages: {
+        deviceApplianceMedicationDetailsPage: {
           path: 'appliances-and-skin-medications',
           title: 'Appliances and skin medications',
-          uiSchema: clothingItemsPage.uiSchema,
-          schema: clothingItemsPage.schema,
+          depends: formData => formData?.electTermination === 'continue',
+          uiSchema: deviceApplianceMedicationDetails.uiSchema,
+          schema: deviceApplianceMedicationDetails.schema,
+        },
+      },
+    },
+    applicationCertificationChapter: {
+      title: 'Application Certification',
+      pages: {
+        applicationCertification: {
+          path: 'required-certifications',
+          title: 'Application Certification Statement, Legal Information',
+          depends: formData => formData?.electTermination === 'continue',
+          uiSchema: applicationCertification.uiSchema,
+          schema: applicationCertification.schema,
+        },
+      },
+    },
+    benefitTerminationCertificationChapter: {
+      title: 'Benefit Termination',
+      pages: {
+        benefitTerminationCertification: {
+          path: 'benefit-termination-certification',
+          title: 'Benefit Termination Certification and Legal Information',
+          depends: formData =>
+            !formData?.electTermination ||
+            formData.electTermination === 'terminate',
+          uiSchema: benefitTerminationCertification.uiSchema,
+          schema: benefitTerminationCertification.schema,
         },
       },
     },
   },
+
   ...minimalHeaderFormConfigOptions({
     breadcrumbList: [
       { href: '/', label: 'VA.gov home' },

@@ -12,15 +12,11 @@
       "state": "CA",
       "postalCode": "12345"
     },
-    "daytimePhone": "5551234567",
-    "applicationYear": "2026",
-    "clothingItems": [
-      {
-        "itemType": "Artificial leg",
-        "serviceConnectedDisability": "Left leg amputation",
-        "issuedDate": "01/2024",
-        "issuingFacility": "VA Medical Center, Los Angeles, CA"
-      }
-    ]
+    "phone": "5551234567",
+    "emailAddress": "john.doe@example.com",
+    "electTermination": "terminate",
+    "vhaMedicalFacility": "Other",
+    "vhaMedicalFacilityOther": "Custom Prosthetics Clinic",
+    "benefitTerminationCertificationAccepted": true
   }
 }

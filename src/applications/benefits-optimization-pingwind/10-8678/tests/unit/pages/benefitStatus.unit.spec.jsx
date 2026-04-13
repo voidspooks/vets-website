@@ -7,9 +7,9 @@ import formConfig from '../../../config/form';
 const {
   schema,
   uiSchema,
-} = formConfig.chapters.applicationInformationChapter.pages.applicationInformation;
+} = formConfig.chapters.benefitStatusChapter.pages.benefitStatus;
 
-const pageTitle = 'applicationInformation';
+const pageTitle = 'benefitStatus';
 
 const numberOfWebComponentFields = 1;
 testNumberOfWebComponentFields(
