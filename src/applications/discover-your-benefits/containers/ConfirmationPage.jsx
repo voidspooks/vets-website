@@ -160,9 +160,23 @@ const ConfirmationPage = ({ formConfig, location, router }) => {
     (queryParams, displayResultsFn) => {
       const { benefits: benefitsParam } = queryParams;
 
-      if (benefitsParam) {
-        const benefitIdsFromQuery = benefitsParam.split(',');
-        displayResultsFn(benefitIdsFromQuery);
+      if (typeof benefitsParam !== 'string' || benefitsParam.trim() === '') {
+        return;
+      }
+
+      const benefitIdsFromQuery = benefitsParam
+        .split(',')
+        .map(id => id.trim())
+        .filter(Boolean);
+
+      // Only allow IDs that exist in benefits list. This prevents random text from reaching state/sorting logic.
+      const validIdsFromQuery = benefitIdsFromQuery.filter(id =>
+        BENEFITS_LIST.some(masterBenefit => masterBenefit.id === id),
+      );
+
+      // Only trigger dispatch if we actually have valid IDs
+      if (validIdsFromQuery.length > 0) {
+        displayResultsFn(validIdsFromQuery);
       }
     },
     [],
