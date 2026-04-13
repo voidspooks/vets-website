@@ -101,6 +101,7 @@ export const ARP_APPS = {
 };
 
 export const OKTA_APPS = [
+  'occ_staging',
   'okta_test',
   'okta_stg',
   '861fbfbf1b4cd2594e0f7a4a367a9a87',
