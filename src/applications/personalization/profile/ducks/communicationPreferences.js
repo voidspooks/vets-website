@@ -2,7 +2,6 @@ import recordEvent from '~/platform/monitoring/record-event';
 import { apiRequest } from '~/platform/utilities/api';
 
 import { LOADING_STATES } from '../../common/constants';
-import { RX_TRACKING_SUPPORTING_FACILITIES } from '../constants';
 
 // HELPERS
 
@@ -63,20 +62,11 @@ const makeHealthCareGroupFilter = facilities => group => {
 };
 
 // Makes a reducer callback to operate on the raw communication groups API data
-const groupItemReducer = facilities => (groups, group) => {
+const groupItemReducer = () => (groups, group) => {
   const newGroup = { ...group };
-  const filteredItems = newGroup.communicationItems
-    .filter(item => {
-      // Removes the RX tracking item if there are no facilities that support that
-      if (item.id === 4) {
-        return facilities.some(facility =>
-          RX_TRACKING_SUPPORTING_FACILITIES.has(facility.facilityId),
-        );
-      }
-      return true;
-    })
-    .sort(nameCompare);
-  newGroup.communicationItems = filteredItems;
+  newGroup.communicationItems = [...newGroup.communicationItems].sort(
+    nameCompare,
+  );
   groups.push(newGroup);
   return groups;
 };
@@ -298,7 +288,7 @@ export default function reducer(state = initialState, action = {}) {
       // sort the raw API data and filter out any groups the user should not see
       const availableCommunicationGroups = communicationGroups
         .filter(makeHealthCareGroupFilter(facilities))
-        .reduce(groupItemReducer(facilities), [])
+        .reduce(groupItemReducer(), [])
         .sort(nameCompare);
       const availableCommunicationItems = availableCommunicationGroups.reduce(
         (acc, group) => {

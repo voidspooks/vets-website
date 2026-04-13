@@ -45,78 +45,45 @@ describe('fetching communication preferences', () => {
     );
     store = mockStore(createState({}));
   });
-  context(
-    "when a user's only facility is one that supports Rx tracking",
-    () => {
-      it('sets the state properly', () => {
-        const promise = store.dispatch(
-          fetchCommunicationPreferenceGroups({
-            facilities: [{ facilityId: '983', isCerner: false }],
-          }),
-        );
+  context('when user has facilities', () => {
+    it('sets the state properly', () => {
+      const promise = store.dispatch(
+        fetchCommunicationPreferenceGroups({
+          facilities: [{ facilityId: '983', isCerner: false }],
+        }),
+      );
 
-        return promise.then(() => {
-          const state = store.getState();
-          expect(state.loadingStatus).to.equal(LOADING_STATES.loaded);
-          expect(state.loadingErrors).to.be.null;
-          const communicationGroups = selectGroups(state);
-          expect(communicationGroups.ids.length).to.equal(5);
-          const rxTrackingItem = selectItemById(state, 'item4');
-          // The Rx-tracking item exists
-          expect(rxTrackingItem).to.exist;
-        });
+      return promise.then(() => {
+        const state = store.getState();
+        expect(state.loadingStatus).to.equal(LOADING_STATES.loaded);
+        expect(state.loadingErrors).to.be.null;
+        const communicationGroups = selectGroups(state);
+        expect(communicationGroups.ids.length).to.equal(5);
+        expect(selectItemById(state, 'item4')).to.exist;
       });
-    },
-  );
-  context(
-    'when user has a facility that supports Rx tracking and another that does not',
-    () => {
-      it('sets the state properly', () => {
-        const promise = store.dispatch(
-          fetchCommunicationPreferenceGroups({
-            facilities: [
-              { facilityId: '983', isCerner: true },
-              { facilityId: '111', isCerner: false },
-            ],
-          }),
-        );
+    });
+  });
+  context('when user has multiple facilities', () => {
+    it('sets the state properly', () => {
+      const promise = store.dispatch(
+        fetchCommunicationPreferenceGroups({
+          facilities: [
+            { facilityId: '983', isCerner: true },
+            { facilityId: '111', isCerner: false },
+          ],
+        }),
+      );
 
-        return promise.then(() => {
-          const state = store.getState();
-          expect(state.loadingStatus).to.equal(LOADING_STATES.loaded);
-          expect(state.loadingErrors).to.be.null;
-          const communicationGroups = selectGroups(state);
-          expect(communicationGroups.ids.length).to.equal(5);
-          // The Rx-tracking item exists
-          expect(selectItemById(state, 'item4')).to.exist;
-        });
+      return promise.then(() => {
+        const state = store.getState();
+        expect(state.loadingStatus).to.equal(LOADING_STATES.loaded);
+        expect(state.loadingErrors).to.be.null;
+        const communicationGroups = selectGroups(state);
+        expect(communicationGroups.ids.length).to.equal(5);
+        expect(selectItemById(state, 'item4')).to.exist;
       });
-    },
-  );
-  context(
-    'when user does not have a facility that supports Rx tracking',
-    () => {
-      it('sets the state properly', () => {
-        const promise = store.dispatch(
-          fetchCommunicationPreferenceGroups({
-            facilities: [{ facilityId: '111', isCerner: false }],
-          }),
-        );
-
-        return promise.then(() => {
-          const state = store.getState();
-          expect(state.loadingStatus).to.equal(LOADING_STATES.loaded);
-          expect(state.loadingErrors).to.be.null;
-          const communicationGroups = selectGroups(state);
-          expect(communicationGroups.ids.length).to.equal(5);
-          // The Rx-tracking item does not exist
-          expect(selectItemById(state, 'item4')).not.to.exist;
-          // The Rx-tracking item channel does not exist
-          expect(selectChannelById(state, 'channel4-1')).not.to.exist;
-        });
-      });
-    },
-  );
+    });
+  });
   context('when user does not have any facilities', () => {
     it('sets the state properly', () => {
       const promise = store.dispatch(

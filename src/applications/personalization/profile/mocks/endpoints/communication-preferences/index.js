@@ -135,6 +135,10 @@ const maximalSetOfPreferences = {
                   id: 2,
                   name: 'Email',
                   description: 'Email Notification',
+                  communicationPermission: {
+                    id: 8361,
+                    allowed: false,
+                  },
                 },
               ],
             },
