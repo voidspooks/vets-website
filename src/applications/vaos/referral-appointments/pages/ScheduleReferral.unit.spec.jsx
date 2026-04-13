@@ -234,4 +234,74 @@ describe('VAOS Component: ScheduleReferral', () => {
     );
     expect(scheduleButton).to.exist;
   });
+  it('should display address alert and hide schedule link when veteranAddressPresent is false', async () => {
+    const referral = createReferralById(referralDate, '777');
+    referral.meta.veteranAddressPresent = false;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const addressAlert = await screen.findByTestId('address-alert');
+    expect(addressAlert).to.exist;
+    expect(addressAlert).to.contain.text(
+      'Add a home address to schedule an appointment',
+    );
+    expect(addressAlert).to.contain.text(
+      'To schedule an appointment, you need a home address on file.',
+    );
+
+    const profileLink = screen.getByTestId('va-profile-link');
+    expect(profileLink).to.exist;
+    expect(profileLink).to.have.attribute('href', '/profile');
+    expect(profileLink).to.have.attribute('target', '_blank');
+
+    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
+    expect(scheduleButton).to.be.null;
+
+    const genericAlert = screen.queryByTestId('referral-alert');
+    expect(genericAlert).to.be.null;
+  });
+  it('should show only address alert when veteranAddressPresent is false and other blockers exist', async () => {
+    const referral = createReferralById(referralDate, '888');
+    referral.meta.veteranAddressPresent = false;
+    referral.attributes.onlineSchedule = false;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const addressAlert = await screen.findByTestId('address-alert');
+    expect(addressAlert).to.exist;
+
+    const genericAlert = screen.queryByTestId('referral-alert');
+    expect(genericAlert).to.be.null;
+
+    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
+    expect(scheduleButton).to.be.null;
+  });
+  it('should not display address alert when veteranAddressPresent is true', async () => {
+    const referral = createReferralById(referralDate, '999');
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const scheduleButton = await screen.findByTestId(
+      'schedule-appointment-button',
+    );
+    expect(scheduleButton).to.exist;
+
+    const addressAlert = screen.queryByTestId('address-alert');
+    expect(addressAlert).to.be.null;
+  });
 });

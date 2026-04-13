@@ -68,6 +68,7 @@ const errorReferralsList = (errorUUIDs || []).map(uuid => {
  * @param {Boolean} hasProvider Whether the referral has a provider
  * @param {String} stationId The station id for the referral
  * @param {Boolean} onlineSchedule Whether the referral can be scheduled online
+ * @param {Boolean} veteranAddressPresent Whether the veteran has a home address on file
  * @returns {Object} Referral object
  */
 const createReferralById = (
@@ -78,6 +79,7 @@ const createReferralById = (
   hasProvider = true,
   stationId = '659BY',
   onlineSchedule = true,
+  veteranAddressPresent = true,
 ) => {
   const [year, month, day] = startDate.split('-');
   const relativeDate = new Date(year, month - 1, day);
@@ -125,6 +127,9 @@ const createReferralById = (
         },
       },
       provider,
+    },
+    meta: {
+      veteranAddressPresent,
     },
   };
 };

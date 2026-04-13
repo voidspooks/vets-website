@@ -15,6 +15,7 @@ class MockReferralDetailResponse {
       serverError: false,
       referralNumber: 'VA0000005681',
       onlineSchedule: true,
+      veteranAddressPresent: true,
       provider: {
         name: 'Dr. Moreen S. Rafa',
         npi: '1346206547',
@@ -50,6 +51,7 @@ class MockReferralDetailResponse {
     referralDate = format(new Date(), 'yyyy-MM-dd'),
     stationId = '659',
     onlineSchedule = true,
+    veteranAddressPresent = true,
     provider = {
       name: 'Dr. Moreen S. Rafa',
       npi: '1346206547',
@@ -102,6 +104,9 @@ class MockReferralDetailResponse {
           sendingStaffName: null,
         },
         relationships: {},
+      },
+      meta: {
+        veteranAddressPresent,
       },
     };
   }
@@ -159,6 +164,7 @@ class MockReferralDetailResponse {
       referralNumber,
       stationId,
       onlineSchedule,
+      veteranAddressPresent,
     } = this.options;
 
     // Return 404 error if notFound is true
@@ -180,6 +186,7 @@ class MockReferralDetailResponse {
       referralNumber,
       stationId,
       onlineSchedule,
+      veteranAddressPresent,
     });
   }
 }

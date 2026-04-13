@@ -17,7 +17,10 @@ export const vaosApi = createApi({
     getReferralById: builder.query({
       async queryFn(referralId) {
         try {
-          return await apiRequestWithUrl(`/vaos/v2/referrals/${referralId}`);
+          const response = await apiRequestWithUrl(
+            `/vaos/v2/referrals/${referralId}`,
+          );
+          return { data: { ...response.data, meta: response.meta } };
         } catch (error) {
           captureError(error, false, 'fetch single referral');
           return {

@@ -661,6 +661,16 @@ const responses = {
       );
     }
 
+    if (req.params.referralId === 'no-veteran-address') {
+      return res.json(
+        new MockReferralDetailResponse({
+          id: req.params.referralId,
+          referralNumber: req.params.referralId,
+          veteranAddressPresent: false,
+        }),
+      );
+    }
+
     return res.json(
       new MockReferralDetailResponse({
         id: req.params.referralId,

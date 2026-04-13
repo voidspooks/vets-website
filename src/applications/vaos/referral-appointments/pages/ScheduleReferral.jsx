@@ -12,15 +12,17 @@ import { selectCurrentPage } from '../redux/selectors';
 import { getReferralSlotKey } from '../utils/referrals';
 import { titleCase } from '../../utils/formatters';
 import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
+import NewTabAnchor from '../../components/NewTabAnchor';
 import { getIsInPilotReferralStation } from '../utils/pilot';
 
 export default function ScheduleReferral(props) {
-  const { attributes: currentReferral } = props.currentReferral;
+  const { attributes: currentReferral, meta } = props.currentReferral;
   const location = useLocation();
   const history = useHistory();
   const currentPage = useSelector(selectCurrentPage);
   const dispatch = useDispatch();
   const selectedSlotKey = getReferralSlotKey(currentReferral.uuid);
+  const hasVeteranAddress = meta.veteranAddressPresent;
 
   const stationIdValid = getIsInPilotReferralStation(currentReferral);
   useEffect(
@@ -44,6 +46,7 @@ export default function ScheduleReferral(props) {
   };
 
   const canScheduleAppointment =
+    hasVeteranAddress &&
     currentReferral.onlineSchedule &&
     currentReferral.provider?.npi &&
     !currentReferral.hasAppointments &&
@@ -52,20 +55,40 @@ export default function ScheduleReferral(props) {
   return (
     <ReferralLayout hasEyebrow heading={`Referral for ${categoryOfCare}`}>
       <div>
-        {!canScheduleAppointment && (
+        {!hasVeteranAddress && (
           <va-alert
             status="warning"
-            data-testid="referral-alert"
+            data-testid="address-alert"
             class="vads-u-margin-bottom--2"
           >
-            <p className="vads-u-margin-top--0 vads-u-margin-bottom--1">
-              Online scheduling isn’t available for this referral right now.
-              Call your community care provider or your facility’s community
-              care office to schedule an appointment.
+            <h2 className="vads-u-margin-top--0">
+              Add a home address to schedule an appointment
+            </h2>
+            <p>
+              To schedule an appointment, you need a home address on file. To
+              update your address, go to your VA.gov profile. Allow some time
+              for your address update to process through our system.
             </p>
-            <FindCommunityCareOfficeLink />
+            <NewTabAnchor href="/profile" data-testid="va-profile-link">
+              Go to your VA.gov profile
+            </NewTabAnchor>
           </va-alert>
         )}
+        {hasVeteranAddress &&
+          !canScheduleAppointment && (
+            <va-alert
+              status="warning"
+              data-testid="referral-alert"
+              class="vads-u-margin-bottom--2"
+            >
+              <p className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+                Online scheduling isn’t available for this referral right now.
+                Call your community care provider or your facility’s community
+                care office to schedule an appointment.
+              </p>
+              <FindCommunityCareOfficeLink />
+            </va-alert>
+          )}
 
         <p data-testid="subtitle">
           We’ve approved your referral for community care.
@@ -100,7 +123,7 @@ export default function ScheduleReferral(props) {
             id="questions-changes"
           >
             <p>
-              Contact your facility's community care office for any of these
+              Contact your facility’s community care office for any of these
               reasons:
             </p>
             <ul>
