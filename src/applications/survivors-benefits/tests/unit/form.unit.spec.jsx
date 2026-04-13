@@ -2,6 +2,31 @@ import { expect } from 'chai';
 import formConfig from '../../config/form';
 
 describe('Survivors Benefits Form config', () => {
+  describe('forceDivWrapper uiSchema configuration', () => {
+    it('adds forceDivWrapper at the page uiSchema root', () => {
+      const { veteranInformation } = formConfig.chapters;
+      const { veteranName } = veteranInformation.pages;
+
+      expect(veteranName.uiSchema['ui:options'].forceDivWrapper).to.be.true;
+    });
+
+    it('adds forceDivWrapper to empty uiSchema pages', () => {
+      const {
+        claimantInformation,
+        additionalInformation,
+      } = formConfig.chapters;
+
+      expect(
+        claimantInformation.pages.claimantOther.uiSchema['ui:options']
+          .forceDivWrapper,
+      ).to.be.true;
+      expect(
+        additionalInformation.pages.artifactReview.uiSchema['ui:options']
+          .forceDivWrapper,
+      ).to.be.true;
+    });
+  });
+
   describe('Chapter 2: Claimant Information with different data sets', () => {
     it('should show claimantOther page when claimantRelationship is OTHER', () => {
       const { claimantInformation } = formConfig.chapters;

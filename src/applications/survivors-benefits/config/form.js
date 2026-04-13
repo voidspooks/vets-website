@@ -83,6 +83,7 @@ import {
 } from '../cave/fieldMapping';
 import IncorrectForm from '../containers/IncorrectForm';
 import { transform } from './submit-transformer';
+import { applyForceDivWrapperToFormConfig } from './uiSchemaHelpers';
 // import prefillTransformer from './prefill-transformer';
 
 const getSeparationDetailsDepends = formData => {
@@ -681,4 +682,4 @@ const formConfig = {
   },
 };
 
-export default formConfig;
+export default applyForceDivWrapperToFormConfig(formConfig);
