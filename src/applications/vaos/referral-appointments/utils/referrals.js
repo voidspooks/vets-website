@@ -19,18 +19,23 @@ const CHIRO_FEATURE_ALLOWED_CATEGORY = ['chiropractic'];
 /**
  * Creates a referral list object relative to a start date.
  *
- * @param {String} startDate The date in 'yyyy-MM-dd' format to base the referrals around
+ * @param {String} expirationDate The date in 'yyyy-MM-dd' format for the referral expiration
  * @param {String} uuid The UUID for the referral
- * @param {String} categoryOfCare The category of care for the referral
+ * @param {String} [categoryOfCare='OPTOMETRY'] The category of care for the referral
+ * @param {String} [stationId='659'] The station id for the referral
+ * @param {Boolean} [onlineSchedule=true] Whether the referral can be scheduled online
+ * @param {String} [careType='CC'] The care type for the referral
+ * @param {Boolean} [hasAppointments=false] Whether the referral has appointments
  * @returns {Object} Referral object
  */
-
 const createReferralListItem = (
   expirationDate,
   uuid,
   categoryOfCare = 'OPTOMETRY',
   stationId = '659',
   onlineSchedule = true,
+  careType = 'CC',
+  hasAppointments = false,
 ) => {
   const [year, month, day] = expirationDate.split('-');
   const relativeDate = new Date(year, month - 1, day);
@@ -43,10 +48,12 @@ const createReferralListItem = (
         expirationDate || format(addMonths(relativeDate, 6), mydFormat),
       uuid,
       categoryOfCare,
+      careType,
       referralNumber: 'VA0000007241',
       referralConsultId: '984_646907',
       stationId,
       onlineSchedule,
+      hasAppointments,
     },
   };
 };
@@ -68,6 +75,7 @@ const errorReferralsList = (errorUUIDs || []).map(uuid => {
  * @param {Boolean} hasProvider Whether the referral has a provider
  * @param {String} stationId The station id for the referral
  * @param {Boolean} onlineSchedule Whether the referral can be scheduled online
+ * @param {String} [careType='CC'] The care type for the referral
  * @param {Boolean} veteranAddressPresent Whether the veteran has a home address on file
  * @returns {Object} Referral object
  */
@@ -79,6 +87,7 @@ const createReferralById = (
   hasProvider = true,
   stationId = '659BY',
   onlineSchedule = true,
+  careType = 'CC',
   veteranAddressPresent = true,
 ) => {
   const [year, month, day] = startDate.split('-');
@@ -112,6 +121,7 @@ const createReferralById = (
         expirationDate || format(addMonths(relativeDate, 6), mydFormat),
       referralNumber: uuid.includes('error') ? uuid : 'VA0000007241',
       categoryOfCare,
+      careType,
       referralConsultId: '984_646907',
       hasAppointments: false,
       onlineSchedule,

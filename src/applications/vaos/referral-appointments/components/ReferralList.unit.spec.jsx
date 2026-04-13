@@ -99,7 +99,7 @@ describe('VAOS Component: ReferralList', () => {
     ).to.exist;
     expect(
       screen.getByText(
-        'You can’t access community care referrals right now. Check back soon, or call your provider for help scheduling an appointment.',
+        'You can’t access community care referrals right now. Check back soon. Or call your facility’s community care office for help scheduling an appointment.',
       ),
     ).to.exist;
   });

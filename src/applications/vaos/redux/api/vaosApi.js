@@ -40,7 +40,7 @@ export const vaosApi = createApi({
           };
         }
       },
-      // Needs an argumant to be passed in to trigger the query.
+      // Needs an argument to be passed in to trigger the query.
       async onQueryStarted(id, { dispatch }) {
         dispatch(fetchPendingAppointments());
       },

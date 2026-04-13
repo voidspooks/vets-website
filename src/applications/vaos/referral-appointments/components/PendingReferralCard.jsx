@@ -5,7 +5,6 @@ import { titleCase } from '../../utils/formatters';
 import ListItem from '../../components/ListItem';
 import AppointmentRow from '../../components/AppointmentRow';
 import AppointmentColumn from '../../components/AppointmentColumn';
-import FindCommunityCareOfficeLink from './FindCCFacilityLink';
 
 const PendingReferralCard = ({ referral, index }) => {
   const first = index === 0;
@@ -25,45 +24,51 @@ const PendingReferralCard = ({ referral, index }) => {
   return (
     <ListItem borderTop={first} borderBottom status="pending">
       <AppointmentRow className="vads-u-padding-y--1 mobile:vads-u-flex-direction--row">
-        <AppointmentColumn className="vads-u-padding-y--1" size="1">
+        <AppointmentColumn
+          className="vads-u-padding-top--1 vads-u-padding-bottom--0p5"
+          size="1"
+        >
           <va-link
             href={detailLink}
             text={`${categoryOfCare} referral`}
             data-dd-privacy="mask"
             class="vads-u-font-weight--bold"
           />
-          <div className="vaos-appts__display--table vads-u-padding-left--0 vads-u-padding-y--1">
-            <span
-              id={`ref-desc-${index}`}
-              className="vaos-appts__display--table-cell vads-u-display--flex vads-u-align-items--center"
+          <p
+            id={`ref-desc-${index}`}
+            className="vads-u-padding-left--0 vads-u-margin-bottom--0 vads-u-margin-top--1"
+          >
+            <strong>Expiration date:</strong> {expiration}
+          </p>
+          {referral.hasAppointments && (
+            <p
+              className="vads-u-margin-top--0 vads-u-margin-bottom--0p5"
+              data-testid="has-appointments-message"
             >
-              {`Expiration date: ${expiration}.`}
-            </span>
-          </div>
-          {referral.onlineSchedule ? (
-            <div className="vaos-hide-for-print vads-u-padding-left--0">
-              <va-link-action
-                type="secondary"
-                href={providerSelectLink}
-                aria-labelledby={`ref-title-${index} ref-desc-${index}`}
-                text="Schedule an appointment"
-                data-testid="schedule-appointment-link"
-              />
-            </div>
-          ) : (
-            <div
-              className="vads-u-padding-left--0 vads-u-padding-y--1"
-              data-testid="cannot-schedule-online-message"
-            >
-              <va-additional-info trigger="Why you can’t schedule online?">
-                <p>
-                  Online scheduling isn’t available for this referral. Call your
-                  facility’s community care office to schedule an appointment.
-                </p>
-                <FindCommunityCareOfficeLink />
-              </va-additional-info>
-            </div>
+              You’ve already scheduled 1 or more appointments for this referral.
+            </p>
           )}
+          {!referral.hasAppointments &&
+            referral.onlineSchedule && (
+              <div className="vaos-hide-for-print vads-u-padding-left--0 vads-u-margin-top--0p5">
+                <va-link-action
+                  type="secondary"
+                  href={providerSelectLink}
+                  aria-labelledby={`ref-title-${index} ref-desc-${index}`}
+                  text="Schedule an appointment"
+                  data-testid="schedule-appointment-link"
+                />
+              </div>
+            )}
+          {!referral.hasAppointments &&
+            !referral.onlineSchedule && (
+              <p
+                className="vads-u-margin-top--0 vads-u-margin-bottom--0p5"
+                data-testid="cannot-schedule-online-message"
+              >
+                Online scheduling isn’t available for this referral.
+              </p>
+            )}
         </AppointmentColumn>
       </AppointmentRow>
     </ListItem>

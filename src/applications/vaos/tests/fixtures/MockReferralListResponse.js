@@ -30,10 +30,13 @@ class MockReferralListResponse {
       .toString(36)
       .substring(2, 10)}`,
     categoryOfCare = 'OPTOMETRY',
+    careType = 'CC',
     referralNumber = `VA${Math.floor(1000 + Math.random() * 9000)}`,
     expirationDate = format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
     stationId = '659',
     onlineSchedule = true,
+    referralConsultId = '12345',
+    hasAppointments = false,
   } = {}) {
     return {
       id,
@@ -41,10 +44,13 @@ class MockReferralListResponse {
       attributes: {
         stationId,
         categoryOfCare,
+        careType,
         referralNumber,
         uuid: id,
         expirationDate,
         onlineSchedule,
+        referralConsultId,
+        hasAppointments,
       },
     };
   }
@@ -74,8 +80,10 @@ class MockReferralListResponse {
       MockReferralListResponse.createReferral({
         id: 'add2f0f4-a1ea-4dea-a504-a54ab57c6801',
         categoryOfCare: 'CHIROPRACTIC',
+        careType: 'VA',
         referralNumber: 'VA0000007123',
         expirationDate: format(addMonths(today, 5), formatStr),
+        referralConsultId: '67890',
       }),
       MockReferralListResponse.createReferral({
         id: 'out-of-pilot-station',
@@ -133,6 +141,13 @@ class MockReferralListResponse {
         categoryOfCare: 'OPTOMETRY',
         referralNumber: 'details-not-found-error',
         expirationDate: format(new Date(2024, 12, 2), formatStr),
+      }),
+      MockReferralListResponse.createReferral({
+        id: 'scheduled-referral',
+        categoryOfCare: 'OPTOMETRY',
+        referralNumber: 'scheduled-referral',
+        expirationDate: format(addMonths(today, 3), formatStr),
+        hasAppointments: true,
       }),
       MockReferralListResponse.createReferral({
         id: 'details-error',

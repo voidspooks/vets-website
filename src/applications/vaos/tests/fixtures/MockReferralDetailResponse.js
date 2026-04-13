@@ -43,8 +43,10 @@ class MockReferralDetailResponse {
       .toString(36)
       .substring(2, 10)}`,
     categoryOfCare = 'OPTOMETRY',
+    careType = 'CC',
     hasAppointments = false,
     referralNumber = 'VA0000005681',
+    referralConsultId = '12345',
     expirationDate = this.expirationDate
       ? format(this.expirationDate, 'yyyy-MM-dd')
       : format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
@@ -72,8 +74,10 @@ class MockReferralDetailResponse {
         attributes: {
           uuid: id,
           categoryOfCare,
+          careType,
           status: 'ACTIVE',
           referralNumber,
+          referralConsultId,
           expirationDate,
           serviceName: 'Referral',
           hasAppointments,
@@ -157,11 +161,13 @@ class MockReferralDetailResponse {
     const {
       id,
       categoryOfCare,
+      careType,
       hasAppointments,
       notFound,
       serverError,
       provider,
       referralNumber,
+      referralConsultId,
       stationId,
       onlineSchedule,
       veteranAddressPresent,
@@ -181,9 +187,11 @@ class MockReferralDetailResponse {
     return MockReferralDetailResponse.createSuccessResponse({
       id,
       categoryOfCare,
+      careType,
       hasAppointments,
       provider,
       referralNumber,
+      referralConsultId,
       stationId,
       onlineSchedule,
       veteranAddressPresent,

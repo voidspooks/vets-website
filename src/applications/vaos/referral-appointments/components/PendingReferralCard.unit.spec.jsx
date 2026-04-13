@@ -34,16 +34,17 @@ describe('VAOS Component: PendingReferralCard', () => {
   });
   it('should display the expiration date', () => {
     screen = render(<PendingReferralCard referral={referral} index={0} />);
-    expect(screen.getByText('Expiration date: July 1, 2025.')).to.exist;
+    expect(screen.getByText(/July 1, 2025/)).to.exist;
   });
 
-  it('should display schedule link when onlineSchedule is true', () => {
+  it('should display schedule link when onlineSchedule is true and hasAppointments is false', () => {
     screen = render(<PendingReferralCard referral={referral} index={0} />);
     expect(screen.getByTestId('schedule-appointment-link')).to.exist;
     expect(screen.queryByTestId('cannot-schedule-online-message')).to.not.exist;
+    expect(screen.queryByTestId('has-appointments-message')).to.not.exist;
   });
 
-  it('should display cannot-schedule-online message when onlineSchedule is false', () => {
+  it('should display cannot-schedule-online message when onlineSchedule is false and hasAppointments is false', () => {
     const offlineReferral = {
       ...referral,
       onlineSchedule: false,
@@ -53,6 +54,25 @@ describe('VAOS Component: PendingReferralCard', () => {
     );
     expect(screen.queryByTestId('schedule-appointment-link')).to.not.exist;
     expect(screen.getByTestId('cannot-schedule-online-message')).to.exist;
+    expect(screen.queryByTestId('has-appointments-message')).to.not.exist;
+  });
+
+  it('should display has-appointments message when hasAppointments is true', () => {
+    const scheduledReferral = {
+      ...referral,
+      hasAppointments: true,
+    };
+    screen = render(
+      <PendingReferralCard referral={scheduledReferral} index={0} />,
+    );
+    expect(screen.getByTestId('has-appointments-message')).to.exist;
+    expect(
+      screen.getByText(
+        /You’ve already scheduled 1 or more appointments for this referral/,
+      ),
+    ).to.exist;
+    expect(screen.queryByTestId('schedule-appointment-link')).to.not.exist;
+    expect(screen.queryByTestId('cannot-schedule-online-message')).to.not.exist;
   });
 
   it('should set correct detail href on referral title link', () => {
@@ -85,43 +105,6 @@ describe('VAOS Component: PendingReferralCard', () => {
     screen = render(<PendingReferralCard referral={referral} index={1} />);
     const secondItem = screen.getByTestId('appointment-list-item');
     expect(secondItem.className).to.not.contain('vads-u-border-top--1px');
-  });
-
-  it('should render va-additional-info with correct trigger and body when offline', () => {
-    const offlineReferral = {
-      ...referral,
-      onlineSchedule: false,
-    };
-    screen = render(
-      <PendingReferralCard referral={offlineReferral} index={0} />,
-    );
-    const additionalInfo = screen.container.querySelector('va-additional-info');
-    expect(additionalInfo).to.exist;
-    expect(additionalInfo.getAttribute('trigger')).to.match(
-      /Why you can.t schedule online\?/,
-    );
-    const bodyText = screen.container.querySelector(
-      '[data-testid="cannot-schedule-online-message"] p',
-    );
-    expect(bodyText).to.exist;
-    expect(bodyText.textContent).to.match(
-      /Online scheduling isn.t available for this referral/,
-    );
-  });
-
-  it('should render FindCommunityCareOfficeLink when offline', () => {
-    const offlineReferral = {
-      ...referral,
-      onlineSchedule: false,
-    };
-    screen = render(
-      <PendingReferralCard referral={offlineReferral} index={0} />,
-    );
-    const ccLink = screen.getByTestId('referral-community-care-office');
-    expect(ccLink).to.exist;
-    expect(ccLink.getAttribute('href')).to.equal(
-      '/COMMUNITYCARE/providers/Care-Coordination-Facilities.asp',
-    );
   });
 
   it('should set correct provider selection href on schedule action link', () => {
