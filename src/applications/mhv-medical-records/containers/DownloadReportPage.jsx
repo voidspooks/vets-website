@@ -72,7 +72,7 @@ const DownloadReportPage = ({ runningUnitTest }) => {
   // Use platform hook for Cerner/OH detection. isAcceleratingCCD combines
   // the CCD OH feature flag with isCernerPatient (200CRNR MPI flag) in the
   // user's profile.
-  const { isAcceleratingCCD } = useAcceleratedData();
+  const { isLoading, isAcceleratingCCD } = useAcceleratedData();
 
   // Get user's facility list for display name mapping
   const facilities = useSelector(state => selectPatientFacilities(state) || []);
@@ -157,6 +157,11 @@ const DownloadReportPage = ({ runningUnitTest }) => {
   useEffect(
     () => {
       updatePageTitle(pageTitles.DOWNLOAD_PAGE_TITLE);
+
+      // Let va-loading-indicator manage focus while loading.
+      // Focus logic runs once content mounts (isLoading becomes false).
+      if (isLoading) return undefined;
+
       const params = new URLSearchParams(window.location.search);
       if (params.get('sei') === 'true') {
         // Expand and focus the self-entered accordion if ?sei=true query param is present
@@ -178,7 +183,7 @@ const DownloadReportPage = ({ runningUnitTest }) => {
         dispatch({ type: Actions.Downloads.CCD_CLEAR_ALERT });
       };
     },
-    [dispatch],
+    [dispatch, isLoading],
   );
 
   useEffect(
@@ -315,20 +320,30 @@ const DownloadReportPage = ({ runningUnitTest }) => {
   return (
     <DownloadReportProvider value={downloadReportContextValue}>
       <div>
-        <IntroSection
-          dataSourceType={dataSourceType}
-          lastSuccessfulUpdate={lastSuccessfulUpdate}
-          ohFacilityNamesAfterCutover={ohFacilityNamesAfterCutover}
-          ohFacilityNamesBeforeCutover={ohFacilityNamesBeforeCutover}
-          vistaFacilityNames={vistaFacilityNames}
-        />
-        <BlueButtonSection
-          activeAlert={activeAlert}
-          failedBBDomains={failedBBDomains}
-          successfulBBDownload={successfulBBDownload}
-        />
-        {renderContent()}
-        <NeedHelpSection />
+        <h1>Download your medical records reports</h1>
+        {isLoading ? (
+          <va-loading-indicator
+            message="Loading your medical records information..."
+            set-focus
+          />
+        ) : (
+          <>
+            <IntroSection
+              dataSourceType={dataSourceType}
+              lastSuccessfulUpdate={lastSuccessfulUpdate}
+              ohFacilityNamesAfterCutover={ohFacilityNamesAfterCutover}
+              ohFacilityNamesBeforeCutover={ohFacilityNamesBeforeCutover}
+              vistaFacilityNames={vistaFacilityNames}
+            />
+            <BlueButtonSection
+              activeAlert={activeAlert}
+              failedBBDomains={failedBBDomains}
+              successfulBBDownload={successfulBBDownload}
+            />
+            {renderContent()}
+            <NeedHelpSection />
+          </>
+        )}
       </div>
     </DownloadReportProvider>
   );

@@ -68,6 +68,56 @@ const getBaseState = (
   },
 });
 
+describe('DownloadRecordsPage - Loading State', () => {
+  it('shows loading indicator and withholds content when featureToggles are loading', () => {
+    const loadingState = {
+      ...getBaseState(),
+      featureToggles: {
+        ...getBaseState().featureToggles,
+        loading: true,
+      },
+    };
+    const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
+      initialState: loadingState,
+      reducers: reducer,
+      path: '/download-all',
+    });
+
+    // h1 should always render
+    expect(screen.getByText('Download your medical records reports')).to.exist;
+    // Loading indicator should be present
+    expect(screen.container.querySelector('va-loading-indicator')).to.exist;
+    // Page content should NOT render
+    expect(
+      screen.queryByText(
+        /Download your VA medical records as a single report/i,
+      ),
+    ).to.be.null;
+    expect(screen.queryByText('Need help?')).to.be.null;
+  });
+
+  it('shows loading indicator when DSOT data is still loading', () => {
+    const loadingState = {
+      ...getBaseState(),
+      drupalStaticData: {
+        vamcEhrData: {
+          data: null,
+          loading: true,
+        },
+      },
+    };
+    const screen = renderWithStoreAndRouter(<DownloadReportPage />, {
+      initialState: loadingState,
+      reducers: reducer,
+      path: '/download-all',
+    });
+
+    expect(screen.getByText('Download your medical records reports')).to.exist;
+    expect(screen.container.querySelector('va-loading-indicator')).to.exist;
+    expect(screen.queryByText('Need help?')).to.be.null;
+  });
+});
+
 describe('DownloadRecordsPage - VistA Only User', () => {
   let screen;
 

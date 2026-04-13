@@ -6,15 +6,6 @@ import { dataSourceTypes } from '../../../util/constants';
 
 describe('IntroSection', () => {
   describe('Vista-only (default)', () => {
-    it('renders the h1 heading', () => {
-      const { getByRole } = render(<IntroSection />);
-      const heading = getByRole('heading', { level: 1 });
-      expect(heading).to.exist;
-      expect(heading.textContent).to.eq(
-        'Download your medical records reports',
-      );
-    });
-
     it('renders the intro paragraph about Blue Button report', () => {
       const { getByText } = render(<IntroSection />);
       expect(getByText(/Download your VA medical records as a single report/i))
@@ -31,17 +22,12 @@ describe('IntroSection', () => {
       const ohFacilityNamesAfterCutover = [
         'OH Facility (January 1, 2022 - present)',
       ];
-      const { getByRole, getAllByText, getByText } = render(
+      const { getAllByText, getByText } = render(
         <IntroSection
           dataSourceType={dataSourceTypes.BOTH}
           ohFacilityNamesBeforeCutover={ohFacilityNamesBeforeCutover}
           ohFacilityNamesAfterCutover={ohFacilityNamesAfterCutover}
         />,
-      );
-
-      const heading = getByRole('heading', { level: 1 });
-      expect(heading.textContent).to.eq(
-        'Download your medical records reports',
       );
 
       expect(getByText(/Continuity of Care Document/i)).to.exist;
@@ -59,18 +45,13 @@ describe('IntroSection', () => {
         'OH Facility (January 1, 2022 - present)',
       ];
       const vistaFacilityNames = ['VistA Facility'];
-      const { getByRole, getByText } = render(
+      const { getByText } = render(
         <IntroSection
           dataSourceType={dataSourceTypes.BOTH}
           ohFacilityNamesBeforeCutover={ohFacilityNamesBeforeCutover}
           ohFacilityNamesAfterCutover={ohFacilityNamesAfterCutover}
           vistaFacilityNames={vistaFacilityNames}
         />,
-      );
-
-      const heading = getByRole('heading', { level: 1 });
-      expect(heading.textContent).to.eq(
-        'Download your medical records reports',
       );
 
       // Should mention Blue Button and self-entered information

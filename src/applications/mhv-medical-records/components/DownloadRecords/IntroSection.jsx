@@ -6,7 +6,6 @@ import LastUpdatedCard from './LastUpdatedCard';
 import HoldTimeInfo from '../shared/HoldTimeInfo';
 
 const BOTH_CONTENT = {
-  heading: 'Download your medical records reports',
   getDescription: (
     vistaFacilityNames,
     ohFacilityNamesAfterCutover,
@@ -34,7 +33,6 @@ const BOTH_CONTENT = {
 const CONTENT = {
   [dataSourceTypes.BOTH]: BOTH_CONTENT,
   [dataSourceTypes.VISTA_ONLY]: {
-    heading: 'Download your medical records reports',
     description: (
       <p>
         Download your VA medical records as a single report (called your VA Blue
@@ -61,7 +59,6 @@ const IntroSection = ({
 
   return (
     <>
-      <h1>{content.heading}</h1>
       {description}
       <HoldTimeInfo locationPhrase="in your reports" />
       <LastUpdatedCard lastSuccessfulUpdate={lastSuccessfulUpdate} />
