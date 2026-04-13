@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/sort-prop-types */
-import classNames from 'classnames';
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { focusElement } from 'platform/utilities/ui/focus';
@@ -11,10 +10,10 @@ import get from '~/platform/utilities/data/get';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { setData } from '~/platform/forms-system/src/js/actions';
 import FormNavButtons from '~/platform/forms-system/src/js/components/FormNavButtons';
+import { useHeadingLevels } from 'platform/forms-system/src/js/web-component-patterns/titlePattern';
 import ArrayBuilderCards from './ArrayBuilderCards';
 import ArrayBuilderSummaryReviewPage from './ArrayBuilderSummaryReviewPage';
 import ArrayBuilderSummaryNoSchemaFormPage from './ArrayBuilderSummaryNoSchemaFormPage';
-import { getTitleHeadingColorToken } from '../../web-component-patterns/titlePattern';
 import {
   arrayBuilderContextObject,
   checkIfArrayHasDuplicateData,
@@ -24,7 +23,6 @@ import {
   // META_DATA_KEY,
   maxItemsFn,
   slugifyText,
-  useHeadingLevels,
   validateIncompleteItems,
 } from './helpers';
 
@@ -154,10 +152,10 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
     const maxItemsAlertRef = useRef(null);
     const dataRef = useRef(props.data);
     const { uiSchema, schema } = props;
-    const { headingLevel, headerStyleLevel, headingStyle } = useHeadingLevels(
-      titleHeaderLevel,
+    const { headingLevel, headingClasses } = useHeadingLevels({
+      userHeaderLevel: titleHeaderLevel,
       isReviewPage,
-    );
+    });
     const Heading = `h${headingLevel}`;
     const maxItems = maxItemsFn(arrayBuilderOptions.maxItems, props.data);
     const isMaxItemsReached = arrayData?.length >= maxItems;
@@ -386,17 +384,9 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
 
     const Title = ({ textType }) => {
       const text = getText(textType, updatedItemData, props.data);
-      const colorToken = getTitleHeadingColorToken(
-        Number(headingLevel),
-        headerStyleLevel,
-      );
-      const baseClasses = [
-        `vads-u-color--${colorToken}`,
-        'vads-u-margin-top--0',
-      ];
       return text ? (
         <Heading
-          className={classNames(baseClasses, headingStyle)}
+          className={headingClasses}
           data-title-for-noun-singular={nounSingular}
           data-array-path={arrayPath}
         >

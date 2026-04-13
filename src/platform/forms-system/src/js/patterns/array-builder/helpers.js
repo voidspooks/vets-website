@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import get from 'platform/utilities/data/get';
 import set from 'platform/utilities/data/set';
 import {
@@ -528,37 +527,6 @@ export const validateIncompleteItems = ({
   }
 
   return isValid;
-};
-
-/**
- * Determines the appropriate heading level and style based on user input,
- * review page state, and whether the current path uses a minimal header layout.
- *
- * @param {string|undefined} userHeaderLevel - An optional custom heading level to use (e.g., '1', '2', '3').
- * @param {boolean} isReviewPage - Whether the current page is a review page.
- * @returns {{ headingLevel: string, headerStyleLevel: number|undefined, headingStyle: Object }}
- * An object containing:
- *  - `headingLevel`: The resolved heading level as a string.
- *  - `headerStyleLevel`: The numeric style level (e.g. `2` for minimal-header summary) or `undefined`.
- *  - `headingStyle`: A style object for applying conditional font size classes.
- */
-export const useHeadingLevels = (userHeaderLevel, isReviewPage) => {
-  const isMinimalHeader = useMemo(() => isMinimalHeaderPath(), []);
-  let defaultLevel;
-
-  if (isMinimalHeader) {
-    defaultLevel = isReviewPage ? '3' : '1';
-  } else {
-    defaultLevel = isReviewPage ? '4' : '3';
-  }
-
-  const headingLevel = userHeaderLevel ?? defaultLevel;
-  const headerStyleLevel = isMinimalHeader && !isReviewPage ? 2 : undefined;
-  const headingStyle = {
-    'vads-u-font-size--h2': isMinimalHeader && !isReviewPage,
-  };
-
-  return { headingLevel, headerStyleLevel, headingStyle };
 };
 
 /**

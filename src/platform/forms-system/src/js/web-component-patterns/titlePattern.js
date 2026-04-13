@@ -1,40 +1,69 @@
 /* eslint-disable react/prop-types */
-import React, { useRef } from 'react';
+import classNames from 'classnames';
+import React, { useMemo } from 'react';
 import { isReactComponent } from '~/platform/utilities/ui';
 import { isMinimalHeaderPath } from '../patterns/minimal-header';
 
 /**
- * Page title text color used by `Title` (titleUI). Shared with array-builder summary
- * headings so they stay visually consistent.
+ * Determines the appropriate heading level and responsive font-size classes
+ * based on user input, review page state, and minimal header layout.
  *
- * @param {number} headerLevel
- * @param {number} [headerStyleLevel] - Use `2` when the title uses `vads-u-font-size--h2` (minimal-header summary).
- * @returns {'gray-dark' | 'black'}
+ * @param {Object} [options={}] - Optional configuration object.
+ * @param {string|number|null} userHeaderLevel - An optional custom heading level (e.g., '1', '2', '3').
+ *   If not provided, defaults based on minimal header status and review page state.
+ * @param {number|null} [options.userHeaderStyleLevel=null] - An optional style level to override the
+ *   responsive font-size calculation. Used to apply alternate styling (e.g., h2 size for h1 heading).
+ * @param {boolean} [options.isReviewPage=false] - Whether the heading is on a review page.
+ *   When true, uses review-page styling (h5 size, base color) and ignores style-level sizing.
+ *
+ * @returns {Object} An object containing:
+ *   - `headingLevel`: The resolved heading element level as a string ('1', '2', '3', etc.).
+ *   - `headingClasses`: A classNames string with combined utility classes including:
+ *     - Color token (`vads-u-color--base` on review pages, otherwise `gray-dark` or `black`).
+ *     - Margin reset (`vads-u-margin-top--0`).
+ *     - Responsive font sizes (`mobile-lg:vads-u-font-size--h${styleLevel}` and `vads-u-font-size--h${styleLevel + 1}`)
+ *       when a style level is active (non-review pages with minimal header).
+ *     - Review-page size (`vads-u-font-size--h5`) when on review page.
  */
-export function getTitleHeadingColorToken(headerLevel, headerStyleLevel) {
-  return headerStyleLevel === 3 || (!headerStyleLevel && headerLevel === 3)
-    ? 'gray-dark'
-    : 'black';
-}
+export const useHeadingLevels = ({
+  userHeaderLevel = null,
+  userHeaderStyleLevel = null,
+  isReviewPage = false,
+}) => {
+  const isMinimalHeader = useMemo(() => isMinimalHeaderPath(), []);
+  let defaultStyleLevel;
+  let defaultLevel;
 
-const useHeadingLevels = (userHeaderLevel, userHeaderStyleLevel) => {
-  const isMinimalHeader = useRef(null);
-  if (isMinimalHeader.current === null) {
-    // only call once
-    isMinimalHeader.current = isMinimalHeaderPath();
+  if (isMinimalHeader) {
+    defaultLevel = isReviewPage ? 3 : 1;
+    defaultStyleLevel = !isReviewPage && 2;
+  } else {
+    defaultLevel = isReviewPage ? 4 : 3;
   }
-  const headerLevel = userHeaderLevel || (isMinimalHeader.current ? 1 : 3);
-  // Arbitrary decision with design:
-  // When using titleUI with minimal header and we are now using h1s,
-  // the styling is a bit too large for a page title (before it was h3),
-  // so we'll bump the style down to h2
-  const headerStyleLevel =
-    userHeaderStyleLevel || (isMinimalHeader.current ? 2 : undefined);
 
-  return {
-    headerLevel,
-    headerStyleLevel,
-  };
+  const headingLevel = userHeaderLevel || defaultLevel;
+  const headingStyleLevel = isReviewPage
+    ? undefined
+    : userHeaderStyleLevel || defaultStyleLevel;
+
+  const defaultColor =
+    Number(headingStyleLevel) === 3 ||
+    (!headingStyleLevel && Number(headingLevel) === 3)
+      ? 'gray-dark'
+      : 'black';
+  const headingColor = isReviewPage ? 'base' : defaultColor;
+
+  const headingClasses = classNames({
+    [`vads-u-color--${headingColor}`]: true,
+    'vads-u-margin-top--0': true,
+    ...(headingStyleLevel && {
+      [`mobile-lg:vads-u-font-size--h${headingStyleLevel}`]: true,
+      [`vads-u-font-size--h${headingStyleLevel + 1}`]: true,
+    }),
+    'vads-u-font-size--h5': isReviewPage,
+  });
+
+  return { headingLevel, headingClasses };
 };
 
 export const Title = ({
@@ -42,30 +71,18 @@ export const Title = ({
   description,
   headerLevel: userHeaderLevel,
   headerStyleLevel: userHeaderStyleLevel,
-  classNames,
+  classNames: userClassNames,
 }) => {
-  const { headerLevel, headerStyleLevel } = useHeadingLevels(
+  const { headingLevel, headingClasses } = useHeadingLevels({
     userHeaderLevel,
     userHeaderStyleLevel,
-  );
+  });
 
-  const CustomHeader = `h${headerLevel}`;
-  const style = headerStyleLevel
-    ? ` mobile-lg:vads-u-font-size--h${headerStyleLevel} vads-u-font-size--h${Number(
-        headerStyleLevel,
-      ) + 1}`
-    : '';
-  const color = getTitleHeadingColorToken(headerLevel, headerStyleLevel);
-  const className =
-    classNames || `vads-u-color--${color} vads-u-margin-top--0${style}`;
+  const CustomHeader = `h${headingLevel}`;
+  const className = userClassNames || headingClasses;
 
   // If the header is an h1, it's intended to also be the focus
-  const focusHeaderProps =
-    headerLevel === 1
-      ? {
-          tabIndex: '-1',
-        }
-      : {};
+  const focusHeaderProps = headingLevel === 1 ? { tabIndex: '-1' } : {};
 
   return (
     <>
@@ -137,7 +154,7 @@ export const titleUI = (titleOption, descriptionOption) => {
     description,
     headerLevel,
     headerStyleLevel,
-    classNames,
+    classNames: userClassNames,
   } = isTitleObject(titleOption)
     ? titleOption
     : {
@@ -157,7 +174,7 @@ export const titleUI = (titleOption, descriptionOption) => {
               description={isDescriptionFn ? description(props) : description}
               headerLevel={headerLevel}
               headerStyleLevel={headerStyleLevel}
-              classNames={classNames}
+              classNames={userClassNames}
             />
           </legend>
         )
@@ -167,7 +184,7 @@ export const titleUI = (titleOption, descriptionOption) => {
           description={description}
           headerLevel={headerLevel}
           headerStyleLevel={headerStyleLevel}
-          classNames={classNames}
+          classNames={userClassNames}
         />
       ),
   };

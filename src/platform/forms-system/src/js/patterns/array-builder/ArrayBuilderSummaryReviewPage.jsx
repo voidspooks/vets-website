@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useHeadingLevels } from './helpers';
+import { useHeadingLevels } from 'platform/forms-system/src/js/web-component-patterns/titlePattern';
 
 const ArrayBuilderSummaryReviewPage = ({
   customPageProps,
@@ -13,8 +13,11 @@ const ArrayBuilderSummaryReviewPage = ({
   Title,
   hideAdd,
 }) => {
-  const { reviewPanelHeadingLevel } = arrayBuilderOptions;
-  const { headingLevel } = useHeadingLevels(reviewPanelHeadingLevel, true);
+  const userHeaderLevel = arrayBuilderOptions.reviewPanelHeadingLevel;
+  const { headingLevel } = useHeadingLevels({
+    userHeaderLevel,
+    isReviewPage: true,
+  });
   const Header = `h${headingLevel}`;
   return (
     <>
