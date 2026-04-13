@@ -13,7 +13,43 @@ const {
   uiSchema,
 } = formConfig.chapters.additionalInformation.pages.paymentInformation;
 
+const fakeStore = {
+  getState: () => ({ form: { data: {} } }),
+  subscribe: () => {},
+  dispatch: () => {},
+};
+
 describe('526 -- paymentInformation', () => {
+  it('should render "Edit your account details" when bank information is present', () => {
+    const form = mount(
+      <Provider store={fakeStore}>
+        <DefinitionTester
+          definitions={formConfig.defaultDefinitions}
+          schema={schema}
+          data={{
+            'view:bankAccount': {
+              'view:hasPrefilledBank': true,
+            },
+            'view:originalBankAccount': {
+              'view:bankAccountType': 'Checking',
+              'view:bankAccountNumber': '*********1234',
+              'view:bankRoutingNumber': '*****2115',
+              'view:bankName': 'Comerica',
+            },
+          }}
+          formData={{}}
+          uiSchema={uiSchema}
+        />
+      </Provider>,
+    );
+
+    const button = form.find('button.edit-button');
+    expect(button).to.have.lengthOf(1);
+    expect(button.text()).to.equal('Edit your account details');
+
+    form.unmount();
+  });
+
   it('should render with no prefill', () => {
     const form = mount(
       <DefinitionTester
@@ -68,11 +104,7 @@ describe('526 -- paymentInformation', () => {
 
   it('should submit with all required info', async () => {
     const onSubmit = sinon.spy();
-    const fakeStore = {
-      getState: () => ({ form: { data: {} } }),
-      subscribe: () => {},
-      dispatch: () => {},
-    };
+
     const form = mount(
       // The page's PaymentView is connected to the redux store
       <Provider store={fakeStore}>
