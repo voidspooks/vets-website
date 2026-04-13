@@ -239,12 +239,12 @@ const ClaimsAndAppeals = ({
       </div>
       <Toggler toggleName={Toggler.TOGGLE_NAMES.myVaAuthExpRedesignEnabled}>
         <Toggler.Enabled>
-          <div>
+          <p>
             <va-link
               href="/track-claims/your-claims"
               text="Check claims and appeals"
             />
-          </div>
+          </p>
           {!isLOA1 && (
             <DashboardWidgetWrapper>
               <DisabilityRatingCard />

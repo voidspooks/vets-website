@@ -116,11 +116,13 @@ const BenefitPayments = () => {
         {!lastPayment && (
           <DashboardWidgetWrapper>
             {paymentsError ? <PaymentsError /> : <NoRecentPaymentText />}
-            <va-link
-              href="/va-payment-history/payments/"
-              text="View all payment information"
-              data-testid="view-payment-history-link"
-            />
+            <p>
+              <va-link
+                href="/va-payment-history/payments/"
+                text="View all payment information"
+                data-testid="view-payment-history-link"
+              />
+            </p>
           </DashboardWidgetWrapper>
         )}
       </div>
