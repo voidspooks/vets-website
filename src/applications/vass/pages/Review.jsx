@@ -8,6 +8,7 @@ import {
   selectSelectedTopics,
   selectSelectedSlot,
 } from '../redux/slices/formSlice';
+import { sortTopicsAlphabetically } from '../utils/appointments';
 import { URLS } from '../utils/constants';
 import { isServerError, isAppointmentFailedError } from '../utils/errors';
 
@@ -83,7 +84,9 @@ const Review = () => {
         data-dd-privacy="mask"
         data-testid="topic-description"
       >
-        {(selectedTopics || []).map(topic => topic?.topicName || '').join(', ')}
+        {sortTopicsAlphabetically(selectedTopics)
+          .map(topic => topic?.topicName || '')
+          .join(', ')}
       </p>
       <div className="vads-u-display--flex vads-u-margin-top--4 vass-form__button-container vass-flex-direction--column">
         <va-button

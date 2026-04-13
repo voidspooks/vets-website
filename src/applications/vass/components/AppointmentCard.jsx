@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import CardSection from './CardSection';
+import { sortTopicsAlphabetically } from '../utils/appointments';
 import { VASS_PHONE_NUMBER } from '../utils/constants';
 /**
  * @typedef {import('../utils/appointments').Appointment} Appointment
@@ -67,7 +68,7 @@ const AppointmentCard = ({
           <CardSection
             data-testid="topics-section"
             heading="Topics you’d like to learn more about"
-            textContent={appointmentData?.topics
+            textContent={sortTopicsAlphabetically(appointmentData.topics)
               .map(topic => topic?.topicName || '')
               .join(', ')}
           />

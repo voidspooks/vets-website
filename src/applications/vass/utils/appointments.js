@@ -25,6 +25,19 @@
  */
 
 /**
+ * Sorts an array of topics alphabetically by topicName.
+ * Returns a new array without mutating the original.
+ *
+ * @param {Topic[]} topics - Array of topic objects
+ * @returns {Topic[]} Sorted copy of the topics array
+ */
+function sortTopicsAlphabetically(topics = []) {
+  return [...topics].sort((a, b) =>
+    (a?.topicName || '').localeCompare(b?.topicName || ''),
+  );
+}
+
+/**
  * Normalizes appointment topics from the `skillId`/`skillName` format
  * to the canonical `topicId`/`topicName` format. When the backend migrates
  * to `topicId`/`topicName`, this function can be removed.
@@ -111,6 +124,7 @@ function createVassApiStateWithAppointment(appointmentId, appointmentData) {
 }
 
 module.exports = {
+  sortTopicsAlphabetically,
   normalizeAppointmentTopics,
   createAppointmentData,
   createVassApiStateWithAppointment,

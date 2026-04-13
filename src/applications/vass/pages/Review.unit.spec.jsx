@@ -95,8 +95,8 @@ describe('VASS Component: Review', () => {
       getDefaultRenderOptions({
         ...defaultFormState,
         selectedTopics: [
-          { topicId: '1', topicName: 'Education Benefits' },
           { topicId: '2', topicName: 'Health Care' },
+          { topicId: '1', topicName: 'Education Benefits' },
           { topicId: '3', topicName: 'Housing Assistance' },
         ],
       }),

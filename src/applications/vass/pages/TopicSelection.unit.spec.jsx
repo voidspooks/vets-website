@@ -72,7 +72,7 @@ describe('VASS Component: TopicSelection', () => {
   };
 
   it('should render the page correctly after topics load', async () => {
-    const topics = createDefaultTopics(3);
+    const topics = createDefaultTopics();
     setupTopicsResponse(topics);
 
     const screen = renderComponent();
@@ -96,6 +96,13 @@ describe('VASS Component: TopicSelection', () => {
       expect(checkbox).to.exist;
       expect(checkbox).to.have.attribute('label', topicName);
     });
+
+    const checkboxes = screen.container.querySelectorAll(
+      'va-checkbox[name="topic"]',
+    );
+    const labels = [...checkboxes].map(cb => cb.getAttribute('label'));
+    const sortedLabels = [...labels].sort((a, b) => a.localeCompare(b));
+    expect(labels).to.deep.equal(sortedLabels);
   });
 
   it('should render empty checkbox group when API returns no topics', async () => {

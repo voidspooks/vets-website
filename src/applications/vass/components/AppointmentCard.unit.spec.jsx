@@ -10,8 +10,8 @@ describe('VASS Component: AppointmentCard', () => {
   it('renders card sections and actions', () => {
     const appointmentData = createAppointmentData({
       topics: [
-        { topicName: 'Benefits', topicId: '123' },
         { topicName: 'Health care', topicId: '456' },
+        { topicName: 'Benefits', topicId: '123' },
       ],
     });
 

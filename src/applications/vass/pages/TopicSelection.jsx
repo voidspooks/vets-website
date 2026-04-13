@@ -12,6 +12,7 @@ import {
 } from '../redux/slices/formSlice';
 import { useGetTopicsQuery } from '../redux/api/vassApi';
 import { useErrorFocus } from '../hooks/useErrorFocus';
+import { sortTopicsAlphabetically } from '../utils/appointments';
 import { URLS } from '../utils/constants';
 import { isServerError } from '../utils/errors';
 
@@ -21,7 +22,7 @@ const TopicSelection = () => {
   const selectedTopics = useSelector(selectSelectedTopics);
   const navigate = useNavigate();
   const { data, isLoading: loading, error: topicsError } = useGetTopicsQuery();
-  const topics = useMemo(() => data?.topics || [], [data]);
+  const topics = useMemo(() => sortTopicsAlphabetically(data?.topics), [data]);
 
   const handleTopicChange = event => {
     handleSetError('');
