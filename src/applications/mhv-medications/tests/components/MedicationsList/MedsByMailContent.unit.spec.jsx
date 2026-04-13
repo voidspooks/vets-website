@@ -6,10 +6,13 @@ import reducer from '../../../reducers';
 import MedsByMailContent from '../../../components/MedicationsList/MedsByMailContent';
 
 describe('MedsByMailContent component', () => {
-  const setup = () => {
-    return renderWithStoreAndRouterV6(<MedsByMailContent />, {
-      reducers: reducer,
-    });
+  const setup = (headingLevel = undefined) => {
+    return renderWithStoreAndRouterV6(
+      <MedsByMailContent headingLevel={headingLevel} />,
+      {
+        reducers: reducer,
+      },
+    );
   };
 
   it('renders correct content', () => {
@@ -64,5 +67,17 @@ describe('MedsByMailContent component', () => {
       ['8883850235', null],
       [CONTACTS[711], 'true'],
     ]);
+  });
+
+  it('renders with default h2 heading level', () => {
+    const screen = setup();
+    const heading = screen.getByTestId('meds-by-mail-header');
+    expect(heading.tagName).to.equal('H2');
+  });
+
+  it('renders with custom heading level', () => {
+    const screen = setup(4);
+    const heading = screen.getByTestId('meds-by-mail-header');
+    expect(heading.tagName).to.equal('H4');
   });
 });

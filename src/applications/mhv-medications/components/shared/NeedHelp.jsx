@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import { selectMedicationsManagementImprovementsFlag } from '../../util/selectors';
 
@@ -22,12 +23,9 @@ const NeedHelp = ({ page, headingLevel = 3 }) => {
       const pageActions = pageActionMap[page] || dataDogActionNames.refillPage;
 
       return {
-        allergiesLink: pageActions.GO_TO_ALLERGIES_AND_REACTIONS_LINK,
         seiLink: pageActions.GO_TO_SELF_ENTERED_HEALTH_INFORMATION_LINK,
         managingMedsLink:
           pageActions.LEARN_MORE_ABOUT_MANAGING_MEDICATIONS_ONLINE_LINK,
-        messageLink: pageActions.START_A_NEW_MESSAGE_LINK,
-        notificationLink: pageActions.GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK,
         useMedsLink: pageActions.GO_TO_USE_MEDICATIONS_LINK,
         composeMessageLink: pageActions.COMPOSE_A_MESSAGE_LINK,
       };
@@ -51,51 +49,20 @@ const NeedHelp = ({ page, headingLevel = 3 }) => {
           Need help?
         </HeadingTag>
 
-        <p>Need to update your allergies and reactions?</p>
-        <va-link
-          href="/my-health/medical-records/allergies/"
-          text="Go to your list of allergies and reactions"
-          data-testid="go-to-allergies-and-reactions-link"
-          data-dd-action-name={actionNames.allergiesLink}
-        />
-
-        <p>
-          Can’t find your self-entered medications? You can still download a
-          copy of any self-entered health information.
-        </p>
-        <va-link
-          href="/my-health/medical-records/download?sei=true"
-          text="Go to download your self-entered health information"
-          data-testid="go-to-self-entered-health-information-link"
-          data-dd-action-name={actionNames.seiLink}
-        />
-
         <p>Have questions about managing your medications online?</p>
         <va-link
-          href="/health-care/refill-track-prescriptions"
+          href="/health-care/manage-prescriptions-medications"
           text="Learn more about managing medications online"
           data-testid="learn-more-about-managing-medications-online-link"
           data-dd-action-name={actionNames.managingMedsLink}
         />
 
         <p>
-          Have questions about your medications and supplies? Send a secure
-          message to your care team.
+          Or you can call the My HealtheVet help desk at{' '}
+          <va-telephone contact={CONTACTS.MY_HEALTHEVET} /> (
+          <va-telephone contact={CONTACTS[711]} tty />
+          ). We’re here Monday through Friday, 8:00 a.m. to 8:00 p.m. ET.
         </p>
-        <va-link
-          href="/my-health/secure-messages/new-message/"
-          text="Start a new message"
-          data-testid="start-a-new-message-link"
-          data-dd-action-name={actionNames.messageLink}
-        />
-
-        <p>Need to update your notification settings?</p>
-        <va-link
-          href="/profile/notifications/"
-          text="Go to update your notification settings"
-          data-testid="go-to-update-notification-settings-link"
-          data-dd-action-name={actionNames.notificationLink}
-        />
       </div>
     );
   }

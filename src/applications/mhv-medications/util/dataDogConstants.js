@@ -55,6 +55,9 @@ export const dataDogActionNames = {
     GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK: `Go to update notification settings link - ${
       pageType.LIST
     }`,
+    ORDER_MEDICAL_SUPPLIES_LINK: `Order medical supplies link - ${
+      pageType.LIST
+    }`,
   },
   detailsPage: {
     COMPOSE_A_MESSAGE_LINK: `Compose A Message Link - ${pageType.DETAILS}`,
@@ -105,6 +108,9 @@ export const dataDogActionNames = {
       pageType.REFILL
     }`,
     GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK: `Go To Review And Print Medication History Link - ${
+      pageType.REFILL
+    }`,
+    ORDER_MEDICAL_SUPPLIES_LINK: `Order medical supplies link - ${
       pageType.REFILL
     }`,
   },
@@ -167,6 +173,9 @@ export const dataDogActionNames = {
     GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK: `Go to update notification settings link - ${
       pageType.HISTORY
     }`,
+    ORDER_MEDICAL_SUPPLIES_LINK: `Order medical supplies link - ${
+      pageType.HISTORY
+    }`,
   },
   inProgressPage: {
     GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK: `Review and print list of medications link - ${
@@ -189,6 +198,9 @@ export const dataDogActionNames = {
       pageType.IN_PROGRESS
     }`,
     GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK: `Go to update notification settings link - ${
+      pageType.IN_PROGRESS
+    }`,
+    ORDER_MEDICAL_SUPPLIES_LINK: `Order medical supplies link - ${
       pageType.IN_PROGRESS
     }`,
   },

@@ -50,6 +50,7 @@ import NeedHelp from '../components/shared/NeedHelp';
 import ProcessList from '../components/shared/ProcessList';
 import PrintOnlyPage from './PrintOnlyPage';
 import useOracleHealthAlertTracking from '../hooks/useOracleHealthAlertTracking';
+import MedicationResources from '../components/shared/MedicationResources';
 
 const RefillPrescriptionsV2 = () => {
   const {
@@ -532,6 +533,7 @@ const RefillPrescriptionsV2 = () => {
             )}
             <hr className="vads-u-margin-y--3" />
             <ProcessList stepGuideProps={stepGuideProps} />
+            <MedicationResources page={pageType.REFILL} />
             <NeedHelp page={pageType.REFILL} />
           </>
         )}

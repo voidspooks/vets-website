@@ -130,11 +130,6 @@ describe('Need Help shared component', () => {
       const screen = setup(true);
 
       expect(screen.getByText('Need help?')).to.exist;
-      expect(screen.getByText('Need to update your allergies and reactions?'))
-        .to.exist;
-      expect(screen.getByTestId('go-to-allergies-and-reactions-link')).to.exist;
-      expect(screen.getByTestId('go-to-self-entered-health-information-link'))
-        .to.exist;
       expect(
         screen.getByText(
           'Have questions about managing your medications online?',
@@ -143,184 +138,36 @@ describe('Need Help shared component', () => {
       expect(
         screen.getByTestId('learn-more-about-managing-medications-online-link'),
       ).to.exist;
-      expect(screen.getByTestId('start-a-new-message-link')).to.exist;
-      expect(screen.getByText('Need to update your notification settings?')).to
-        .exist;
-      expect(screen.getByTestId('go-to-update-notification-settings-link')).to
+      expect(screen.getByText(/Or you can call the My HealtheVet help desk/)).to
         .exist;
     });
 
-    it('has all enhanced links with correct DD action names for REFILL page', () => {
-      const screen = setup(true, pageType.REFILL);
+    const pageActionNameMap = [
+      { page: pageType.REFILL, actions: dataDogActionNames.refillPage },
+      { page: pageType.LIST, actions: dataDogActionNames.medicationsListPage },
+      {
+        page: pageType.HISTORY,
+        actions: dataDogActionNames.medicationsHistoryPage,
+      },
+      {
+        page: pageType.IN_PROGRESS,
+        actions: dataDogActionNames.inProgressPage,
+      },
+    ];
 
-      // Allergies link
-      const allergiesLink = screen.getByTestId(
-        'go-to-allergies-and-reactions-link',
-      );
-      expect(allergiesLink).to.exist;
-      expect(allergiesLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.refillPage.GO_TO_ALLERGIES_AND_REACTIONS_LINK,
-      );
+    pageActionNameMap.forEach(({ page, actions }) => {
+      it(`has managing medications online link with correct DD action name for ${page}`, () => {
+        const screen = setup(true, page);
 
-      // Self-entered health information link
-      const seiLink = screen.getByTestId(
-        'go-to-self-entered-health-information-link',
-      );
-      expect(seiLink).to.exist;
-      expect(seiLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.refillPage
-          .GO_TO_SELF_ENTERED_HEALTH_INFORMATION_LINK,
-      );
-
-      // Managing medications online link
-      const managingMedsLink = screen.getByTestId(
-        'learn-more-about-managing-medications-online-link',
-      );
-      expect(managingMedsLink).to.exist;
-      expect(managingMedsLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.refillPage
-          .LEARN_MORE_ABOUT_MANAGING_MEDICATIONS_ONLINE_LINK,
-      );
-
-      // Start new message link
-      const messageLink = screen.getByTestId('start-a-new-message-link');
-      expect(messageLink).to.exist;
-      expect(messageLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.refillPage.START_A_NEW_MESSAGE_LINK,
-      );
-
-      // Notification settings link
-      const notificationLink = screen.getByTestId(
-        'go-to-update-notification-settings-link',
-      );
-      expect(notificationLink).to.exist;
-      expect(notificationLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.refillPage.GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK,
-      );
-    });
-
-    it('has correct DD action names for LIST page', () => {
-      const screen = setup(true, pageType.LIST);
-
-      // Check a few key links have LIST page action names
-      expect(
-        screen.getByTestId('go-to-allergies-and-reactions-link'),
-      ).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsListPage
-          .GO_TO_ALLERGIES_AND_REACTIONS_LINK,
-      );
-
-      expect(screen.getByTestId('start-a-new-message-link')).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsListPage.START_A_NEW_MESSAGE_LINK,
-      );
-    });
-
-    it('has all enhanced links with correct DD action names for HISTORY page', () => {
-      const screen = setup(true, pageType.HISTORY);
-
-      // Allergies link
-      const allergiesLink = screen.getByTestId(
-        'go-to-allergies-and-reactions-link',
-      );
-      expect(allergiesLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsHistoryPage
-          .GO_TO_ALLERGIES_AND_REACTIONS_LINK,
-      );
-
-      // Self-entered health information link
-      const seiLink = screen.getByTestId(
-        'go-to-self-entered-health-information-link',
-      );
-      expect(seiLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsHistoryPage
-          .GO_TO_SELF_ENTERED_HEALTH_INFORMATION_LINK,
-      );
-
-      // Managing medications online link
-      const managingMedsLink = screen.getByTestId(
-        'learn-more-about-managing-medications-online-link',
-      );
-      expect(managingMedsLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsHistoryPage
-          .LEARN_MORE_ABOUT_MANAGING_MEDICATIONS_ONLINE_LINK,
-      );
-
-      // Start new message link
-      const messageLink = screen.getByTestId('start-a-new-message-link');
-      expect(messageLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsHistoryPage.START_A_NEW_MESSAGE_LINK,
-      );
-
-      // Notification settings link
-      const notificationLink = screen.getByTestId(
-        'go-to-update-notification-settings-link',
-      );
-      expect(notificationLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.medicationsHistoryPage
-          .GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK,
-      );
-    });
-
-    it('has all enhanced links with correct DD action names for IN_PROGRESS page', () => {
-      const screen = setup(true, pageType.IN_PROGRESS);
-
-      // Allergies link
-      const allergiesLink = screen.getByTestId(
-        'go-to-allergies-and-reactions-link',
-      );
-      expect(allergiesLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.inProgressPage.GO_TO_ALLERGIES_AND_REACTIONS_LINK,
-      );
-
-      // Self-entered health information link
-      const seiLink = screen.getByTestId(
-        'go-to-self-entered-health-information-link',
-      );
-      expect(seiLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.inProgressPage
-          .GO_TO_SELF_ENTERED_HEALTH_INFORMATION_LINK,
-      );
-
-      // Managing medications online link
-      const managingMedsLink = screen.getByTestId(
-        'learn-more-about-managing-medications-online-link',
-      );
-      expect(managingMedsLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.inProgressPage
-          .LEARN_MORE_ABOUT_MANAGING_MEDICATIONS_ONLINE_LINK,
-      );
-
-      // Start new message link
-      const messageLink = screen.getByTestId('start-a-new-message-link');
-      expect(messageLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.inProgressPage.START_A_NEW_MESSAGE_LINK,
-      );
-
-      // Notification settings link
-      const notificationLink = screen.getByTestId(
-        'go-to-update-notification-settings-link',
-      );
-      expect(notificationLink).to.have.attribute(
-        'data-dd-action-name',
-        dataDogActionNames.inProgressPage
-          .GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK,
-      );
+        const managingMedsLink = screen.getByTestId(
+          'learn-more-about-managing-medications-online-link',
+        );
+        expect(managingMedsLink).to.exist;
+        expect(managingMedsLink).to.have.attribute(
+          'data-dd-action-name',
+          actions.LEARN_MORE_ABOUT_MANAGING_MEDICATIONS_ONLINE_LINK,
+        );
+      });
     });
 
     it('does NOT display original-only content', () => {

@@ -40,6 +40,7 @@ import {
   selectV2StatusMappingFlag,
   selectMedicationsManagementImprovementsFlag,
 } from '../util/selectors';
+import MedicationResources from '../components/shared/MedicationResources';
 
 const MedicationHistory = () => {
   const navigate = useNavigate();
@@ -300,6 +301,7 @@ const MedicationHistory = () => {
         Refill medications
       </Link>
       {renderContent()}
+      <MedicationResources page={pageType.HISTORY} headingLevel={2} />
       <NeedHelp page={pageType.HISTORY} headingLevel={2} />
     </div>
   );

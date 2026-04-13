@@ -7,6 +7,7 @@ import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import useFetchPrescriptionsInProgress from '../hooks/PrescriptionsInProgress/useFetchPrescriptionsInProgress';
 import { pageType, dataDogActionNames } from '../util/dataDogConstants';
 import InProgressMedicationsEmptyView from '../components/PrescriptionsInProgress/InProgressMedicationsEmptyView';
+import MedicationResources from '../components/shared/MedicationResources';
 
 const PrescriptionsInProgress = () => {
   const {
@@ -89,6 +90,7 @@ const PrescriptionsInProgress = () => {
         Refill medications
       </Link>
       {renderContent()}
+      <MedicationResources page={pageType.IN_PROGRESS} headingLevel={2} />
       <NeedHelp page={pageType.IN_PROGRESS} headingLevel={2} />
     </div>
   );

@@ -56,9 +56,19 @@ describe('Medication History page', () => {
     site.loginWithManagementImprovements();
     historyPage.visitPageWithPrescriptions(rxList);
     historyPage.verifyNeedHelpSection();
-    historyPage.verifyNeedHelpAllergiesLink();
-    historyPage.verifyNeedHelpMessageLink();
-    historyPage.verifyNeedHelpNotificationSettingsLink();
+    historyPage.verifyNeedHelpManagingMedsLink();
+    cy.injectAxeThenAxeCheck();
+  });
+
+  it('displays Medication Resources section with management improvements links', () => {
+    const historyPage = new MedicationsHistoryPage();
+    site.loginWithManagementImprovements();
+    historyPage.visitPageWithPrescriptions(rxList);
+    historyPage.verifyMedicationResourcesSection();
+    historyPage.verifyMedicationResourcesOrderSuppliesLink();
+    historyPage.verifyMedicationResourcesSeiLink();
+    historyPage.verifyMedicationResourcesNotificationSettingsLink();
+    historyPage.verifyMedicationResourcesAllergiesLink();
     cy.injectAxeThenAxeCheck();
   });
 

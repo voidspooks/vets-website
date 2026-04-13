@@ -130,6 +130,28 @@ class MedicationsHistoryPage {
     cy.findByTestId('go-to-update-notification-settings-link').should('exist');
   };
 
+  verifyMedicationResourcesSection = () => {
+    cy.findByTestId('rx-medication-resources-container').should('exist');
+  };
+
+  verifyMedicationResourcesOrderSuppliesLink = () => {
+    cy.findByTestId('order-medical-supplies-link').should('exist');
+  };
+
+  verifyMedicationResourcesSeiLink = () => {
+    cy.findByTestId(
+      'download-your-self-entered-health-information-link',
+    ).should('exist');
+  };
+
+  verifyMedicationResourcesNotificationSettingsLink = () => {
+    cy.findByTestId('update-notification-settings-link').should('exist');
+  };
+
+  verifyMedicationResourcesAllergiesLink = () => {
+    cy.findByTestId('review-your-allergies-and-reactions-link').should('exist');
+  };
+
   verifyPaginationExists = () => {
     cy.get('#pagination').should('exist');
   };
