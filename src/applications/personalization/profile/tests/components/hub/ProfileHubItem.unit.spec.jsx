@@ -29,6 +29,8 @@ describe('<ProfileHubItem />', () => {
       />,
     );
 
+    const header = container.getByRole('heading', { level: 2 });
+    expect(header).to.exist;
     const vaLink = container.container.querySelector('va-link');
     expect(vaLink).to.exist;
     expect(vaLink.getAttribute('href')).to.equal(href);

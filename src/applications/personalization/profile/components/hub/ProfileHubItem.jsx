@@ -20,10 +20,9 @@ export const ProfileHubItem = ({
 
   return (
     <div className="vads-u-margin-y--4">
-      <VaLink
-        className="vads-u-margin--0 vads-u-font-size--sans-lg vads-u-font-weight--bold"
-        {...props}
-      />
+      <h2 className="vads-u-margin--0">
+        <VaLink className="vads-u-font-size--sans-lg" {...props} />
+      </h2>
       <p className="vads-u-margin-top--0">{content}</p>
     </div>
   );
