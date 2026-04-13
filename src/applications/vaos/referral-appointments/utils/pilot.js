@@ -1,10 +1,8 @@
-// V1 community care pilot stations
 const stagingStations = ['984', '983'];
+// V1 community care pilot stations
 const prodStations = ['659', '657', '648'];
-
 // V2 community care pilot stations
-const stagingStationsV2 = ['911'];
-const prodStationsV2 = [];
+const prodStationsV2 = ['534', '508'];
 
 /**
  * Determines if a patient is in the Community Care (CC) pilot program user station.
@@ -37,7 +35,7 @@ const getIsInPilotUserStationsV2 = (
   featureCCDirectSchedulingV2,
   patientFacilities = [],
 ) => {
-  const pilotStations = [...stagingStationsV2, ...prodStationsV2];
+  const pilotStations = [...stagingStations, ...prodStationsV2];
   const hasPilotStation = patientFacilities.some(station =>
     pilotStations.includes(station.facilityId),
   );
@@ -48,34 +46,43 @@ const getIsInPilotUserStationsV2 = (
 const getIsInPilotReferralStation = referral => {
   const validStationIds = [
     ...stagingStations,
-    '659',
-    '659BY',
-    '659BZ',
-    '659GA',
-    '657A5',
-    '657GJ',
-    '657GK',
-    '657GL',
-    '657GM',
-    '657GO',
-    '657GP',
-    '657GQ',
-    '657GR',
-    '657GT',
-    '657GU',
-    '657QD',
-    '648',
-    '648A4',
-    '648GA',
-    '648GB',
-    '648GD',
-    '648GE',
-    '648GF',
-    '648GG',
-    '648GH',
-    '648GI',
-    '648GJ',
-    '648GK',
+    // Charleston
+    '534',
+    '534QD',
+    '534GH',
+    '534QC',
+    '534GF',
+    '534GD',
+    '534QE',
+    '534GC',
+    '534GE',
+    '534GB',
+    '534BY',
+    '534GG',
+    // Atlanta
+    '508',
+    '508QK',
+    '508QF',
+    '508QC',
+    '508QI',
+    '508QJ',
+    '508GA',
+    '508GP',
+    '508GO',
+    '508GQ',
+    '508QE',
+    '508GG',
+    '508GH',
+    '508GF',
+    '508QH',
+    '508GN',
+    '508GI',
+    '508GE',
+    '508GS',
+    '508GM',
+    '508GK',
+    '508GL',
+    '508GJ',
   ];
   return validStationIds.includes(referral.stationId);
 };

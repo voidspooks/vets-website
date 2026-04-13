@@ -47,6 +47,7 @@ describe('VAOS Referral Appointments', () => {
       // Set required feature flags
       mockFeatureToggles({
         vaOnlineSchedulingCCDirectScheduling: true,
+        vaOnlineSchedulingCCDirectSchedulingV2: false,
         vaOnlineSchedulingFlatFacilityPage: true,
         vaOnlineSchedulingUseV2ApiRequests: true,
       });

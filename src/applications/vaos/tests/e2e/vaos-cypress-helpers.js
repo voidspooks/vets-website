@@ -17,6 +17,7 @@ export function mockFeatureToggles(
   toggles = {
     vaOnlineSchedulingRecentLocationsFilter: false,
     vaOnlineSchedulingCCDirectScheduling: false,
+    vaOnlineSchedulingCCDirectSchedulingV2: false,
     vaOnlineSchedulingCCDirectSchedulingChiropractic: false,
     vaOnlineSchedulingCommunityCareCancellations: false,
   },

@@ -51,7 +51,7 @@ class MockReferralDetailResponse {
       ? format(this.expirationDate, 'yyyy-MM-dd')
       : format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
     referralDate = format(new Date(), 'yyyy-MM-dd'),
-    stationId = '659',
+    stationId = '534',
     onlineSchedule = true,
     veteranAddressPresent = true,
     provider = {

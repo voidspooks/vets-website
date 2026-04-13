@@ -33,7 +33,7 @@ class MockReferralListResponse {
     careType = 'CC',
     referralNumber = `VA${Math.floor(1000 + Math.random() * 9000)}`,
     expirationDate = format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
-    stationId = '659',
+    stationId = '534',
     onlineSchedule = true,
     referralConsultId = '12345',
     hasAppointments = false,

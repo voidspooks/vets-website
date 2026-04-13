@@ -53,7 +53,7 @@ describe('VAOS CC pilot utils', () => {
       expect(
         getIsInPilotUserStationsV2(true, [
           { facilityId: '123' },
-          { facilityId: '984' },
+          { facilityId: '456' },
         ]),
       ).to.be.false;
     });
@@ -61,14 +61,14 @@ describe('VAOS CC pilot utils', () => {
       expect(
         getIsInPilotUserStationsV2(true, [
           { facilityId: '123' },
-          { facilityId: '911' },
+          { facilityId: '534' },
         ]),
       ).to.be.true;
     });
     it('Returns true when the user has a V2 pilot facility as well as some outside', () => {
       expect(
         getIsInPilotUserStationsV2(true, [
-          { facilityId: '911' },
+          { facilityId: '508' },
           { facilityId: '400' },
         ]),
       ).to.be.true;

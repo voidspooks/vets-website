@@ -223,7 +223,7 @@ describe('VAOS Component: ScheduleReferral', () => {
   });
   it('should allow user to schedule from pilot expansion station', async () => {
     const referral = createReferralById(referralDate, '99999');
-    referral.attributes.stationId = '648GE';
+    referral.attributes.stationId = '508GE';
     const store = createTestStore();
     const screen = renderWithStoreAndRouter(
       <ScheduleReferral currentReferral={referral} />,

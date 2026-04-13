@@ -392,7 +392,7 @@ describe('VAOS Page: AppointmentsPage', () => {
   describe('community care referrals V2', () => {
     const v2UserState = {
       profile: {
-        facilities: [{ facilityId: '911', isCerner: false }],
+        facilities: [{ facilityId: '534', isCerner: false }],
       },
     };
 

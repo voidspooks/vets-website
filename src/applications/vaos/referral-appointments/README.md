@@ -61,7 +61,7 @@ The feature visibility is controlled in two stages:
 1. If a user's facilities don't include a pilot station, they won't see the feature
 2. When scheduling, referrals are checked against valid station IDs to ensure they can proceed
 
-Due to three-character station ID limitations in user objects, users from station 657 are initially allowed into the feature, but their specific referral station IDs are validated before allowing scheduling to proceed.
+Due to three-character station ID limitations in user objects, users from station 534 and 508 are initially allowed into the feature, but their specific referral station IDs are validated before allowing scheduling to proceed.
 
 Pilot logic is implemented in: [`src/applications/vaos/referral-appointments/utils/pilot.js`](utils/pilot.js)
 
@@ -71,44 +71,50 @@ Pilot logic is implemented in: [`src/applications/vaos/referral-appointments/uti
 | 983 | Staging |
 | 984 | Staging |
 
-### Original Pilot Sites
+### Charleston
 
 | Station Number | Station Name |
 | ------------- | ------------- |
-| 659 | W.G. (Bill) Hefner Salisbury Department of Veterans Affairs Medical Center |
-| 659BY | TBD |
-| 659BZ | TBD |
-| 659GA | TBD |
-| 657 | John J. Cochran Veterans Hospital |
-| 657A5 | Marion VA Medical Center |
-| 657GJ | TBD |
-| 657GK | TBD |
-| 657GL | TBD |
-| 657GM | TBD |
-| 657GO | TBD |
-| 657GP | TBD |
-| 657GQ | TBD |
-| 657GR | TBD |
-| 657GT | TBD |
-| 657GU | TBD |
-| 657QD | TBD |
+| 534 | Ralph H. Johnson VA Medical Center |
+| 534QD | TBD |
+| 534GH | TBD |
+| 534QC | TBD |
+| 534GF | TBD |
+| 534GD | TBD |
+| 534QE | TBD |
+| 534GC | TBD |
+| 534GE | TBD |
+| 534GB | TBD |
+| 534BY | TBD |
+| 534GG | TBD |
 
-### Portland Pilot Expansion
+### Atlanta
 
 | Station Number | Station Name |
 | ------------- | ------------- |
-| 648 | Portland VA Medical Center |
-| 648A4 | Vancouver VA Medical Center |
-| 648GA | Robert D. Maxwell Department of Veterans Affairs Clinic |
-| 648GB | Salem VA Clinic |
-| 648GD | Astoria VA Clinic |
-| 648GE | Fairview VA Clinic |
-| 648GF | Hillsboro VA Clinic |
-| 648GG | West Linn VA Clinic |
-| 648GH | Newport VA Clinic |
-| 648GI | Portland VA Clinic |
-| 648GJ | Loren R. Kaufman VA Clinic |
-| 648GK | Lincoln City VA Clinic |
+| 508 | Atlanta VA Medical Center |
+| 508QK | TBD |
+| 508QF | TBD |
+| 508QC | TBD |
+| 508QI | TBD |
+| 508QJ | TBD |
+| 508GA | TBD |
+| 508GP | TBD |
+| 508GO | TBD |
+| 508GQ | TBD |
+| 508QE | TBD |
+| 508GG | TBD |
+| 508GH | TBD |
+| 508GF | TBD |
+| 508QH | TBD |
+| 508GN | TBD |
+| 508GI | TBD |
+| 508GE | TBD |
+| 508GS | TBD |
+| 508GM | TBD |
+| 508GK | TBD |
+| 508GL | TBD |
+| 508GJ | TBD |
 
 ## Running tests
 
