@@ -114,9 +114,9 @@ export const Paths = {
   DELAY_ALERT:
     '/my_health/v1/prescriptions?filter[[disp_status][eq]]=Active:%20Refill%20in%20Process,Active:%20Submitted&sort=alphabetical-rx-name',
   SORT_BY_NAME:
-    'my_health/v1/prescriptions?page=1&per_page=10&sort=alphabetical-rx-name',
+    '/my_health/v1/prescriptions?page=1&per_page=10&sort=alphabetical-rx-name',
   SORT_BY_LAST_FILLED:
-    'my_health/v1/prescriptions?page=1&per_page=10&sort=last-fill-date',
+    '/my_health/v1/prescriptions?page=1&per_page=10&sort=last-fill-date',
   SORT_BY_STATUS: '&sort=alphabetical-status',
   ACTIVE_FILTER:
     '/my_health/v1/prescriptions?page=1&per_page=10&filter[[disp_status][eq]]=Active,Active:%20Refill%20in%20Process,Active:%20Non-VA,Active:%20On%20Hold,Active:%20Parked,Active:%20Submitted&sort=alphabetical-status',
@@ -124,12 +124,12 @@ export const Paths = {
     PAGINATION_NEXT:
       '/my_health/v1/prescriptions?page=2&per_page=10&sort=alphabetical-status',
     RECENTLY_REQUESTED_FILTER_LIST:
-      'my_health/v1/prescriptions?page=1&per_page=10&filter[[disp_status][eq]]=Active:%20Refill%20in%20Process,Active:%20Submitted&sort=alphabetical-status',
+      '/my_health/v1/prescriptions?page=1&per_page=10&filter[[disp_status][eq]]=Active:%20Refill%20in%20Process,Active:%20Submitted&sort=alphabetical-status',
     RENEW_FILTER_LIST:
       '/my_health/v1/prescriptions?page=1&per_page=10&filter[[disp_status][eq]]=Active,Expired&sort=alphabetical-status',
     NON_ACTIVE_FILTER_LIST:
-      'my_health/v1/prescriptions?page=1&per_page=10&filter[[disp_status][eq]]=Discontinued,Expired,Transferred,Unknown&sort=alphabetical-status',
-    AAL: 'my_health/v1/aal',
+      '/my_health/v1/prescriptions?page=1&per_page=10&filter[[disp_status][eq]]=Discontinued,Expired,Transferred,Unknown&sort=alphabetical-status',
+    AAL: '/my_health/v1/aal',
   },
 };
 export const Alerts = {
