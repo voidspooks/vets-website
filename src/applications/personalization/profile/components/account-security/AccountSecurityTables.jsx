@@ -19,23 +19,6 @@ const AccountSetupList = ({ isIdentityVerified, isMultifactorEnabled }) => {
   return (
     <va-process-list>
       <va-process-list-item
-        active={!isIdentityVerified}
-        checkmark={isIdentityVerified}
-        header="Verify your identity"
-      >
-        {isIdentityVerified ? (
-          <p>We’ve verified your identity.</p>
-        ) : (
-          <>
-            <p>
-              We’ll need to verify your identity so that you can securely access
-              your complete profile.
-            </p>
-            <a href="/verify">Verify your identity</a>
-          </>
-        )}
-      </va-process-list-item>
-      <va-process-list-item
         active={!isMultifactorEnabled}
         checkmark={isMultifactorEnabled}
         header="Add multifactor authentication"
@@ -56,6 +39,23 @@ const AccountSetupList = ({ isIdentityVerified, isMultifactorEnabled }) => {
               onClick={mfaHandler}
               text={`Sign in again through ${label} to get started`}
             />
+          </>
+        )}
+      </va-process-list-item>
+      <va-process-list-item
+        active={!isIdentityVerified}
+        checkmark={isIdentityVerified}
+        header="Verify your identity"
+      >
+        {isIdentityVerified ? (
+          <p>We’ve verified your identity.</p>
+        ) : (
+          <>
+            <p>
+              We’ll need to verify your identity so that you can securely access
+              your complete profile.
+            </p>
+            <a href="/verify">Verify your identity</a>
           </>
         )}
       </va-process-list-item>
