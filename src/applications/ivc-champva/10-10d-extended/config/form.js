@@ -15,6 +15,7 @@ import { signerPages } from '../chapters/signer';
 import { sponsorPages } from '../chapters/sponsor';
 import { applicantPages } from '../chapters/applicant';
 import { healthInsurancePages } from '../chapters/healthInsurance';
+import { applicationStatusPages } from '../chapters/applicationStatus';
 
 /** @type {FormConfig}  */
 const formConfig = {
@@ -94,6 +95,10 @@ const formConfig = {
   subTitle: content['form-subtitle'],
   defaultDefinitions: {},
   chapters: {
+    applicationStatus: {
+      title: 'Application status',
+      pages: applicationStatusPages,
+    },
     certifierInformation: {
       title: 'Your information',
       pages: signerPages,

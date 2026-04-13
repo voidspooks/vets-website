@@ -1,16 +1,18 @@
 import { testNumberOfWebComponentFields } from '../../../../shared/tests/pages/pageTests.spec';
-import formConfig from '../../../config/form';
-import { sponsorPages } from '../../../chapters/sponsor';
+import { applicationStatusPages } from '../../../chapters/applicationStatus';
 import { signerPages } from '../../../chapters/signer';
+import { sponsorPages } from '../../../chapters/sponsor';
+import formConfig from '../../../config/form';
 
 testNumberOfWebComponentFields(
   formConfig,
-  signerPages.certifierRole.schema,
-  signerPages.certifierRole.uiSchema,
+  applicationStatusPages.certifierRole.schema,
+  applicationStatusPages.certifierRole.uiSchema,
   1,
-  'Certifier Information - Role',
+  'Application status - Role',
   {},
 );
+
 testNumberOfWebComponentFields(
   formConfig,
   signerPages.certifierRelationship.schema,
