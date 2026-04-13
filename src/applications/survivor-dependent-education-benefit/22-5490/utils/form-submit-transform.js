@@ -372,9 +372,8 @@ export function transform5490Form(_formConfig, form) {
       highSchoolDiplomaOrCertificateDate: form?.data?.graduationDate,
     },
     directDeposit: {
-      directDepositAccountType: form?.data[
-        'view:directDeposit'
-      ]?.bankAccount?.accountType?.toLowerCase(),
+      directDepositAccountType:
+        form?.data['view:directDeposit']?.bankAccount?.accountType,
       directDepositAccountNumber:
         form?.data['view:directDeposit']?.bankAccount?.accountNumber,
       directDepositRoutingNumber:

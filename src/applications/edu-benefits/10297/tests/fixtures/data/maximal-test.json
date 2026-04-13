@@ -6,7 +6,7 @@
     "isInTechnologyIndustry": true,
     "isEmployed": true,
     "bankAccount": {
-      "accountType": "CHECKING",
+      "accountType": "Checking",
       "accountNumber": "123123123",
       "accountNumberConfirmation": "123123123",
       "routingNumber": "121000248",

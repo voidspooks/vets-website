@@ -38,7 +38,7 @@ describe('22-10297 Submit Transformer Function', () => {
     expect(submitData.militaryInfo).to.exist;
     expect(submitData.directDeposit).to.exist;
     expect(submitData.directDeposit.directDepositAccountType).to.equal(
-      'checking',
+      'Checking',
     );
     expect(submitData.trainingProviders).to.exist;
     expect(submitData.trainingProviders.providers).to.have.lengthOf(1);

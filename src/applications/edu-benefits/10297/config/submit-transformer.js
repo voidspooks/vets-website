@@ -83,7 +83,7 @@ export function transform(_formConfig, form) {
       activeDutyDuringHitechVets: data?.activeDutyDuringHitechVets,
     },
     directDeposit: {
-      directDepositAccountType: data?.bankAccount?.accountType?.toLowerCase(),
+      directDepositAccountType: data?.bankAccount?.accountType,
       directDepositAccountNumber: data?.bankAccount?.accountNumber,
       directDepositRoutingNumber: data?.bankAccount?.routingNumber,
     },

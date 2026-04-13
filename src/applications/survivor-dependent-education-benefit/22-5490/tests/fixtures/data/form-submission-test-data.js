@@ -28,7 +28,7 @@ export const submissionForm = {
     'view:directDeposit': {
       bankAccount: {
         accountNumber: '123123123',
-        accountType: 'checking',
+        accountType: 'Checking',
         routingNumber: '123123124',
       },
     },
