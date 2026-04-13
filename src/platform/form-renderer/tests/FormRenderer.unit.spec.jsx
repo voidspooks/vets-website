@@ -51,23 +51,6 @@ describe('FormRenderer', () => {
 
     tree.unmount();
   });
-  it('screen reader message should be present in the dom', () => {
-    const tree = render(
-      <FormRenderer config={submission.config} data={submission.data} />,
-    );
-
-    const orderedLists = document.querySelectorAll('ol');
-    const count = orderedLists.length;
-    const srElement = document.querySelector('#ol-section-0-group-1-continue');
-
-    expect(srElement).to.exist;
-    expect(count).to.equal(3);
-    expect(srElement.textContent).to.equal(
-      'Question numbering continues from the previous section.',
-    );
-
-    tree.unmount();
-  });
 
   it('formats biographical date fields via fieldFormat', () => {
     const dateConfig = {

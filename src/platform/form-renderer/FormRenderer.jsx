@@ -275,19 +275,10 @@ function render(template, data) {
   const createList = (currentListItems, index) => {
     const start = listItemCount - currentListItems.length + 1;
     const olId = `ol-section-${index}-group-${orderedListCount}`;
-    const descId = `${olId}-continue`;
     elements.push(
       <div key={olId}>
-        {orderedListCount > 0 && (
-          <p id={descId} className="sr-only">
-            Question numbering continues from the previous section.
-          </p>
-        )}
         <ol
           className="vads-u-margin-top--0 vads-u-margin-bottom--1p5"
-          {...orderedListCount > 0 && {
-            'aria-describedby': descId,
-          }}
           start={start}
           id={olId}
         >
