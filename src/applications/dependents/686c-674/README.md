@@ -25,11 +25,8 @@ From time to time Veterans need to make updates to the dependents they receive b
 - `dependents_pension_check` - Enable pension check
 - `va_dependents_no_ssn` - Enable no SSN flow for adding dependents
 - `va_dependents_duplicate_modals` - Enable duplicate entry checks for current spouse (adding a child duplicate is enabled via platform)
-- `va_dependents_fully_digital_form_project` - Owned by FDF team
 - `dependents_enable_form_viewer_mfe` - Owned by FDF team
 - `va_dependents_browser_monitoring_enabled` - Enable Datadog Real User Monitoring & Logging
-- `va_dependents_v2` - No longer being used
-- `va_dependents_v2_banner` - no longer being used
 
 ## How the form works for the user
 
