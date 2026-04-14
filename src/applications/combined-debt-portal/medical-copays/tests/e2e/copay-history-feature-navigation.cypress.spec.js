@@ -17,11 +17,20 @@ describe('CDP - Copay navigation and content w/ vha_show_payment_history enabled
 
   beforeEach(() => {
     cy.login(mockUser);
-    const adjustedFeatures = mockFeatureToggles;
-    adjustedFeatures.data.features.push({
-      name: 'vha_show_payment_history',
-      value: true,
-    });
+
+    // Clone the fixture before mutating to avoid state leakage across specs
+    // that import the same mockFeatureToggles module reference.
+    const adjustedFeatures = {
+      ...mockFeatureToggles,
+      data: {
+        ...mockFeatureToggles.data,
+        features: [
+          ...mockFeatureToggles.data.features,
+          { name: 'vha_show_payment_history', value: true },
+        ],
+      },
+    };
+
     cy.intercept('GET', '/v0/feature_toggles*', adjustedFeatures).as(
       'features',
     );

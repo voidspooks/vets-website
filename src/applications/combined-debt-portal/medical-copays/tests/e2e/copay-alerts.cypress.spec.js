@@ -18,8 +18,9 @@ describe('CDP - VHA Copay Alerts', () => {
     beforeEach(() => {
       copayResponses.good('copays');
     });
+
     // Has both VHA and VBA balances
-    it('should display valid copay balances & other VA debt information', () => {
+    it('should display valid copay balances & other VA debt information when debts ok', () => {
       debtResponses.good('debts');
       cy.visit('/manage-va-debt/summary/copay-balances');
       cy.wait(['@copays', '@debts', '@features']);
@@ -34,8 +35,8 @@ describe('CDP - VHA Copay Alerts', () => {
       cy.injectAxeThenAxeCheck();
     });
 
-    // Has VHA and VBA 404
-    it('should display valid copay balances & other VA debt information', () => {
+    // Has VHA balances and VBA 404
+    it('should display valid copay balances & debt error alert when debts 404', () => {
       debtResponses.bad('debts');
       cy.visit('/manage-va-debt/summary/copay-balances');
       cy.wait(['@copays', '@debts', '@features']);
@@ -56,6 +57,7 @@ describe('CDP - VHA Copay Alerts', () => {
     beforeEach(() => {
       copayResponses.bad('copays');
     });
+
     // VHA && VBA 404
     it('should display alert error message for VBA & VHA 404 responses', () => {
       debtResponses.bad('debts');
@@ -97,8 +99,9 @@ describe('CDP - VHA Copay Alerts', () => {
     beforeEach(() => {
       copayResponses.empty('copays');
     });
+
     // VHA 0 balance & VBA balance
-    it('should display alert info message for 0 VHA balance and Your Other VA secion ', () => {
+    it('should display alert info message for 0 VHA balance and Your Other VA section', () => {
       debtResponses.good('debts');
       cy.visit('/manage-va-debt/summary/copay-balances');
       cy.wait(['@copays', '@debts', '@features']);
@@ -110,7 +113,7 @@ describe('CDP - VHA Copay Alerts', () => {
     });
 
     // VHA & VBA 0 balance
-    it('should display alert info message for 0 VHA balance and no Your Other VA secion', () => {
+    it('should display alert info message for 0 VHA balance and no Your Other VA section', () => {
       debtResponses.empty('debts');
       cy.visit('/manage-va-debt/summary/copay-balances');
       cy.wait(['@copays', '@debts', '@features']);
@@ -133,10 +136,7 @@ describe('CDP - VHA Copay Alerts', () => {
       cy.visit('/manage-va-debt/summary/copay-balances');
       cy.wait(['@copays', '@debts', '@features']);
 
-      // Ensure the page has loaded
       cy.findByTestId('summary-page-title').should('exist');
-
-      // Check for the "not enrolled in healthcare" alert
       cy.findByTestId('copay-no-health-care-alert').should('exist');
       cy.injectAxeThenAxeCheck();
     });
