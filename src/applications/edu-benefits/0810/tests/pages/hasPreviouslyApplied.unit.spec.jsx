@@ -21,7 +21,7 @@ describe('22-0810 Your education benefits information Step 1 - Page 1', () => {
       />,
     );
     const previouslyAppliedRadio = container.querySelector(
-      'va-radio[label^="Have you previously applied"',
+      'va-radio[label^="Have you been found eligible"',
     );
 
     expect(previouslyAppliedRadio).to.exist;

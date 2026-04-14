@@ -7,7 +7,7 @@ import {
 const uiSchema = {
   ...titleUI('Your VA education benefits'),
   hasPreviouslyApplied: yesNoUI(
-    'Have you previously applied and been found eligible for the VA education benefit you want to use?',
+    'Have you been found eligible for the VA education benefit you want to use?',
   ),
 };
 
