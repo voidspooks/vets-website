@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import { Link } from 'react-router-dom-v5-compat';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   VaButton,
   VaCheckbox,
@@ -34,6 +34,7 @@ import {
   REFILL_STATUS,
   REFILL_LOADING_MESSAGES,
   REFILL_ERROR_MESSAGES,
+  RENEWAL_FILTER_KEY,
 } from '../util/constants';
 import { dataDogActionNames, pageType } from '../util/dataDogConstants';
 import { refillProcessStepGuideV2 } from '../util/processListData';
@@ -41,8 +42,10 @@ import { selectCernerPilotFlag } from '../util/selectors';
 
 import { selectUserDob, selectUserFullName } from '../selectors/selectUser';
 import { selectSortOption } from '../selectors/selectPreferences';
+import { setFilterOption } from '../redux/preferencesSlice';
 
 import RefillNotification from '../components/RefillPrescriptions/RefillNotification';
+import RenewableMedsNote from '../components/RefillPrescriptions/RenewableMedsNote';
 import AllergiesPrintOnly from '../components/shared/AllergiesPrintOnly';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import DelayedRefillAlert from '../components/shared/DelayedRefillAlert';
@@ -53,6 +56,8 @@ import useOracleHealthAlertTracking from '../hooks/useOracleHealthAlertTracking'
 import MedicationResources from '../components/shared/MedicationResources';
 
 const RefillPrescriptionsV2 = () => {
+  const dispatch = useDispatch();
+
   const {
     data: refillableData,
     isLoading,
@@ -302,6 +307,14 @@ const RefillPrescriptionsV2 = () => {
   const baseTitle = 'Medications | Veterans Affairs';
   usePrintTitle(baseTitle, userName, dob, updatePageTitle);
 
+  // Pre-set the filter before navigation so the history page loads with RENEWAL filter applied
+  const handleGoToRenewableMeds = useCallback(
+    () => {
+      dispatch(setFilterOption(RENEWAL_FILTER_KEY));
+    },
+    [dispatch],
+  );
+
   const getCheckboxDescription = prescription => {
     let lastFilledText = '';
     if (prescription.sortedDispensedDate || prescription.dispensedDate) {
@@ -418,25 +431,11 @@ const RefillPrescriptionsV2 = () => {
                 >
                   Medications you can refill now
                 </h2>
-                <p
+                <RenewableMedsNote
+                  testId="medications-page-link"
                   className="vads-u-margin-top--3"
-                  data-testid="note-refill-page"
-                >
-                  <strong>Note:</strong> Note: If you can’t find the medication
-                  you’re looking for, you may need to renew it before you can
-                  refill it.
-                  <Link
-                    data-testid="medications-page-link"
-                    className="vads-u-margin-top--2 vads-u-display--block"
-                    to="/"
-                    data-dd-action-name={
-                      dataDogActionNames.refillPage
-                        .GO_TO_YOUR_MEDICATIONS_LIST_ACTION_LINK_RENEW
-                    }
-                  >
-                    Go to your list of renewable meds
-                  </Link>
-                </p>
+                  onLinkClick={handleGoToRenewableMeds}
+                />
                 <VaCheckboxGroup
                   data-testid="refill-checkbox-group"
                   label={`You have ${fullRefillList.length} ${pluralize(
@@ -525,6 +524,10 @@ const RefillPrescriptionsV2 = () => {
                   You don’t have any VA prescriptions with refills available. If
                   you need a prescription, contact your care team.
                 </p>
+                <RenewableMedsNote
+                  testId="no-refills-medications-page-link"
+                  onLinkClick={handleGoToRenewableMeds}
+                />
                 <CernerFacilityAlert
                   healthTool="MEDICATIONS"
                   className="vads-u-margin-top--2"

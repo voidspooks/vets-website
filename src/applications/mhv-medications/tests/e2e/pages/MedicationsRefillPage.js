@@ -648,6 +648,27 @@ class MedicationsRefillPage {
       'Go to your list of renewable meds',
     );
   };
+
+  verifyRenewableMedsLinkV2NoRefills = () => {
+    cy.findByTestId('no-refills-medications-page-link').should(
+      'contain',
+      'Go to your list of renewable meds',
+    );
+  };
+
+  clickRenewableMedsLinkV2 = () => {
+    cy.findByTestId('medications-page-link').should('exist');
+    cy.findByTestId('medications-page-link')
+      .first()
+      .click({ waitForAnimations: true });
+  };
+
+  clickRenewableMedsLinkV2NoRefills = () => {
+    cy.findByTestId('no-refills-medications-page-link').should('exist');
+    cy.findByTestId('no-refills-medications-page-link')
+      .first()
+      .click({ waitForAnimations: true });
+  };
 }
 
 export default MedicationsRefillPage;
