@@ -126,7 +126,7 @@ const formConfig = {
           path: 'previous-sah-application-2',
           title: 'Past SAH grant application details',
           depends: formData =>
-            formData[previousSahApplicationFields.parentObject][
+            formData?.[previousSahApplicationFields.parentObject]?.[
               previousSahApplicationFields.hasPreviousSahApplication
             ],
           uiSchema: previousSahApplication2.uiSchema,
@@ -142,7 +142,7 @@ const formConfig = {
           path: 'previous-sha-application-2',
           title: 'Past SHA grant applications details',
           depends: formData =>
-            formData[previousHiApplicationFields.parentObject][
+            formData?.[previousHiApplicationFields.parentObject]?.[
               previousHiApplicationFields.hasPreviousHiApplication
             ],
           uiSchema: previousHiApplication2.uiSchema,
@@ -163,7 +163,7 @@ const formConfig = {
           path: 'living-situation-2',
           title: 'Facility details',
           depends: formData =>
-            formData[livingSituationFields.parentObject][
+            formData?.[livingSituationFields.parentObject]?.[
               livingSituationFields.isInCareFacility
             ],
           uiSchema: livingSituation2.uiSchema,
