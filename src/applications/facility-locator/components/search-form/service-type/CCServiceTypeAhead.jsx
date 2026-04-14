@@ -5,7 +5,7 @@ import Downshift from 'downshift';
 import classNames from 'classnames';
 import { get } from 'lodash';
 import MessagePromptDiv from './MessagePromptDiv';
-import { MIN_SEARCH_CHARS } from '../../../constants';
+import { MIN_SEARCH_CHARS, SR_ANNOUNCE_DELAY_MS } from '../../../constants';
 
 /**
  * CC Providers' Service Types Typeahead
@@ -16,11 +16,19 @@ class CCServiceTypeAhead extends Component {
     this.state = {
       services: [],
       isFocused: false,
+      statusMessage: '',
     };
+    this.statusTimer = null;
   }
 
   componentDidMount() {
     this.getServices();
+  }
+
+  componentWillUnmount() {
+    if (this.statusTimer) {
+      clearTimeout(this.statusTimer);
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -64,6 +72,11 @@ class CCServiceTypeAhead extends Component {
   };
 
   handleOnSelect = selectedItem => {
+    if (this.statusTimer) {
+      clearTimeout(this.statusTimer);
+    }
+    this.setState({ statusMessage: '' });
+
     const value = selectedItem ? selectedItem.specialtyCode.trim() : null;
     this.props.handleServiceTypeChange({
       target: { value },
@@ -99,7 +112,30 @@ class CCServiceTypeAhead extends Component {
         this.shouldShow(inputValue, specialty),
       );
     }
-    return null;
+    return [];
+  };
+
+  updateStatusMessage = (matches, inputValue, isExpanded) => {
+    if (this.statusTimer) {
+      clearTimeout(this.statusTimer);
+    }
+
+    if (!isExpanded || !inputValue) {
+      this.setState({ statusMessage: '' });
+      return;
+    }
+
+    if (matches && matches.length > 0) {
+      this.statusTimer = setTimeout(() => {
+        this.setState({
+          statusMessage: `${matches.length} result${
+            matches.length === 1 ? '' : 's'
+          } for ${inputValue}`,
+        });
+      }, SR_ANNOUNCE_DELAY_MS);
+    } else {
+      this.setState({ statusMessage: 'No results available.' });
+    }
   };
 
   renderSearchForAvailableServicePrompt = inputValue => {
@@ -123,7 +159,7 @@ class CCServiceTypeAhead extends Component {
   renderServiceTypeDropdownOptions = (
     getItemProps,
     highlightedIndex,
-    inputValue,
+    matches,
     selectedServiceCode,
   ) => {
     return (
@@ -136,7 +172,7 @@ class CCServiceTypeAhead extends Component {
         }`}
         role="listbox"
       >
-        {this.matchingServices(inputValue).map((specialty, index) => (
+        {matches.map((specialty, index) => (
           <li
             key={`${this.getSpecialtyName(specialty)}-${index}`}
             {...getItemProps({
@@ -153,11 +189,12 @@ class CCServiceTypeAhead extends Component {
     );
   };
 
-  renderTryAnotherServicePrompt = inputValue => {
+  renderTryAnotherServicePrompt = (inputValue, matches) => {
     if (
       inputValue &&
       inputValue.length >= MIN_SEARCH_CHARS &&
-      !this.matchingServices(inputValue).length
+      matches &&
+      matches.length === 0
     ) {
       return (
         <MessagePromptDiv
@@ -184,6 +221,11 @@ class CCServiceTypeAhead extends Component {
         defaultInputValue=""
         itemToString={this.getSpecialtyName}
         onInputValueChange={inputValue => {
+          const isExpanded =
+            inputValue && inputValue.length >= MIN_SEARCH_CHARS;
+          const matches = this.matchingServices(inputValue);
+          this.updateStatusMessage(matches, inputValue, isExpanded);
+
           if (
             currentQuery.serviceType &&
             currentQuery.specialties &&
@@ -212,6 +254,7 @@ class CCServiceTypeAhead extends Component {
           );
           const showExpanded =
             isOpen && inputValue && MIN_SEARCH_CHARS <= inputValue.length;
+          const matches = this.matchingServices(inputValue);
           return (
             <div
               id="service-error"
@@ -267,11 +310,14 @@ class CCServiceTypeAhead extends Component {
                   this.renderServiceTypeDropdownOptions(
                     getItemProps,
                     highlightedIndex,
-                    inputValue,
+                    matches,
                     selectedServiceCode,
                   )}
-                {this.renderTryAnotherServicePrompt(inputValue)}
+                {this.renderTryAnotherServicePrompt(inputValue, matches)}
               </span>
+              <div className="usa-combo-box__status usa-sr-only" role="status">
+                {this.state.statusMessage}
+              </div>
             </div>
           );
         }}

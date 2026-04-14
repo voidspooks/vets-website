@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { useCombobox } from 'downshift-v9';
 import { itemToString as toDisplay } from './helpers';
@@ -8,7 +8,7 @@ import AutosuggestOptions from './AutosuggestOptions';
 import './sass/autosuggest.scss';
 import { AutosuggestProps } from '../../../types';
 import { srClearOnBlur, srKeepOnBlur } from './StateReducer';
-import { MIN_SEARCH_CHARS } from '../../../constants';
+import { MIN_SEARCH_CHARS, SR_ANNOUNCE_DELAY_MS } from '../../../constants';
 
 function Autosuggest({
   // downshift props
@@ -78,6 +78,40 @@ function Autosuggest({
     shouldBeShown = isOpen && hasMinimumChars;
   }
 
+  const [statusMessage, setStatusMessage] = useState('');
+  const statusTimerRef = useRef(null);
+
+  useEffect(
+    () => {
+      if (statusTimerRef.current) {
+        clearTimeout(statusTimerRef.current);
+      }
+
+      if (!shouldBeShown || !inputValue) {
+        setStatusMessage('');
+        return undefined;
+      }
+
+      const count = options?.length ?? 0;
+      if (count > 0) {
+        statusTimerRef.current = setTimeout(() => {
+          setStatusMessage(
+            `${count} result${count === 1 ? '' : 's'} for ${inputValue}`,
+          );
+        }, SR_ANNOUNCE_DELAY_MS);
+      } else {
+        setStatusMessage('No results available.');
+      }
+
+      return () => {
+        if (statusTimerRef.current) {
+          clearTimeout(statusTimerRef.current);
+        }
+      };
+    },
+    [shouldBeShown, options?.length, inputValue],
+  );
+
   const { id } = getMenuProps();
 
   return (
@@ -108,7 +142,7 @@ function Autosuggest({
           className={inputContainerClassName}
           inputId={inputId}
           inputRef={inputRef}
-          isOpen={isOpen}
+          isOpen={shouldBeShown}
           showDownCaret={showDownCaret}
           showClearButton={!!inputValue}
           onClearClick={inputClearClick}
@@ -129,6 +163,9 @@ function Autosuggest({
           loadingMessage={loadingMessage}
           AutosuggestOptionComponent={AutosuggestOptionComponent}
         />
+        <div className="usa-combo-box__status usa-sr-only" role="status">
+          {statusMessage}
+        </div>
       </div>
     </div>
   );

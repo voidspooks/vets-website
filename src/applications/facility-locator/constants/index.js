@@ -213,6 +213,13 @@ export const Covid19Vaccine = 'Covid19Vaccine';
 export const MIN_SEARCH_CHARS = 3;
 
 /**
+ * Delay in ms before announcing dropdown result count to screen readers.
+ * Debounces rapid keystrokes so assistive tech isn't flooded with
+ * intermediate announcements while the user is still typing.
+ */
+export const SR_ANNOUNCE_DELAY_MS = 700;
+
+/**
  * Array indices for CMS VA health services data (from Drupal).
  * Each service entry is an array: [displayName, alias, commonConditions, serviceId, ...]
  */
