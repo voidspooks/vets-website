@@ -1000,6 +1000,30 @@ describe('Medication card component', () => {
     expect(screen.queryByText(rxWithUnknownStatus.dispStatus)).to.not.exist;
   });
 
+  it('does not render Refills left for Unknown status with mhvMedicationsManagementImprovements enabled', () => {
+    const rxWithUnknownStatus = {
+      ...prescriptionsListItem,
+      dispStatus: 'Unknown',
+      refillRemaining: 5,
+    };
+    const screen = setupWithFlags(rxWithUnknownStatus, {
+      mhvMedicationsManagementImprovements: true,
+    });
+    expect(screen.queryByTestId('rx-refill-remaining')).to.not.exist;
+  });
+
+  it('does not render Last filled for Unknown status with mhvMedicationsManagementImprovements enabled', () => {
+    const rxWithUnknownStatus = {
+      ...prescriptionsListItem,
+      dispStatus: 'Unknown',
+      dispensedDate: '2024-02-25T10:30:00-05:00',
+    };
+    const screen = setupWithFlags(rxWithUnknownStatus, {
+      mhvMedicationsManagementImprovements: true,
+    });
+    expect(screen.queryByTestId('rx-last-filled-date')).to.not.exist;
+  });
+
   it('does not render aria-describedby attribute on the link', () => {
     const screen = setup();
     const link = screen.getByTestId('medications-history-details-link');

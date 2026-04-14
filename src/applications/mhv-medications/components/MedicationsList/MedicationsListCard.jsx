@@ -103,6 +103,9 @@ const MedicationsListCard = ({ rx }) => {
   const isOracleHealth = isOracleHealthPrescription(rx, cernerFacilityIds);
   const rxStatus = getRxStatus(rx);
   const isOnHold = rx.dispStatus === dispStatusObj.onHold;
+  const isUnknownStatus =
+    rxStatus === dispStatusObj.unknown ||
+    (useV2StatusMapping && rxStatus === dispStatusObjV2.statusNotAvailable);
   const isDiscontinued = rx.dispStatus === dispStatusObj.discontinued;
   const isTransferred = rx.dispStatus === dispStatusObj.transferred;
   const isActiveNoRefills =
@@ -282,7 +285,8 @@ const MedicationsListCard = ({ rx }) => {
           )}
         {rx &&
           (rx.isRefillable || showMedImprovementCard) &&
-          rx.refillRemaining >= 0 && (
+          rx.refillRemaining >= 0 &&
+          !(isMedsImprovements && isUnknownStatus) && (
             <p
               className="vads-u-margin-bottom--0"
               data-testid="rx-refill-remaining"
@@ -294,7 +298,11 @@ const MedicationsListCard = ({ rx }) => {
                 : `Refills remaining: ${rx.refillRemaining}`}
             </p>
           )}
-        {rx && !(isMedsImprovements && isOnHold) && <LastFilledInfo {...rx} />}
+        {rx &&
+          !(isMedsImprovements && isOnHold) &&
+          !(isMedsImprovements && isUnknownStatus) && (
+            <LastFilledInfo {...rx} />
+          )}
         {showMedImprovementCard &&
           !isRecentlyRenewed &&
           (isActiveNoRefills || isExpiredRenewable) && (
@@ -365,23 +373,32 @@ const MedicationsListCard = ({ rx }) => {
           )}
         {rx &&
           !showMedImprovementCard &&
-          (isMedsImprovements && isOnHold ? (
-            <div className="vads-u-margin-top--1p5">
+          (() => {
+            const extraDetailsContent = (
               <ExtraDetails
                 {...rx}
                 page={pageType.LIST}
                 isRefillBlocked={isRefillBlocked}
                 isRenewalBlocked={isRenewalBlocked}
               />
-            </div>
-          ) : (
-            <ExtraDetails
-              {...rx}
-              page={pageType.LIST}
-              isRefillBlocked={isRefillBlocked}
-              isRenewalBlocked={isRenewalBlocked}
-            />
-          ))}
+            );
+
+            if (isMedsImprovements && isOnHold) {
+              return (
+                <div className="vads-u-margin-top--1p5">
+                  {extraDetailsContent}
+                </div>
+              );
+            }
+            if (isMedsImprovements && isUnknownStatus) {
+              return (
+                <div className="vads-u-margin-top--1">
+                  {extraDetailsContent}
+                </div>
+              );
+            }
+            return extraDetailsContent;
+          })()}
       </>
     );
   };

@@ -35,6 +35,15 @@ export const UNFILLED_OH_MESSAGE_CONTENT = {
   },
 };
 
+export const UNKNOWN_STATUS_MESSAGES = {
+  systemError:
+    'We’re sorry. There’s a problem with our system. You can’t manage this prescription online right now.',
+  callPharmacyLegacy: 'Call your VA pharmacy',
+  callPharmacyWithQuestions: 'If you have questions, call your VA pharmacy',
+  callPharmacyFallback:
+    'If you have questions, call your VA pharmacy. The phone number is on your prescription label or in your medication details page.',
+};
+
 export const downtimeNotificationParams = {
   appTitle: 'this medications tool',
 };

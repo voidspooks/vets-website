@@ -75,6 +75,7 @@ export {
   FIELD_NOT_AVAILABLE,
   NO_PROVIDER_NAME,
   UNFILLED_OH_MESSAGE_CONTENT,
+  UNKNOWN_STATUS_MESSAGES,
   downtimeNotificationParams,
   tooltipNames,
   tooltipHintContent,

@@ -338,6 +338,72 @@ describe('Medications List Card Extra Details', () => {
         expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
       });
     });
+
+    describe('Unknown status (S17)', () => {
+      it('displays phone number when phone is available', async () => {
+        const screen = setupWithMedsImprovementsFlag({
+          ...prescription,
+          dispStatus: dispStatusObj.unknown,
+          cmopDivisionPhone: '(123) 456-7890',
+          dialCmopDivisionPhone: '1234567890',
+        });
+        const el = await screen.findByTestId('unknown-rx');
+        expect(el.textContent).to.include(
+          'We’re sorry. There’s a problem with our system.',
+        );
+        expect(el.textContent).to.include(
+          'If you have questions, call your VA pharmacy',
+        );
+        expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
+      });
+
+      it('displays no-phone fallback text when phone is not available', async () => {
+        const screen = setupWithMedsImprovementsFlag({
+          ...prescription,
+          dispStatus: dispStatusObj.unknown,
+          cmopDivisionPhone: null,
+          dialCmopDivisionPhone: null,
+          rxRfRecords: [],
+        });
+        const el = await screen.findByTestId('unknown-rx');
+        expect(el.textContent).to.include(
+          'We’re sorry. There’s a problem with our system.',
+        );
+        expect(el.textContent).to.include(
+          'If you have questions, call your VA pharmacy.',
+        );
+        expect(el.textContent).to.include(
+          'The phone number is on your prescription label or in your medication details page.',
+        );
+      });
+
+      it('displays V2 unknown status message when both CernerPilot and V2StatusMapping flags enabled', async () => {
+        const rxWithUnknown = {
+          ...prescription,
+          dispStatus: dispStatusObjV2.statusNotAvailable,
+          cmopDivisionPhone: '(123) 456-7890',
+          dialCmopDivisionPhone: '1234567890',
+        };
+        const screen = setup(
+          rxWithUnknown,
+          {
+            featureToggles: {
+              [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+            },
+          },
+          true,
+          true,
+        );
+        const el = await screen.findByTestId('unknown-rx');
+        expect(el.textContent).to.include(
+          'We’re sorry. There’s a problem with our system.',
+        );
+        expect(el.textContent).to.include(
+          'If you have questions, call your VA pharmacy',
+        );
+        expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
+      });
+    });
   });
 
   describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
@@ -361,6 +427,52 @@ describe('Medications List Card Extra Details', () => {
         'Contact your VA provider if you need more of this medication.',
       );
       expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
+    });
+
+    it('displays legacy message with phone for Unknown status', async () => {
+      const screen = setup(
+        {
+          ...prescription,
+          dispStatus: dispStatusObj.unknown,
+          cmopDivisionPhone: '(123) 456-7890',
+          dialCmopDivisionPhone: '1234567890',
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
+          },
+        },
+      );
+      const el = await screen.findByTestId('unknown-rx');
+      expect(el.textContent).to.include(
+        'We’re sorry. There’s a problem with our system.',
+      );
+      expect(el.textContent).to.include('Call your VA pharmacy');
+      expect(screen.getByTestId('pharmacy-phone-number')).to.exist;
+    });
+
+    it('displays legacy message without phone for Unknown status when phone is not available', async () => {
+      const screen = setup(
+        {
+          ...prescription,
+          dispStatus: dispStatusObj.unknown,
+          cmopDivisionPhone: null,
+          dialCmopDivisionPhone: null,
+          rxRfRecords: [],
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
+          },
+        },
+      );
+      const el = await screen.findByTestId('unknown-rx');
+      expect(el.textContent).to.include(
+        'We’re sorry. There’s a problem with our system.',
+      );
+      expect(el.textContent).to.include('Call your VA pharmacy');
+      // Phone link should not be rendered when no phone
+      expect(screen.queryByTestId('pharmacy-phone-number')).to.not.exist;
     });
   });
 

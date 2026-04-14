@@ -16,6 +16,7 @@ import {
   dispStatusObjV2,
   DISPENSE_STATUS,
   NON_VA_MEDICATION_MESSAGE,
+  UNKNOWN_STATUS_MESSAGES,
 } from '../../util/constants';
 import CallPharmacyPhone from './CallPharmacyPhone';
 import RefillButton from './RefillButton';
@@ -59,24 +60,41 @@ const ExtraDetails = ({
       <RefillButton {...rx} />
     ) : null;
 
+  const renderUnknownStatusPhoneMessage = () => {
+    if (!isMedsImprovements) {
+      return (
+        <p className="vads-u-margin-y--0">
+          {UNKNOWN_STATUS_MESSAGES.callPharmacyLegacy}
+          <CallPharmacyPhone cmopDivisionPhone={pharmacyPhone} page={page} />
+        </p>
+      );
+    }
+    if (pharmacyPhone) {
+      return (
+        <p className="vads-u-margin-top--2 vads-u-margin-bottom--0">
+          {UNKNOWN_STATUS_MESSAGES.callPharmacyWithQuestions}
+          <CallPharmacyPhone cmopDivisionPhone={pharmacyPhone} page={page} />
+        </p>
+      );
+    }
+    return (
+      <p className="vads-u-margin-top--2 vads-u-margin-bottom--0">
+        {UNKNOWN_STATUS_MESSAGES.callPharmacyFallback}
+      </p>
+    );
+  };
+
   const renderV2Content = () => {
     switch (dispStatus) {
       case dispStatusObjV2.statusNotAvailable:
         return (
           <div className="statusIcon unknownIcon" data-testid="unknown">
-            <va-icon icon="warning" size={4} aria-hidden="true" />
-            <div className="vads-u-padding-left--2" data-testid="unknown-rx">
+            <va-icon icon="warning" size={3} aria-hidden="true" />
+            <div className="vads-u-padding-left--1" data-testid="unknown-rx">
               <p className="vads-u-margin-y--0">
-                We’re sorry. There’s a problem with our system. You can’t manage
-                this prescription online right now.
+                {UNKNOWN_STATUS_MESSAGES.systemError}
               </p>
-              <p className="vads-u-margin-y--0">
-                Call your VA pharmacy
-                <CallPharmacyPhone
-                  cmopDivisionPhone={pharmacyPhone}
-                  page={pageType.DETAILS}
-                />
-              </p>
+              {renderUnknownStatusPhoneMessage()}
             </div>
           </div>
         );
@@ -243,19 +261,12 @@ const ExtraDetails = ({
       case dispStatusObj.unknown:
         return (
           <div className="statusIcon unknownIcon" data-testid="unknown">
-            <va-icon icon="warning" size={4} aria-hidden="true" />
-            <div className="vads-u-padding-left--2" data-testid="unknown-rx">
+            <va-icon icon="warning" size={3} aria-hidden="true" />
+            <div className="vads-u-padding-left--1" data-testid="unknown-rx">
               <p className="vads-u-margin-y--0">
-                We’re sorry. There’s a problem with our system. You can’t manage
-                this prescription online right now.
+                {UNKNOWN_STATUS_MESSAGES.systemError}
               </p>
-              <p className="vads-u-margin-y--0">
-                Call your VA pharmacy
-                <CallPharmacyPhone
-                  cmopDivisionPhone={pharmacyPhone}
-                  page={pageType.DETAILS}
-                />
-              </p>
+              {renderUnknownStatusPhoneMessage()}
             </div>
           </div>
         );
