@@ -3,6 +3,8 @@ export const APPLICANTS_MAX = 25;
 export const ATTACHMENT_IDS = Object.freeze({
   adoptionPapers: 'Court ordered adoption papers',
   birthCert: 'Birth certificate',
+  civilUnionCert: 'Certificate of civil union',
+  divorceDecree: 'Divorce decree',
   marriageCert: 'Marriage certificate',
   medicareAbCardFront: 'Front of Medicare Parts A or B card',
   medicareAbCardBack: 'Back of Medicare Parts A or B card',
@@ -12,6 +14,7 @@ export const ATTACHMENT_IDS = Object.freeze({
   medicareDCardBack: 'Back of Medicare Part D card',
   ohiCardFront: 'Front of health insurance card',
   ohiCardBack: 'Back of health insurance card',
+  other: 'Other document',
   schoolCertificationForm: 'School enrollment certification form',
   schoolEnrollmentLetter: 'Enrollment letter',
   ssaLetter: 'Letter from the SSA',

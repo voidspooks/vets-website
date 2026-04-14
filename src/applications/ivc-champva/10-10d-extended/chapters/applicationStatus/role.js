@@ -6,24 +6,48 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import SignInAlert from '../../components/FormAlerts/SignInAlert';
 import content from '../../locales/en/content.json';
+import { isNewSubmission } from '../../utils/helpers';
 
-const TITLE_TEXT = content['eligibility--role-title'];
+const SCHEMA_ENUM = ['applicant', 'sponsor', 'other'];
+const SUBMISSION_TYPES = { NEW: 'new', UPDATE: 'update' };
+
+const TITLE_TEXT = {
+  [SUBMISSION_TYPES.NEW]: content['eligibility--role-title--new'],
+  [SUBMISSION_TYPES.UPDATE]: content['eligibility--role-title--update'],
+};
 const INPUT_LABEL = content['eligibility--role-label'];
 
+const buildLabels = type =>
+  SCHEMA_ENUM.reduce((acc, role) => {
+    acc[role] = content[`eligibility--role-option--${type}-${role}`];
+    return acc;
+  }, {});
+
 const SCHEMA_LABELS = {
-  applicant: content['eligibility--role-option--applicant'],
-  sponsor: content['eligibility--role-option--sponsor'],
-  other: content['eligibility--role-option--other'],
+  [SUBMISSION_TYPES.NEW]: buildLabels(SUBMISSION_TYPES.NEW),
+  [SUBMISSION_TYPES.UPDATE]: buildLabels(SUBMISSION_TYPES.UPDATE),
 };
-const SCHEMA_ENUM = Object.keys(SCHEMA_LABELS);
+
+const updateUiSchema = formData => {
+  const submissionType = isNewSubmission(formData)
+    ? SUBMISSION_TYPES.NEW
+    : SUBMISSION_TYPES.UPDATE;
+  return {
+    'ui:title': TITLE_TEXT[submissionType],
+    'ui:options': {
+      labels: SCHEMA_LABELS[submissionType],
+    },
+  };
+};
 
 export default {
   uiSchema: {
-    ...titleUI(TITLE_TEXT),
+    ...titleUI(TITLE_TEXT.new),
     ...descriptionUI(SignInAlert),
     certifierRole: radioUI({
       title: INPUT_LABEL,
-      labels: SCHEMA_LABELS,
+      labels: SCHEMA_LABELS[SUBMISSION_TYPES.NEW],
+      updateUiSchema,
     }),
   },
   schema: {
