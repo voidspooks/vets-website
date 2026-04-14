@@ -27,6 +27,8 @@ import uploadDocuments from './chapters/03-additional-information/uploadDocument
 import expensesReview from './chapters/02-expenses/expensesReview';
 import GetFormHelp from '../components/GetFormHelp';
 import { hasNoExpenses, hasCareExpenses } from './chapters/02-expenses/helpers';
+import { focusH3 } from '../utils/helpers';
+import { applyForceDivWrapperToFormConfig } from '../utils/uiSchemaHelpers';
 
 /** @type {FormConfig} */
 const formConfig = {
@@ -35,6 +37,8 @@ const formConfig = {
   submitUrl: `${environment.API_URL}/medical_expense_reports/v0/form8416`,
   transformForSubmit: transform,
   trackingPrefix: 'med-expense-8416',
+  useCustomScrollAndFocus: true,
+  scrollAndFocusTarget: focusH3, // scroll and focus fallback
   v3SegmentedProgressBar: true,
   dev: {
     // disableWindowUnloadInCI: true,
@@ -190,4 +194,4 @@ const formConfig = {
   },
 };
 
-export default formConfig;
+export default applyForceDivWrapperToFormConfig(formConfig);
