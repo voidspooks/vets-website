@@ -45,7 +45,13 @@ describe('buildSubmissionData', () => {
       spouseSupportingDocuments: [{ name: 'doc.pdf' }],
       spouseMarriageHistory: [{ fullName: { first: 'Ex', last: 'Spouse' } }],
       veteranMarriageHistory: [{ fullName: { first: 'Ex', last: 'Spouse' } }],
-      childrenToAdd: [{ fullName: { first: 'Child', last: 'Doe' } }],
+      childrenToAdd: [
+        {
+          fullName: { first: 'Child', last: 'Doe' },
+          doesChildHaveDisability: true,
+          doesChildHavePermanentDisability: true,
+        },
+      ],
       childSupportingDocuments: [{ name: 'child-doc.pdf' }],
       studentInformation: [{ fullName: { first: 'Student', last: 'Doe' } }],
       reportDivorce: { fullName: { first: 'Ex', last: 'Spouse' } },
@@ -264,6 +270,90 @@ describe('buildSubmissionData', () => {
 
     expect(result.data.childrenToAdd).to.not.be.undefined;
     expect(result.data.childSupportingDocuments).to.not.be.undefined;
+  });
+
+  it('should only set addDisabledChild when all child records are disabled children', () => {
+    const payload = createTestData({
+      'view:addDependentOptions': {
+        addSpouse: false,
+        addChild: true,
+        report674: true,
+        addDisabledChild: true,
+      },
+    });
+    const result = buildSubmissionData(payload);
+
+    expect(result.data['view:addDependentOptions']).to.deep.equal({
+      report674: true,
+      addDisabledChild: true,
+    });
+    expect(result.data['view:selectable686Options']).to.deep.equal({
+      report674: true,
+      addDisabledChild: true,
+      reportDivorce: true,
+      reportDeath: true,
+      reportStepchildNotInHousehold: true,
+      reportMarriageOfChildUnder18: true,
+      reportChild18OrOlderIsNotAttendingSchool: true,
+    });
+  });
+
+  it('should convert addChild to addDisabledChild when only disabled children are present (regression)', () => {
+    const payload = createTestData({
+      'view:addDependentOptions': {
+        addSpouse: false,
+        addChild: true,
+        report674: true,
+        addDisabledChild: false,
+      },
+      childrenToAdd: [
+        {
+          fullName: { first: 'Disabled', last: 'Only' },
+          doesChildHaveDisability: true,
+          doesChildHavePermanentDisability: true,
+        },
+      ],
+    });
+    const result = buildSubmissionData(payload);
+
+    expect(result.data['view:addDependentOptions']).to.deep.equal({
+      report674: true,
+      addDisabledChild: true,
+    });
+    expect(result.data['view:addDependentOptions'].addChild).to.be.undefined;
+    expect(result.data['view:selectable686Options'].addChild).to.be.undefined;
+    expect(result.data['view:selectable686Options'].addDisabledChild).to.be
+      .true;
+  });
+
+  it('should keep both child flags when child records include disabled and non-disabled children', () => {
+    const payload = createTestData({
+      'view:addDependentOptions': {
+        addSpouse: false,
+        addChild: true,
+        report674: true,
+        addDisabledChild: true,
+      },
+      childrenToAdd: [
+        {
+          fullName: { first: 'Disabled', last: 'Child' },
+          doesChildHaveDisability: true,
+          doesChildHavePermanentDisability: true,
+        },
+        {
+          fullName: { first: 'Minor', last: 'Child' },
+          doesChildHaveDisability: false,
+          doesChildHavePermanentDisability: false,
+        },
+      ],
+    });
+    const result = buildSubmissionData(payload);
+
+    expect(result.data['view:addDependentOptions']).to.deep.equal({
+      addChild: true,
+      report674: true,
+      addDisabledChild: true,
+    });
   });
 
   it('should not include child data when both addChild and addDisabledChild are false', () => {

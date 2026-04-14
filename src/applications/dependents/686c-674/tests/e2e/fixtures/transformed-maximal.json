@@ -9,13 +9,11 @@
   "view:addDependentOptions": {
     "addSpouse": true,
     "addChild": true,
-    "addDisabledChild": true,
     "report674": true
   },
   "view:selectable686Options": {
     "addSpouse": true,
     "addChild": true,
-    "addDisabledChild": true,
     "report674": true
   },
 

@@ -142,7 +142,7 @@
       "isEncrypted": false
     }
   ],
-  "view:addDependentOptions": { "addSpouse": true, "addChild": true },
+  "view:addDependentOptions": { "addSpouse": true, "addDisabledChild": true },
   "view:addOrRemoveDependents": { "add": true },
-  "view:selectable686Options": { "addSpouse": true, "addChild": true }
+  "view:selectable686Options": { "addSpouse": true, "addDisabledChild": true }
 }

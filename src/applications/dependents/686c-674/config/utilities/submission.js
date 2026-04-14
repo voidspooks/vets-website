@@ -49,6 +49,54 @@ function extractDataFields(sourceData, fields) {
   return result;
 }
 
+/**
+ * Returns true when a child record should be treated as disabled for
+ * submission option normalization.
+ *
+ * @param {object} childFormData - child form data row
+ * @returns {boolean} true when child has either disability flag
+ */
+function isDisabledChild(childFormData = {}) {
+  return Boolean(
+    childFormData?.doesChildHaveDisability ||
+      childFormData?.doesChildHavePermanentDisability,
+  );
+}
+
+/**
+ * Normalize child add workflow flags from the actual child records.
+ *
+ * childrenToAdd is shared by both addChild and addDisabledChild workflows, so
+ * wizard selections alone are not enough to determine the correct submission
+ * flags. When child data exists, rebuild both child flags from the child rows:
+ * - Disabled children enable addDisabledChild
+ * - Non-disabled children enable addChild
+ * - Mixed sets enable both
+ *
+ * @param {object} addOptions - selected add-dependent options
+ * @param {object} sourceData - original form data
+ * @returns {object} normalized add-dependent options
+ */
+function normalizeChildAddOptions(addOptions, sourceData) {
+  const normalizedAddOptions = { ...addOptions };
+  const childrenToAdd = Array.isArray(sourceData?.childrenToAdd)
+    ? sourceData.childrenToAdd
+    : [];
+  const childWorkflowSelected =
+    addOptions.addChild === true || addOptions.addDisabledChild === true;
+
+  if (!childWorkflowSelected || childrenToAdd.length === 0) {
+    return normalizedAddOptions;
+  }
+
+  normalizedAddOptions.addDisabledChild = childrenToAdd.some(isDisabledChild);
+  normalizedAddOptions.addChild = childrenToAdd.some(
+    childFormData => !isDisabledChild(childFormData),
+  );
+
+  return normalizedAddOptions;
+}
+
 /* eslint-disable no-param-reassign */
 /**
  * Apply noSsnReason payload mappings for spouse, children, and students.
@@ -126,7 +174,10 @@ export function buildSubmissionData(payload) {
   const addEnabled = sourceData['view:addOrRemoveDependents']?.add === true;
   const removeEnabled =
     sourceData['view:addOrRemoveDependents']?.remove === true;
-  const addOptions = sourceData['view:addDependentOptions'] || {};
+  const addOptions = normalizeChildAddOptions(
+    sourceData['view:addDependentOptions'] || {},
+    sourceData,
+  );
   const removeOptions = sourceData['view:removeDependentOptions'] || {};
 
   // Always include these - needed for BE
