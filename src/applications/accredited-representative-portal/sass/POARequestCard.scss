@@ -88,9 +88,9 @@
     }
   }
   &__meta {
-    margin-bottom: 32px;
+    margin-bottom: 16px;
     @media (min-width: $small-desktop-screen) {
-      margin: 32px 0;
+      margin-top: 32px;
     }
     &:focus {
       outline: 2px solid $vads-color-action-focus-on-light;
