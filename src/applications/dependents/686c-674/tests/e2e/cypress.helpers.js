@@ -37,7 +37,9 @@ export const setupCypress = ({
   const fdfSubmission = {
     data: {
       digitalFormsApi: {
-        submissionId: '123fake-submission-id-567',
+        submission: {
+          submissionId: '123fake-submission-id-567',
+        },
         confirmationNumber: 'V-DEB-1234',
       },
     },

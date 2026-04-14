@@ -153,7 +153,11 @@ const responses = {
     attributes: {
       guid: '123fake-submission-id-567',
     },
-    submissionId: 12345,
+    digitalFormsApi: {
+      submission: {
+        submissionId: '12345',
+      },
+    },
   },
 };
 
