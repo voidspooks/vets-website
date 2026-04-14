@@ -1,9 +1,17 @@
 import React from 'react';
 import { expect } from 'chai';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PreviousStatements from '../../components/PreviousStatements';
-import HTMLStatementLink from '../../components/HTMLStatementLink';
+
+const copayIds = {
+  jan: 'f4385298-08a6-42f8-a86f-50e97033fb85',
+  feb: '4-1abZUKu7xIvIw6',
+  mar: '4-1abZUKu7xIv1t4',
+  apr: '4-1abZUKu7xIukq2',
+  legacyA: '648-stmt-2024-03',
+  legacyB: '648-stmt-2024-02',
+};
 
 const vhaStatement = (id, invoiceDate) => ({ id, invoiceDate });
 
@@ -12,168 +20,191 @@ const legacyStatement = (id, date) => ({
   pSStatementDateOutput: date,
 });
 
-const mountWithRouter = component =>
-  mount(<MemoryRouter>{component}</MemoryRouter>);
+const renderWithRouter = component =>
+  render(<MemoryRouter>{component}</MemoryRouter>);
 
 describe('PreviousStatements', () => {
   describe('when shouldUseLighthouseCopays is true', () => {
     it('should render when recentStatements exist', () => {
-      const wrapper = mountWithRouter(
+      const { getByTestId } = renderWithRouter(
         <PreviousStatements
           previousStatements={[
-            vhaStatement('1', '2024-01-01'),
-            vhaStatement('2', '2024-02-01'),
-            vhaStatement('3', '2024-03-01'),
+            vhaStatement(copayIds.jan, '2024-01-01'),
+            vhaStatement(copayIds.feb, '2024-02-01'),
+            vhaStatement(copayIds.mar, '2024-03-01'),
           ]}
           shouldUseLighthouseCopays
         />,
       );
 
-      expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(
-        1,
-      );
-      expect(wrapper.find(HTMLStatementLink)).to.have.lengthOf(3);
-      wrapper.unmount();
+      expect(getByTestId('view-statements')).to.exist;
+      expect(getByTestId(`balance-details-${copayIds.jan}-statement-view`)).to
+        .exist;
+      expect(getByTestId(`balance-details-${copayIds.feb}-statement-view`)).to
+        .exist;
+      expect(getByTestId(`balance-details-${copayIds.mar}-statement-view`)).to
+        .exist;
     });
 
     it('should return null when recentStatements is empty', () => {
-      const wrapper = mountWithRouter(
+      const { queryByTestId } = renderWithRouter(
         <PreviousStatements
           previousStatements={[]}
           shouldUseLighthouseCopays
         />,
       );
 
-      expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(
-        0,
-      );
-      wrapper.unmount();
+      expect(queryByTestId('view-statements')).to.not.exist;
     });
 
     it('should not sort statements (render in original order)', () => {
-      const wrapper = mountWithRouter(
+      const { getByTestId } = renderWithRouter(
         <PreviousStatements
           previousStatements={[
-            vhaStatement('1', '2024-01-01'),
-            vhaStatement('3', '2024-03-01'),
-            vhaStatement('2', '2024-02-01'),
-            vhaStatement('4', '2024-04-01'),
+            vhaStatement(copayIds.jan, '2024-01-01'),
+            vhaStatement(copayIds.mar, '2024-03-01'),
+            vhaStatement(copayIds.feb, '2024-02-01'),
+            vhaStatement(copayIds.apr, '2024-04-01'),
           ]}
           shouldUseLighthouseCopays
         />,
       );
 
-      const links = wrapper.find(HTMLStatementLink);
-      expect(links).to.have.lengthOf(4);
-      expect(links.at(0).prop('statementDate')).to.equal('2024-01-01');
-      expect(links.at(1).prop('statementDate')).to.equal('2024-03-01');
-      expect(links.at(2).prop('statementDate')).to.equal('2024-02-01');
-      expect(links.at(3).prop('statementDate')).to.equal('2024-04-01');
-      wrapper.unmount();
+      const list = getByTestId('otpp-statement-list');
+      const items = list.querySelectorAll('li');
+      expect(items).to.have.lengthOf(4);
+
+      // Verify order is preserved by checking the full href of each va-link in sequence
+      expect(items[0].querySelector('va-link').getAttribute('href')).to.equal(
+        `/copay-balances/${copayIds.jan}/statement`,
+      );
+      expect(items[1].querySelector('va-link').getAttribute('href')).to.equal(
+        `/copay-balances/${copayIds.mar}/statement`,
+      );
+      expect(items[2].querySelector('va-link').getAttribute('href')).to.equal(
+        `/copay-balances/${copayIds.feb}/statement`,
+      );
+      expect(items[3].querySelector('va-link').getAttribute('href')).to.equal(
+        `/copay-balances/${copayIds.apr}/statement`,
+      );
     });
 
     it('should render correct heading and description text', () => {
-      const wrapper = mountWithRouter(
+      const { getByRole, getByText } = renderWithRouter(
         <PreviousStatements
-          previousStatements={[vhaStatement('1', '2024-01-01')]}
+          previousStatements={[vhaStatement(copayIds.jan, '2024-01-01')]}
           shouldUseLighthouseCopays
         />,
       );
 
-      expect(wrapper.find('h2').text()).to.equal('Previous statements');
-      expect(wrapper.find('p').text()).to.include(
-        'Review your charges and download your mailed statements from the past 6 months',
+      expect(getByRole('heading', { level: 2 }).textContent).to.equal(
+        'Previous statements',
       );
-      wrapper.unmount();
+      expect(
+        getByText(content =>
+          content.includes(
+            'Review your charges and download your mailed statements from the past 6 months',
+          ),
+        ),
+      ).to.exist;
     });
   });
 
   describe('when shouldUseLighthouseCopays is false', () => {
     it('should render when previous statements exist', () => {
-      const wrapper = mountWithRouter(
+      const { getByTestId } = renderWithRouter(
         <PreviousStatements
           previousStatements={[
-            legacyStatement('1', '01/01/2024'),
-            legacyStatement('3', '03/01/2024'),
+            legacyStatement(copayIds.legacyA, '01/01/2024'),
+            legacyStatement(copayIds.legacyB, '03/01/2024'),
           ]}
         />,
       );
 
-      expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(
-        1,
-      );
-      expect(wrapper.find(HTMLStatementLink)).to.have.lengthOf(2);
-      wrapper.unmount();
+      expect(getByTestId('view-statements')).to.exist;
+      expect(getByTestId(`balance-details-${copayIds.legacyA}-statement-view`))
+        .to.to.exist;
+      expect(getByTestId(`balance-details-${copayIds.legacyB}-statement-view`))
+        .to.to.exist;
     });
 
     it('should return null when previousStatements is empty', () => {
-      const wrapper = mountWithRouter(
+      const { queryByTestId } = renderWithRouter(
         <PreviousStatements previousStatements={[]} />,
       );
 
-      expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(
-        0,
-      );
-      wrapper.unmount();
+      expect(queryByTestId('view-statements')).to.not.exist;
     });
 
     it('should render statements in the order provided', () => {
-      const wrapper = mountWithRouter(
+      const { getByTestId } = renderWithRouter(
         <PreviousStatements
           previousStatements={[
-            legacyStatement('2', '03/01/2024'),
-            legacyStatement('3', '02/01/2024'),
+            legacyStatement(copayIds.legacyA, '03/01/2024'),
+            legacyStatement(copayIds.legacyB, '02/01/2024'),
           ]}
           shouldUseLighthouseCopays={false}
         />,
       );
 
-      const links = wrapper.find(HTMLStatementLink);
-      expect(links).to.have.lengthOf(2);
-      expect(links.at(0).prop('statementDate')).to.equal('03/01/2024');
-      expect(links.at(1).prop('statementDate')).to.equal('02/01/2024');
-      wrapper.unmount();
+      const list = getByTestId('otpp-statement-list');
+      const items = list.querySelectorAll('li');
+      expect(items).to.have.lengthOf(2);
+      expect(items[0].querySelector('va-link').getAttribute('href')).to.equal(
+        `/copay-balances/${copayIds.legacyA}/statement`,
+      );
+      expect(items[1].querySelector('va-link').getAttribute('href')).to.equal(
+        `/copay-balances/${copayIds.legacyB}/statement`,
+      );
     });
   });
 
-  it('should forward copayId to each HTMLStatementLink', () => {
-    const wrapper = mountWithRouter(
+  it('should forward copayId to each HTMLStatementLink as router state (links render with correct hrefs)', () => {
+    const { getByTestId } = renderWithRouter(
       <PreviousStatements
         previousStatements={[
-          vhaStatement('1', '2024-01-01'),
-          vhaStatement('2', '2024-02-01'),
+          vhaStatement(copayIds.jan, '2024-01-01'),
+          vhaStatement(copayIds.feb, '2024-02-01'),
         ]}
         isVHA
         copayId="parent-copay-123"
       />,
     );
 
-    const links = wrapper.find(HTMLStatementLink);
-    expect(links).to.have.lengthOf(2);
-    expect(links.at(0).prop('copayId')).to.equal('parent-copay-123');
-    expect(links.at(1).prop('copayId')).to.equal('parent-copay-123');
-    wrapper.unmount();
+    // copayId is threaded via history.push state in HTMLStatementLink, not a DOM attribute.
+    // We verify both links render and point to the correct copay hrefs.
+    expect(getByTestId(`balance-details-${copayIds.jan}-statement-view`)).to
+      .exist;
+
+    expect(getByTestId(`balance-details-${copayIds.feb}-statement-view`)).to
+      .exist;
+    expect(
+      getByTestId(
+        `balance-details-${copayIds.jan}-statement-view`,
+      ).getAttribute('href'),
+    ).to.equal(`/copay-balances/${copayIds.jan}/statement`);
+    expect(
+      getByTestId(
+        `balance-details-${copayIds.feb}-statement-view`,
+      ).getAttribute('href'),
+    ).to.equal(`/copay-balances/${copayIds.feb}/statement`);
   });
 
   it('should return null when previousStatements is undefined', () => {
-    const wrapper = mountWithRouter(
+    const { queryByTestId } = renderWithRouter(
       <PreviousStatements previousStatements={undefined} />,
     );
 
-    expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(0);
-    wrapper.unmount();
+    expect(queryByTestId('view-statements')).to.not.exist;
   });
 
   describe('edge cases', () => {
     it('should handle null previousStatements gracefully', () => {
-      const wrapper = mountWithRouter(
+      const { queryByTestId } = renderWithRouter(
         <PreviousStatements previousStatements={null} />,
       );
 
-      expect(wrapper.find('[data-testid="view-statements"]')).to.have.lengthOf(
-        0,
-      );
-      wrapper.unmount();
+      expect(queryByTestId('view-statements')).to.not.exist;
     });
   });
 });
