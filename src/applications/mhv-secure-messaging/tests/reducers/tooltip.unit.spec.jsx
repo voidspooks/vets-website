@@ -5,22 +5,12 @@ import { Actions } from '../../util/actionTypes';
 describe('tooltipReducer', () => {
   const initialState = {
     tooltipVisible: false,
-    tooltipId: undefined,
     error: undefined,
   };
 
   it('returns initial state by default', () => {
     const state = tooltipReducer(undefined, { type: 'UNKNOWN_ACTION' });
     expect(state).to.deep.equal(initialState);
-  });
-
-  it('handles SET_TOOLTIP_ID', () => {
-    const state = tooltipReducer(initialState, {
-      type: Actions.Tooltip.SET_TOOLTIP_ID,
-      payload: 'tooltip-123',
-    });
-    expect(state.tooltipId).to.equal('tooltip-123');
-    expect(state.error).to.be.null;
   });
 
   it('handles SET_TOOLTIP_VISIBILITY to true', () => {
@@ -39,15 +29,6 @@ describe('tooltipReducer', () => {
       payload: false,
     });
     expect(state.tooltipVisible).to.be.false;
-    expect(state.error).to.be.null;
-  });
-
-  it('clears error when SET_TOOLTIP_ID is dispatched', () => {
-    const prevState = { ...initialState, error: 'some error' };
-    const state = tooltipReducer(prevState, {
-      type: Actions.Tooltip.SET_TOOLTIP_ID,
-      payload: 'tooltip-456',
-    });
     expect(state.error).to.be.null;
   });
 
@@ -99,7 +80,6 @@ describe('tooltipReducer', () => {
   it('preserves other state fields on error', () => {
     const prevState = {
       tooltipVisible: true,
-      tooltipId: 'tooltip-789',
       error: undefined,
     };
     const error = { message: 'something broke' };
@@ -108,7 +88,6 @@ describe('tooltipReducer', () => {
       error,
     });
     expect(state.tooltipVisible).to.be.true;
-    expect(state.tooltipId).to.equal('tooltip-789');
     expect(state.error).to.deep.equal(error);
   });
 });

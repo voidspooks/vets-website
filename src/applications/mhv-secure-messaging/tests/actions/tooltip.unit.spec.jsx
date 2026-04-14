@@ -6,7 +6,6 @@ import {
   createNewTooltip,
   incrementTooltip,
   updateTooltipVisibility,
-  setTooltip,
   getTooltipByName,
 } from '../../actions/tooltip';
 import * as SmApi from '../../api/SmApi';
@@ -150,22 +149,6 @@ describe('tooltip actions', () => {
         Actions.Tooltip.UPDATE_TOOLTIP_VISIBILITY_ERROR,
       );
       expect(dispatchedActions[1].error).to.equal(error);
-    });
-  });
-
-  describe('setTooltip', () => {
-    it('dispatches SET_TOOLTIP_ID and SET_TOOLTIP_VISIBILITY', () => {
-      setTooltip('tooltip-456', true)(dispatch);
-
-      expect(dispatchedActions).to.have.lengthOf(2);
-      expect(dispatchedActions[0]).to.deep.equal({
-        type: Actions.Tooltip.SET_TOOLTIP_ID,
-        payload: 'tooltip-456',
-      });
-      expect(dispatchedActions[1]).to.deep.equal({
-        type: Actions.Tooltip.SET_TOOLTIP_VISIBILITY,
-        payload: true,
-      });
     });
   });
 

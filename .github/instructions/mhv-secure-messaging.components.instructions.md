@@ -209,6 +209,7 @@ const validateForm = () => {
 
 | Hook | Purpose |
 |---|---|
+| `useTooltipLifecycle` | Manages tooltip fetch-or-create, local visibility state, view counter, and dismiss. Use for all dismissible tooltip alerts. |
 | `useDebounce` | Debounce value changes for auto-save |
 | `useFocusSettle` | Delay content until page focus is stable (1s debounce + 5s ceiling). Internal to `SmAlert` — consumers should not need to use directly. |
 | `useInterval` | Run function at intervals (e.g., session check) |
@@ -239,16 +240,16 @@ const validateForm = () => {
 | `RouterLink` / `RouterLinkAction` | Internal navigation wrappers (see above) |
 | `CareTeamNameChangeAlert` | EHR crosswalk warning — lists renamed care teams, filtered to recent recipients, tooltip-persisted dismiss (local state, not Redux) |
 | `MigratedMessageAlert` | Post-migration thread alert — shows old→new team name if crosswalk match exists for thread recipient |
-| `DismissibleAlert` | Server-persisted dismissible tooltip alert (uses tooltip Redux slice + API) |
+| `DismissibleAlert` | Server-persisted dismissible tooltip alert (uses `useTooltipLifecycle` hook + API) |
 
 ### DismissibleAlert (Tooltip Pattern)
 
 `DismissibleAlert` wraps `VaAlert` with server-persisted dismiss state. Once a user closes it, the backend records it as hidden so it won't reappear.
 
 - **Location**: `components/shared/DismissibleAlert.jsx`
-- **Redux**: Uses `state.sm.tooltip` (`tooltipVisible`, `tooltipId`)
-- **API**: `getTooltipsList`, `createTooltip`, `incrementTooltipCounter`, `hideTooltip` from `SmApi.js`
-- **Lifecycle**: On mount, fetches or creates a tooltip by name → sets visibility → increments view counter. On close, calls `hideTooltip` API → sets `tooltipVisible: false`.
+- **Hook**: Uses `useTooltipLifecycle(tooltipName)` for local visibility state — no Redux
+- **API**: `getTooltipsList`, `createTooltip`, `incrementTooltipCounter`, `hideTooltip` from `SmApi.js` (called by the hook)
+- **Lifecycle**: On mount, hook fetches or creates a tooltip by name → sets local visibility → increments view counter. On close, calls `hideTooltip` API and updates local state.
 - **Accessibility**: Always includes `closeBtnAriaLabel="Close notification"` (consistent with other closeable alerts)
 - **Datadog**: Uses `data-dd-privacy="mask"` and `data-dd-action-name` (includes `tooltipId`)
 

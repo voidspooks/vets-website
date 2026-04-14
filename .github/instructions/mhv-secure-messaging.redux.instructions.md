@@ -70,7 +70,6 @@ state.sm = {
   },
   tooltip: {
     tooltipVisible: false,
-    tooltipId: undefined,
     error: undefined,
   },
   careTeamChanges: {
@@ -208,7 +207,6 @@ const rxPrescriptionId =
 | `deleteMessage(threadId)` | Move thread to trash |
 | `getTooltipByName(tooltipName)` | Fetch tooltip by name (find-or-create pattern) |
 | `createNewTooltip(tooltipName)` | Create a new tooltip record via API |
-| `setTooltip(tooltipId, visible)` | Set tooltip ID and visibility in state |
 | `updateTooltipVisibility(tooltipId, visible)` | Hide tooltip via API + update state |
 | `incrementTooltip(tooltipId)` | Increment view counter via API |
 
@@ -256,45 +254,29 @@ dispatch(setBreadcrumbs([
 
 Mobile vs desktop rendering handled by `BreadcrumbViews` constant.
 
-## Tooltip Single-Instance Limitation
+## Tooltip Lifecycle Pattern
 
-**When to use:** Adding a second dismissible tooltip-backed alert to a page that already has one.
+All tooltip-backed alert components manage tooltip state in **local component state** via the `useTooltipLifecycle` hook — not Redux. This keeps each mounted alert isolated so that multiple tooltips on the same page cannot overwrite each other's visibility state.
 
-The `state.sm.tooltip` Redux slice tracks a **single** tooltip (`tooltipId`, `tooltipVisible`). If two components on the same page both use the Redux tooltip actions (`getTooltipByName`, `setTooltip`, `updateTooltipVisibility`), they will overwrite each other's state.
-
-**Pattern:** Use **local component state + direct SmApi calls** for the second tooltip:
+**Standard pattern:** Use `useTooltipLifecycle` for any dismissible tooltip alert:
 
 ```javascript
-const [tooltipVisible, setTooltipVisible] = useState(false);
-const [tooltipId, setTooltipId] = useState(null);
+import useTooltipLifecycle from '../hooks/useTooltipLifecycle';
 
-useEffect(() => {
-  const tooltips = await SmApi.getTooltipsList();
-  const existing = tooltips?.find?.(t => t.tooltipName === MY_TOOLTIP_NAME);
-  if (existing?.id) {
-    setTooltipId(existing.id);
-    setTooltipVisible(!existing.hidden);
-  } else {
-    const created = await SmApi.createTooltip(MY_TOOLTIP_NAME);
-    setTooltipId(created.id);
-    setTooltipVisible(!created.hidden);
-  }
-}, []);
-
-const handleClose = useCallback(() => {
-  setTooltipVisible(false);
-  if (tooltipId) SmApi.hideTooltip(tooltipId).catch(() => {});
-}, [tooltipId]);
+const { tooltipVisible, tooltipId, dismiss } = useTooltipLifecycle(tooltipName);
 ```
 
-**Anti-pattern:**
+The hook handles fetch-or-create, view counter incrementing, auto-hide after `maxViews`, and dismiss — all in local state.
+
+**Options:**
 ```javascript
-// ❌ Using Redux tooltip actions when another tooltip component is on the same page
-dispatch(getTooltipByName('my_tooltip'));
-// This overwrites state.sm.tooltip, hiding the other tooltip
+useTooltipLifecycle(tooltipName, {
+  skip: !isCernerPatient, // Skip fetch entirely (avoids inflating view counts)
+  maxViews: 3,            // Auto-hide after N views (default: 3)
+});
 ```
 
-**Why:** Discovered in #138299 — `CareTeamNameChangeAlert` and `InProductionEducationAlert` (via `DismissibleAlert`) both appear on the SelectCareTeam page. Using Redux for both caused them to overwrite each other's visibility state.
+**Why local state:** Discovered in #138299 — `CareTeamNameChangeAlert` and `InProductionEducationAlert` (via `DismissibleAlert`) both appear on the SelectCareTeam page. Storing tooltip state in Redux caused them to overwrite each other's visibility. Local hook state keeps each alert fully isolated.
 
 ## Alert Dispatch Patterns
 

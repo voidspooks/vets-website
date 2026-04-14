@@ -60,17 +60,6 @@ export const updateTooltipVisibility = tooltipId => async dispatch => {
   }
 };
 
-export const setTooltip = (tooltipId, tooltipVisibility) => dispatch => {
-  dispatch({
-    type: Actions.Tooltip.SET_TOOLTIP_ID,
-    payload: tooltipId,
-  });
-  dispatch({
-    type: Actions.Tooltip.SET_TOOLTIP_VISIBILITY,
-    payload: tooltipVisibility,
-  });
-};
-
 export const getTooltipByName = tooltipName => async dispatch => {
   try {
     const tooltips = await dispatch(getTooltips());
