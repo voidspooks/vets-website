@@ -376,7 +376,7 @@
  * @property {boolean} [useAllFormData] `formData` will return all form data instead of just the current item in an array. Applicable to `ui:validations`. TODO other fields.
  * @property {boolean} [useDlWrap] On the review page, moves \<dl\> tag to immediately surrounding the \<dt\> field instead of using a \<div\>. \<dt\> fields should be wrapped in \<dl\> fields, so this fixes that a11y issue. Formats fields horizontally.
  * @property {'single' | 'multiple'} [useFormsPattern] Used if you want to define the formHeading and formDescription for the web component field, which can include JSX, so it can be read out by screen readers. Accepts 'single' for a single field on the page where the error will show on the entire block, or 'multiple' for multiple fields on the page where the error will show only on the field.
- * @property {boolean} [useHeaderStyling] Enables developer to implement and use alternate style classes for auto generated html elements such as in ObjectField or ArrayField
+ * @property {boolean | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'} [useHeaderStyling] If true, renders title with header styling using default visual level 'h5'. If set to a header level string, uses that visual level class (vads-u-font-size--{level}). Semantic markup remains h3.
  * @property {boolean} [uswds] For web components. `true` will use the v3 web components and is the default option for `'ui:webComponentField'` if omitted. `false` will use the v1 web components.
  * @property {React.ReactNode} [viewComponent]
  * @property {React.ReactNode} [viewField] For arrays. The display of each item after you've added it.

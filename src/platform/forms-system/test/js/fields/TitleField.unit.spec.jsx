@@ -31,6 +31,15 @@ describe('Schemaform <TitleField>', () => {
     );
     expect(container.querySelector('h3')).to.be.null;
   });
+  it('should apply h3 class modifier when useHeaderStyling is a string', () => {
+    const { container } = render(
+      <TitleField id="root__title" title="foo" useHeaderStyling="h3" />,
+    );
+
+    const heading = container.querySelector('h3');
+    expect(heading).not.to.be.null;
+    expect(heading.classList.contains('vads-u-font-size--h3')).to.be.true;
+  });
   it('should render subtitle for non-root', () => {
     const Foo = () => <div>Foo</div>;
     const { container } = render(
