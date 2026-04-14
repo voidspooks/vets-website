@@ -363,9 +363,12 @@ const RefillPrescriptionsV2 = () => {
 
     return (
       <>
+        <CernerFacilityAlert
+          healthTool="MEDICATIONS"
+          className="vads-u-margin-top--2"
+        />
         {fullRefillList?.length > 0 ? (
           <div>
-            <CernerFacilityAlert healthTool="MEDICATIONS" />
             <h2
               className="vads-u-margin-top--3"
               data-testid="refill-page-subtitle"
@@ -455,17 +458,19 @@ const RefillPrescriptionsV2 = () => {
           </div>
         ) : (
           <>
+            <h2
+              className="vads-u-margin-top--3"
+              data-testid="refill-page-subtitle"
+            >
+              You don’t have any available refills
+            </h2>
             <p data-testid="no-refills-message">
-              You don’t have any VA prescriptions with refills available. If you
-              need a prescription, contact your care team.
+              You don’t have any VA medications with available refills. If you
+              need more of your medication, contact your care team.
             </p>
             <RenewableMedsNote
               testId="no-refills-medications-page-link"
               onLinkClick={handleGoToRenewableMeds}
-            />
-            <CernerFacilityAlert
-              healthTool="MEDICATIONS"
-              className="vads-u-margin-top--2"
             />
           </>
         )}

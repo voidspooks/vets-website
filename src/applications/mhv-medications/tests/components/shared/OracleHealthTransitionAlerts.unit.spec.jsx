@@ -410,9 +410,7 @@ describe('OracleHealthTransitionAlerts', () => {
         <OracleHealthRenewalInCardAlert {...renewalInCardProps} />,
       );
 
-      expect(container.textContent).to.include(
-        'don\u2019t have any refills left',
-      );
+      expect(container.textContent).to.include('don’t have any refills left');
       expect(container.textContent).to.include(
         'call your provider to request a renewal',
       );

@@ -11,7 +11,8 @@ const RenewableMedsNote = ({ testId, className, onLinkClick }) => {
   return (
     <p className={className} data-testid={`${testId}-note`}>
       <strong>Note:</strong> If you can’t find the medication you’re looking
-      for, you may need to renew it before you can refill it.
+      for, you may have already requested a refill. Or you may need to submit a
+      renewal request before you can request a refill.
       <Link
         data-testid={testId}
         className="vads-u-margin-top--2 vads-u-display--block"
@@ -22,7 +23,7 @@ const RenewableMedsNote = ({ testId, className, onLinkClick }) => {
             .GO_TO_YOUR_MEDICATIONS_LIST_ACTION_LINK_RENEW
         }
       >
-        Go to your list of renewable meds
+        Go to your list of renewable medications
       </Link>
     </p>
   );

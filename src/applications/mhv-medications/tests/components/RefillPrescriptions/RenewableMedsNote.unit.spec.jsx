@@ -32,16 +32,14 @@ describe('RenewableMedsNote', () => {
     const { getByTestId } = setup();
     const note = getByTestId('test-renewable-meds-link-note');
     expect(note).to.contain.text('Note:');
-    expect(note).to.contain.text(
-      'you may need to renew it before you can refill it',
-    );
+    expect(note).to.contain.text('you may have already requested a refill');
   });
 
-  it('renders the link to renewable meds', () => {
+  it('renders the link to renewable medications', () => {
     const { getByTestId } = setup();
     const link = getByTestId('test-renewable-meds-link');
     expect(link).to.exist;
-    expect(link).to.contain.text('Go to your list of renewable meds');
+    expect(link).to.contain.text('Go to your list of renewable medications');
   });
 
   it('link navigates to /history', () => {

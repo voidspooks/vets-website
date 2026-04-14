@@ -37,7 +37,7 @@ describe('Medications Refill Page V2 Layout', () => {
     refillPage.loadRefillPageV2(emptyPrescriptions);
     cy.injectAxe();
     cy.axeCheck('main');
-    refillPage.verifyNoMedicationsAvailableMessageOnRefillPage();
+    refillPage.verifyNoMedicationsAvailableMessageOnRefillPageV2();
     refillPage.verifyRenewableMedsLinkV2NoRefills();
   });
 });

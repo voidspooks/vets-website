@@ -446,6 +446,13 @@ class MedicationsRefillPage {
     );
   };
 
+  verifyNoMedicationsAvailableMessageOnRefillPageV2 = () => {
+    cy.findByTestId('no-refills-message').should(
+      'contain',
+      'You don’t have any VA medications with available refills',
+    );
+  };
+
   verifyRenewListCountonRefillPage = (
     displayedStartNumber,
     displayedEndNumber,
@@ -645,14 +652,14 @@ class MedicationsRefillPage {
   verifyRenewableMedsLinkV2 = () => {
     cy.findByTestId('medications-page-link').should(
       'contain',
-      'Go to your list of renewable meds',
+      'Go to your list of renewable medications',
     );
   };
 
   verifyRenewableMedsLinkV2NoRefills = () => {
     cy.findByTestId('no-refills-medications-page-link').should(
       'contain',
-      'Go to your list of renewable meds',
+      'Go to your list of renewable medications',
     );
   };
 
