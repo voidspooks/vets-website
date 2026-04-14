@@ -51,7 +51,7 @@ const MedicationResources = ({ page, headingLevel = 3 }) => {
 
         <p>
           <va-link
-            href="/my-health/order-medical-supplies/"
+            href="/health-care/order-medical-supplies/"
             text="Order medical supplies and devices"
             data-testid="order-medical-supplies-link"
             data-dd-action-name={actionNames.orderMedicalSuppliesLink}
