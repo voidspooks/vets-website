@@ -27,6 +27,11 @@ export default function prefillTransformer(pages, formData, metadata, state) {
     fullName.suffix = profile?.userFullName?.suffix || '';
   }
 
+  if (fullName.middle !== null || fullName.middle !== undefined) {
+    fullName.middle = fullName.middle.charAt(0);
+    fullName.middleinitial = fullName.middle;
+  }
+
   const dateOfBirth =
     formData.veteranDateOfBirth ||
     profile.dob ||
