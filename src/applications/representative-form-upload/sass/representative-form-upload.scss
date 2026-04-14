@@ -178,6 +178,11 @@
 
   .review .review-row {
     padding: 20px 0 !important;
+
+    dd {
+      overflow-wrap: normal;
+      word-break: normal;
+    }
   }
 
   [name="uploadPageScrollElement"] {
