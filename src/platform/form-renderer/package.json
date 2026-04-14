@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "date-fns": "^2.24.0",
-    "handlebars": "^4.7.7"
+    "handlebars": "^4.7.9"
   },
   "peerDependencies": {
     "@department-of-veterans-affairs/css-library": ">=0.26.0",
