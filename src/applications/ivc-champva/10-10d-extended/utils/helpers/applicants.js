@@ -1,9 +1,6 @@
 import { addYears, differenceInYears, format, isMatch, parse } from 'date-fns';
 import get from 'platform/utilities/data/get';
 import { NOT_SHARED } from '../../components/FormFields/AddressSelectionField';
-import { whenAny } from './form-config';
-import { hasCertifierAddress } from './signer';
-import { hasSponsorAddress } from './sponsor';
 
 /**
  * Normalize a date to UTC midnight to avoid TZ / DST edge cases when comparing
@@ -88,12 +85,6 @@ export const applicantDependentStatusIn = statuses =>
 // Shared applicant predicates
 export const applicantIsChild = applicantRelationshipIs('child');
 export const applicantIsSpouse = applicantRelationshipIs('spouse');
-
-// Shared form predicates
-export const canSelectApplicantAddress = whenAny(
-  hasCertifierAddress,
-  hasSponsorAddress,
-);
 
 // Address-sharing predicates
 export const applicantSharesAddressWith = expected =>

@@ -1,16 +1,23 @@
 import { expect } from 'chai';
 import migrations from '../../../config/migrations';
+import { certifierPages } from '../../../chapters/certifier';
 
 const EXAMPLE_METADATA = {
   version: 0,
   prefill: true,
   returnUrl: '/review-applicants',
 };
+const STALE_CERTIFIER_PATH = `/${Object.values(certifierPages)[0].path}`;
 
-const runMigration = (index, formData, metadata = EXAMPLE_METADATA) =>
+const clone = value => JSON.parse(JSON.stringify(value));
+
+const runMigration = (
+  index,
+  { formData = {}, metadata = EXAMPLE_METADATA } = {},
+) =>
   migrations[index]({
-    formData: JSON.parse(JSON.stringify(formData)),
-    metadata,
+    formData: clone(formData),
+    metadata: clone(metadata),
   });
 
 describe('10-10d-extended migrations', () => {
@@ -19,13 +26,13 @@ describe('10-10d-extended migrations', () => {
       const formData = {
         certifierRelationship: { relationshipToVeteran: { other: true } },
       };
-      const { formData: migrated } = runMigration(0, formData);
+      const { formData: migrated } = runMigration(0, { formData });
       expect(migrated.certifierRelationship).to.deep.equal({ other: true });
     });
 
     it('should not modify form data when certifierRelationship does not exist', () => {
       const formData = { applicantName: { first: 'John', last: 'Doe' } };
-      const { formData: migrated } = runMigration(0, formData);
+      const { formData: migrated } = runMigration(0, { formData });
       expect(migrated).to.deep.equal(formData);
     });
 
@@ -34,19 +41,44 @@ describe('10-10d-extended migrations', () => {
         certifierRelationship: { relationshipToVeteran: { child: true } },
         applicantName: { first: 'Jane', last: 'Smith' },
       };
-      const { formData: migrated } = runMigration(0, formData);
+      const { formData: migrated } = runMigration(0, { formData });
       expect(migrated.applicantName).to.deep.equal({
         first: 'Jane',
         last: 'Smith',
       });
     });
 
-    it('should preserve metadata', () => {
+    it('should preserve metadata when returnUrl is not a certifier path', () => {
       const formData = {
         certifierRelationship: { relationshipToVeteran: { parent: true } },
       };
-      const { metadata } = runMigration(0, formData);
+      const { metadata } = runMigration(0, { formData });
       expect(metadata).to.deep.equal(EXAMPLE_METADATA);
+    });
+
+    it('should not reset returnUrl when it does not point to a certifier page', () => {
+      const metadata = {
+        version: 0,
+        prefill: true,
+        returnUrl: '/review-and-submit',
+      };
+      const { metadata: migrated } = runMigration(0, { metadata });
+      expect(migrated).to.deep.equal(metadata);
+    });
+
+    ['returnUrl', 'return_url'].forEach(returnUrlKey => {
+      it(`should reset stale ${returnUrlKey} when it points to a certifier page`, () => {
+        const metadata = {
+          version: 0,
+          prefill: true,
+          [returnUrlKey]: STALE_CERTIFIER_PATH,
+        };
+        const { metadata: migrated } = runMigration(0, { metadata });
+        expect(migrated).to.deep.equal({
+          ...metadata,
+          returnUrl: '/who-is-applying',
+        });
+      });
     });
   });
 });

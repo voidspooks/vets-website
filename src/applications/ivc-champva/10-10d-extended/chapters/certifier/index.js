@@ -4,7 +4,7 @@ import mailingAddress from './mailingAddress';
 import name from './name';
 import relationship from './relationship';
 
-export const signerPages = {
+export const certifierPages = {
   certifierName: {
     path: 'your-name',
     title: 'Your name',

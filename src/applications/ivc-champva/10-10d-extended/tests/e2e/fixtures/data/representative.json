@@ -1,29 +1,15 @@
 {
   "data": {
     "certifierRole": "other",
-    "certifierName": {
-      "first": "Certifier",
-      "last": "Jones"
-    },
-    "certifierAddress": {
-      "country": "USA",
-      "street": "123 Certifier St",
-      "city": "Certifier",
-      "state": "MD",
-      "postalCode": "12312"
-    },
-    "certifierPhone": "1231231234",
-    "certifierEmail": "certifier@email.gov",
-    "certifierRelationship": {
-      "spouse": true
-    },
     "sponsorName": {
       "first": "Joe",
       "last": "Johnson"
     },
     "sponsorDob": "1958-01-01",
     "sponsorSsn": "123123123",
-    "sponsorIsDeceased": false,
+    "sponsorIsDeceased": true,
+    "sponsorDod": "2025-01-01",
+    "sponsorDeathConditions": false,
     "sponsorPhone": "5552223333",
     "view:hasApplicants": true,
     "applicants": [
@@ -34,6 +20,13 @@
         },
         "applicantDob": "2003-01-04",
         "applicantSsn": "345345345",
+        "applicantAddress": {
+          "street": "456 Circle St",
+          "city": "Applicant",
+          "country": "USA",
+          "state": "IN",
+          "postalCode": "56790"
+        },
         "applicantPhone": "5555551234",
         "applicantGender": {
           "gender": "male"
@@ -51,6 +44,22 @@
     ],
     "view:hasHealthInsurance": false,
     "view:hasMedicare": false,
+    "certifierName": {
+      "first": "Certifier",
+      "last": "Jones"
+    },
+    "certifierAddress": {
+      "country": "USA",
+      "street": "123 Certifier St",
+      "city": "Certifier",
+      "state": "MD",
+      "postalCode": "12312"
+    },
+    "certifierPhone": "1231231234",
+    "certifierEmail": "certifier@email.gov",
+    "certifierRelationship": {
+      "parent": true
+    },
     "statementOfTruthSignature": "Certifier Jones"
   }
 }

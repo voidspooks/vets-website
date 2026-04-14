@@ -7,7 +7,7 @@ import {
   applicantIsCollegeAge,
   applicantIsSpouse,
   applicantOriginIs,
-  canSelectApplicantAddress,
+  hasSponsorAddress,
   requireBirthCertificate,
   sponsorIsDeceased,
   whenAll,
@@ -57,7 +57,7 @@ export const applicantPages = arrayBuilderPages(
     applicationAddress: pageBuilder.itemPage({
       path: 'applicant-address/:index',
       title: 'Address selection',
-      depends: canSelectApplicantAddress,
+      depends: hasSponsorAddress,
       ...addressSelection,
     }),
     applicantMailingAddress: pageBuilder.itemPage({

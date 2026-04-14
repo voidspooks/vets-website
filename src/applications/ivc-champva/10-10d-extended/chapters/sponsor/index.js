@@ -1,12 +1,8 @@
 import {
-  hasCertifierAddress,
   isNotSponsor,
-  sponsorHasNoSharedAddressSelection,
   sponsorIsDeceased,
   sponsorIsNotDeceased,
-  whenAll,
 } from '../../utils/helpers';
-import addressSelection from './addressSelection';
 import contactInformation from './contactInformation';
 import deathInformation from './deathInformation';
 import identityInformation from './identityInformation';
@@ -43,16 +39,10 @@ export const sponsorPages = {
     depends: sponsorIsDeceased,
     ...deathInformation,
   },
-  sponsorAddress: {
-    path: 'veteran-address',
-    title: 'Veteran’s address',
-    depends: whenAll(sponsorIsNotDeceased, hasCertifierAddress),
-    ...addressSelection,
-  },
   sponsorMailingAddress: {
     path: 'veteran-mailing-address',
     title: 'Veteran’s mailing address',
-    depends: whenAll(sponsorIsNotDeceased, sponsorHasNoSharedAddressSelection),
+    depends: sponsorIsNotDeceased,
     ...mailingAddress,
   },
   sponsorContactInformation: {

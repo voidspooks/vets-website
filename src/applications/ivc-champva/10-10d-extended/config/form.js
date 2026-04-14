@@ -11,7 +11,7 @@ import content from '../locales/en/content.json';
 import migrations from './migrations';
 import transformForSubmit from './submitTransformer';
 import { medicarePages } from '../chapters/medicare';
-import { signerPages } from '../chapters/signer';
+import { certifierPages } from '../chapters/certifier';
 import { sponsorPages } from '../chapters/sponsor';
 import { applicantPages } from '../chapters/applicant';
 import { healthInsurancePages } from '../chapters/healthInsurance';
@@ -100,10 +100,6 @@ const formConfig = {
       title: 'Application status',
       pages: applicationStatusPages,
     },
-    certifierInformation: {
-      title: 'Your information',
-      pages: signerPages,
-    },
     sponsorInformation: {
       title: 'Veteran information',
       pages: sponsorPages,
@@ -120,6 +116,10 @@ const formConfig = {
       title:
         'Other Health Insurance Certification: Health insurance information',
       pages: healthInsurancePages,
+    },
+    certifierInformation: {
+      title: 'Your information',
+      pages: certifierPages,
     },
   },
 };
