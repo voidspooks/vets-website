@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { VaTelephone } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useSelector, shallowEqual } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { getRealFacilityId } from '../../utils/appointment';
 import { selectRequestedAppointmentData } from '../../appointment-list/redux/selectors';
 import FacilityDirectionsLink from '../FacilityDirectionsLink';
@@ -21,13 +20,11 @@ import {
 } from '../../utils/events';
 
 export default function VARequestLayout({ data: appointment }) {
-  const { search } = useLocation();
   const {
     email,
     facility,
     facilityId,
     facilityPhone,
-    isPendingAppointment,
     phone,
     preferredDates,
     status,
@@ -36,15 +33,11 @@ export default function VARequestLayout({ data: appointment }) {
     state => selectRequestedAppointmentData(state, appointment),
     shallowEqual,
   );
-  const queryParams = new URLSearchParams(search);
-  const showConfirmMsg = queryParams.get('confirmMsg');
   const preferredModality = appointment?.preferredModality;
   const { patientComments } = appointment || {};
 
-  let heading = 'Appointment request';
-  if (isPendingAppointment && !showConfirmMsg)
-    heading = 'Request for appointment';
-  else if (APPOINTMENT_STATUS.cancelled === status)
+  let heading = 'Request for appointment';
+  if (APPOINTMENT_STATUS.cancelled === status)
     heading = 'Canceled request for appointment';
 
   if (!appointment.modality) {

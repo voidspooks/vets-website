@@ -363,7 +363,7 @@ describe('VAOS Component: VARequestLayout', () => {
       expect(
         screen.getByRole('heading', {
           level: 1,
-          name: /Appointment request/i,
+          name: /Request for appointment/i,
         }),
       );
       expect(

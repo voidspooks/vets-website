@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { VaTelephone } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useSelector, shallowEqual } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { selectRequestedAppointmentData } from '../../appointment-list/redux/selectors';
 import DetailPageLayout, { CCDetails } from './DetailPageLayout';
 import CCProofOfAttendanceSection from '../CCProofOfAttendanceSection';
@@ -18,11 +17,9 @@ import {
 } from '../../utils/events';
 
 export default function CCRequestLayout({ data: appointment }) {
-  const { search } = useLocation();
   const {
     email,
     facility,
-    isPendingAppointment,
     phone,
     preferredDates,
     preferredLanguage,
@@ -37,15 +34,11 @@ export default function CCRequestLayout({ data: appointment }) {
   );
   const { providerName, treatmentSpecialty } = provider || {};
   const { name: facilityName } = facility || {};
-  const queryParams = new URLSearchParams(search);
-  const showConfirmMsg = queryParams.get('confirmMsg');
 
   const { patientComments } = appointment;
 
-  let heading = 'Community care appointment request';
-  if (isPendingAppointment && !showConfirmMsg)
-    heading = 'Request for community care appointment';
-  else if (APPOINTMENT_STATUS.cancelled === status)
+  let heading = 'Request for community care appointment';
+  if (APPOINTMENT_STATUS.cancelled === status)
     heading = 'Canceled request for community care appointment';
 
   if (!appointment.modality) {
