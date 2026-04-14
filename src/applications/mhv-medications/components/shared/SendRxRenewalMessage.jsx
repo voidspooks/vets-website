@@ -7,6 +7,7 @@ import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring
 import { datadogRum } from '@datadog/browser-rum';
 import { dataDogActionNames } from '../../util/dataDogConstants';
 import { selectSecureMessagingMedicationsRenewalRequestFlag } from '../../util/selectors';
+import { isExpiredWithin120Days } from '../../util/helpers';
 
 const SendRxRenewalMessage = ({
   rx,
@@ -29,11 +30,7 @@ const SendRxRenewalMessage = ({
   const secureMessagesUrl = `/my-health/secure-messages/new-message?${params}`;
   const [showRenewalModal, setShowRenewalModal] = useState(false);
 
-  const isExpiredLessThan120Days =
-    (rx.dispStatus === 'Expired' || rx.dispStatus === 'Inactive') &&
-    rx.expirationDate &&
-    new Date(rx.expirationDate) >
-      new Date(Date.now() - 120 * 24 * 60 * 60 * 1000);
+  const isExpiredLessThan120Days = isExpiredWithin120Days(rx);
   const { isRenewable } = rx;
 
   const canSendRenewalRequest = isOracleHealth && isRenewable;

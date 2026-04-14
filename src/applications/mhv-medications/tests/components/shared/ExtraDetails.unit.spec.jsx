@@ -476,6 +476,38 @@ describe('Medications List Card Extra Details', () => {
     });
   });
 
+  describe('Expired ≤120 days with renewal link shown above', () => {
+    it('renders nothing when renewalLinkShownAbove is true and expired within 120 days', async () => {
+      const recentExpirationDate = new Date(
+        Date.now() - 60 * 24 * 60 * 60 * 1000,
+      ).toISOString(); // 60 days ago
+      const screen = setupWithRenewalLink(
+        renewableOHRx({
+          dispStatus: dispStatusObj.expired,
+          expirationDate: recentExpirationDate,
+        }),
+        true,
+      );
+      expect(screen.queryByTestId('expired')).to.not.exist;
+      expect(screen.queryByTestId('send-renewal-request-message-link')).to.not
+        .exist;
+    });
+
+    it('shows fallback content when expiration date is > 120 days ago', async () => {
+      const oldExpirationDate = new Date(
+        Date.now() - 150 * 24 * 60 * 60 * 1000,
+      ).toISOString(); // 150 days ago
+      const screen = setupWithRenewalLink(
+        renewableOHRx({
+          dispStatus: dispStatusObj.expired,
+          expirationDate: oldExpirationDate,
+        }),
+        true,
+      );
+      expect(await screen.findByTestId('expired')).to.exist;
+    });
+  });
+
   describe('CernerPilot and V2StatusMapping flag requirement validation', () => {
     FLAG_COMBINATIONS.forEach(
       ({ cernerPilot, v2StatusMapping, useV2, desc }) => {

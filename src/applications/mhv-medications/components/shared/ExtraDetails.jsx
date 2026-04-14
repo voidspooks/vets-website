@@ -9,6 +9,7 @@ import {
   rxSourceIsNonVA,
   isOracleHealthPrescription,
   isUnfilledOhPrescription,
+  isExpiredWithin120Days,
 } from '../../util/helpers';
 import {
   DATETIME_FORMATS,
@@ -29,6 +30,7 @@ import {
   selectV2StatusMappingFlag,
   selectMhvMedicationsOracleHealthCutoverFlag,
   selectMedicationsManagementImprovementsFlag,
+  selectSecureMessagingMedicationsRenewalRequestFlag,
 } from '../../util/selectors';
 
 const ExtraDetails = ({
@@ -53,7 +55,18 @@ const ExtraDetails = ({
   const isMedsImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
+  const showSecureMessagingRenewalRequest = useSelector(
+    selectSecureMessagingMedicationsRenewalRequestFlag,
+  );
   const useV2Status = isCernerPilot && isV2StatusMapping;
+
+  // Determine if renewal is available for expired prescriptions ≤120 days old
+  const isExpiredLessThan120Days = isExpiredWithin120Days(rx);
+  const renewalAvailableForExpired =
+    isOracleHealth &&
+    rx.isRenewable &&
+    isExpiredLessThan120Days &&
+    showSecureMessagingRenewalRequest;
 
   const refillButton =
     page === pageType.LIST && !isRefillBlocked ? (
@@ -190,6 +203,9 @@ const ExtraDetails = ({
             />
           );
         }
+        if (renewalLinkShownAbove && renewalAvailableForExpired) {
+          return null;
+        }
         return (
           <div>
             <SendRxRenewalMessage
@@ -211,6 +227,9 @@ const ExtraDetails = ({
       case dispStatusObjV2.expired:
         if (isRenewalBlocked && rx.isRenewable) {
           return <OracleHealthRenewalInCardAlert isExpired />;
+        }
+        if (renewalLinkShownAbove && renewalAvailableForExpired) {
+          return null;
         }
         return (
           <div>
@@ -356,6 +375,9 @@ const ExtraDetails = ({
               isExpired
             />
           );
+        }
+        if (renewalLinkShownAbove && renewalAvailableForExpired) {
+          return null;
         }
         return (
           <div>

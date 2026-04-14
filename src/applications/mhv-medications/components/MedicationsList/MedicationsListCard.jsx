@@ -19,6 +19,7 @@ import {
   isInitialFill,
   isOracleHealthPrescription,
   isRenewalWithin72Hours,
+  RENEWAL_ELIGIBILITY_WINDOW_DAYS,
 } from '../../util/helpers';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import {
@@ -115,7 +116,10 @@ const MedicationsListCard = ({ rx }) => {
   const expirationDate = rx.expirationDate ? new Date(rx.expirationDate) : null;
   const isExpiredOver120Days =
     expirationDate &&
-    expirationDate <= new Date(Date.now() - 120 * 24 * 60 * 60 * 1000);
+    expirationDate <
+      new Date(
+        Date.now() - RENEWAL_ELIGIBILITY_WINDOW_DAYS * 24 * 60 * 60 * 1000,
+      );
   const isNonRenewableExpired =
     showSecureMessagingRenewalRequest &&
     (rx.dispStatus === dispStatusObj.expired ||
@@ -311,7 +315,9 @@ const MedicationsListCard = ({ rx }) => {
               data-testid="no-refills-left-alert"
             >
               <p className="vads-u-margin-y--0">
-                You have no refills left. If you need more, request a renewal.
+                {isExpiredRenewable
+                  ? 'You can’t refill this prescription. If you need more, send a secure message to your care team.'
+                  : 'You have no refills left. If you need more, request a renewal.'}
               </p>
               <SendRxRenewalMessage
                 rx={rx}

@@ -691,7 +691,7 @@ describe('Medication card component', () => {
         });
         expect(getByTestId('no-refills-left-alert')).to.exist;
         expect(getByTestId('no-refills-left-alert').textContent).to.include(
-          'You have no refills left. If you need more, request a renewal.',
+          'You can’t refill this prescription. If you need more, send a secure message to your care team.',
         );
         expect(getByTestId('rx-refill-remaining')).to.have.text(
           'Refills left: 0',
