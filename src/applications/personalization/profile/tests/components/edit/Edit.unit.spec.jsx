@@ -142,4 +142,18 @@ describe('<Edit>', () => {
       );
     });
   });
+
+  context('When returning to scheduling preferences page', () => {
+    it('renders field-specific heading for contact information', async () => {
+      const view = renderWithStoreAndRouter(<Edit />, {
+        initialState: {},
+        reducers: { vapService },
+        path:
+          '/profile/edit?returnPath=%2Fprofile%2Fhealth-care-settings%2Fscheduling-preferences&fieldName=mailingAddress',
+      });
+
+      const heading = await view.findByText('Add your mailing address');
+      expect(heading).to.exist;
+    });
+  });
 });

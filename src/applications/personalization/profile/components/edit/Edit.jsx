@@ -121,21 +121,13 @@ export const Edit = () => {
 
   const editPageHeadingString = useMemo(
     () => {
-      if (
-        isSubtaskSchedulingPreference(fieldInfo?.fieldName) ||
-        isReturningToSchedulingPreferences(returnPath)
-      ) {
-        return `Edit ${FIELD_SECTION_HEADERS?.[
-          fieldInfo.fieldName
-        ].toLowerCase()}`;
-      }
       const addOrUpdate = isFieldEmpty(fieldData, fieldInfo?.fieldName)
         ? 'Add'
         : 'Update';
 
       return `${addOrUpdate} your ${fieldInfo?.title.toLowerCase()}`;
     },
-    [fieldData, fieldInfo, returnPath],
+    [fieldData, fieldInfo],
   );
 
   const internationalPhonesToggleValue = useToggleValue(
