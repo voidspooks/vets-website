@@ -1,11 +1,8 @@
 import React from 'react';
-
 import { expect } from 'chai';
-import { mount } from 'enzyme';
-import { createStore } from 'redux';
-import configureMockStore from 'redux-mock-store';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { cleanup } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
 import { format } from 'date-fns';
 import { createInitialState } from '@department-of-veterans-affairs/platform-forms-system/state/helpers';
 import formConfig from '../../config/form';
@@ -13,9 +10,6 @@ import ConfirmationPage from '../../containers/ConfirmationPage';
 import testData from '../e2e/fixtures/data/maximal-test.json';
 
 describe('ConfirmationPage', () => {
-  let wrapper;
-  let store;
-  const mockStore = configureMockStore();
   const initialState = {
     form: {
       ...createInitialState(formConfig),
@@ -25,50 +19,126 @@ describe('ConfirmationPage', () => {
           confirmationNumber: '1234567890',
           referenceNumber: '9876543210',
         },
-        timestamp: '2022-01-01T00:00:00Z',
+        timestamp: new Date('2022-01-01T00:00:00Z'),
       },
     },
   };
 
-  beforeEach(() => {
-    store = mockStore(initialState);
-    wrapper = mount(
+  const createMockStore = (state = initialState) => {
+    return configureStore({
+      reducer: {
+        form: () => state.form,
+      },
+      preloadedState: state,
+    });
+  };
+
+  it('renders the confirmation page with the submission date and reference number', () => {
+    const store = createMockStore();
+    const { getByText } = render(
       <Provider store={store}>
         <ConfirmationPage route={{ formConfig }} />
       </Provider>,
     );
-  });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
-    }
-    cleanup();
-  });
-
-  it('passes the correct props to ConfirmationPageView', () => {
-    const confirmationViewProps = wrapper.find('ConfirmationView').props();
-
-    expect(confirmationViewProps.submitDate).to.equal('2022-01-01T00:00:00Z');
-    expect(confirmationViewProps.confirmationNumber).to.equal('1234567890');
+    const timestamp = new Date('2022-01-01T00:00:00Z');
+    expect(getByText(format(timestamp, 'MMMM d, yyyy'), { exact: false })).to
+      .exist;
+    expect(getByText(/9876543210/)).to.exist;
   });
 
   it('renders the submission alert title and includes the reference number', () => {
-    const headline = wrapper.find('h2[slot="headline"]');
-
-    expect(headline.text()).to.contain('Your form submission was succesful');
-    expect(wrapper.text()).to.include('9876543210');
+    const store = createMockStore();
+    const { container, getByText } = render(
+      <Provider store={store}>
+        <ConfirmationPage route={{ formConfig }} />
+      </Provider>,
+    );
+    const alert = container.querySelector('va-alert');
+    expect(alert).to.have.attr('status', 'success');
+    expect(getByText(/Your form submission was succesful/)).to.exist;
+    expect(getByText(/9876543210/)).to.exist;
   });
 
   it('renders a va-telephone component in the submission alert', () => {
-    const alert = wrapper.find('.confirmation-submission-alert-section');
+    const store = createMockStore();
+    const { container } = render(
+      <Provider store={store}>
+        <ConfirmationPage route={{ formConfig }} />
+      </Provider>,
+    );
+    const vaTelephone = container.querySelector('va-telephone');
+    expect(vaTelephone).to.exist;
+    expect(vaTelephone.getAttribute('contact')).to.equal('8778273702');
+  });
 
-    expect(alert.find('va-telephone').exists()).to.be.true;
+  it('renders the rejected status alert content with reference number', () => {
+    const mockState = {
+      form: {
+        ...createInitialState(formConfig),
+        testData,
+        submission: {
+          response: {
+            confirmationNumber: '1234567890',
+            referenceNumber: '9876543210',
+            status: 'REJECTED',
+          },
+          timestamp: new Date('2022-01-01T00:00:00Z'),
+        },
+      },
+    };
+    const store = createMockStore(mockState);
+    const { getByText, container } = render(
+      <Provider store={store}>
+        <ConfirmationPage route={{ formConfig }} />
+      </Provider>,
+    );
+
+    expect(getByText(/We received your application, but there was a problem/))
+      .to.exist;
+    expect(getByText(/For more information, contact us at/)).to.exist;
+    expect(getByText(/9876543210/)).to.exist;
+
+    const vaTelephone = container.querySelector('va-telephone');
+    expect(vaTelephone).to.exist;
+    expect(vaTelephone.getAttribute('contact')).to.equal('8778273702');
+  });
+
+  it('renders the duplicate status alert content without reference number', () => {
+    const mockState = {
+      form: {
+        ...createInitialState(formConfig),
+        testData,
+        submission: {
+          response: {
+            confirmationNumber: '1234567890',
+            referenceNumber: '9876543210',
+            status: 'DUPLICATE',
+          },
+          timestamp: new Date('2022-01-01T00:00:00Z'),
+        },
+      },
+    };
+    const store = createMockStore(mockState);
+    const { getByText, container } = render(
+      <Provider store={store}>
+        <ConfirmationPage route={{ formConfig }} />
+      </Provider>,
+    );
+
+    expect(
+      getByText(
+        /We received your application, but we already have an existing housing grant application from you on file/,
+      ),
+    ).to.exist;
+    const vaTelephone = container.querySelector('va-telephone');
+    expect(vaTelephone).to.exist;
+    expect(vaTelephone.getAttribute('contact')).to.equal('8778273702');
   });
 
   it('should select form from state when state.form is defined', () => {
     const submitDate = new Date();
-    const mockInitialState = {
+    const mockState = {
       form: {
         ...createInitialState(formConfig),
         testData,
@@ -78,38 +148,35 @@ describe('ConfirmationPage', () => {
         },
       },
     };
-    const mockDefinedState = createStore(() => mockInitialState);
+    const store = createMockStore(mockState);
 
-    const definedWrapper = mount(
-      <Provider store={mockDefinedState}>
+    const { getByText } = render(
+      <Provider store={store}>
         <ConfirmationPage route={{ formConfig }} />
       </Provider>,
     );
 
-    expect(definedWrapper.text()).to.include(
-      format(submitDate, 'MMMM d, yyyy'),
-    );
-    expect(definedWrapper.text()).to.include('1234');
-
-    definedWrapper.unmount();
+    const formattedDate = format(submitDate, 'MMMM d, yyyy');
+    expect(getByText(new RegExp(formattedDate))).to.exist;
+    expect(getByText(/1234/)).to.exist;
   });
 
   it('should throw error when state.form is undefined', () => {
-    const mockEmptyState = {};
-    const mockEmptyStore = createStore(() => mockEmptyState);
-
-    let errorWrapper;
+    const store = configureStore({
+      reducer: {
+        form: () => ({
+          ...createInitialState(formConfig),
+          submission: undefined,
+        }),
+      },
+    });
 
     expect(() => {
-      errorWrapper = mount(
-        <Provider store={mockEmptyStore}>
+      render(
+        <Provider store={store}>
           <ConfirmationPage route={{ formConfig }} />
         </Provider>,
       );
     }).to.throw();
-
-    if (errorWrapper) {
-      errorWrapper.unmount();
-    }
   });
 });
