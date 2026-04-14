@@ -6,10 +6,20 @@ const ConfirmationFAQ = () => (
   <>
     <section className="confirmation-faq">
       <h2>What to expect next</h2>
-      <p>It takes about 14 days to process your application.</p>
       <p>
-        If we have any questions or need additional information, we’ll contact
-        you.
+        You don’t need to do anything unless we send you a letter asking for
+        more information.
+      </p>
+      <p>
+        If you or the applicants are eligible for CHAMPVA, we’ll send a CHAMPVA
+        ID card and guide in the mail.
+      </p>
+      <p>
+        <va-link
+          href="/resources/what-to-do-after-applying-for-champva-benefits/"
+          text="Learn what to do after you apply for CHAMPVA benefits"
+          external
+        />
       </p>
     </section>
 
@@ -26,7 +36,7 @@ const ConfirmationFAQ = () => (
         .
       </p>
 
-      <p>You can also contact us online through our Ask VA tool.</p>
+      <p>You can also use Ask VA to ask questions online.</p>
     </section>
   </>
 );
