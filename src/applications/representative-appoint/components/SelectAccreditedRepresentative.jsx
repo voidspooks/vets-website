@@ -10,6 +10,7 @@ import { withRouter } from 'react-router';
 import FormNavButtons from 'platform/forms-system/src/js/components/FormNavButtons';
 import { focusElement } from 'platform/utilities/ui/focus';
 import { scrollToFirstError } from 'platform/utilities/scroll';
+import { recordAppointedRepSearchResultSelection } from '../utilities/analytics';
 import { fetchRepresentatives } from '../api/fetchRepresentatives';
 import { fetchRepStatus } from '../api/fetchRepStatus';
 import SearchResult from './SearchResult';
@@ -129,6 +130,7 @@ const SelectAccreditedRepresentative = props => {
     if (selectedRepResult === currentSelectedRep.current && isReviewPage) {
       goToPath('/review-and-submit');
     } else {
+      recordAppointedRepSearchResultSelection(selectedRepResult);
       const repStatus = await getRepStatus();
 
       const tempData = {

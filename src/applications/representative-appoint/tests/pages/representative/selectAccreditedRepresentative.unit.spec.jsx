@@ -14,6 +14,7 @@ import { $ } from 'platform/forms-system/src/js/utilities/ui';
 import { SelectAccreditedRepresentative } from '../../../components/SelectAccreditedRepresentative';
 import * as api from '../../../api/fetchRepStatus';
 import * as searchAPI from '../../../api/fetchRepresentatives';
+import * as analytics from '../../../utilities/analytics';
 import repResults from '../../fixtures/data/representative-results.json';
 import * as reviewPageHook from '../../../hooks/useReviewPage';
 
@@ -56,15 +57,22 @@ describe('<SelectAccreditedRepresentative>', () => {
     };
   };
 
+  let sandbox;
   let useSelectorStub;
+  let recordSelectionStub;
 
   beforeEach(() => {
-    useSelectorStub = sinon.stub(reactRedux, 'useSelector').returns(true);
+    sandbox = sinon.createSandbox();
+    useSelectorStub = sandbox.stub(reactRedux, 'useSelector').returns(true);
+    recordSelectionStub = sandbox.stub(
+      analytics,
+      'recordAppointedRepSearchResultSelection',
+    );
   });
 
   afterEach(() => {
     cleanup();
-    useSelectorStub.restore();
+    sandbox.restore();
   });
 
   const renderContainer = (props, mockStore) => {
@@ -116,7 +124,7 @@ describe('<SelectAccreditedRepresentative>', () => {
           results: undefined,
         });
 
-        const fetchRepStub = sinon
+        const fetchRepStub = sandbox
           .stub(searchAPI, 'fetchRepresentatives')
           .resolves(repResults);
 
@@ -133,8 +141,6 @@ describe('<SelectAccreditedRepresentative>', () => {
             'view:representativeSearchResults': repResults,
           });
         });
-
-        fetchRepStub.restore();
       });
     });
   });
@@ -145,9 +151,7 @@ describe('<SelectAccreditedRepresentative>', () => {
         it('calls goBack', async () => {
           const { mockStore, props } = getProps();
 
-          const useReviewPageStub = sinon
-            .stub(reviewPageHook, 'useReviewPage')
-            .returns(false);
+          sandbox.stub(reviewPageHook, 'useReviewPage').returns(false);
 
           const container = renderContainer(props, mockStore);
 
@@ -158,16 +162,14 @@ describe('<SelectAccreditedRepresentative>', () => {
           await waitFor(() => {
             expect(props.goBack.called).to.be.true;
           });
-
-          useReviewPageStub.restore();
         });
       });
 
       context('when clicking the select a rep button', () => {
-        it('calls getRepStatus and updates state accordingly', async () => {
+        it('calls getRepStatus, records analytics, and updates state accordingly', async () => {
           const { props, mockStore } = getProps();
 
-          const fetchRepStatusStub = sinon
+          const fetchRepStatusStub = sandbox
             .stub(api, 'fetchRepStatus')
             .resolves({
               data: { status: 'active' },
@@ -182,6 +184,10 @@ describe('<SelectAccreditedRepresentative>', () => {
           fireEvent.click(selectRepButton);
 
           await waitFor(() => {
+            expect(recordSelectionStub.calledOnce).to.be.true;
+            expect(recordSelectionStub.firstCall.args[0]).to.deep.equal(
+              repResults[0].data,
+            );
             expect(fetchRepStatusStub.calledOnce).to.be.true;
             expect(props.setFormData.called).to.be.true;
             expect(props.goToPath.called).to.be.false;
@@ -189,8 +195,6 @@ describe('<SelectAccreditedRepresentative>', () => {
               'view:selectedRepresentative': repResults[0].data,
             });
           });
-
-          fetchRepStatusStub.restore();
         });
       });
     });
@@ -200,9 +204,7 @@ describe('<SelectAccreditedRepresentative>', () => {
         it('calls goToPath', async () => {
           const { mockStore, props } = getProps();
 
-          const useReviewPageStub = sinon
-            .stub(reviewPageHook, 'useReviewPage')
-            .returns(true);
+          sandbox.stub(reviewPageHook, 'useReviewPage').returns(true);
 
           const container = renderContainer(props, mockStore);
 
@@ -213,27 +215,21 @@ describe('<SelectAccreditedRepresentative>', () => {
           await waitFor(() => {
             expect(props.goToPath.called).to.be.true;
           });
-
-          useReviewPageStub.restore();
         });
       });
 
       context('when clicking the select a rep button', () => {
         context('when selecting a new representative', () => {
-          it('sets the new selection in state', async () => {
+          it('records analytics and sets the new selection in state', async () => {
             const { props, mockStore } = getProps({
               currentRep: repResults[1].data,
             });
 
-            const fetchRepStatusStub = sinon
-              .stub(api, 'fetchRepStatus')
-              .resolves({
-                data: { status: 'active' },
-              });
+            sandbox.stub(api, 'fetchRepStatus').resolves({
+              data: { status: 'active' },
+            });
 
-            const useReviewPageStub = sinon
-              .stub(reviewPageHook, 'useReviewPage')
-              .returns(true);
+            sandbox.stub(reviewPageHook, 'useReviewPage').returns(true);
 
             const container = renderContainer(props, mockStore);
 
@@ -242,13 +238,14 @@ describe('<SelectAccreditedRepresentative>', () => {
             fireEvent.click(selectRepButton);
 
             await waitFor(() => {
+              expect(recordSelectionStub.calledOnce).to.be.true;
+              expect(recordSelectionStub.firstCall.args[0]).to.deep.equal(
+                repResults[0].data,
+              );
               expect(props.setFormData.args[0][0]).to.include({
                 'view:selectedRepresentative': repResults[0].data,
               });
             });
-
-            fetchRepStatusStub.restore();
-            useReviewPageStub.restore();
           });
 
           it('routes to the contact representative page', async () => {
@@ -256,15 +253,11 @@ describe('<SelectAccreditedRepresentative>', () => {
               currentRep: repResults[1].data,
             });
 
-            const fetchRepStatusStub = sinon
-              .stub(api, 'fetchRepStatus')
-              .resolves({
-                data: { status: 'active' },
-              });
+            sandbox.stub(api, 'fetchRepStatus').resolves({
+              data: { status: 'active' },
+            });
 
-            const useReviewPageStub = sinon
-              .stub(reviewPageHook, 'useReviewPage')
-              .returns(true);
+            sandbox.stub(reviewPageHook, 'useReviewPage').returns(true);
 
             const container = renderContainer(props, mockStore);
 
@@ -273,33 +266,30 @@ describe('<SelectAccreditedRepresentative>', () => {
             fireEvent.click(selectRepButton);
 
             await waitFor(() => {
+              expect(recordSelectionStub.calledOnce).to.be.true;
+              expect(recordSelectionStub.firstCall.args[0]).to.deep.equal(
+                repResults[0].data,
+              );
               expect(
                 props.goToPath.calledWith(
                   '/representative-contact?review=true',
                 ),
               ).to.be.true;
             });
-
-            fetchRepStatusStub.restore();
-            useReviewPageStub.restore();
           });
         });
 
         context('when selecting the same representative', () => {
-          it('does not attempt to update state', async () => {
+          it('does not attempt to update state or record analytics', async () => {
             const { props, mockStore } = getProps({
               currentRep: repResults[0].data,
             });
 
-            const fetchRepStatusStub = sinon
-              .stub(api, 'fetchRepStatus')
-              .resolves({
-                data: { status: 'active' },
-              });
+            sandbox.stub(api, 'fetchRepStatus').resolves({
+              data: { status: 'active' },
+            });
 
-            const useReviewPageStub = sinon
-              .stub(reviewPageHook, 'useReviewPage')
-              .returns(true);
+            sandbox.stub(reviewPageHook, 'useReviewPage').returns(true);
 
             const container = renderContainer(props, mockStore);
 
@@ -309,10 +299,8 @@ describe('<SelectAccreditedRepresentative>', () => {
 
             await waitFor(() => {
               expect(props.setFormData.called).to.be.false;
+              expect(recordSelectionStub.called).to.be.false;
             });
-
-            fetchRepStatusStub.restore();
-            useReviewPageStub.restore();
           });
 
           it('routes to the review page', async () => {
@@ -320,15 +308,11 @@ describe('<SelectAccreditedRepresentative>', () => {
               currentRep: repResults[0].data,
             });
 
-            const fetchRepStatusStub = sinon
-              .stub(api, 'fetchRepStatus')
-              .resolves({
-                data: { status: 'active' },
-              });
+            sandbox.stub(api, 'fetchRepStatus').resolves({
+              data: { status: 'active' },
+            });
 
-            const useReviewPageStub = sinon
-              .stub(reviewPageHook, 'useReviewPage')
-              .returns(true);
+            sandbox.stub(reviewPageHook, 'useReviewPage').returns(true);
 
             const container = renderContainer(props, mockStore);
 
@@ -337,12 +321,10 @@ describe('<SelectAccreditedRepresentative>', () => {
             fireEvent.click(selectRepButton);
 
             await waitFor(() => {
+              expect(recordSelectionStub.called).to.be.false;
               expect(props.goToPath.calledWith('/review-and-submit')).to.be
                 .true;
             });
-
-            fetchRepStatusStub.restore();
-            useReviewPageStub.restore();
           });
         });
       });
@@ -353,9 +335,7 @@ describe('<SelectAccreditedRepresentative>', () => {
             currentRep: repResults[0].data,
           });
 
-          const useReviewPageStub = sinon
-            .stub(reviewPageHook, 'useReviewPage')
-            .returns(true);
+          sandbox.stub(reviewPageHook, 'useReviewPage').returns(true);
 
           const container = renderContainer(props, mockStore);
 
@@ -366,8 +346,6 @@ describe('<SelectAccreditedRepresentative>', () => {
           await waitFor(() => {
             expect(props.goToPath.calledWith('/review-and-submit')).to.be.true;
           });
-
-          useReviewPageStub.restore();
         });
       });
     });
@@ -400,10 +378,12 @@ describe('<SelectAccreditedRepresentative>', () => {
       context('when the search input is valid', () => {
         context('when there is no selected representative', () => {
           it('displays the no selection error', async () => {
-            const { mockStore } = getProps();
+            const { mockStore, props: baseProps } = getProps();
 
             const props = {
+              ...baseProps,
               formData: {
+                ...baseProps.formData,
                 'view:representativeQueryInput': 'Valid Query',
                 'view:selectedRepresentative': null,
               },
@@ -435,13 +415,13 @@ describe('<SelectAccreditedRepresentative>', () => {
   });
 
   context('when isUserLOA3WithParticipantId is false', () => {
-    it('should not call fetchRepStatus', async () => {
+    it('should not call fetchRepStatus, but should still record analytics', async () => {
       // Restore original stub and create a new one that returns false
       useSelectorStub.restore();
-      useSelectorStub = sinon.stub(reactRedux, 'useSelector').returns(false);
+      useSelectorStub = sandbox.stub(reactRedux, 'useSelector').returns(false);
 
       const { props, mockStore } = getProps();
-      const fetchRepStatusStub = sinon.stub(api, 'fetchRepStatus');
+      const fetchRepStatusStub = sandbox.stub(api, 'fetchRepStatus');
 
       const container = renderContainer(props, mockStore);
       const selectRepButton = getByTestId(container, 'rep-select-19731');
@@ -449,13 +429,15 @@ describe('<SelectAccreditedRepresentative>', () => {
       fireEvent.click(selectRepButton);
 
       await waitFor(() => {
+        expect(recordSelectionStub.calledOnce).to.be.true;
+        expect(recordSelectionStub.firstCall.args[0]).to.deep.equal(
+          repResults[0].data,
+        );
         expect(fetchRepStatusStub.called).to.be.false;
         expect(props.setFormData.called).to.be.true;
         expect(props.setFormData.args[0][0]['view:representativeStatus']).to.be
           .null;
       });
-
-      fetchRepStatusStub.restore();
     });
   });
 });
