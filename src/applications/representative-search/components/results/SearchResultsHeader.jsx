@@ -1,22 +1,26 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { VaSelect } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { sortOptions } from '../../config';
+import { commitSearchQuery, updateSearchQuery } from '../../actions';
 
 /* eslint-disable camelcase */
 /* eslint-disable @department-of-veterans-affairs/prefer-button-component */
 
-export const SearchResultsHeader = props => {
-  const { searchResults, pagination, query } = props;
-  const { inProgress } = query;
+export const SearchResultsHeader = () => {
+  const searchResults = useSelector(state => state.searchResult.searchResults);
+  const pagination = useSelector(state => state.searchResult.pagination);
+  const searchQuery = useSelector(state => state.searchQuery);
+  const { inProgress } = searchQuery;
   const {
     context,
     organization,
     representativeType,
     sortType,
     searchArea,
-  } = query.committedSearchQuery;
+  } = searchQuery.committedSearchQuery;
+
+  const dispatch = useDispatch();
 
   const { totalEntries, currentPage, totalPages } = pagination;
   const noResultsFound = !searchResults || !searchResults?.length;
@@ -69,8 +73,8 @@ export const SearchResultsHeader = props => {
       sortType: selectedSortType,
     };
 
-    props.updateSearchQuery(queryUpdateCommitPayload);
-    props.commitSearchQuery(queryUpdateCommitPayload);
+    dispatch(updateSearchQuery(queryUpdateCommitPayload));
+    dispatch(commitSearchQuery(queryUpdateCommitPayload));
   };
 
   return (
@@ -78,6 +82,7 @@ export const SearchResultsHeader = props => {
       <h2 className="vads-u-margin-y--1">Your search results</h2>
       <div className="vads-u-margin-top--3">
         <p
+          data-testid="search-results-subheader"
           id="search-results-subheader"
           className="vads-u-font-family--sans vads-u-font-weight--normal vads-u-margin-bottom--0 vads-u-margin-top--3"
           tabIndex="-1"
@@ -145,22 +150,7 @@ export const SearchResultsHeader = props => {
   );
 };
 
-SearchResultsHeader.propTypes = {
-  pagination: PropTypes.object,
-  query: PropTypes.shape({
-    context: PropTypes.shape({
-      repOrgName: PropTypes.string,
-      location: PropTypes.string,
-    }),
-    inProgress: PropTypes.bool,
-    representativeType: PropTypes.string,
-    searchArea: PropTypes.any,
-    sortType: PropTypes.string,
-  }),
-  searchResults: PropTypes.array,
-  updateSearchQuery: PropTypes.func,
-  commitSearchQuery: PropTypes.func,
-};
+SearchResultsHeader.propTypes = {};
 
 // Only re-render if results or inProgress props have changed
 const areEqual = (prevProps, nextProps) => {
@@ -170,11 +160,4 @@ const areEqual = (prevProps, nextProps) => {
   );
 };
 
-const mapStateToProps = state => ({
-  ...state,
-});
-
-export default React.memo(
-  connect(mapStateToProps)(SearchResultsHeader),
-  areEqual,
-);
+export default React.memo(SearchResultsHeader, areEqual);

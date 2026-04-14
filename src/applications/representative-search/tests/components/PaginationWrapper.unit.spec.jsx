@@ -1,42 +1,50 @@
 import React from 'react';
 import { expect } from 'chai';
-import { shallow } from 'enzyme';
+import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
 import PaginationWrapper from '../../components/results/PaginationWrapper';
 
 const handlePageSelect = () => {};
 
 describe('PaginationWrapper', () => {
+  const mockStore = configureMockStore([thunk]);
+  let store;
+
   it('Should render when all required props are provided', () => {
     const currentPage = 1;
     const totalPages = 2;
-
-    const wrapper = shallow(
-      <PaginationWrapper
-        handlePageSelect={handlePageSelect}
-        currentPage={currentPage}
-        totalPages={totalPages}
-      />,
+    store = mockStore({
+      searchResult: {
+        pagination: { currentPage, totalPages },
+      },
+    });
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <PaginationWrapper handlePageSelect={handlePageSelect} />
+      </Provider>,
     );
 
-    expect(wrapper.find('ForwardRef(VaPagination)').length).to.equal(1);
-    wrapper.unmount();
+    expect(getByTestId('pagination-container')).to.exist;
   });
 
   it('Should not render if currentPage is undefined', () => {
     const totalPages = 2;
     const results = [1, 2];
-    const shouldRender = true;
+    const currentPage = null;
 
-    const wrapper = shallow(
-      <PaginationWrapper
-        handlePageSelect={handlePageSelect}
-        totalPages={totalPages}
-        results={results}
-        shouldRender={shouldRender}
-      />,
+    store = mockStore({
+      searchResult: {
+        pagination: { currentPage, totalPages, results },
+      },
+    });
+    const { queryByTestId } = render(
+      <Provider store={store}>
+        <PaginationWrapper handlePageSelect={handlePageSelect} />
+      </Provider>,
     );
 
-    expect(wrapper.find('ForwardRef(VaPagination)').length).to.equal(0);
-    wrapper.unmount();
+    expect(queryByTestId('pagination-container')).not.to.exist;
   });
 });

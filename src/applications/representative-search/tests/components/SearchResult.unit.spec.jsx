@@ -2,21 +2,23 @@ import React from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { render } from '@testing-library/react';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import { mount } from 'enzyme';
 import SearchResult from '../../components/results/SearchResult';
 
 describe('SearchResults', () => {
-  const mockStore = {
-    getState: () => ({
-      featureToggles: {
-        // eslint-disable-next-line camelcase
-        find_a_representative_flagging_feature_enabled: true,
-      },
-    }),
-    subscribe: () => {},
-    dispatch: () => {},
-  };
+  const mockStore = configureMockStore([thunk]);
+  const store = mockStore({
+    featureToggles: {
+      // eslint-disable-next-line camelcase
+      find_a_representative_flagging_feature_enabled: true,
+    },
+    searchQuery: {},
+    searchResult: {
+      searchResults: [],
+    },
+  });
 
   const baseProps = {
     officer: 'Test Officer',
@@ -51,54 +53,53 @@ describe('SearchResults', () => {
   });
 
   it('should push to dataLayer on click of contact link', () => {
-    const wrapper = mount(
-      <Provider store={mockStore}>
+    const { getByLabelText } = render(
+      <Provider store={store}>
         <SearchResult {...fullAddressProps} />
       </Provider>,
     );
 
-    const addressLink = wrapper.find('.address-anchor');
-    expect(addressLink.exists()).to.be.true;
+    const addressLink = getByLabelText(fullAddressProps.addressLine1, {
+      exact: false,
+    });
+    expect(addressLink).to.exist;
 
-    addressLink.simulate('click');
-    expect(dataLayerPushStub.callCount).to.equal(1);
+    addressLink.click();
+    expect(dataLayerPushStub.callCount).to.eq(1);
 
-    addressLink.simulate('click');
-    expect(dataLayerPushStub.callCount).to.equal(2);
+    addressLink.click();
+    expect(dataLayerPushStub.callCount).to.eq(2);
 
     const firstPayload = dataLayerPushStub.firstCall.args[0];
     expect(firstPayload).to.have.property('event', 'far-search-results-click');
-
-    wrapper.unmount();
   });
 
   it('should render rep email if rep email exists', () => {
-    const wrapper = mount(
-      <Provider store={mockStore}>
+    const { container } = render(
+      <Provider store={store}>
         <SearchResult {...fullAddressProps} />
       </Provider>,
     );
 
-    const emailLink = wrapper.find('a[href="mailto:test@example.com"]');
-    expect(emailLink.exists(), 'Email link exists').to.be.true;
-    expect(emailLink, 'Email link length').to.have.lengthOf(1);
-
-    wrapper.unmount();
+    const emailLink = container.querySelector(
+      'a[href="mailto:test@example.com"]',
+    );
+    expect(emailLink).to.exist;
+    expect(emailLink).to.have.text(fullAddressProps.email);
   });
 
   describe('address rendering rules', () => {
     it('renders address link when street address exists (full address)', () => {
-      const { container } = render(
-        <Provider store={mockStore}>
+      const { getByLabelText } = render(
+        <Provider store={store}>
           <SearchResult {...fullAddressProps} />
         </Provider>,
       );
 
-      const addressLinkContainer = container.querySelector('.address-link');
-      expect(addressLinkContainer).to.exist;
-
-      const addressAnchor = container.querySelector('.address-link > a');
-      expect(addressAnchor).to.exist;
+      const addressLink = getByLabelText(fullAddressProps.addressLine1, {
+        exact: false,
+      });
+      expect(addressLink).to.exist;
     });
 
     it('does NOT render an address link when ONLY city exists (ambiguous city-only)', () => {
@@ -111,7 +112,7 @@ describe('SearchResults', () => {
       };
 
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...cityOnlyProps} />
         </Provider>,
       );
@@ -130,7 +131,7 @@ describe('SearchResults', () => {
       };
 
       const { container, getByText } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...cityStateProps} distance="5.5" />
         </Provider>,
       );
@@ -155,7 +156,7 @@ describe('SearchResults', () => {
       };
 
       const { container, getByText } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...zipOnlyProps} distance="5.5" />
         </Provider>,
       );
@@ -180,7 +181,7 @@ describe('SearchResults', () => {
       };
 
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...cityStateZipProps} distance="5.5" />
         </Provider>,
       );
@@ -202,7 +203,7 @@ describe('SearchResults', () => {
       };
 
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...noAddressProps} />
         </Provider>,
       );
@@ -215,7 +216,7 @@ describe('SearchResults', () => {
   describe('distance label "(estimated)"', () => {
     it('does NOT show "(estimated)" when street address exists', () => {
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...fullAddressProps} distance="5.5" />
         </Provider>,
       );
@@ -228,7 +229,7 @@ describe('SearchResults', () => {
 
     it('renders distance when distance is 0 (exact match)', () => {
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...fullAddressProps} distance={0} />
         </Provider>,
       );
@@ -249,7 +250,7 @@ describe('SearchResults', () => {
       };
 
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...cityStateProps} distance="5.5" />
         </Provider>,
       );
@@ -269,7 +270,7 @@ describe('SearchResults', () => {
       };
 
       const { container } = render(
-        <Provider store={mockStore}>
+        <Provider store={store}>
           <SearchResult {...zipOnlyProps} distance="5.5" />
         </Provider>,
       );
@@ -281,8 +282,8 @@ describe('SearchResults', () => {
   });
 
   it('sets the aria-label on the address link', () => {
-    const wrapper = mount(
-      <Provider store={mockStore}>
+    const { container } = render(
+      <Provider store={store}>
         <SearchResult {...fullAddressProps} />
       </Provider>,
     );
@@ -290,23 +291,23 @@ describe('SearchResults', () => {
     const expectedAriaLabel =
       '123 Main St Suite 100 Columbus, OH 43210 (opens in a new tab)';
 
-    const addressAnchor = wrapper.find('.address-link a');
-    expect(addressAnchor.exists(), 'Address link exists').to.be.true;
-    expect(addressAnchor.prop('aria-label')).to.equal(expectedAriaLabel);
-
-    wrapper.unmount();
+    const addressAnchor = container.querySelector('.address-link a');
+    expect(addressAnchor).to.exist;
+    expect(addressAnchor.getAttribute('aria-label')).to.eq(expectedAriaLabel);
   });
 
   it('renders addressLine2 if it exists (full address)', () => {
     const { container } = render(
-      <Provider store={mockStore}>
+      <Provider store={store}>
         <SearchResult {...fullAddressProps} />
       </Provider>,
     );
 
     const addressAnchor = container.querySelector('.address-link > a');
-    expect(addressAnchor).to.not.be.null;
-    expect(addressAnchor.textContent).to.contain(fullAddressProps.addressLine2);
+    expect(addressAnchor).to.exist;
+    expect(addressAnchor.textContent).to.have.string(
+      fullAddressProps.addressLine2,
+    );
   });
 
   it('renders without addressLine2 when not provided (full address)', () => {
@@ -320,7 +321,7 @@ describe('SearchResults', () => {
     };
 
     const { queryByText } = render(
-      <Provider store={mockStore}>
+      <Provider store={store}>
         <SearchResult {...noAddressLine2Props} />
       </Provider>,
     );
@@ -331,7 +332,7 @@ describe('SearchResults', () => {
 
   it('renders the trigger button text for associated organizations', () => {
     const { container } = render(
-      <Provider store={mockStore}>
+      <Provider store={store}>
         <SearchResult
           {...fullAddressProps}
           associatedOrgs={['Org1', 'Org2', 'Org3']}
@@ -348,7 +349,7 @@ describe('SearchResults', () => {
 
   it('renders distance information when distance is provided', () => {
     const { container } = render(
-      <Provider store={mockStore}>
+      <Provider store={store}>
         <SearchResult {...fullAddressProps} distance="5.5" />
       </Provider>,
     );

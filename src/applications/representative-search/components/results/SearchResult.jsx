@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
+import { useSelector } from 'react-redux';
 import { parsePhoneNumber } from '../../utils/phoneNumbers';
 
 const SearchResult = ({
@@ -20,9 +21,11 @@ const SearchResult = ({
   email,
   associatedOrgs,
   representativeId,
-  searchResults,
-  query,
 }) => {
+  const searchQuery = useSelector(state => state.searchQuery);
+  const searchResult = useSelector(state => state.searchResult);
+  const { searchResults } = searchResult;
+
   const { contact, extension } = parsePhoneNumber(phone);
 
   const hasStreetAddress = Boolean((addressLine1 || '').trim());
@@ -75,19 +78,19 @@ const SearchResult = ({
 
   // Reusable map href for both full + partial address cases
   const mapHref = `https://maps.google.com?saddr=${
-    query?.context?.location
+    searchQuery?.context?.location
   }&daddr=${encodeURIComponent(destinationAddress)}`;
 
   const recordContactLinkClick = () => {
     recordEvent({
       // prettier-ignore
       'event': 'far-search-results-click',
-      'search-query': query?.locationQueryString,
+      'search-query': searchQuery?.locationQueryString,
       'search-filters-list': {
-        'representative-type': query?.representativeType,
-        'search-radius': query?.searchArea,
-        'representative-name': query?.representativeQueryString,
-        organization: query?.organization,
+        'representative-type': searchQuery?.representativeType,
+        'search-radius': searchQuery?.searchArea,
+        'representative-name': searchQuery?.representativeQueryString,
+        organization: searchQuery?.organization,
       },
       'search-selection': 'Find VA Accredited Rep',
       'search-results-id': representativeId,
@@ -194,27 +197,7 @@ SearchResult.propTypes = {
   key: PropTypes.number,
   officer: PropTypes.string,
   phone: PropTypes.string,
-  query: PropTypes.shape({
-    context: PropTypes.shape({
-      location: PropTypes.string,
-    }),
-    locationQueryString: PropTypes.string,
-    representativeType: PropTypes.string,
-    searchArea: PropTypes.string,
-    representativeQueryString: PropTypes.string,
-  }),
   representativeId: PropTypes.string,
-  searchResults: PropTypes.arrayOf(
-    PropTypes.shape({
-      meta: PropTypes.shape({
-        pagination: PropTypes.shape({
-          totalEntries: PropTypes.number,
-          totalPages: PropTypes.number,
-          currentPage: PropTypes.number,
-        }),
-      }),
-    }),
-  ),
   stateCode: PropTypes.string,
   type: PropTypes.string,
   zipCode: PropTypes.string,
