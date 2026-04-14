@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import {
   vbsCompositeId,
   getCopaysForPriorMonthlyStatements,
-  groupCopaysByPriorMonthlyStatement,
+  groupCopaysByMonth,
 } from '../../utils/vbsCopayStatements';
 
 /** Minimal VBS copay row for monthly-statement helpers */
@@ -17,8 +17,8 @@ const vbsCopay = (id, pSFacilityNum, pSStatementDateOutput) => ({
  * PreviousStatements only reads `id` and `pSStatementDateOutput`; `compositeId` is included
  * for debugging / contract clarity.
  */
-const legacyPreviousStatementsPayload = (copays, facilityId, openCopayId) =>
-  getCopaysForPriorMonthlyStatements(copays, facilityId, openCopayId).map(
+const legacyPreviousStatementsPayload = (copays, facilityId, currentCopayId) =>
+  getCopaysForPriorMonthlyStatements(copays, facilityId, currentCopayId).map(
     ({ id, pSStatementDateOutput, compositeId }) => ({
       id,
       pSStatementDateOutput,
@@ -56,6 +56,26 @@ describe('vbsCopayStatements', () => {
       ).to.deep.equal([]);
     });
 
+    it('resolves the current copay when currentCopayId strictly matches copay.id (same type)', () => {
+      const open = {
+        id: 1001,
+        pSFacilityNum: FACILITY,
+        pSStatementDateOutput: '03/15/2024',
+      };
+      const prior = {
+        id: 1002,
+        pSFacilityNum: FACILITY,
+        pSStatementDateOutput: '02/10/2024',
+      };
+      const result = getCopaysForPriorMonthlyStatements(
+        [open, prior],
+        FACILITY,
+        1001,
+      );
+      expect(result).to.have.lengthOf(1);
+      expect(result[0].id).to.equal(1002);
+    });
+
     it('returns an empty array when the open copay has no valid billing month', () => {
       const copays = [
         vbsCopay('open', FACILITY, ''),
@@ -66,12 +86,12 @@ describe('vbsCopayStatements', () => {
       ).to.deep.equal([]);
     });
 
-    it('excludes the open copay, other facilities, and months outside the six billing months before the open month', () => {
+    it('excludes the current copay, other facilities, and statements on or after the current month', () => {
       const open = vbsCopay('open', FACILITY, '03/15/2024');
       const copays = [
         open,
         vbsCopay('wrong-facility', '999', '02/01/2024'),
-        vbsCopay('too-old', FACILITY, '08/01/2023'),
+        vbsCopay('older', FACILITY, '08/01/2023'),
         vbsCopay('future', FACILITY, '04/01/2024'),
         vbsCopay('feb', FACILITY, '02/10/2024'),
         vbsCopay('jan', FACILITY, '01/05/2024'),
@@ -94,6 +114,7 @@ describe('vbsCopayStatements', () => {
         'nov',
         'oct',
         'sep',
+        'older',
       ]);
       expect(result.every(c => typeof c.compositeId === 'string')).to.be.true;
     });
@@ -165,7 +186,7 @@ describe('vbsCopayStatements', () => {
     });
   });
 
-  describe('groupCopaysByPriorMonthlyStatement', () => {
+  describe('groupCopaysByMonth', () => {
     it('returns one group per monthly statement, ordered newest billing month first', () => {
       const open = vbsCopay('open', FACILITY, '03/01/2024');
       const copays = [
@@ -178,22 +199,16 @@ describe('vbsCopayStatements', () => {
         vbsCopay('sep', FACILITY, '09/01/2023'),
       ];
 
-      const groups = groupCopaysByPriorMonthlyStatement(
-        copays,
-        FACILITY,
-        'open',
-      );
+      const groups = groupCopaysByMonth(copays, FACILITY, 'open');
 
-      expect(groups.map(g => g.month)).to.deep.equal([2, 1, 12, 11, 10, 9]);
-      expect(groups.map(g => g.year)).to.deep.equal([
-        2024,
-        2024,
-        2023,
-        2023,
-        2023,
-        2023,
+      expect(groups.map(g => g.compositeId)).to.deep.equal([
+        vbsCompositeId(FACILITY, 2, 2024),
+        vbsCompositeId(FACILITY, 1, 2024),
+        vbsCompositeId(FACILITY, 12, 2023),
+        vbsCompositeId(FACILITY, 11, 2023),
+        vbsCompositeId(FACILITY, 10, 2023),
+        vbsCompositeId(FACILITY, 9, 2023),
       ]);
-      expect(groups.every(g => g.facilityId === FACILITY)).to.be.true;
     });
 
     it('merges multiple copay rows in the same billing month into one group', () => {
@@ -202,11 +217,7 @@ describe('vbsCopayStatements', () => {
       const laterFeb = vbsCopay('feb-late', FACILITY, '02/28/2024');
       const copays = [open, earlierFeb, laterFeb];
 
-      const groups = groupCopaysByPriorMonthlyStatement(
-        copays,
-        FACILITY,
-        'open',
-      );
+      const groups = groupCopaysByMonth(copays, FACILITY, 'open');
 
       expect(groups).to.have.lengthOf(1);
       expect(groups[0].compositeId).to.equal(vbsCompositeId(FACILITY, 2, 2024));
@@ -226,11 +237,7 @@ describe('vbsCopayStatements', () => {
       ];
 
       const flat = getCopaysForPriorMonthlyStatements(copays, FACILITY, 'open');
-      const grouped = groupCopaysByPriorMonthlyStatement(
-        copays,
-        FACILITY,
-        'open',
-      );
+      const grouped = groupCopaysByMonth(copays, FACILITY, 'open');
       const flattenedFromGroups = grouped.flatMap(g => g.copays);
 
       expect(flattenedFromGroups).to.have.lengthOf(flat.length);
@@ -260,11 +267,7 @@ describe('vbsCopayStatements', () => {
       expect(flat.find(c => c.id === 'feb-a').details).to.deep.equal(detailsA);
       expect(flat.find(c => c.id === 'feb-b').details).to.deep.equal(detailsB);
 
-      const [febGroup] = groupCopaysByPriorMonthlyStatement(
-        copays,
-        FACILITY,
-        'open',
-      );
+      const [febGroup] = groupCopaysByMonth(copays, FACILITY, 'open');
       expect(febGroup.copays).to.have.lengthOf(2);
       expect(febGroup.copays.find(c => c.id === 'feb-a').details).to.deep.equal(
         detailsA,

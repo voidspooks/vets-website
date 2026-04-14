@@ -8,6 +8,7 @@ import { formatDate } from '../../combined/utils/helpers';
 
 const HTMLStatementLink = ({ id, copayId, statementDate }) => {
   const history = useHistory();
+  const to = `/copay-balances/${id}/statement`;
 
   return (
     <li>
@@ -16,9 +17,9 @@ const HTMLStatementLink = ({ id, copayId, statementDate }) => {
         onClick={event => {
           event.preventDefault();
           recordEvent({ event: 'cta-link-click-copay-statement-link' });
-          history.push(`/copay-balances/${id}/statement`, { copayId });
+          history.push(to, { copayId });
         }}
-        href={`/copay-balances/${id}/statement`}
+        href={to}
         text={`${formatDate(statementDate)} statement`}
       />
     </li>

@@ -17,7 +17,7 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
     ? charges.map(item => ({
         date: item.datePosted,
         description: item.description,
-        reference: selectedCopay.attributes.billNumber,
+        reference: selectedCopay?.attributes?.billNumber,
         amount: item.priceComponents?.[0]?.amount ?? 0,
         provider: item.providerName,
         details: [],

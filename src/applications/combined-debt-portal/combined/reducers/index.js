@@ -38,6 +38,7 @@ const mcpInitialState = {
   statements: null,
   selectedStatement: null,
   shouldUseLighthouseCopays: null,
+  isCopayDetailLoading: false,
 };
 
 export const medicalCopaysReducer = (state = mcpInitialState, action) => {

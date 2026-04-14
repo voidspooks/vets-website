@@ -28,16 +28,6 @@ const billingMonth = copay => {
 /** Monotonic index for calendar (year, month) so month distance is a simple subtraction. */
 const billingMonthIndex = ({ year, month }) => year * 12 + month - 1;
 
-/** Matches “past 6 months” of monthly statements: the six billing months before the open copay’s month. */
-const PRIOR_MONTHLY_STATEMENT_MONTH_COUNT = 6;
-
-const isWithinSixMonths = (candidateBillingMonthMeta, openBillingMonthMeta) => {
-  const monthGap =
-    billingMonthIndex(openBillingMonthMeta) -
-    billingMonthIndex(candidateBillingMonthMeta);
-  return monthGap >= 1 && monthGap <= PRIOR_MONTHLY_STATEMENT_MONTH_COUNT;
-};
-
 const sortCopaysByMonthlyStatementDateDesc = copays =>
   orderBy(
     copays,
@@ -67,8 +57,8 @@ const monthlyStatementIdentityFromCopay = copay => {
 };
 
 /**
- * Same facility, not the open copay, monthly statement in the six billing months before
- * the open copay’s — returns that copay with `compositeId` from the built identity, or null.
+ * Same facility, not the current copay, billing month at least one month before the current
+ * copay’s — returns that copay with `compositeId` from the built identity, or null.
  */
 const priorCopayWithCompositeId = (
   copay,
@@ -82,19 +72,17 @@ const priorCopayWithCompositeId = (
   const candidateMonthlyStatement = monthlyStatementIdentityFromCopay(copay);
   if (!candidateMonthlyStatement) return null;
 
-  const withinSixMonths = isWithinSixMonths(
-    candidateMonthlyStatement.billingMonthMeta,
-    currentMonthlyStatement.billingMonthMeta,
-  );
-
-  if (!withinSixMonths) return null;
+  const monthGap =
+    billingMonthIndex(currentMonthlyStatement.billingMonthMeta) -
+    billingMonthIndex(candidateMonthlyStatement.billingMonthMeta);
+  if (monthGap < 1) return null;
 
   return { ...copay, compositeId: candidateMonthlyStatement.compositeId };
 };
 
 /**
- * Copays for prior monthly statements at this facility: the **last six** billing months
- * before the open copay’s month (not the open row). Sorted by statement date descending;
+ * Copays for prior monthly statements at this facility: billing months at least one month before
+ * the current copay’s month (not the current row). Sorted by statement date descending;
  * each row includes a built `compositeId` (Lighthouse-style composite key).
  */
 export const getCopaysForPriorMonthlyStatements = (
@@ -126,16 +114,12 @@ export const getCopaysForPriorMonthlyStatements = (
 };
 
 /**
- * Same rows as {@link getCopaysForPriorMonthlyStatements} (six billing months back),
+ * Same rows as {@link getCopaysForPriorMonthlyStatements},
  * grouped by monthly statement (`compositeId`).
  *
  * @returns {Array<{ compositeId: string, facilityId: string, year: number, month: number, copays: object[] }>}
  */
-export const groupCopaysByPriorMonthlyStatement = (
-  copays,
-  facilityId,
-  currentCopayId,
-) => {
+export const groupCopaysByMonth = (copays, facilityId, currentCopayId) => {
   const flatCopays = getCopaysForPriorMonthlyStatements(
     copays,
     facilityId,
@@ -147,13 +131,13 @@ export const groupCopaysByPriorMonthlyStatement = (
     Object.values(compositeBuckets).map(bucketCopays => {
       const sortedCopays = sortCopaysByMonthlyStatementDateDesc(bucketCopays);
       const leadCopay = sortedCopays[0];
-      const leadBillingMonth = billingMonth(leadCopay);
+      const bm = billingMonth(leadCopay);
       return {
         compositeId: leadCopay.compositeId,
-        facilityId: leadBillingMonth?.facilityId,
-        year: leadBillingMonth?.year,
-        month: leadBillingMonth?.month,
         copays: sortedCopays,
+        year: bm?.year,
+        month: bm?.month,
+        facilityId: bm?.facilityId,
       };
     }),
     ['year', 'month', 'facilityId'],

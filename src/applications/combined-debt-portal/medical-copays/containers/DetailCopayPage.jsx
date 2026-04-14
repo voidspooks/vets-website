@@ -26,7 +26,11 @@ import { getCopayDetailStatement } from '../../combined/actions/copays';
 import useHeaderPageTitle from '../../combined/hooks/useHeaderPageTitle';
 import CopayAlertContainer from '../components/CopayAlertContainer';
 import { splitAccountNumber } from '../components/HowToPay';
-import { getCopaysForPriorMonthlyStatements } from '../../combined/utils/vbsCopayStatements';
+import {
+  useVbsGroupedCopaysByCurrentCopay,
+  groupVbsCopaysByStatements,
+  selectLighthousePreviousStatements,
+} from '../../combined/utils/selectors';
 
 const getDetailCopayBreadcrumbList = (selectedId, copayAttributes) => [
   { href: '/', label: 'VA.gov Home' },
@@ -87,13 +91,18 @@ const DetailCopayPage = ({ match }) => {
     ? copayDetail
     : allStatements?.find(({ id }) => id === selectedId);
 
+  const groupedCopaysByMonth = useVbsGroupedCopaysByCurrentCopay(
+    selectedId,
+    shouldUseLighthouseCopays,
+  );
+
+  const lighthousePreviousStatements = useSelector(
+    selectLighthousePreviousStatements,
+  );
+
   const previousStatements = shouldUseLighthouseCopays
-    ? copayDetail?.attributes?.recentStatements || []
-    : getCopaysForPriorMonthlyStatements(
-        allStatements,
-        selectedCopay?.pSFacilityNum,
-        selectedId,
-      );
+    ? lighthousePreviousStatements
+    : groupVbsCopaysByStatements(groupedCopaysByMonth);
 
   const hasPreviousStatements =
     previousStatements && previousStatements.length > 0;

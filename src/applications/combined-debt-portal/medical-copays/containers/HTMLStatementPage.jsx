@@ -15,6 +15,7 @@ import StatementTable from '../components/StatementTable';
 import DownloadStatement from '../components/DownloadStatement';
 import NeedHelpCopay from '../components/NeedHelpCopay';
 import useHeaderPageTitle from '../../combined/hooks/useHeaderPageTitle';
+import StatementCharges from '../components/StatementCharges';
 
 const HTMLStatementPage = ({ match }) => {
   const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
@@ -100,12 +101,14 @@ const HTMLStatementPage = ({ match }) => {
           previousBalance={selectedCopay.pHPrevBal}
           statementDate={statementDate}
         />
-        {shouldUseLighthouseCopays && (
+        {shouldUseLighthouseCopays ? (
           <StatementTable
             charges={charges}
             formatCurrency={formatCurrency}
             selectedCopay={selectedCopay}
           />
+        ) : (
+          <StatementCharges copay={selectedCopay} />
         )}
         <DownloadStatement
           key={selectedId}
