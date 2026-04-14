@@ -4,6 +4,30 @@ import { shallowEqual, useSelector } from 'react-redux';
 import ConfirmationFAQ from '../components/ConfirmationPage/ConfirmationFAQ';
 import ConfirmationPrintView from '../components/ConfirmationPage/ConfirmationPrintView';
 import ConfirmationScreenView from '../components/ConfirmationPage/ConfirmationScreenView';
+import {
+  isEnrollmentSubmission,
+  isExistingSubmission,
+  isNewSubmission,
+} from '../utils/helpers';
+
+export const TITLE_BY_SUBMISSION_TYPE = Object.freeze({
+  new: 'You submitted your application for CHAMPVA benefits',
+  existing: 'You submitted your updated application for CHAMPVA benefits',
+  enrollment: 'You submitted your updated information for CHAMPVA benefits',
+});
+
+const SUBMISSION_TYPE_RULES = [
+  ['new', isNewSubmission],
+  ['existing', isExistingSubmission],
+  ['enrollment', isEnrollmentSubmission],
+];
+
+const getSubmissionTypeTitle = formData => {
+  const matchedType = SUBMISSION_TYPE_RULES.find(([, predicate]) =>
+    predicate(formData),
+  )?.[0];
+  return TITLE_BY_SUBMISSION_TYPE[matchedType] || TITLE_BY_SUBMISSION_TYPE.new;
+};
 
 const selectFormData = state => ({
   timestamp: state.form.submission?.timestamp,
@@ -20,10 +44,15 @@ const ConfirmationPage = () => {
     () => timestamp && format(new Date(timestamp), 'MMMM d, yyyy'),
     [timestamp],
   );
-  const viewProps = useMemo(() => ({ signerName, submitDate }), [
-    signerName,
-    submitDate,
-  ]);
+  const viewProps = useMemo(
+    () => ({
+      alertTitle: getSubmissionTypeTitle(formData),
+      isTypeNew: isNewSubmission(formData),
+      signerName,
+      submitDate,
+    }),
+    [formData, signerName, submitDate],
+  );
 
   return (
     <div className="confirmation-page vads-u-margin-bottom--2p5">

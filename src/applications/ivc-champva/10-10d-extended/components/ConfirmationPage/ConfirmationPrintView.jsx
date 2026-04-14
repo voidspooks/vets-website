@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import content from '../../locales/en/content.json';
 
-const ConfirmationPrintView = ({ signerName, submitDate }) => (
+const ConfirmationPrintView = ({
+  alertTitle,
+  isTypeNew,
+  signerName,
+  submitDate,
+}) => (
   <>
     <img
       src="/img/design/logo/logo-black-and-white.png"
@@ -15,17 +20,25 @@ const ConfirmationPrintView = ({ signerName, submitDate }) => (
     </h1>
     <div>{content['form-subtitle']}</div>
 
-    <h2 className="vads-u-font-size--h3">
-      You submitted your CHAMPVA benefits application
+    <h2
+      className="vads-u-font-size--h3"
+      data-testid="1010d-confirmation-headline"
+    >
+      {alertTitle}
     </h2>
 
     <hr className="vads-u-margin-y--4" />
 
     <h3 className="vads-u-margin-top--0">Your submission information</h3>
-    <h4>What forms were submitted</h4>
+    <h4>What forms you submitted</h4>
     <p>Application for CHAMPVA benefits (VA Form 10-10d)</p>
-    <p>If you reported Medicare or health insurance, you have also submitted</p>
-    <p>Other Health Insurance Certification (VA Form 10-7959c)</p>
+
+    {isTypeNew && (
+      <div data-testid="1010d-confirmation-new-form">
+        <p>If you reported Medicare or health insurance, you also submitted:</p>
+        <p>Other Health Insurance Certification (VA Form 10-7959c)</p>
+      </div>
+    )}
 
     <h4>Who submitted this form</h4>
     <p
@@ -52,6 +65,8 @@ const ConfirmationPrintView = ({ signerName, submitDate }) => (
 );
 
 ConfirmationPrintView.propTypes = {
+  alertTitle: PropTypes.string,
+  isTypeNew: PropTypes.bool,
   signerName: PropTypes.string,
   submitDate: PropTypes.string,
 };

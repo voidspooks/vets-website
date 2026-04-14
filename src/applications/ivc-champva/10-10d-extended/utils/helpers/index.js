@@ -1,4 +1,5 @@
 export * from './applicants';
+export * from './applicationStatus';
 export * from './arraybuilder';
 export * from './form-config';
 export * from './formatting';

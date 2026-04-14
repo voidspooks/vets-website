@@ -3,7 +3,9 @@ import { Provider } from 'react-redux';
 import { fireEvent, render } from '@testing-library/react';
 import { expect } from 'chai';
 import sinon from 'sinon-v20';
-import ConfirmationPage from '../../../containers/ConfirmationPage';
+import ConfirmationPage, {
+  TITLE_BY_SUBMISSION_TYPE,
+} from '../../../containers/ConfirmationPage';
 
 const MOCK_FORM_DATA = {
   applicantName: { first: 'Jack', middle: 'W', last: 'Smith' },
@@ -18,9 +20,23 @@ const MOCK_SUBMISSION = {
 describe('10-10d ConfirmationPage', () => {
   let printSpy;
 
-  const subject = ({ submission = MOCK_SUBMISSION } = {}) => {
+  const buildFormData = submissionType => ({
+    ...MOCK_FORM_DATA,
+    'view:form1010dEnhancedFlowEnabled': true,
+    submissionType,
+  });
+
+  const expectTextInAllNodes = (nodes, expectedText) => {
+    expect(nodes.length).to.be.greaterThan(0);
+    [...nodes].forEach(node => expect(node).to.contain.text(expectedText));
+  };
+
+  const subject = ({
+    submission = MOCK_SUBMISSION,
+    formData = MOCK_FORM_DATA,
+  } = {}) => {
     const mockStore = {
-      getState: () => ({ form: { submission, data: MOCK_FORM_DATA } }),
+      getState: () => ({ form: { submission, data: formData } }),
       subscribe: () => {},
       dispatch: () => {},
     };
@@ -29,9 +45,17 @@ describe('10-10d ConfirmationPage', () => {
         <ConfirmationPage />
       </Provider>,
     );
-    const getPrintBtn = () => container.querySelector('va-button');
-    const getSubmissionDate = () => container.querySelector('.submission-date');
-    return { getPrintBtn, getSubmissionDate };
+    const selectors = () => ({
+      alertHeadline: container.querySelectorAll(
+        '[data-testid="1010d-confirmation-headline"]',
+      ),
+      newFormType: container.querySelectorAll(
+        '[data-testid="1010d-confirmation-new-form"]',
+      ),
+      printBtn: container.querySelector('va-button'),
+      submissionDate: container.querySelector('.submission-date'),
+    });
+    return { selectors };
   };
 
   beforeEach(() => {
@@ -47,19 +71,44 @@ describe('10-10d ConfirmationPage', () => {
   });
 
   it('should not render submission date container when there is no response data', () => {
-    const { getSubmissionDate } = subject({ submission: { timestamp: false } });
-    expect(getSubmissionDate()).to.not.exist;
+    const { selectors } = subject({ submission: { timestamp: false } });
+    expect(selectors().submissionDate).to.not.exist;
   });
 
   it('should render application date container when there is response data', () => {
-    const { getSubmissionDate } = subject();
+    const { selectors } = subject();
     const expectedResult = 'January 1, 2010';
-    expect(getSubmissionDate()).to.contain.text(expectedResult);
+    expect(selectors().submissionDate).to.contain.text(expectedResult);
   });
 
   it('should fire the correct event when the print button is clicked', () => {
-    const { getPrintBtn } = subject();
-    fireEvent.click(getPrintBtn());
+    const { selectors } = subject();
+    fireEvent.click(selectors().printBtn);
     sinon.assert.calledOnce(printSpy);
   });
+
+  it('should render the additional submitted form name for new submissions', () => {
+    const { selectors } = subject({ formData: buildFormData('new') });
+    expect(selectors().newFormType).to.have.length(2);
+  });
+
+  it('should not render the additional submitted form name for non-new submissions', () => {
+    ['existing', 'enrollment'].forEach(submissionType => {
+      const { selectors } = subject({
+        formData: buildFormData(submissionType),
+      });
+      expect(selectors().newFormType).to.have.length(0);
+    });
+  });
+
+  Object.entries(TITLE_BY_SUBMISSION_TYPE).forEach(
+    ([submissionType, expectedTitle]) => {
+      it(`should render the ${submissionType} confirmation headline in screen and print views`, () => {
+        const { selectors } = subject({
+          formData: buildFormData(submissionType),
+        });
+        expectTextInAllNodes(selectors().alertHeadline, expectedTitle);
+      });
+    },
+  );
 });
