@@ -27,7 +27,7 @@
           },
           "applicantDob": "1995-01-04",
           "applicantSsn": "213454367",
-          "view:sharesAddressWith": "na",
+          "view:applicantSharedAddress": "na",
           "applicantAddress": {
             "country": "USA",
             "street": "123 Certifier St",
@@ -53,7 +53,7 @@
           },
           "applicantDob": "2020-01-04",
           "applicantSsn": "345345345",
-          "view:sharesAddressWith": "na",
+          "view:applicantSharedAddress": "na",
           "applicantAddress": {
             "country": "USA",
             "street": "456 Circle St",

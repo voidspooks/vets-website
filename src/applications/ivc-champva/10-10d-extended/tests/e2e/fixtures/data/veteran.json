@@ -25,14 +25,6 @@
         },
         "applicantDob": "2003-01-04",
         "applicantSsn": "345345345",
-        "view:sharesAddressWith": "na",
-        "applicantAddress": {
-          "street": "456 Circle St",
-          "city": "Applicant",
-          "country": "USA",
-          "state": "IN",
-          "postalCode": "56790"
-        },
         "applicantPhone": "5555551234",
         "applicantGender": {
           "gender": "male"

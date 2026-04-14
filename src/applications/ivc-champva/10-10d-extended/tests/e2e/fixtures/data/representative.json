@@ -48,13 +48,6 @@
       "first": "Certifier",
       "last": "Jones"
     },
-    "certifierAddress": {
-      "country": "USA",
-      "street": "123 Certifier St",
-      "city": "Certifier",
-      "state": "MD",
-      "postalCode": "12312"
-    },
     "certifierPhone": "1231231234",
     "certifierEmail": "certifier@email.gov",
     "certifierRelationship": {

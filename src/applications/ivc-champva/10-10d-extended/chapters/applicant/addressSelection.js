@@ -12,21 +12,17 @@ export default {
       roleKey: 'view:certifierRole',
       arrayBuilder: true,
     }),
-    'view:sharesAddressWith': addressSelectionUI({
+    'view:applicantSharedAddress': addressSelectionUI({
       title: INPUT_LABEL,
       destinationKey: 'applicantAddress',
-      sourceKeys: [
-        'applicants.applicantAddress',
-        'certifierAddress',
-        'sponsorAddress',
-      ],
+      sourceKeys: ['applicants.applicantAddress', 'sponsorAddress'],
     }),
   },
   schema: {
     type: 'object',
-    required: ['view:sharesAddressWith'],
+    required: ['view:applicantSharedAddress'],
     properties: {
-      'view:sharesAddressWith': { type: 'string' },
+      'view:applicantSharedAddress': { type: 'string' },
     },
   },
 };

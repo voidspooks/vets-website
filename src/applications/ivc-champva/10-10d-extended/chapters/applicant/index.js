@@ -54,7 +54,7 @@ export const applicantPages = arrayBuilderPages(
       title: 'Applicant identification information',
       ...identificationInformation,
     }),
-    applicationAddress: pageBuilder.itemPage({
+    applicantAddress: pageBuilder.itemPage({
       path: 'applicant-address/:index',
       title: 'Address selection',
       depends: hasSponsorAddress,

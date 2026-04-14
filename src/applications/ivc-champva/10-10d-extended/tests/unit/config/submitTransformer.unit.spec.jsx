@@ -4,7 +4,6 @@ import transformForSubmit from '../../../config/submitTransformer';
 import { toHash } from '../../../../shared/utilities';
 import { NOT_SHARED } from '../../../components/FormFields/AddressSelectionField';
 
-const SHARED_ADDRESS_FIELD_NAME = 'view:sharesAddressWith';
 const APPLICANT_SSN = '345345345';
 const SSN_HASH = toHash(APPLICANT_SSN);
 
@@ -360,7 +359,7 @@ describe('10-10d-extended transform for submit', () => {
     it('should properly format sponsor address fields when hydrated into "Veteran" object', () => {
       const testData = {
         data: {
-          [SHARED_ADDRESS_FIELD_NAME]: NOT_SHARED,
+          'view:sponsorSharedAddress': NOT_SHARED,
           sponsorAddress: {
             street: '123 Main Street',
             street2: 'Suite 200',
@@ -412,7 +411,7 @@ describe('10-10d-extended transform for submit', () => {
       });
       const testData = {
         data: {
-          [SHARED_ADDRESS_FIELD_NAME]: JSON.stringify(sponsorAddress),
+          'view:sponsorSharedAddress': JSON.stringify(sponsorAddress),
           sponsorAddress,
         },
       };
@@ -441,13 +440,13 @@ describe('10-10d-extended transform for submit', () => {
             {
               applicantName: { first: 'Alpha', last: 'One' },
               applicantRelationshipToSponsor: 'child',
-              'view:sharesAddressWith': JSON.stringify(firstAddress),
+              'view:applicantSharedAddress': JSON.stringify(firstAddress),
               applicantAddress: firstAddress,
             },
             {
               applicantName: { first: 'Beta', last: 'Two' },
               applicantRelationshipToSponsor: 'child',
-              'view:sharesAddressWith': JSON.stringify(secondAddress),
+              'view:applicantSharedAddress': JSON.stringify(secondAddress),
               applicantAddress: secondAddress,
             },
           ],

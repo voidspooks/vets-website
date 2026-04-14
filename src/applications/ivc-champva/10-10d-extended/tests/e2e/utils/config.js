@@ -16,8 +16,8 @@ import { setupBasicTest, setupForAuth } from './setup';
  * @param {boolean} [options.useAuth=false] - Whether to use authenticated setup
  * @param {Object} [options.prefill] - Prefill data for authenticated tests
  * @param {Object} [options.additionalPageHooks={}] - Additional page hooks to merge
- * @param {boolean} [options.includeVeteranAddressHook=false] - Include veteran-address hook
- * @param {boolean} [options.includeApplicantAddressHook=true] - Include applicant-address hook
+ * @param {boolean} [options.includeSignerAddressHook=false] - Include your-address hook
+ * @param {boolean} [options.includeApplicantAddressHook=false] - Include applicant-address/:index hook
  * @returns {Object} Test configuration
  */
 export const getConfig = ({
@@ -25,7 +25,7 @@ export const getConfig = ({
   useAuth = false,
   prefill,
   additionalPageHooks = {},
-  includeVeteranAddressHook = false,
+  includeSignerAddressHook = false,
   includeApplicantAddressHook = false,
 } = {}) => {
   const basePageHooks = {
@@ -41,8 +41,8 @@ export const getConfig = ({
   };
 
   const addressHooks = {};
-  if (includeVeteranAddressHook) {
-    addressHooks['veteran-address'] = ({ afterHook }) => {
+  if (includeSignerAddressHook) {
+    addressHooks['your-address'] = ({ afterHook }) => {
       afterHook(() => fillSharedAddressAndContinue());
     };
   }

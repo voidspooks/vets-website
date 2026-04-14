@@ -61,8 +61,8 @@ export const applicantRelationshipOrigin = applicantValue(
 export const applicantDependentStatus = applicantValue(
   'applicantDependentStatus.status',
 );
-export const applicantSharedAddressWith = applicantValue(
-  'view:sharesAddressWith',
+export const applicantSharedAddress = applicantValue(
+  'view:applicantSharedAddress',
 );
 export const applicantRemarried = applicantValue('applicantRemarried', false);
 
@@ -87,11 +87,8 @@ export const applicantIsChild = applicantRelationshipIs('child');
 export const applicantIsSpouse = applicantRelationshipIs('spouse');
 
 // Address-sharing predicates
-export const applicantSharesAddressWith = expected =>
-  applicantFieldEquals('view:sharesAddressWith', expected);
-
 export const applicantHasNoSharedAddressSelection = (formData, index) => {
-  const sharedWith = applicantSharedAddressWith(formData, index);
+  const sharedWith = applicantSharedAddress(formData, index);
   return !sharedWith || sharedWith === NOT_SHARED;
 };
 

@@ -22,6 +22,9 @@ const runMigration = (
 
 describe('10-10d-extended migrations', () => {
   context('migration 0 -> 1: flatten certifier relationship', () => {
+    const SHARED_ADDRESS_KEY = 'view:sharesAddressWith';
+    const APPLICANT_ADDRESS_KEY = 'view:applicantSharedAddress';
+
     it('should flatten certifierRelationship from nested object', () => {
       const formData = {
         certifierRelationship: { relationshipToVeteran: { other: true } },
@@ -34,6 +37,49 @@ describe('10-10d-extended migrations', () => {
       const formData = { applicantName: { first: 'John', last: 'Doe' } };
       const { formData: migrated } = runMigration(0, { formData });
       expect(migrated).to.deep.equal(formData);
+    });
+
+    it('should remove original root-level address sharing key', () => {
+      const formData = { [SHARED_ADDRESS_KEY]: 'na' };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData).to.not.have.property(SHARED_ADDRESS_KEY);
+    });
+
+    it('should migrate applicant address sharing key to new key name', () => {
+      const formData = {
+        applicants: [{ ssn: '411111111', [SHARED_ADDRESS_KEY]: 'na' }],
+      };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData.applicants[0]).to.deep.equal({
+        ssn: '411111111',
+        [APPLICANT_ADDRESS_KEY]: 'na',
+      });
+    });
+
+    it('should not modify applicants without address sharing key', () => {
+      const formData = { applicants: [{ ssn: '411111111' }] };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData.applicants).to.deep.equal(formData.applicants);
+    });
+
+    it('should handle mixed applicants (some with key, some without)', () => {
+      const formData = {
+        applicants: [
+          { ssn: '411111111', [SHARED_ADDRESS_KEY]: 'na' },
+          { ssn: '311111111' },
+        ],
+      };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData.applicants).to.deep.equal([
+        { ssn: '411111111', [APPLICANT_ADDRESS_KEY]: 'na' },
+        { ssn: '311111111' },
+      ]);
+    });
+
+    it('should remove root key when applicants do not yet exist', () => {
+      const formData = { [SHARED_ADDRESS_KEY]: 'na' };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData).to.deep.equal({});
     });
 
     it('should preserve other form data fields', () => {
