@@ -14,13 +14,11 @@ export const SupportingDocsDescription = () => (
       <li>COVID-19 vaccines</li>
     </ul>
     <p>
-      <a
+      <va-link
         href="/health-care/file-foreign-medical-program-claim/#supporting-documents-to-send-w"
-        rel="noreferrer"
-        target="_blank"
-      >
-        Find out which supporting documents you need (opens in a new tab)
-      </a>
+        text="Find out which supporting documents you need"
+        external
+      />
     </p>
 
     <FileUploadDescription />

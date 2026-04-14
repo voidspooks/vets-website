@@ -12,13 +12,11 @@ const MedicalEobDescription = () => (
       beneficiary’s insurance provider already paid for this specific claim.
     </p>
     <p>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="/resources/how-to-file-a-champva-claim/?#supporting-documents-to-send-w"
-      >
-        Learn more about an explanation of benefits (opens in a new tab)
-      </a>
+      <va-link
+        href="/resources/how-to-file-a-champva-claim/#supporting-documents-to-send-w"
+        text="Learn more about an explanation of benefits"
+        external
+      />
     </p>
 
     <h2 className="mobile-lg:vads-u-font-size--h3 vads-u-font-size--h4">

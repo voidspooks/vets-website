@@ -3,13 +3,11 @@ import FileUploadDescription from './FileUploadDescription';
 
 const SupportingDocsLink = label => (
   <p>
-    <a
-      target="_blank"
-      rel="noreferrer noopener"
+    <va-link
       href="/resources/how-to-file-a-champva-claim/#supporting-documents-to-send-w"
-    >
-      {label}
-    </a>
+      text={label}
+      external
+    />
   </p>
 );
 
@@ -51,18 +49,13 @@ const ResubmissionDocsDescription = (
 
 const ResubmissionDocsUploadDescription = (
   <>
-    {SupportingDocsLink(
-      'Learn more about supporting medical claim documents (opens in a new tab)',
-    )}
+    {SupportingDocsLink('Learn more about supporting medical claim documents')}
     <p className="vads-u-margin-bottom--4">
-      <a
-        target="_blank"
-        rel="noreferrer noopener"
+      <va-link
         href="/resources/how-to-file-a-champva-claim/#if-youre-filing-a-claim-for-pr"
-      >
-        Learn more about supporting pharmacy claim documents (opens in a new
-        tab)
-      </a>
+        text="Learn more about supporting pharmacy claim documents"
+        external
+      />
     </p>
     <FileUploadDescription />
   </>
@@ -99,9 +92,7 @@ const ResubmissionAddtlDocsUploadDescription = (
       claim. And don’t upload previously submitted documents from your existing
       claim.
     </p>
-    {SupportingDocsLink(
-      'Learn more about supporting medical claim documents (opens in a new tab)',
-    )}
+    {SupportingDocsLink('Learn more about supporting medical claim documents')}
     <FileUploadDescription />
   </>
 );

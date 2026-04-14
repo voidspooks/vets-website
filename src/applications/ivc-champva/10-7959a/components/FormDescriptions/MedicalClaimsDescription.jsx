@@ -77,13 +77,11 @@ const MedicalClaimsDescription = () => (
     <ProcedureCodesAddtlInfo />
 
     <p>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="/resources/how-to-file-a-champva-claim/?#supporting-documents-to-send-w"
-      >
-        Learn more about itemized bills (opens in a new tab)
-      </a>
+      <va-link
+        href="/resources/how-to-file-a-champva-claim/#supporting-documents-to-send-w"
+        text="Learn more about itemized bills"
+        external
+      />
     </p>
 
     <p>
