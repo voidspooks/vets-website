@@ -82,7 +82,7 @@ export function mockAppointmentDetailsApiWithPolling({
   cy.intercept(
     {
       method: 'GET',
-      pathname: `/vaos/v2/eps_appointments/${id}`,
+      pathname: `/vaos/v2/unified_bookings/${id}`,
     },
     req => {
       requestCount += 1;
@@ -185,7 +185,7 @@ export function mockUnifiedBookingApi({
 /**
  * Function to mock the 'GET' epsApi appointment details endpoint.
  *
- * @example GET '/vaos/v2/epsApi/appointments/:id'
+ * @example GET '/vaos/v2/eps_appointments/:id'
  *
  * @export
  * @param {Object} arguments - Function arguments.

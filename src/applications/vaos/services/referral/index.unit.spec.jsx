@@ -50,7 +50,7 @@ describe('Referral Services', () => {
     const result = await services.getAppointmentInfo('a1');
 
     expect(
-      requestStub.calledWith('/vaos/v2/eps_appointments/a1', {
+      requestStub.calledWith('/vaos/v2/unified_bookings/a1?provider_type=eps', {
         method: 'GET',
       }),
     ).to.be.true;

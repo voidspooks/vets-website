@@ -27,9 +27,9 @@ export async function getProvidersByReferralId(
   );
 }
 
-export async function getAppointmentInfo(appointmentId) {
+export async function getAppointmentInfo(appointmentId, providerType = 'eps') {
   const response = await apiRequestWithUrl(
-    `/vaos/v2/eps_appointments/${appointmentId}`,
+    `/vaos/v2/unified_bookings/${appointmentId}?provider_type=${providerType}`,
     {
       method: 'GET',
     },

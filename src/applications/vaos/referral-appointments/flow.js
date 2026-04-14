@@ -6,10 +6,16 @@ import { startReferralTimer } from './utils/timer';
  * @export
  * @param {string} referralId - The referral unique identifier
  * @param {string} appointmentId - The appointment unique identifier
- * @param {string} providerId = The provider for appointment slots
+ * @param {string} providerId - The provider for appointment slots
+ * @param {string} providerType - The provider type for the unified booking endpoint ('va' or 'eps')
  * @returns {object} Referral appointment workflow object
  */
-export function getPageFlow(referralId, appointmentId, providerId = null) {
+export function getPageFlow(
+  referralId,
+  appointmentId,
+  providerId = null,
+  providerType = null,
+) {
   return {
     error: {
       url: '/',
@@ -54,14 +60,16 @@ export function getPageFlow(referralId, appointmentId, providerId = null) {
       previous: 'scheduleAppointment',
     },
     complete: {
-      url: `/schedule-referral/complete/${appointmentId}?id=${referralId}`,
+      url: `/schedule-referral/complete/${appointmentId}?id=${referralId}&providerType=${providerType}`,
       label: 'Your appointment is scheduled',
       next: 'details',
       previous: 'appointments',
     },
-    // TODO: This may not be EPS appointment
     details: {
-      url: `/${appointmentId}?eps=true`,
+      url:
+        providerType === 'eps'
+          ? `/${appointmentId}?eps=true`
+          : `/${appointmentId}`,
       label: '',
       next: '',
       previous: 'complete',
@@ -76,8 +84,14 @@ export function routeToPageInFlow(
   referralId,
   appointmentId,
   providerId,
+  providerType,
 ) {
-  const pageFlow = getPageFlow(referralId, appointmentId, providerId);
+  const pageFlow = getPageFlow(
+    referralId,
+    appointmentId,
+    providerId,
+    providerType,
+  );
   // if there is no current page meaning there was an error fetching referral data
   // then we are on an error state in the form and back should go back to appointments.
   const nextPageString = current
@@ -118,6 +132,7 @@ export function routeToNextReferralPage(
   referralId = null,
   appointmentId = null,
   providerId = null,
+  providerType = null,
 ) {
   return routeToPageInFlow(
     history,
@@ -126,6 +141,7 @@ export function routeToNextReferralPage(
     referralId,
     appointmentId,
     providerId,
+    providerType,
   );
 }
 

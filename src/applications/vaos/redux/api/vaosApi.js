@@ -66,21 +66,14 @@ export const vaosApi = createApi({
         }
       },
     }),
-    pollAppointmentInfo: builder.query({
-      async queryFn(appointmentId) {
+    getUnifiedBooking: builder.query({
+      async queryFn({ appointmentId, providerType }) {
         try {
           return await apiRequestWithUrl(
-            `/vaos/v2/eps_appointments/${appointmentId}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-Page-Type': 'polling',
-              },
-            },
+            `/vaos/v2/unified_bookings/${appointmentId}?provider_type=${providerType}`,
           );
         } catch (error) {
-          captureError(error, false, 'poll fetch appointment info');
+          captureError(error, false, 'fetch unified booking');
           return {
             error: { status: error.status || 500, message: error.message },
           };
@@ -158,7 +151,7 @@ export const {
   useGetReferralByIdQuery,
   useGetPatientReferralsQuery,
   useGetAppointmentInfoQuery,
-  usePollAppointmentInfoQuery,
+  useGetUnifiedBookingQuery,
   useGetReferralProvidersQuery,
   usePostReferralAppointmentMutation,
   useGetProviderSlotsQuery,

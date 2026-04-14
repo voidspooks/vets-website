@@ -791,20 +791,44 @@ const responses = {
       }),
     );
   },
-  'GET /vaos/v2/eps_appointments/:appointmentId': (req, res) => {
-    let successPollCount = 2; // The number of times to poll before returning a confirmed appointment
+  'GET /vaos/v2/unified_bookings/:appointmentId': (req, res) => {
+    let successPollCount = 2;
     const { appointmentId } = req.params;
 
-    // create a mock appointment in draft state for polling simulation
     let mockAppointment = new MockReferralAppointmentDetailsResponse({
       appointmentId,
-      status: 'draft',
+      status: 'proposed',
     });
 
-    const mockBookedAppointment = new MockReferralAppointmentDetailsResponse({
+    const serverError = new MockReferralAppointmentDetailsResponse({
       appointmentId,
-      status: 'booked',
+      serverError: true,
     });
+
+    if (appointmentId === 'appointment-for-poll-retry-error') {
+      successPollCount = 1000;
+    }
+
+    if (appointmentId === 'appointment-for-poll-error') {
+      return res.status(500).json(serverError);
+    }
+
+    const count = draftAppointmentPollCount[appointmentId] || 0;
+
+    if (count < successPollCount) {
+      draftAppointmentPollCount[appointmentId] = count + 1;
+    } else {
+      draftAppointmentPollCount[appointmentId] = 0;
+      mockAppointment = new MockReferralAppointmentDetailsResponse({
+        appointmentId,
+        status: 'booked',
+      });
+    }
+
+    return res.json(mockAppointment);
+  },
+  'GET /vaos/v2/eps_appointments/:appointmentId': (req, res) => {
+    const { appointmentId } = req.params;
 
     const serverError = new MockReferralAppointmentDetailsResponse({
       appointmentId,
@@ -816,50 +840,20 @@ const responses = {
       notFound: true,
     });
 
-    if (appointmentId === 'appointment-for-poll-retry-error') {
-      // Set a very high poll count to simulate a timeout
-      successPollCount = 1000;
-    }
-
-    if (appointmentId === 'appointment-for-poll-error') {
-      return res.status(500).json(serverError);
-    }
-
-    // Check if the request is coming from the details page
-    const isDetailsView = req.headers['x-page-type'] === 'details'; // 'details' or 'review-confirm'
-
-    if (
-      isDetailsView &&
-      appointmentId === 'appointment-for-details-not-found-error'
-    ) {
+    if (appointmentId === 'appointment-for-details-not-found-error') {
       return res.status(400).json(notFoundError);
     }
 
-    if (isDetailsView && appointmentId === 'appointment-for-details-error') {
+    if (appointmentId === 'appointment-for-details-error') {
       return res.status(500).json(serverError);
     }
 
-    if (isDetailsView) {
-      // For details view, immediately return appointment in booked state
-      return res.json(mockBookedAppointment);
-    }
-
-    // Continue with normal polling behavior for ReviewAndConfirm component
-    const count = draftAppointmentPollCount[appointmentId] || 0;
-
-    // Mock polling for appointment state change
-    if (count < successPollCount) {
-      draftAppointmentPollCount[appointmentId] = count + 1;
-    } else {
-      // reassign status of mocked appointment to booked to simulate success
-      draftAppointmentPollCount[appointmentId] = 0;
-      mockAppointment = new MockReferralAppointmentDetailsResponse({
+    return res.json(
+      new MockReferralAppointmentDetailsResponse({
         appointmentId,
         status: 'booked',
-      });
-    }
-
-    return res.json(mockAppointment);
+      }),
+    );
   },
   'POST /vaos/v2/unified_bookings': (req, res) => {
     const { providerType, slotId, providerServiceId } = req.body;

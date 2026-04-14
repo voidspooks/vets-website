@@ -457,7 +457,7 @@ const eventPrefix = `${GA_PREFIX}-cancel-appointment-submission`;
 function getSystemType(apiData) {
   const { type, isCerner, modality } = apiData || {};
 
-  if (modality === 'communityCareEps') {
+  if (modality === 'communityCareEps' || modality === 'communityCareUnified') {
     return APPOINTMENT_SYSTEM.eps;
   }
 
@@ -750,7 +750,9 @@ export function groupAppointmentByDay(appointments) {
 
 export function getLink({ appointment }) {
   const { isPastAppointment } = appointment.vaos;
-  const ccEps = appointment.modality === 'communityCareEps';
+  const ccEps =
+    appointment.modality === 'communityCareEps' ||
+    appointment.modality === 'communityCareUnified';
 
   return `${isPastAppointment && !ccEps ? 'past' : ''}/${appointment.id}${
     ccEps ? '?eps=true' : ''

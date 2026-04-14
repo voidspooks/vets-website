@@ -1,5 +1,6 @@
 export const MODALITY_CONFIG = {
   communityCareEps: { text: 'In-person', icon: 'location_city' },
+  communityCareUnified: { text: 'In-person', icon: 'location_city' },
   communityCare: { text: 'In-person', icon: 'location_city' },
   vaInPerson: { text: 'In-person', icon: 'location_city' },
   vaInPersonVaccine: { text: 'In-person', icon: 'location_city' },

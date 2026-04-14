@@ -489,6 +489,27 @@ describe('VAOS Services: Appointment ', () => {
       );
     });
 
+    it('should return the correct link for a communityCareUnified appointment', () => {
+      const appointment = {
+        id: '123',
+        vaos: {
+          isPastAppointment: true,
+        },
+        modality: 'communityCareUnified',
+      };
+      expect(getLink({ appointment })).to.equal('/123?eps=true');
+      const futureAppointment = {
+        id: '1234',
+        vaos: {
+          isPastAppointment: false,
+        },
+        modality: 'communityCareUnified',
+      };
+      expect(getLink({ appointment: futureAppointment })).to.equal(
+        '/1234?eps=true',
+      );
+    });
+
     it('should return the correct link for a future appointment', () => {
       const appointment = {
         id: '123',
@@ -650,6 +671,25 @@ describe('VAOS Services: Appointment ', () => {
         kind: 'cc',
         isCerner: false,
         modality: 'communityCareEps',
+      });
+      mockAppointmentUpdateApi({
+        id: '123',
+        response: new MockAppointmentResponse({ status: 'cancelled' }),
+      });
+
+      await cancelAppointment({ appointment });
+      const body = getSubmitBody();
+
+      expect(body.systemType).to.equal('eps');
+      expect(body.type).to.equal('booked');
+    });
+
+    it('should send systemType as eps for a communityCareUnified appointment', async () => {
+      const appointment = createAppointment({
+        type: 'COMMUNITY_CARE_APPOINTMENT',
+        kind: 'cc',
+        isCerner: false,
+        modality: 'communityCareUnified',
       });
       mockAppointmentUpdateApi({
         id: '123',

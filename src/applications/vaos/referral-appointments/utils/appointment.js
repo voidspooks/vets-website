@@ -1,6 +1,6 @@
 const appointmentData = {
   id: 'QC9S60he',
-  type: 'epsAppointment',
+  type: 'appointment',
   attributes: {
     id: 'QC9S60he',
     status: 'booked',
@@ -8,7 +8,7 @@ const appointmentData = {
     past: false,
     isLatest: true,
     lastRetrieved: '2025-10-14T15:15:07Z',
-    modality: 'communityCareEps',
+    modality: 'communityCareUnified',
     provider: {
       id: 'KMWjsCY3',
       name: 'Dr. Smith @ Acme Cardiology - Anywhere, USA',
@@ -39,7 +39,7 @@ const appointmentData = {
  * Creates a referral appointment object with the given id and status.
  *
  * @param {string} id - The unique identifier for the appointment.
- * @param {string} [status='draft'] - The state of the appointment. Defaults to 'draft'.
+ * @param {string} [status='booked'] - The state of the appointment. Defaults to 'booked'.
  * @param {Object} [draftResponse={}] - The draft response object.
  * @returns {Object} The referral appointment object.
  */

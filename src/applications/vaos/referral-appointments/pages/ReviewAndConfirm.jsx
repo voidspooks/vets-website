@@ -169,11 +169,14 @@ const ReviewAndConfirm = props => {
 
     try {
       await postReferralAppointment(bookingPayload).unwrap();
+      const providerType = isCommunityCare ? 'eps' : 'va';
       routeToNextReferralPage(
         history,
         'reviewAndConfirm',
         currentReferral.uuid,
         draftAppointmentInfo.id,
+        null,
+        providerType,
       );
     } catch {
       setCreateFailed(true);

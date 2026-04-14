@@ -28,24 +28,31 @@ class MockReferralAppointmentDetailsResponse {
     organizationName = 'Meridian Health',
     status = 'booked',
   } = {}) {
-    // TODO update success response
-    const baseAttributes = {
-      id: appointmentId,
-      status,
-      start: new Date(
-        new Date().setDate(new Date().getDate() + 30),
-      ).toISOString(), // 30 days in future
-      isLatest: true,
-      lastRetrieved: new Date().toISOString(),
-      referralId: '123abc',
-      past: false,
-    };
+    const baseAttributes =
+      status === 'booked'
+        ? {
+            id: appointmentId,
+            status,
+            careType: 'CC',
+            start: new Date(
+              new Date().setDate(new Date().getDate() + 30),
+            ).toISOString(),
+            isLatest: true,
+            lastRetrieved: new Date().toISOString(),
+            referralId: '123abc',
+            past: false,
+          }
+        : {
+            id: appointmentId,
+            status,
+            careType: 'CC',
+            modality: 'communityCareUnified',
+          };
 
-    // Only include modality and provider when status is 'booked'
     const bookedAttributes =
       status === 'booked'
         ? {
-            modality: 'communityCareEps',
+            modality: 'communityCareUnified',
             provider: {
               id: 'test-provider-id',
               name: 'Dr. Smith @ Acme Cardiology - Anywhere, USA',
@@ -76,7 +83,7 @@ class MockReferralAppointmentDetailsResponse {
     return {
       data: {
         id: appointmentId,
-        type: 'epsAppointment',
+        type: 'appointment',
         attributes: {
           ...baseAttributes,
           ...bookedAttributes,

@@ -24,7 +24,7 @@ describe('CompleteReferral', () => {
   );
   const referralDraftAppointmentInfo = createMockEpsAppointment(
     appointmentId,
-    'draft',
+    'proposed',
     epsAppointmentUtils.appointmentData,
   );
   const currentReferral = createReferralById(
@@ -72,7 +72,7 @@ describe('CompleteReferral', () => {
       <CompleteReferral currentReferral={currentReferral} />,
       {
         store: createTestStore(initialState),
-        path: '/complete/UUID?confirmMsg=true',
+        path: '/complete/UUID?confirmMsg=true&providerType=eps',
       },
     );
     await waitFor(() => {
@@ -127,7 +127,7 @@ describe('CompleteReferral', () => {
       <CompleteReferral currentReferral={currentReferral} />,
       {
         store: createTestStore(initialState),
-        path: `/schedule-referral/complete/${appointmentId}`,
+        path: `/schedule-referral/complete/${appointmentId}?providerType=eps`,
       },
     );
     await waitFor(() => {
@@ -175,7 +175,7 @@ describe('CompleteReferral', () => {
       <CompleteReferral currentReferral={currentReferral} />,
       {
         store: createTestStore(initialState),
-        path: `/schedule-referral/complete/${appointmentId}`,
+        path: `/schedule-referral/complete/${appointmentId}?providerType=eps`,
       },
     );
     await waitFor(() => {
