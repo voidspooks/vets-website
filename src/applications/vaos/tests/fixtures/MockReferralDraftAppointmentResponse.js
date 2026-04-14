@@ -63,7 +63,7 @@ class MockReferralDraftAppointmentResponse {
         },
       ],
       providerOrganization: {
-        name: 'Meridian Health (Sandbox 5vuTac8v)',
+        name: 'Meridian Health',
       },
       location: {
         name: 'FHA South Melbourne Medical Complex',

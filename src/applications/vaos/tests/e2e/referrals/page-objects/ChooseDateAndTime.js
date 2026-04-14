@@ -18,9 +18,12 @@ export class ChooseDateAndTimePageObject extends PageObject {
   /**
    * Validates provider information is displayed correctly
    */
-  assertProviderInfo() {
+  assertProviderInfo({
+    providerName = 'CC Provider Name',
+    organizationName = 'CC Provider Organization Name',
+  } = {}) {
     cy.findByText(
-      /Scheduling with CC Provider Name at CC Provider Organization Name/,
+      new RegExp(`Scheduling with ${providerName} at ${organizationName}\\.`),
     ).should('exist');
     cy.findByText(/Times are displayed in/).should('exist');
     return this;

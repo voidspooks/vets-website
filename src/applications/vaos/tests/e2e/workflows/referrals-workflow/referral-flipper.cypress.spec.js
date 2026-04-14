@@ -38,7 +38,7 @@ describe('VAOS Referral Appointments', () => {
     it('should not show community care referrals banner', () => {
       cy.visit('/my-health/appointments');
       cy.injectAxeThenAxeCheck();
-      appointmentList.validateCCReferralsBanner({ exist: false });
+      appointmentList.validateCCReferralsDisabledBanner({ exist: false });
     });
   });
 
@@ -56,7 +56,7 @@ describe('VAOS Referral Appointments', () => {
     it('should show community care referrals banner', () => {
       cy.visit('/my-health/appointments');
       cy.injectAxeThenAxeCheck();
-      appointmentList.validateCCReferralsBanner({ exist: true });
+      appointmentList.validateCCReferralsDisabledBanner({ exist: true });
     });
   });
 });

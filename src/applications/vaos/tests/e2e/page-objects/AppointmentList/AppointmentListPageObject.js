@@ -35,7 +35,13 @@ export class AppointmentListPageObject extends PageObject {
     return this;
   }
 
-  validateCCReferralsBanner({ exist = true } = {}) {
+  clickReferralsAndRequestsLink() {
+    cy.findByTestId('review-requests-and-referrals').click();
+
+    return this;
+  }
+
+  validateCCReferralsDisabledBanner({ exist = true } = {}) {
     if (exist) {
       cy.findByTestId('cc-referrals-banner').should('exist');
     } else {

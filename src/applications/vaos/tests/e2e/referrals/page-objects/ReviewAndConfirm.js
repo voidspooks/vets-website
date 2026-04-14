@@ -31,9 +31,9 @@ export class ReviewAndConfirmPageObject extends PageObject {
   /**
    * Validates the Details section heading, modality, and organization name
    */
-  assertDetailsSection() {
+  assertDetailsSection({ modality = 'In-person' } = {}) {
     cy.findByRole('heading', { level: 2, name: 'Details' }).should('exist');
-    cy.findByText('In-person').should('exist');
+    cy.findByTestId('review-modality').should('contain.text', modality);
     return this;
   }
 
