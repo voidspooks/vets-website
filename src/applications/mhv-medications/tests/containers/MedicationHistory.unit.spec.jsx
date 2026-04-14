@@ -117,6 +117,7 @@ describe('MedicationHistory container', () => {
     return renderWithStoreAndRouterV6(<MedicationHistory />, {
       initialState,
       reducers,
+      initialEntries: ['/history'],
       additionalMiddlewares: [
         allergiesApiModule.allergiesApi.middleware,
         prescriptionsApiModule.prescriptionsApi.middleware,
@@ -181,7 +182,7 @@ describe('MedicationHistory container', () => {
     const screen = setup();
     await waitFor(() => {
       const link = screen.getByRole('link', {
-        name: /Go to your in-progress medications/i,
+        name: /Refill Status/i,
       });
       expect(link).to.exist;
       expect(link.getAttribute('href')).to.equal('/in-progress');
@@ -203,7 +204,7 @@ describe('MedicationHistory container', () => {
     const screen = setup();
     await waitFor(() => {
       const link = screen.getByRole('link', {
-        name: /Refill medications/i,
+        name: /Medication Refills/i,
       });
       expect(link).to.exist;
       expect(link.getAttribute('href')).to.equal('/');
@@ -253,12 +254,6 @@ describe('MedicationHistory container', () => {
       await waitFor(() => {
         expect(screen.queryByTestId('loading-indicator')).to.be.null;
       });
-    });
-
-    it('does not display filter when error occurs', () => {
-      stubFetchHook({ prescriptionsApiError: new Error('API Error') });
-      const screen = setup();
-      expect(screen.queryByTestId('medication-history-filter')).to.be.null;
     });
   });
 

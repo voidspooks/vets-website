@@ -63,15 +63,15 @@ class MedicationsHistoryPage {
     cy.get('h1').should('be.focused');
   };
 
-  verifyInProgressLink = () => {
-    cy.get('a[href$="/in-progress"]').should(
-      'contain',
-      'Go to your in-progress medications',
-    );
+  verifyRefillStatusLink = () => {
+    cy.findByTestId('in-progress-inner-nav').should('contain', 'Refill Status');
   };
 
   verifyRefillLink = () => {
-    cy.findByTestId('refill-link').should('contain', 'Refill medications');
+    cy.findByTestId('landing-inner-nav').should(
+      'contain',
+      'Medication Refills',
+    );
   };
 
   verifyLoadingIndicator = () => {

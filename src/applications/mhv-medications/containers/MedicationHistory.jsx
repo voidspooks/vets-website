@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { useDispatch, useSelector } from 'react-redux';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import useAcceleratedData from '~/platform/mhv/hooks/useAcceleratedData';
@@ -10,7 +10,7 @@ import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import MedicationsList from '../components/MedicationsList/MedicationsList';
 import MedicationsListSort from '../components/MedicationsList/MedicationsListSort';
 import { useFetchMedicationHistory } from '../hooks/MedicationHistory/useFetchMedicationHistory';
-import { pageType, dataDogActionNames } from '../util/dataDogConstants';
+import { pageType } from '../util/dataDogConstants';
 import {
   rxListSortingOptions,
   rxListSortingOptionsV2,
@@ -25,6 +25,7 @@ import { setSortOption, setFilterOption } from '../redux/preferencesSlice';
 import EmptyPrescriptionContent from '../components/MedicationsList/EmptyPrescriptionContent';
 import NoFilterMatches from '../components/MedicationsList/NoFilterMatches';
 import MedicationHistoryFilter from '../components/MedicationHistory/MedicationHistoryFilter';
+import InnerNavigation from '../components/shared/InnerNavigation';
 
 import { useGetAllergiesQuery } from '../api/allergiesApi';
 import { getPrescriptionsExportList } from '../api/prescriptionsApi';
@@ -229,9 +230,6 @@ const MedicationHistory = () => {
         </div>
       );
     }
-    if (prescriptionsApiError) {
-      return <ApiErrorNotification errorType="access" content="medications" />;
-    }
     if (noMedications) {
       return <EmptyPrescriptionContent />;
     }
@@ -280,26 +278,10 @@ const MedicationHistory = () => {
   return (
     <div>
       <h1 data-testid="medication-history-heading">Medication history</h1>
-      <Link
-        data-testid="in-progress-link"
-        to="/in-progress"
-        data-dd-action-name={
-          dataDogActionNames.medicationsHistoryPage
-            .GO_TO_YOUR_IN_PROGRESS_MEDICATIONS_LINK
-        }
-      >
-        Go to your in-progress medications
-      </Link>
-      <span className="vads-u-margin-x--1">|</span>
-      <Link
-        data-testid="refill-link"
-        to="/"
-        data-dd-action-name={
-          dataDogActionNames.medicationsHistoryPage.REFILL_MEDICATIONS_LINK
-        }
-      >
-        Refill medications
-      </Link>
+      {prescriptionsApiError && (
+        <ApiErrorNotification errorType="access" content="medications" />
+      )}
+      <InnerNavigation />
       {renderContent()}
       <MedicationResources page={pageType.HISTORY} headingLevel={2} />
       <NeedHelp page={pageType.HISTORY} headingLevel={2} />

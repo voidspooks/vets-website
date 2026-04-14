@@ -78,6 +78,7 @@ describe('PrescriptionsInProgress container', () => {
     return renderWithStoreAndRouterV6(<PrescriptionsInProgress />, {
       initialState,
       reducers,
+      initialEntries: ['/in-progress'],
     });
   };
 
@@ -124,7 +125,7 @@ describe('PrescriptionsInProgress container', () => {
     stubFetchHook(mockCategorizedPrescriptions);
     const screen = setup();
     const link = screen.getByRole('link', {
-      name: /Review and print list of medications/i,
+      name: /Medications List/i,
     });
     expect(link).to.exist;
     expect(link.getAttribute('href')).to.equal('/history');
@@ -138,7 +139,7 @@ describe('PrescriptionsInProgress container', () => {
     stubFetchHook(mockCategorizedPrescriptions);
     const screen = setup();
     const link = screen.getByRole('link', {
-      name: /Refill medications/i,
+      name: /Medication Refills/i,
     });
     expect(link).to.exist;
     expect(link.getAttribute('href')).to.equal('/');

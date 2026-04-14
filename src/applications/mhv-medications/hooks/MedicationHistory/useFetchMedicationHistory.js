@@ -93,6 +93,7 @@ export const useFetchMedicationHistory = (perPage = 10) => {
     isUninitialized: apiIsUninitialized,
   } = useGetPrescriptionsListQuery(queryParams, {
     skip: featureTogglesLoading !== false,
+    refetchOnMountOrArgChange: true,
   });
 
   return {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useGetPrescriptionsListQuery } from '../../api/prescriptionsApi';
-import { dispStatusObj } from '../../util/constants';
+import { dispStatusObj, rxListSortingOptions } from '../../util/constants';
 
 /**
  * Custom hook to fetch in-progress prescription data.
@@ -12,7 +12,10 @@ import { dispStatusObj } from '../../util/constants';
  * @returns {Object} The prescription data, loading state, and error state
  */
 export const useFetchPrescriptionsInProgress = () => {
-  const { data, error, isLoading, isFetching } = useGetPrescriptionsListQuery();
+  const { data, error, isLoading, isFetching } = useGetPrescriptionsListQuery(
+    { sortEndpoint: rxListSortingOptions.alphabeticalOrder.API_ENDPOINT },
+    { refetchOnMountOrArgChange: true },
+  );
 
   const getInProgressPrescriptions = prescriptions => {
     const fifteenDaysAgo = new Date().setDate(new Date().getDate() - 15);

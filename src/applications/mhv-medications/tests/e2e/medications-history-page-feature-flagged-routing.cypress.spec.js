@@ -42,7 +42,7 @@ describe('Medication History page', () => {
     site.loginWithManagementImprovements();
     historyPage.visitPageWithPrescriptions(rxList);
     historyPage.verifyHeading();
-    historyPage.verifyInProgressLink();
+    historyPage.verifyRefillStatusLink();
     historyPage.verifyRefillLink();
     historyPage.verifyMedicationsListVisible();
     historyPage.verifySortDropdownVisible();

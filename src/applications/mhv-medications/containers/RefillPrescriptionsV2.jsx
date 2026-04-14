@@ -5,7 +5,6 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   VaButton,
@@ -50,6 +49,7 @@ import AllergiesPrintOnly from '../components/shared/AllergiesPrintOnly';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import DelayedRefillAlert from '../components/shared/DelayedRefillAlert';
 import NeedHelp from '../components/shared/NeedHelp';
+import InnerNavigation from '../components/shared/InnerNavigation';
 import ProcessList from '../components/shared/ProcessList';
 import PrintOnlyPage from './PrintOnlyPage';
 import useOracleHealthAlertTracking from '../hooks/useOracleHealthAlertTracking';
@@ -63,7 +63,9 @@ const RefillPrescriptionsV2 = () => {
     isLoading,
     isFetching,
     error: refillableError,
-  } = useGetRefillablePrescriptionsQuery();
+  } = useGetRefillablePrescriptionsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const isCernerPilot = useSelector(selectCernerPilotFlag);
 
@@ -337,23 +339,10 @@ const RefillPrescriptionsV2 = () => {
   };
 
   const content = () => {
-    if (isDataLoading || hideList) {
-      return (
-        <div
-          className="refill-loading-indicator"
-          data-testid="loading-indicator"
-        >
-          <va-loading-indicator
-            message={
-              hideList
-                ? REFILL_LOADING_MESSAGES.UPDATING_REFILL_LIST
-                : REFILL_LOADING_MESSAGES.LOADING
-            }
-            set-focus
-          />
-        </div>
-      );
+    if (prescriptionsApiError) {
+      return null;
     }
+
     const stepGuideProps = {
       processSteps: refillProcessStepGuideV2.processSteps,
       title: refillProcessStepGuideV2.title,
@@ -371,176 +360,120 @@ const RefillPrescriptionsV2 = () => {
         </>
       ),
     };
+
     return (
-      <div>
-        <h1
-          className="vads-u-margin-top--neg1 vads-u-margin-bottom--4"
-          data-testid="refill-page-title"
-        >
-          Medications
-        </h1>
-        <Link
-          data-testid="in-progress-link"
-          to="/in-progress"
-          data-dd-action-name={
-            dataDogActionNames.refillPage
-              .GO_TO_YOUR_IN_PROGRESS_MEDICATIONS_LINK
-          }
-        >
-          Go to your in-progress medications
-        </Link>
-        <span className="vads-u-margin-x--1">|</span>
-        <Link
-          data-testid="history-link"
-          to="/history"
-          data-dd-action-name={
-            dataDogActionNames.refillPage
-              .GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK
-          }
-        >
-          Review and print list of medications
-        </Link>
-        {refillAlertList.length > 0 && (
-          <DelayedRefillAlert
-            dataDogActionName={dataDogActionNames.refillPage.REFILL_ALERT_LINK}
-            refillAlertList={refillAlertList}
-          />
-        )}
-        {prescriptionsApiError ? (
-          <>
-            <ApiErrorNotification errorType="access" content="medications" />
-            <CernerFacilityAlert
-              healthTool="MEDICATIONS"
-              apiError={prescriptionsApiError}
+      <>
+        {fullRefillList?.length > 0 ? (
+          <div>
+            <CernerFacilityAlert healthTool="MEDICATIONS" />
+            <h2
+              className="vads-u-margin-top--3"
+              data-testid="refill-page-subtitle"
+            >
+              Medications you can refill now
+            </h2>
+            <RenewableMedsNote
+              testId="medications-page-link"
+              className="vads-u-margin-top--3"
+              onLinkClick={handleGoToRenewableMeds}
             />
-          </>
+            <VaCheckboxGroup
+              data-testid="refill-checkbox-group"
+              label={`You have ${fullRefillList.length} ${pluralize(
+                fullRefillList.length,
+                'prescription',
+                'prescriptions',
+              )} ready to refill.`}
+              class="vads-u-margin-bottom--2 tablet:vads-u-margin-bottom--2p5"
+              error={
+                !hasNoOptionSelectedError
+                  ? ''
+                  : REFILL_ERROR_MESSAGES.NO_PRESCRIPTIONS_SELECTED
+              }
+            >
+              <div className="vads-u-margin-top--2" />
+              {fullRefillList?.length > 1 && (
+                <VaCheckbox
+                  id="select-all-checkbox"
+                  data-testid="select-all-checkbox"
+                  label={`Select all ${fullRefillList.length} refills`}
+                  name="select-all-checkbox"
+                  className="vads-u-margin-bottom--3 select-all-checkbox no-print"
+                  data-dd-action-name={
+                    dataDogActionNames.refillPage.SELECT_ALL_CHECKBOXES
+                  }
+                  checked={selectedRefillListLength === fullRefillList.length}
+                  disabled={isDisabled}
+                  onVaChange={onSelectAll}
+                  uswds
+                />
+              )}
+              {fullRefillList.slice().map((prescription, idx) => (
+                <div key={idx} className="vads-u-margin-bottom--2">
+                  <VaCheckbox
+                    id={`checkbox-${prescription.prescriptionId}`}
+                    data-testid={`refill-prescription-checkbox-${idx}`}
+                    label={prescription.prescriptionName}
+                    name={prescription.prescriptionId}
+                    className="select-1-checkbox vads-u-margin-y--0"
+                    data-dd-action-name={
+                      dataDogActionNames.refillPage
+                        .SELECT_SINGLE_MEDICATION_CHECKBOX
+                    }
+                    data-dd-privacy="mask"
+                    checked={
+                      selectedRefillList.find(
+                        item =>
+                          item.prescriptionId === prescription.prescriptionId,
+                      ) || false
+                    }
+                    disabled={isDisabled}
+                    onVaChange={() => onSelectPrescription(prescription)}
+                    uswds
+                    checkbox-description={getCheckboxDescription(prescription)}
+                  />
+                </div>
+              ))}
+            </VaCheckboxGroup>
+            <VaButton
+              uswds
+              type="button"
+              className="vads-u-background-color--white vads-u-padding--0 vads-u-margin-top--1 no-print"
+              id="request-refill-button"
+              data-testid="request-refill-button"
+              disabled={isDisabled}
+              onClick={() => onRequestRefills()}
+              text={`Request ${
+                selectedRefillListLength > 0 ? selectedRefillListLength : ''
+              } refill${
+                selectedRefillListLength === 1 || fullRefillList.length === 1
+                  ? ''
+                  : 's'
+              }`}
+            />
+            <hr className="vads-u-margin-y--3 print-only" />
+          </div>
         ) : (
           <>
-            <RefillNotification
-              refillStatus={refillRequestStatus}
-              successfulMeds={successfulMeds}
-              failedMeds={failedMeds}
-              isFetching={isFetching}
+            <p data-testid="no-refills-message">
+              You don’t have any VA prescriptions with refills available. If you
+              need a prescription, contact your care team.
+            </p>
+            <RenewableMedsNote
+              testId="no-refills-medications-page-link"
+              onLinkClick={handleGoToRenewableMeds}
             />
-            {fullRefillList?.length > 0 ? (
-              <div>
-                <CernerFacilityAlert healthTool="MEDICATIONS" />
-                <h2
-                  className="vads-u-margin-top--3"
-                  data-testid="refill-page-subtitle"
-                >
-                  Medications you can refill now
-                </h2>
-                <RenewableMedsNote
-                  testId="medications-page-link"
-                  className="vads-u-margin-top--3"
-                  onLinkClick={handleGoToRenewableMeds}
-                />
-                <VaCheckboxGroup
-                  data-testid="refill-checkbox-group"
-                  label={`You have ${fullRefillList.length} ${pluralize(
-                    fullRefillList.length,
-                    'prescription',
-                    'prescriptions',
-                  )} ready to refill.`}
-                  class="vads-u-margin-bottom--2 tablet:vads-u-margin-bottom--2p5"
-                  error={
-                    !hasNoOptionSelectedError
-                      ? ''
-                      : REFILL_ERROR_MESSAGES.NO_PRESCRIPTIONS_SELECTED
-                  }
-                >
-                  <div className="vads-u-margin-top--2" />
-                  {fullRefillList?.length > 1 && (
-                    <VaCheckbox
-                      id="select-all-checkbox"
-                      data-testid="select-all-checkbox"
-                      label={`Select all ${fullRefillList.length} refills`}
-                      name="select-all-checkbox"
-                      className="vads-u-margin-bottom--3 select-all-checkbox no-print"
-                      data-dd-action-name={
-                        dataDogActionNames.refillPage.SELECT_ALL_CHECKBOXES
-                      }
-                      checked={
-                        selectedRefillListLength === fullRefillList.length
-                      }
-                      disabled={isDisabled}
-                      onVaChange={onSelectAll}
-                      uswds
-                    />
-                  )}
-                  {fullRefillList.slice().map((prescription, idx) => (
-                    <div key={idx} className="vads-u-margin-bottom--2">
-                      <VaCheckbox
-                        id={`checkbox-${prescription.prescriptionId}`}
-                        data-testid={`refill-prescription-checkbox-${idx}`}
-                        label={prescription.prescriptionName}
-                        name={prescription.prescriptionId}
-                        className="select-1-checkbox vads-u-margin-y--0"
-                        data-dd-action-name={
-                          dataDogActionNames.refillPage
-                            .SELECT_SINGLE_MEDICATION_CHECKBOX
-                        }
-                        data-dd-privacy="mask"
-                        checked={
-                          selectedRefillList.find(
-                            item =>
-                              item.prescriptionId ===
-                              prescription.prescriptionId,
-                          ) || false
-                        }
-                        disabled={isDisabled}
-                        onVaChange={() => onSelectPrescription(prescription)}
-                        uswds
-                        checkbox-description={getCheckboxDescription(
-                          prescription,
-                        )}
-                      />
-                    </div>
-                  ))}
-                </VaCheckboxGroup>
-                <VaButton
-                  uswds
-                  type="button"
-                  className="vads-u-background-color--white vads-u-padding--0 vads-u-margin-top--1 no-print"
-                  id="request-refill-button"
-                  data-testid="request-refill-button"
-                  disabled={isDisabled}
-                  onClick={() => onRequestRefills()}
-                  text={`Request ${
-                    selectedRefillListLength > 0 ? selectedRefillListLength : ''
-                  } refill${
-                    selectedRefillListLength === 1 ||
-                    fullRefillList.length === 1
-                      ? ''
-                      : 's'
-                  }`}
-                />
-                <hr className="vads-u-margin-y--3 print-only" />
-              </div>
-            ) : (
-              <>
-                <p data-testid="no-refills-message">
-                  You don’t have any VA prescriptions with refills available. If
-                  you need a prescription, contact your care team.
-                </p>
-                <RenewableMedsNote
-                  testId="no-refills-medications-page-link"
-                  onLinkClick={handleGoToRenewableMeds}
-                />
-                <CernerFacilityAlert
-                  healthTool="MEDICATIONS"
-                  className="vads-u-margin-top--2"
-                />
-              </>
-            )}
-            <hr className="vads-u-margin-y--3" />
-            <ProcessList stepGuideProps={stepGuideProps} />
-            <MedicationResources page={pageType.REFILL} />
-            <NeedHelp page={pageType.REFILL} />
+            <CernerFacilityAlert
+              healthTool="MEDICATIONS"
+              className="vads-u-margin-top--2"
+            />
           </>
         )}
-      </div>
+        <hr className="vads-u-margin-y--3" />
+        <ProcessList stepGuideProps={stepGuideProps} />
+        <MedicationResources page={pageType.REFILL} />
+        <NeedHelp page={pageType.REFILL} />
+      </>
     );
   };
 
@@ -552,7 +485,58 @@ const RefillPrescriptionsV2 = () => {
             !prescriptionsApiError && !allergiesError ? '' : 'no-print'
           }
         >
-          {content()}
+          {isDataLoading || hideList ? (
+            <div
+              className="refill-loading-indicator"
+              data-testid="loading-indicator"
+            >
+              <va-loading-indicator
+                message={
+                  hideList
+                    ? REFILL_LOADING_MESSAGES.UPDATING_REFILL_LIST
+                    : REFILL_LOADING_MESSAGES.LOADING
+                }
+                set-focus
+              />
+            </div>
+          ) : (
+            <div>
+              <h1
+                className="vads-u-margin-top--neg1 vads-u-margin-bottom--4"
+                data-testid="refill-page-title"
+              >
+                Medications
+              </h1>
+              {refillAlertList.length > 0 && (
+                <DelayedRefillAlert
+                  dataDogActionName={
+                    dataDogActionNames.refillPage.REFILL_ALERT_LINK
+                  }
+                  refillAlertList={refillAlertList}
+                />
+              )}
+              {prescriptionsApiError && (
+                <>
+                  <ApiErrorNotification
+                    errorType="access"
+                    content="medications"
+                  />
+                  <CernerFacilityAlert
+                    healthTool="MEDICATIONS"
+                    apiError={prescriptionsApiError}
+                  />
+                </>
+              )}
+              <RefillNotification
+                refillStatus={refillRequestStatus}
+                successfulMeds={successfulMeds}
+                failedMeds={failedMeds}
+                isFetching={isFetching}
+              />
+              <InnerNavigation />
+              {content()}
+            </div>
+          )}
           <hr className="vads-u-margin-y--3 print-only" />
           <AllergiesPrintOnly allergies={allergies} />
         </div>

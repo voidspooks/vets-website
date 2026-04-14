@@ -63,3 +63,10 @@ export const DATETIME_FORMATS = {
 };
 
 export const MEDS_BY_MAIL_FACILITY_ID = '741MM';
+
+/**
+ * The tablet breakpoint at which the layout changes for mobile.
+ *
+ * https://design.va.gov/foundation/breakpoints
+ */
+export const MOBILE_BREAKPOINT_PX = 767;

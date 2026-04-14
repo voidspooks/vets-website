@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import InProgressMedicationsProcessList from '../components/PrescriptionsInProgress/InProgressMedicationsProcessList';
 import NeedHelp from '../components/shared/NeedHelp';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import useFetchPrescriptionsInProgress from '../hooks/PrescriptionsInProgress/useFetchPrescriptionsInProgress';
-import { pageType, dataDogActionNames } from '../util/dataDogConstants';
+import { pageType } from '../util/dataDogConstants';
 import InProgressMedicationsEmptyView from '../components/PrescriptionsInProgress/InProgressMedicationsEmptyView';
 import MedicationResources from '../components/shared/MedicationResources';
+import InnerNavigation from '../components/shared/InnerNavigation';
 
 const PrescriptionsInProgress = () => {
   const {
@@ -30,10 +30,6 @@ const PrescriptionsInProgress = () => {
           />
         </div>
       );
-    }
-
-    if (prescriptionsApiError) {
-      return <ApiErrorNotification errorType="access" content="medications" />;
     }
 
     if (
@@ -64,31 +60,15 @@ const PrescriptionsInProgress = () => {
       <h1 data-testid="in-progress-medications-heading">
         In-progress medications
       </h1>
+      {prescriptionsApiError && (
+        <ApiErrorNotification errorType="access" content="medications" />
+      )}
+      <InnerNavigation />
       <p>
         Medications that are shipped will remain in this list for 15 days from
         the date of shipping. To review all your medications, go to your
         medication history.
       </p>
-      <Link
-        data-testid="history-link"
-        to="/history"
-        data-dd-action-name={
-          dataDogActionNames.inProgressPage
-            .GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK
-        }
-      >
-        Review and print list of medications
-      </Link>
-      <span className="vads-u-margin-x--1">|</span>
-      <Link
-        data-testid="refill-link"
-        to="/"
-        data-dd-action-name={
-          dataDogActionNames.inProgressPage.REFILL_MEDICATIONS_LINK
-        }
-      >
-        Refill medications
-      </Link>
       {renderContent()}
       <MedicationResources page={pageType.IN_PROGRESS} headingLevel={2} />
       <NeedHelp page={pageType.IN_PROGRESS} headingLevel={2} />
