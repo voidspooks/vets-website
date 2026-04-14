@@ -132,15 +132,34 @@ export default function AppointmentsPage() {
         {pageTitle}
       </h1>
       {pageTitle === 'Appointments' && (
-        <CernerFacilityAlert
-          healthTool="APPOINTMENTS"
-          className="vaos-hide-for-print vads-u-margin-bottom--3"
-          onLinkClick={() => {
-            window.recordEvent({
-              event: `${GA_PREFIX}-cerner-redirect-appointments-landing-page`,
-            });
-          }}
-        />
+        <>
+          {/* Only one will display at a time: 
+          Migration alerts will display through p6 (ending T+7)
+          Pretransitioned alerts will be displayed with this shared alert */}
+          <CernerFacilityAlert
+            healthTool="APPOINTMENTS"
+            className="vaos-hide-for-print vads-u-margin-bottom--3"
+            onLinkClick={() => {
+              window.recordEvent({
+                event: `${GA_PREFIX}-cerner-redirect-appointments-landing-page`,
+              });
+            }}
+          />
+          {/* Only for extended phase migration error alert: 
+          displaying p7 (starts T+7) through p8 (ending T+45)
+          No pretransitioned or migration warning alerts */}
+          <CernerFacilityAlert
+            healthTool="APPOINTMENTS_EXTENDED_PHASE"
+            forceHidePretransitionedAlert
+            forceHideInfoAlert
+            className="vaos-hide-for-print vads-u-margin-bottom--3"
+            onLinkClick={() => {
+              window.recordEvent({
+                event: `${GA_PREFIX}-cerner-redirect-appointments-landing-page`,
+              });
+            }}
+          />
+        </>
       )}
       {/* {featureBookingExclusion && (
         <CernerTransitionAlert

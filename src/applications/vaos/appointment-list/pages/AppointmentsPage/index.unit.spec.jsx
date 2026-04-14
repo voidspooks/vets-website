@@ -326,6 +326,188 @@ describe('VAOS Page: AppointmentsPage', () => {
     expect(screen.getByTestId('print-list')).to.be.ok;
   });
 
+  describe('Cerner migration alerts', () => {
+    const migrationSchedules = [
+      {
+        migrationDate: '2026-05-01',
+        facilities: [
+          {
+            facilityId: '528',
+            facilityName: 'VA Uptown New Orleans Medical Center',
+          },
+        ],
+        phases: {
+          current: 'p6',
+          p0: 'March 1, 2026',
+          p1: 'March 15, 2026',
+          p2: 'April 1, 2026',
+          p3: 'April 24, 2026',
+          p4: 'April 27, 2026',
+          p5: 'May 1, 2026',
+          p6: 'May 3, 2026',
+          p7: 'May 8, 2026',
+          p8: 'May 30, 2026',
+          p9: 'June 14, 2026',
+        },
+      },
+    ];
+
+    const makeMigrationState = currentPhase => ({
+      ...initialState,
+      user: {
+        profile: {
+          facilities: [{ facilityId: '528', isCerner: false }],
+          userAtPretransitionedOhFacility: false,
+          userFacilityReadyForInfoAlert: false,
+          userFacilityMigratingToOh: true,
+          migrationSchedules: [
+            {
+              ...migrationSchedules[0],
+              phases: {
+                ...migrationSchedules[0].phases,
+                current: currentPhase,
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    it('should show only the APPOINTMENTS error alert during p6', async () => {
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: makeMigrationState('p6'),
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      // APPOINTMENTS error alert should be visible
+      const errorAlerts = screen.getAllByTestId(
+        'cerner-facilities-transition-alert-error-phase',
+      );
+      expect(errorAlerts).to.have.lengthOf(1);
+
+      // Verify content matches APPOINTMENTS config (not APPOINTMENTS_EXTENDED_PHASE)
+      expect(
+        screen.getByText(
+          /You can’t manage appointments online for some facilities right now/i,
+        ),
+      ).to.exist;
+    });
+
+    it('should show only the APPOINTMENTS_EXTENDED_PHASE error alert during p7', async () => {
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: makeMigrationState('p7'),
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      // Only one error alert should be visible
+      const errorAlerts = screen.getAllByTestId(
+        'cerner-facilities-transition-alert-error-phase',
+      );
+      expect(errorAlerts).to.have.lengthOf(1);
+
+      // Verify content matches APPOINTMENTS_EXTENDED_PHASE config
+      expect(
+        screen.getByText(
+          /You can’t schedule appointments online until June 14, 2026/i,
+        ),
+      ).to.exist;
+    });
+
+    it('should show only the APPOINTMENTS_EXTENDED_PHASE error alert during p8', async () => {
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: makeMigrationState('p8'),
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      const errorAlerts = screen.getAllByTestId(
+        'cerner-facilities-transition-alert-error-phase',
+      );
+      expect(errorAlerts).to.have.lengthOf(1);
+
+      // Verify content matches APPOINTMENTS_EXTENDED_PHASE config
+      expect(
+        screen.getByText(
+          /You can’t schedule appointments online until June 14, 2026/i,
+        ),
+      ).to.exist;
+    });
+
+    it('should show no migration error alerts during p9', async () => {
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: makeMigrationState('p9'),
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      // No error alerts should be visible since p9 is past both configs' error phases
+      expect(
+        screen.queryByTestId('cerner-facilities-transition-alert-error-phase'),
+      ).to.not.exist;
+    });
+
+    it('should show only the APPOINTMENTS warning alert during p1', async () => {
+      const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+        initialState: makeMigrationState('p1'),
+      });
+
+      await screen.findByRole('heading', { name: 'Appointments' });
+
+      // Warning alert should be visible
+      const warningAlerts = screen.getAllByTestId(
+        'cerner-facilities-transition-alert',
+      );
+      expect(warningAlerts).to.have.lengthOf(1);
+
+      // No error alerts should be visible
+      expect(
+        screen.queryByTestId('cerner-facilities-transition-alert-error-phase'),
+      ).to.not.exist;
+    });
+
+    it('should never show both APPOINTMENTS and APPOINTMENTS_EXTENDED_PHASE alerts at the same time', async () => {
+      // Test each phase to confirm at most one alert renders
+      const phasesToTest = [
+        'p0',
+        'p1',
+        'p2',
+        'p3',
+        'p4',
+        'p5',
+        'p6',
+        'p7',
+        'p8',
+        'p9',
+      ];
+
+      for (const phase of phasesToTest) {
+        const screen = renderWithStoreAndRouter(<AppointmentsPage />, {
+          initialState: makeMigrationState(phase),
+        });
+
+        // eslint-disable-next-line no-await-in-loop
+        await screen.findByRole('heading', { name: 'Appointments' });
+
+        const errorAlerts = screen.queryAllByTestId(
+          'cerner-facilities-transition-alert-error-phase',
+        );
+        const warningAlerts = screen.queryAllByTestId(
+          'cerner-facilities-transition-alert',
+        );
+        const totalAlerts = errorAlerts.length + warningAlerts.length;
+
+        expect(totalAlerts).to.be.at.most(
+          1,
+          `Expected at most 1 migration alert during phase ${phase}, but found ${totalAlerts}`,
+        );
+
+        screen.unmount();
+      }
+    });
+  });
+
   describe('community care referrals banner', () => {
     it('should display warning banner when user is in a pilot station', async () => {
       const pilotState = {
