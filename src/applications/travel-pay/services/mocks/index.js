@@ -33,6 +33,7 @@ const user = {
 const maintenanceWindows = {
   none: require('./maintenance-windows/none.json'),
   enabled: require('./maintenance-windows/enabled.json'),
+  degradation: require('./maintenance-windows/degradation.json'),
 };
 
 const featureTogglesResponse = {
@@ -69,7 +70,29 @@ const responses = {
   },
 
   'OPTIONS /v0/maintenance_windows': 'OK',
-  'GET /v0/maintenance_windows': maintenanceWindows.none,
+  'GET /v0/maintenance_windows': (req, res) => {
+    // Available maintenanceWindows are
+    //   - none
+    //   = enabled
+    //   - degradation
+    const source = maintenanceWindows.none;
+
+    // Ensure enabled and degradation are always covering the current time
+    const sourceCurrent = source.data.map(d => {
+      const today = new Date().toISOString().split('T')[0];
+      const startTime = `${today}T00:00:00.000Z`;
+      const endTime = `${today}T23:59:59.999Z`;
+      return {
+        ...d,
+        attributes: {
+          ...d.attributes,
+          startTime,
+          endTime,
+        },
+      };
+    });
+    return res.json({ data: sourceCurrent });
+  },
   'GET /v0/user': user.withAddress,
   'GET /v0/feature_toggles': featureTogglesResponse,
 

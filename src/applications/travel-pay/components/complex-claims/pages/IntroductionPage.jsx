@@ -22,6 +22,7 @@ import {
 } from '../../../redux/selectors';
 import { stripTZOffset, formatDateTime } from '../../../util/dates';
 import OutOfBoundsAppointmentAlert from '../../alerts/OutOfBoundsAppointmentAlert';
+import DegradationWarning from '../../DegradationWarning';
 
 const IntroductionPage = () => {
   const navigate = useNavigate();
@@ -127,6 +128,9 @@ const IntroductionPage = () => {
             <OutOfBoundsAppointmentAlert />
           </div>
         )}
+        <div className="vads-u-margin-bottom--2">
+          <DegradationWarning warningType="starting" />
+        </div>
         <div className="vads-u-margin-left--2">
           <va-process-list>
             <va-process-list-item

@@ -71,6 +71,8 @@ export default {
   tims: 'tims',
   // Travel Pay API
   travelPay: 'travel_pay',
+  // Travel Pay services degradation warning
+  travelPayWarning: 'travel_pay_warning',
   // VA Solid Start
   vass: 'vass',
   // Online appointment scheduling

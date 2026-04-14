@@ -1,8 +1,10 @@
 import React from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { addDays, subDays, format } from 'date-fns';
 import { $ } from 'platform/forms-system/src/js/utilities/ui';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
+import { createServiceMap } from '@department-of-veterans-affairs/platform-monitoring';
 import { fireEvent } from '@testing-library/react';
 import {
   MemoryRouter,
@@ -304,5 +306,90 @@ describe('Travel Pay – AgreementPage', () => {
 
     // Verify the action was called
     expect(mockSubmitComplexClaim.calledOnce).to.be.true;
+  });
+
+  context('DegradationWarning rendering', () => {
+    const renderWithDegradation = (scheduledDowntime = {}) => {
+      const state = {
+        ...getData(),
+        scheduledDowntime: {
+          globalDowntime: null,
+          isReady: true,
+          isPending: false,
+          serviceMap: { get() {} },
+          dismissedDowntimeWarnings: [],
+          ...scheduledDowntime,
+        },
+      };
+
+      return renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={[
+            `/file-new-claim/${apptId}/${claimId}/travel-agreement`,
+          ]}
+        >
+          <AgreementPage />
+        </MemoryRouter>,
+        { initialState: state, reducers: reducer },
+      );
+    };
+
+    it('does not render DegradationWarning when there is no degradation', () => {
+      const screen = renderWithDegradation();
+
+      expect(
+        screen.getByRole('heading', {
+          name: /beneficiary travel agreement/i,
+        }),
+      ).to.exist;
+      expect(
+        screen.queryByText(
+          /you may have trouble submitting a claim right now/i,
+        ),
+      ).to.not.exist;
+    });
+
+    it('shows a degradation warning when travel_pay_warning service is down', () => {
+      const serviceMap = createServiceMap([
+        {
+          attributes: {
+            externalService: 'travel_pay_warning',
+            status: 'down',
+            startTime: format(subDays(new Date(), 1), "yyyy-LL-dd'T'HH:mm:ss"),
+            endTime: format(addDays(new Date(), 1), "yyyy-LL-dd'T'HH:mm:ss"),
+          },
+        },
+      ]);
+
+      const screen = renderWithDegradation({ serviceMap });
+
+      expect(
+        screen.getByRole('heading', {
+          name: /you may have trouble submitting a claim right now/i,
+        }),
+      ).to.exist;
+      expect(
+        screen.getByText(
+          /some veterans have reported problems submitting travel reimbursement claims/i,
+        ),
+      ).to.exist;
+    });
+
+    it('includes contact information in the degradation warning', () => {
+      const serviceMap = createServiceMap([
+        {
+          attributes: {
+            externalService: 'travel_pay_warning',
+            status: 'down',
+            startTime: format(subDays(new Date(), 1), "yyyy-LL-dd'T'HH:mm:ss"),
+            endTime: format(addDays(new Date(), 1), "yyyy-LL-dd'T'HH:mm:ss"),
+          },
+        },
+      ]);
+
+      const { container } = renderWithDegradation({ serviceMap });
+
+      expect($('va-telephone[contact="8555747292"]', container)).to.exist;
+    });
   });
 });

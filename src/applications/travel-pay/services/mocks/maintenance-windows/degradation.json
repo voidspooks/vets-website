@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": "320",
+      "type": "maintenance_window",
+      "attributes": {
+        "id": 320,
+        "externalService": "travel_pay_warning",
+        "startTime": "2026-02-23T00:00:00.000Z",
+        "endTime": "2036-02-23T20:00:00.000Z",
+        "description": ""
+      }
+    }
+  ]
+}
+

@@ -12,6 +12,7 @@ import {
   selectComplexClaim,
   selectComplexClaimSubmissionState,
 } from '../../../redux/selectors';
+import DegradationWarning from '../../DegradationWarning';
 
 const AgreementPage = () => {
   const navigate = useNavigate();
@@ -52,6 +53,9 @@ const AgreementPage = () => {
   return (
     <>
       <h1>{title}</h1>
+      <div className="vads-u-margin-bottom--2">
+        <DegradationWarning warningType="submitting" />
+      </div>
       <p className="vads-u-font-weight--bold vads-u-font-family--sans vads-u-display--inline">
         Penalty statement:
       </p>{' '}
