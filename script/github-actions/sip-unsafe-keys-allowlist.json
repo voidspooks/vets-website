@@ -1,0 +1,4 @@
+
+{
+  "_comment": "Known SIP-unsafe keys that predate this CI check. Format: 'filePath::keyName': 'ticket URL'. Remove entries as teams fix them."
+}
