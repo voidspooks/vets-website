@@ -4,7 +4,10 @@ import { VaBreadcrumbs } from '@department-of-veterans-affairs/component-library
 import api from '../utilities/api';
 import ClaimantDetailRow from '../components/ClaimantDetailRow';
 import ClaimantDetailsWrapper from '../components/ClaimantDetailsWrapper';
-import { claimantOverviewBC } from '../utilities/poaRequests';
+import {
+  claimantOverviewBC,
+  requestsContainStatus,
+} from '../utilities/poaRequests';
 
 const toTitleCase = value => {
   if (!value) return '';
@@ -125,7 +128,9 @@ const mapClaimantOverview = raw => ({
   email: raw?.email,
   address: raw?.address || null,
   representativeName: raw?.representative_name || null,
+  representative: raw?.representative,
   intentToFile: normalizeItfArray(raw?.itf),
+  poaRequests: raw?.poa_requests,
 });
 
 const formatItfDate = value => {
@@ -171,6 +176,34 @@ const formatExpiresText = expirationDate => {
 const showExpiryWarning = expirationDate => {
   const d = daysUntil(expirationDate);
   return d != null && d >= 0 && d <= 60;
+};
+
+const statusAlert = claim => {
+  if (
+    claim.representative &&
+    requestsContainStatus('pending', claim.poaRequests)
+  ) {
+    return (
+      <div className="vads-u-margin-y--0">
+        <va-alert status="warning">
+          <h2>There is a pending representation request</h2>
+          <p>
+            To establish representation with this claimant, review and accept
+            the pending representation request.
+          </p>
+          <va-link-action
+            href={`/representative/representation-requests/${
+              claim.poaRequests?.find(r => !r.resolution)?.id
+            }`}
+            text="Review the representation request"
+            type="primary"
+          />
+        </va-alert>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 const ClaimantOverviewPage = () => {
@@ -279,11 +312,13 @@ const ClaimantOverviewPage = () => {
 
         {!unauthorized && (
           <>
-            <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--4">
+            <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--3">
               Claimant overview
             </h2>
 
-            <section className="vads-u-margin-top--0">
+            {statusAlert(claimant)}
+
+            <section className="vads-u-margin-top--4">
               <h3 className="vads-u-margin-top--0 claimant-overview__section-heading">
                 Claimant information
               </h3>
