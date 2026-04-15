@@ -81,9 +81,6 @@ const CernerFacilityAlert = ({
     bodyIntro,
     bodyActionSingle,
     bodyActionMultiple,
-    infoAlertActionPhrase = 'manage your health care',
-    infoAlertHeadline,
-    infoAlertText = '',
   } = CernerAlertContent[healthTool];
 
   const handleLinkClick = () => {
@@ -117,14 +114,6 @@ const CernerFacilityAlert = ({
 
   // Render blue info alert if flag is true and it's not overridden
   if (userProfile.userFacilityReadyForInfoAlert && !forceHideInfoAlert) {
-    // use infoAlertHeadline if provided; otherwise compose from infoAlertActionPhrase
-    // using a single template.
-    const infoAlertComposedHeadline =
-      infoAlertHeadline ||
-      `You can now ${infoAlertActionPhrase} for all VA facilities right here`;
-    const infoAlertComposedText = `We've brought all your VA health care data together so you can manage your care in one place.${
-      infoAlertText ? ` ${infoAlertText}` : ''
-    }`;
     const alertClass = `vads-u-margin-bottom--2p5 ${className} ${
       apiError ? 'vads-u-margin-top--2' : ''
     }`;
@@ -132,54 +121,32 @@ const CernerFacilityAlert = ({
       ? getCernerURL(linkPath, true)
       : getCernerURL('/', true);
 
-    const isSM = healthTool === 'SECURE_MESSAGING';
-
-    const cernerLink = isSM ? (
-      <va-link-action
-        data-testid="cerner-info-alert-link"
-        type="secondary"
-        href={cernerUrl}
-        text="Go to My VA Health"
-      />
-    ) : (
-      <va-link
-        data-testid="cerner-info-alert-link"
-        href={cernerUrl}
-        text="Go to My VA Health"
-      />
-    );
-
-    const infoAlertContent = (
-      <div data-testid="cerner-facility-info-text">
-        <p>{infoAlertComposedText}</p>
-        <p>Still want to use My VA Health for now?</p>
-        {cernerLink}
-      </div>
-    );
-
-    if (isSM) {
-      return (
-        <va-alert
-          class={alertClass}
-          data-testid="cerner-facilities-info-alert"
-          status="info"
-          visible
-        >
-          <h2 slot="headline">{infoAlertComposedHeadline}</h2>
-          {infoAlertContent}
-        </va-alert>
-      );
-    }
-
     return (
-      <va-alert-expandable
+      <va-alert
         class={alertClass}
         data-testid="cerner-facilities-info-alert"
         status="info"
-        trigger={infoAlertComposedHeadline}
+        visible
       >
-        {infoAlertContent}
-      </va-alert-expandable>
+        <h2 slot="headline">
+          You can now manage your health care for all VA facilities right here
+        </h2>
+        <div data-testid="cerner-facility-info-text">
+          <p>
+            We’ve brought all your VA health care data together so you can
+            manage your care in one place.
+          </p>
+          <p>
+            If you’d like, you can still use My VA Health until{' '}
+            <strong>May 29, 2026</strong>.
+          </p>
+          <va-link
+            data-testid="cerner-info-alert-link"
+            href={cernerUrl}
+            text="Go to My VA Health"
+          />
+        </div>
+      </va-alert>
     );
   }
 

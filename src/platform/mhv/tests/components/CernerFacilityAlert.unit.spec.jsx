@@ -3,10 +3,7 @@ import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platfo
 import { expect } from 'chai';
 import sinon from 'sinon';
 import CernerFacilityAlert from '../../components/CernerFacilityAlert/CernerFacilityAlert';
-import {
-  CernerAlertContent,
-  PretransitionedFacilitiesByVhaId,
-} from '../../components/CernerFacilityAlert/constants';
+import { PretransitionedFacilitiesByVhaId } from '../../components/CernerFacilityAlert/constants';
 import mockData from '../fixtures/cerner-facility-mock-data.json';
 
 describe('CernerFacilityAlert', () => {
@@ -424,11 +421,10 @@ describe('CernerFacilityAlert', () => {
       const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
       expect(infoAlert).to.exist;
       expect(infoAlert.getAttribute('status')).to.equal('info');
-      // Trigger should use the provided infoAlertActionPhrase from props
-      expect(infoAlert.getAttribute('trigger')).to.equal(
-        `You can now ${
-          CernerAlertContent.MEDICATIONS.infoAlertActionPhrase
-        } for all VA facilities right here`,
+      const headline = infoAlert.querySelector('h2[slot="headline"]');
+      expect(headline).to.exist;
+      expect(headline.textContent).to.equal(
+        'You can now manage your health care for all VA facilities right here',
       );
       expect(screen.getByTestId('cerner-facility-info-text')).to.exist;
     });
@@ -445,70 +441,39 @@ describe('CernerFacilityAlert', () => {
       );
     });
 
-    it('uses infoAlertHeadline when provided (Secure Messaging)', () => {
+    it('renders unified headline for Secure Messaging', () => {
       const screen = setup(stateWithFacility, {
         healthTool: 'SECURE_MESSAGING',
       });
 
       const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
       expect(infoAlert).to.exist;
-      // SECURE_MESSAGING uses va-alert with h2 headline instead of va-alert-expandable trigger
       const headline = infoAlert.querySelector('h2[slot="headline"]');
       expect(headline).to.exist;
       expect(headline.textContent).to.equal(
-        CernerAlertContent.SECURE_MESSAGING.infoAlertHeadline,
+        'You can now manage your health care for all VA facilities right here',
       );
-      // SM renders va-link-action, not va-link
-      const linkAction = infoAlert.querySelector('va-link-action');
-      expect(linkAction).to.exist;
+      // All tools now render va-link
       const plainLink = infoAlert.querySelector('va-link');
-      expect(plainLink).to.not.exist;
+      expect(plainLink).to.exist;
     });
 
-    it('displays composed text with infoAlertText when provided (Medications)', () => {
+    it('displays unified body text for all tools', () => {
       const screen = setup(stateWithFacility, {
         healthTool: 'MEDICATIONS',
       });
 
       const infoText = screen.getByTestId('cerner-facility-info-text');
       expect(infoText.textContent).to.include(
-        `We've brought all your VA health care data together so you can manage your care in one place.`,
+        'We’ve brought all your VA health care data together so you can manage your care in one place.',
       );
       expect(infoText.textContent).to.include(
-        CernerAlertContent.MEDICATIONS.infoAlertText,
+        'If you’d like, you can still use My VA Health until',
       );
-      // Non-SM tools render va-link, not va-link-action
+      expect(infoText.textContent).to.include('May 29, 2026');
       const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
       const plainLink = infoAlert.querySelector('va-link');
       expect(plainLink).to.exist;
-      const linkAction = infoAlert.querySelector('va-link-action');
-      expect(linkAction).to.not.exist;
-    });
-
-    it('displays composed text with infoAlertText when provided (Secure Messaging)', () => {
-      const screen = setup(stateWithFacility, {
-        healthTool: 'SECURE_MESSAGING',
-      });
-
-      const infoText = screen.getByTestId('cerner-facility-info-text');
-      expect(infoText.textContent).to.include(
-        `We've brought all your VA health care data together so you can manage your care in one place.`,
-      );
-      expect(infoText.textContent).to.include(
-        CernerAlertContent.SECURE_MESSAGING.infoAlertText,
-      );
-    });
-
-    it('displays only base text when infoAlertText is not provided', () => {
-      const screen = setup(stateWithFacility, {
-        healthTool: 'MHV_LANDING_PAGE',
-      });
-
-      const infoText = screen.getByTestId('cerner-facility-info-text');
-      const baseText = `We've brought all your VA health care data together so you can manage your care in one place.`;
-      expect(infoText.textContent).to.include(baseText);
-      // Verify no additional text is appended after the base message
-      expect(infoText.textContent).to.include('Still want to use My VA Health');
     });
   });
 
@@ -806,7 +771,7 @@ describe('CernerFacilityAlert', () => {
       expect(screen.getAllByTestId('cerner-facility').length).to.equal(2);
     });
 
-    it('composes infoAlertHeadline from infoAlertActionPhrase when not provided', () => {
+    it('renders unified info alert headline for all tools', () => {
       const stateWithInfoAlert = {
         ...initialState,
         user: {
@@ -820,46 +785,17 @@ describe('CernerFacilityAlert', () => {
         },
       };
 
-      // MEDICATIONS doesn't have infoAlertHeadline, uses infoAlertActionPhrase
       const screen = setup(stateWithInfoAlert, { healthTool: 'MEDICATIONS' });
 
       const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
-      expect(infoAlert.getAttribute('trigger')).to.equal(
-        `You can now ${
-          CernerAlertContent.MEDICATIONS.infoAlertActionPhrase
-        } for all VA facilities right here`,
-      );
-    });
-
-    it('uses provided infoAlertHeadline when available', () => {
-      const stateWithInfoAlert = {
-        ...initialState,
-        user: {
-          profile: {
-            facilities: [{ facilityId: '668', isCerner: true }],
-            userAtPretransitionedOhFacility: true,
-            userFacilityReadyForInfoAlert: true,
-            userFacilityMigratingToOh: false,
-            migrationSchedules: [],
-          },
-        },
-      };
-
-      // SECURE_MESSAGING has infoAlertHeadline
-      const screen = setup(stateWithInfoAlert, {
-        healthTool: 'SECURE_MESSAGING',
-      });
-
-      const infoAlert = screen.getByTestId('cerner-facilities-info-alert');
-      // SECURE_MESSAGING uses va-alert with h2 headline
       const headline = infoAlert.querySelector('h2[slot="headline"]');
       expect(headline).to.exist;
       expect(headline.textContent).to.equal(
-        CernerAlertContent.SECURE_MESSAGING.infoAlertHeadline,
+        'You can now manage your health care for all VA facilities right here',
       );
     });
 
-    it('renders info alert without additional text when infoAlertText is empty', () => {
+    it('renders unified info alert content with sunsetting date', () => {
       const stateWithInfoAlert = {
         ...initialState,
         user: {
@@ -873,17 +809,18 @@ describe('CernerFacilityAlert', () => {
         },
       };
 
-      // MHV_LANDING_PAGE doesn't have infoAlertText
       const screen = setup(stateWithInfoAlert, {
         healthTool: 'MHV_LANDING_PAGE',
       });
 
       const infoText = screen.getByTestId('cerner-facility-info-text');
       expect(infoText.textContent).to.include(
-        `We've brought all your VA health care data together`,
+        'We’ve brought all your VA health care data together',
       );
-      // Should not have additional text after the base message
-      expect(infoText.textContent).to.include('Still want to use My VA Health');
+      expect(infoText.textContent).to.include(
+        'If you’d like, you can still use My VA Health until',
+      );
+      expect(infoText.textContent).to.include('May 29, 2026');
     });
 
     it('handles missing headline gracefully', () => {

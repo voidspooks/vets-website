@@ -16,15 +16,12 @@ describe(manifest.appName, () => {
       // Info alert should be visible
       cy.findByTestId('cerner-facilities-info-alert').should('exist');
 
-      // Expand the alert by clicking on it
-      cy.findByTestId('cerner-facilities-info-alert').click();
-
-      // Verify expanded content is visible
+      // Verify content is visible
       cy.findByTestId('cerner-facility-info-text').should('be.visible');
       cy.findByText(/brought all your VA health care data together/).should(
         'be.visible',
       );
-      cy.findByText(/Still want to use My VA Health for now\?/).should(
+      cy.findByText(/you can still use My VA Health until/).should(
         'be.visible',
       );
 
