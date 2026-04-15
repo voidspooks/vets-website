@@ -8,6 +8,7 @@ import {
   usePrintTitle,
   makePdf,
 } from '@department-of-veterans-affairs/mhv/exports';
+import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
 import PrintHeader from '../shared/PrintHeader';
 import DateSubheading from '../shared/DateSubheading';
 import HeaderSection from '../shared/HeaderSection';
@@ -24,6 +25,10 @@ import {
 } from '../../util/constants';
 import { pdfPrinter, txtPrinter } from '../../util/printHelper';
 import { fetchBbmiNotificationStatus } from '../../actions/images';
+import {
+  getAcceleratedImagingStudiesList,
+  mergeImagingStudies,
+} from '../../actions/labsAndTests';
 import useThumbnailPolling from '../../hooks/useThumbnailPolling';
 
 const UnifiedRadiologyDetails = props => {
@@ -35,6 +40,20 @@ const UnifiedRadiologyDetails = props => {
     state => state.mr.labsAndTests.scdfImageThumbnails,
   );
   const { notificationStatus } = useSelector(state => state.mr.images);
+  const scdfImagingStudies = useSelector(
+    state => state.mr.labsAndTests.scdfImagingStudies,
+  );
+  const scdfImagingStudiesMerged = useSelector(
+    state => state.mr.labsAndTests.scdfImagingStudiesMerged,
+  );
+  const dateRange = useSelector(state => state.mr.labsAndTests.dateRange);
+
+  const isAcceleratingImagingStudies = useSelector(
+    state =>
+      state.featureToggles?.[
+        FEATURE_FLAG_NAMES.mhvMedicalRecordsFetchScdfImagingStudies
+      ],
+  );
 
   const isCernerUser = useSelector(
     state => state.user?.profile?.isCernerPatient,
@@ -58,6 +77,39 @@ const UnifiedRadiologyDetails = props => {
       dispatch(fetchBbmiNotificationStatus());
     },
     [dispatch],
+  );
+
+  // If the user navigated here before imaging studies were merged into the
+  // labs list, kick off the fetch (if needed) and/or merge so the images
+  // section can render.
+  useEffect(
+    () => {
+      if (
+        !record ||
+        record.imageCount !== undefined ||
+        scdfImagingStudiesMerged ||
+        !isAcceleratingImagingStudies
+      )
+        return;
+      if (!scdfImagingStudies) {
+        dispatch(
+          getAcceleratedImagingStudiesList({
+            startDate: dateRange?.fromDate,
+            endDate: dateRange?.toDate,
+          }),
+        );
+      } else {
+        dispatch(mergeImagingStudies());
+      }
+    },
+    [
+      record,
+      scdfImagingStudies,
+      scdfImagingStudiesMerged,
+      isAcceleratingImagingStudies,
+      dateRange,
+      dispatch,
+    ],
   );
 
   usePrintTitle(

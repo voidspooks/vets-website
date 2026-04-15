@@ -6,6 +6,7 @@ import { beforeEach } from 'mocha';
 import { waitFor, act } from '@testing-library/react';
 import reducer from '../../reducers';
 import UnifiedRadiologyDetails from '../../components/LabsAndTests/UnifiedRadiologyDetails';
+import * as labsAndTestsActions from '../../actions/labsAndTests';
 
 const record = {
   name: 'ABDOMEN 2 + PA & LAT CHEST',
@@ -30,6 +31,23 @@ const user = {
 
 const setup = (stateOverrides = {}, recordOverrides = {}) => {
   const initialState = {
+    featureToggles: {
+      loading: false,
+      // eslint-disable-next-line camelcase
+      mhv_medical_records_fetch_scdf_imaging_studies: false,
+      ...stateOverrides.featureToggles,
+    },
+    user: {
+      profile: {
+        isCernerPatient: false,
+      },
+    },
+    drupalStaticData: {
+      vamcEhrData: {
+        loading: false,
+        data: {},
+      },
+    },
     mr: {
       labsAndTests: {
         labsAndTestsDetails: { ...record, ...recordOverrides },
@@ -353,6 +371,94 @@ describe('UnifiedRadiologyDetails component', () => {
 
       expect(screen.getByTestId('image-request-error-alert')).to.exist;
       expect(screen.queryByTestId('radiology-images-loading')).to.not.exist;
+    });
+  });
+
+  describe('imaging study merge recovery', () => {
+    let getAcceleratedImagingStudiesListStub;
+    let mergeImagingStudiesStub;
+
+    beforeEach(() => {
+      getAcceleratedImagingStudiesListStub = sinon
+        .stub(labsAndTestsActions, 'getAcceleratedImagingStudiesList')
+        .callsFake(() => () => {});
+      mergeImagingStudiesStub = sinon
+        .stub(labsAndTestsActions, 'mergeImagingStudies')
+        .callsFake(() => () => {});
+    });
+
+    afterEach(() => {
+      getAcceleratedImagingStudiesListStub.restore();
+      mergeImagingStudiesStub.restore();
+    });
+
+    const acceleratedToggles = {
+      // eslint-disable-next-line camelcase
+      mhv_medical_records_fetch_scdf_imaging_studies: true,
+    };
+
+    it('fetches imaging studies when record has no imageCount and studies are not loaded', () => {
+      setup(
+        {
+          featureToggles: acceleratedToggles,
+          labsAndTests: { scdfImagingStudies: undefined },
+        },
+        { imageCount: undefined, imagingStudyId: undefined },
+      );
+      expect(getAcceleratedImagingStudiesListStub.calledOnce).to.be.true;
+      expect(mergeImagingStudiesStub.called).to.be.false;
+    });
+
+    it('dispatches merge when record has no imageCount but studies are already loaded', () => {
+      setup(
+        {
+          featureToggles: acceleratedToggles,
+          labsAndTests: {
+            scdfImagingStudies: [{ id: 'study-1', status: 'available' }],
+          },
+        },
+        { imageCount: undefined, imagingStudyId: undefined },
+      );
+      expect(mergeImagingStudiesStub.calledOnce).to.be.true;
+      expect(getAcceleratedImagingStudiesListStub.called).to.be.false;
+    });
+
+    it('does not fetch or merge when record already has imageCount', () => {
+      setup(
+        {
+          featureToggles: acceleratedToggles,
+          labsAndTests: { scdfImagingStudies: undefined },
+        },
+        { imageCount: 3 },
+      );
+      expect(getAcceleratedImagingStudiesListStub.called).to.be.false;
+      expect(mergeImagingStudiesStub.called).to.be.false;
+    });
+
+    it('does not fetch or merge when studies are already merged', () => {
+      setup(
+        {
+          featureToggles: acceleratedToggles,
+          labsAndTests: {
+            scdfImagingStudies: [{ id: 'study-1' }],
+            scdfImagingStudiesMerged: true,
+          },
+        },
+        { imageCount: undefined, imagingStudyId: undefined },
+      );
+      expect(getAcceleratedImagingStudiesListStub.called).to.be.false;
+      expect(mergeImagingStudiesStub.called).to.be.false;
+    });
+
+    it('does not fetch or merge when imaging studies feature flag is off', () => {
+      setup(
+        {
+          labsAndTests: { scdfImagingStudies: undefined },
+        },
+        { imageCount: undefined, imagingStudyId: undefined },
+      );
+      expect(getAcceleratedImagingStudiesListStub.called).to.be.false;
+      expect(mergeImagingStudiesStub.called).to.be.false;
     });
   });
 });
