@@ -3,7 +3,7 @@ import environment from 'platform/utilities/environment';
 
 export const CLAIMANT_INFO_ENDPOINT = `${
   environment.API_URL
-}/meb_api/v0/claimant_info?type=Chapter33`;
+}/meb_api/v0/claimant_info?type=VetTec`;
 
 export const FETCH_PERSONAL_INFORMATION = 'FETCH_PERSONAL_INFORMATION';
 export const FETCH_PERSONAL_INFORMATION_SUCCESS =
@@ -187,7 +187,7 @@ export function fetchClaimStatus() {
       },
     };
     poll({
-      endpoint: CLAIM_STATUS_ENDPOINT,
+      endpoint: `${CLAIM_STATUS_ENDPOINT}?type=VetTec`,
       validate: response =>
         response?.data?.attributes?.claimStatus &&
         response.data.attributes.claimStatus !==
