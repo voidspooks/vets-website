@@ -350,12 +350,7 @@ describe('Thread Details container', () => {
     expect(screen.getByTestId('delete-draft-button')).to.exist;
   });
 
-  it('displays cannotReply alert for reply draft when message is not stale but cannotReply is true (useCanReplyField enabled)', async () => {
-    // Enable the useCanReplyField feature toggle
-    stubUseFeatureToggles({
-      useCanReplyField: true,
-    });
-
+  it('displays cannotReply alert for reply draft when message is not stale but cannotReply is true', async () => {
     const { category, subject } = replyDraftThread.threadDetails.messages[0];
 
     // Message is LESS than 45 days old
@@ -426,87 +421,7 @@ describe('Thread Details container', () => {
     expect(screen.queryByText('Reply')).to.not.exist;
   });
 
-  it('with reply draft where message is not stale but replyDisabled is true (useCanReplyField disabled)', async () => {
-    // Enable the useCanReplyField feature toggle
-    stubUseFeatureToggles({
-      useCanReplyField: false,
-    });
-
-    const { category, subject } = replyDraftThread.threadDetails.messages[0];
-
-    // Message is LESS than 45 days old
-    const draftMessageHistoryUpdated = [
-      {
-        ...replyMessage,
-        sentDate: subDays(new Date(), 10).toISOString(), // 10 days old (less than 45)
-      },
-      olderMessage,
-    ];
-
-    const state = {
-      sm: {
-        folders: {
-          folder: inbox,
-        },
-        triageTeams: {
-          triageTeams: recipients,
-        },
-        threadDetails: {
-          isStale: false,
-          replyDisabled: true,
-          cannotReply: false,
-          drafts: [
-            {
-              ...replyDraftMessage,
-              draftDate: new Date(),
-            },
-          ],
-          messages: [...draftMessageHistoryUpdated],
-          isLoading: false,
-          replyToName: replyMessage.senderName,
-          threadFolderId: '0',
-          replyToMessageId: replyMessage.messageId,
-        },
-        recipients: {
-          allRecipients: noBlockedRecipients.mockAllRecipients,
-          allowedRecipients: noBlockedRecipients.mockAllowedRecipients,
-          blockedRecipients: noBlockedRecipients.mockBlockedRecipients,
-          associatedTriageGroupsQty:
-            noBlockedRecipients.associatedTriageGroupsQty,
-          associatedBlockedTriageGroupsQty:
-            noBlockedRecipients.associatedBlockedTriageGroupsQty,
-          noAssociations: noBlockedRecipients.noAssociations,
-          allTriageGroupsBlocked: noBlockedRecipients.allTriageGroupsBlocked,
-        },
-      },
-    };
-
-    const screen = setup(state);
-
-    expect(
-      await screen.findByText(`Messages: ${category} - ${subject}`, {
-        exact: false,
-      }),
-    ).to.exist;
-
-    expect(document.querySelector('va-textarea')).to.exist;
-    expect(document.querySelector('section.old-reply-message-body')).to.be.null;
-
-    expect(screen.getByTestId('send-button')).to.exist;
-    expect(screen.getByTestId('save-draft-button')).to.exist;
-    // Delete draft button should still exist
-    expect(screen.getByTestId('delete-draft-button')).to.exist;
-
-    // Even though cannotReply is true, since useCanReplyField is disabled, the reply button should still show
-    expect(screen.queryByTestId('expired-alert-message')).to.be.null;
-    expect(screen.getByText('Reply')).to.exist;
-  });
-
   it('displays BlockedTriageGroupAlert if recipient is blocked even when stale and replyDisabled', async () => {
-    stubUseFeatureToggles({
-      useCanReplyField: true,
-    });
-
     const state = {
       sm: {
         folders: {
@@ -1269,10 +1184,6 @@ describe('Thread Details container', () => {
     const MIGRATION_ALERT_H2 = /You can.t reply to conversations with some care teams/i;
     const MIGRATION_ALERT_NOTE = /After February 15, 2026, you.ll be able to start a new message to contact your care teams/i;
     it('renders MigratingFacilitiesAlerts only', async () => {
-      stubUseFeatureToggles({
-        useCanReplyField: true,
-      });
-
       const state = {
         sm: {
           folders: {
@@ -1371,10 +1282,6 @@ describe('Thread Details container', () => {
     const MIGRATION_ALERT_H2 = /You can.t reply to conversations with some care teams/i;
     const MIGRATION_ALERT_NOTE = /After February 15, 2026, you.ll be able to start a new message to contact your care teams/i;
     it('renders MigratingFacilitiesAlerts only', async () => {
-      stubUseFeatureToggles({
-        useCanReplyField: true,
-      });
-
       const state = {
         sm: {
           folders: {
@@ -1475,10 +1382,6 @@ describe('Thread Details container', () => {
     const BLOCKED_TRIAGE_GROUP_ALERT_H2 = /You can't use messages to contact providers at some facilities right now/i;
 
     it('renders BlockedTriageGroupAlert only', async () => {
-      stubUseFeatureToggles({
-        useCanReplyField: true,
-      });
-
       const state = {
         sm: {
           folders: {
@@ -1547,11 +1450,7 @@ describe('Thread Details container', () => {
     });
   });
   describe('when replyDisabled and stale', () => {
-    it('displays cannotReply alert for reply draft (useCanReplyField enabled)', async () => {
-      stubUseFeatureToggles({
-        useCanReplyField: true,
-      });
-
+    it('displays cannotReply alert for reply draft', async () => {
       const { category, subject } = replyDraftThread.threadDetails.messages[0];
 
       const state = {

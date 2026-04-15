@@ -44,10 +44,7 @@ const MessageThreadHeader = props => {
     isOhMessage = false,
   } = message;
 
-  const {
-    customFoldersRedesignEnabled,
-    useCanReplyField,
-  } = useFeatureToggles();
+  const { customFoldersRedesignEnabled } = useFeatureToggles();
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -144,42 +141,29 @@ const MessageThreadHeader = props => {
             stationNumber={message?.triageGroup?.stationNumber}
           />
         )}
-        {useCanReplyField ? (
-          <>
-            <CannotReplyAlert
-              visible={
-                cannotReply &&
-                replyDisabled &&
-                !showBlockedTriageGroupAlert &&
-                !isInMigrationPhase &&
-                !messagePostMigration
-              }
-              isOhMessage={isOhMessage}
-            />
-            <StaleMessageAlert
-              visible={
-                cannotReply &&
-                isStale &&
-                !replyDisabled &&
-                !showBlockedTriageGroupAlert &&
-                !isInMigrationPhase &&
-                !messagePostMigration
-              }
-              isOhMessage={isOhMessage}
-            />
-          </>
-        ) : (
-          <StaleMessageAlert
+        <>
+          <CannotReplyAlert
             visible={
               cannotReply &&
-              isStale &&
+              replyDisabled &&
               !showBlockedTriageGroupAlert &&
               !isInMigrationPhase &&
               !messagePostMigration
             }
             isOhMessage={isOhMessage}
           />
-        )}
+          <StaleMessageAlert
+            visible={
+              cannotReply &&
+              isStale &&
+              !replyDisabled &&
+              !showBlockedTriageGroupAlert &&
+              !isInMigrationPhase &&
+              !messagePostMigration
+            }
+            isOhMessage={isOhMessage}
+          />
+        </>
       </header>
 
       {currentRecipient && (

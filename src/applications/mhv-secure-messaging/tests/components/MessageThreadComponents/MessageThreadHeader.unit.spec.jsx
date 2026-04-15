@@ -399,7 +399,7 @@ describe('MessageThreadHeader component', () => {
     });
   });
 
-  describe('useCanReplyField toggle on + migration phase', () => {
+  describe('migration phase', () => {
     const migrationSchedules = [
       {
         migrationDate: 'February 13, 2026',
@@ -434,9 +434,6 @@ describe('MessageThreadHeader component', () => {
             replyDisabled: true,
           },
         },
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvSecureMessagingCanReplyField]: true,
-        },
         user: { profile: { migrationSchedules } },
       };
       const props = { ...defaultProps, cannotReply: true };
@@ -458,9 +455,6 @@ describe('MessageThreadHeader component', () => {
             isStale: true,
             replyDisabled: false,
           },
-        },
-        featureToggles: {
-          [FEATURE_FLAG_NAMES.mhvSecureMessagingCanReplyField]: true,
         },
         user: { profile: { migrationSchedules } },
       };

@@ -28,7 +28,6 @@ const ThreadDetails = props => {
   const {
     customFoldersRedesignEnabled,
     largeAttachmentsEnabled,
-    useCanReplyField,
   } = useFeatureToggles();
   const { threadId: messageId } = useParams();
   const { testing } = props;
@@ -47,9 +46,9 @@ const ThreadDetails = props => {
 
   const threadCantReply = useMemo(
     () => {
-      return useCanReplyField ? replyDisabled || cannotReply : cannotReply;
+      return replyDisabled || cannotReply;
     },
-    [useCanReplyField, cannotReply, replyDisabled],
+    [cannotReply, replyDisabled],
   );
 
   const { folder } = useSelector(state => state.sm.folders);

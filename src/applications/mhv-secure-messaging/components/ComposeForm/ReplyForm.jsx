@@ -45,10 +45,7 @@ const ReplyForm = props => {
     setIsSending,
   } = props;
   const dispatch = useDispatch();
-  const {
-    customFoldersRedesignEnabled,
-    useCanReplyField,
-  } = useFeatureToggles();
+  const { customFoldersRedesignEnabled } = useFeatureToggles();
   const header = useRef();
 
   const userProfile = useSelector(state => state.user.profile);
@@ -168,38 +165,27 @@ const ReplyForm = props => {
 
         <AlertBackgroundBox closeable className="vads-u-margin-y--1 va-alert" />
 
-        {useCanReplyField ? (
-          <>
-            <CannotReplyAlert
-              visible={
-                cannotReply &&
-                replyDisabled &&
-                !showBlockedTriageGroupAlert &&
-                !isInMigrationPhase
-              }
-              isOhMessage={replyMessage.isOhMessage}
-            />
-            <StaleMessageAlert
-              visible={
-                cannotReply &&
-                isStale &&
-                !replyDisabled &&
-                !showBlockedTriageGroupAlert
-              }
-              isOhMessage={replyMessage.isOhMessage}
-            />
-          </>
-        ) : (
-          <StaleMessageAlert
+        <>
+          <CannotReplyAlert
             visible={
               cannotReply &&
-              isStale &&
+              replyDisabled &&
               !showBlockedTriageGroupAlert &&
               !isInMigrationPhase
             }
             isOhMessage={replyMessage.isOhMessage}
           />
-        )}
+          <StaleMessageAlert
+            visible={
+              cannotReply &&
+              isStale &&
+              !replyDisabled &&
+              !showBlockedTriageGroupAlert &&
+              !isInMigrationPhase
+            }
+            isOhMessage={replyMessage.isOhMessage}
+          />
+        </>
 
         {isInMigrationPhase && (
           <MigratingFacilitiesAlerts
