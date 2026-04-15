@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import migrations from '../../../config/migrations';
 import { certifierPages } from '../../../chapters/certifier';
+import { NOT_SHARED } from '../../../components/FormFields/AddressSelectionField';
 
 const EXAMPLE_METADATA = {
   version: 0,
@@ -8,6 +9,14 @@ const EXAMPLE_METADATA = {
   returnUrl: '/review-applicants',
 };
 const STALE_CERTIFIER_PATH = `/${Object.values(certifierPages)[0].path}`;
+const CERTIFIER_ADDRESS_KEY = 'view:certifierSharedAddress';
+const SPONSOR_ADDRESS = {
+  street: '123 Main St',
+  city: 'Springfield',
+  state: 'VA',
+  postalCode: '12345',
+  country: 'USA',
+};
 
 const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -80,6 +89,43 @@ describe('10-10d-extended migrations', () => {
       const formData = { [SHARED_ADDRESS_KEY]: 'na' };
       const { formData: migratedData } = runMigration(0, { formData });
       expect(migratedData).to.deep.equal({});
+    });
+
+    it('should set certifier shared address when certifierAddress matches sponsorAddress', () => {
+      const sharedAddress = JSON.stringify(SPONSOR_ADDRESS);
+      const formData = {
+        sponsorAddress: SPONSOR_ADDRESS,
+        certifierAddress: SPONSOR_ADDRESS,
+      };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData).to.deep.equal({
+        sponsorAddress: SPONSOR_ADDRESS,
+        certifierAddress: SPONSOR_ADDRESS,
+        [CERTIFIER_ADDRESS_KEY]: sharedAddress,
+      });
+    });
+
+    it('should set certifier shared address when certifierAddress matches applicantAddress', () => {
+      const sharedAddress = JSON.stringify(SPONSOR_ADDRESS);
+      const formData = {
+        certifierAddress: SPONSOR_ADDRESS,
+        applicants: [{ ssn: '411111111', applicantAddress: SPONSOR_ADDRESS }],
+      };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData).to.deep.equal({
+        certifierAddress: SPONSOR_ADDRESS,
+        applicants: [{ ssn: '411111111', applicantAddress: SPONSOR_ADDRESS }],
+        [CERTIFIER_ADDRESS_KEY]: sharedAddress,
+      });
+    });
+
+    it('should set certifier shared address to not shared when certifierAddress does not match a valid source', () => {
+      const formData = { certifierAddress: SPONSOR_ADDRESS };
+      const { formData: migratedData } = runMigration(0, { formData });
+      expect(migratedData).to.deep.equal({
+        certifierAddress: SPONSOR_ADDRESS,
+        [CERTIFIER_ADDRESS_KEY]: NOT_SHARED,
+      });
     });
 
     it('should preserve other form data fields', () => {
