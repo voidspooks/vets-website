@@ -150,17 +150,37 @@ const Documents = () => (
           />
         </span>
         <h6 className={h6BoldStyle}>Claim for Fiduciary Assistance</h6>
-        <p>
-          Examination for Housebound Status or Permanent Need for Regular Aid
-          and Attendance (VA Form 21-2680)
-        </p>
-        <span className="vads-u-display--block">
-          <va-link
-            href="https://www.va.gov/find-forms/about-form-21-2680"
-            external
-            text="Get VA Form 21-2680 to download"
-          />
-        </span>
+        <ul>
+          <li>
+            <p>
+              A fiduciary is someone VA appoints if you need help handling your
+              VA benefits. VA’s Fiduciary Program was established to protect
+              beneficiaries who, due to injury, disease, or due to age, are
+              unable to manage their financial affairs.
+            </p>
+            <span className="vads-u-display--block">
+              <va-link
+                href="https://benefits.va.gov/fiduciary/"
+                external
+                text="Learn more about VA’s Fiduciary Program"
+              />
+            </span>
+          </li>
+          <li>
+            <p>
+              If you need fiduciary assistance, you’ll need to submit an
+              Examination for Housebound Status or Permanent Need for Regular
+              Aid and Attendance (VA Form 21-2680)
+            </p>
+            <span className="vads-u-display--block">
+              <va-link
+                href="https://www.va.gov/find-forms/about-form-21-2680"
+                external
+                text="Get VA Form 21-2680 to download"
+              />
+            </span>
+          </li>
+        </ul>
         <h6 className={h6BoldStyle}>Statement of Medical Care</h6>
         <ul>
           <li>
