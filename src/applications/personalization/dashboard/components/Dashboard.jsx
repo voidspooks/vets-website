@@ -73,7 +73,6 @@ import EducationAndTraining from './education-and-training/EducationAndTraining'
 import { ContactInfoNeeded } from '../../profile/components/alerts/ContactInfoNeeded';
 import FormsAndApplications from './benefit-application-drafts/FormsAndApplications';
 import PaymentsAndDebts from './benefit-payments/PaymentsAndDebts';
-import NewMyVaToggle from './NewMyVaToggle';
 
 import { getAppeals as getAppealsAction } from '../actions/appeals';
 import { getClaims as getClaimsAction } from '../actions/claims';
@@ -477,16 +476,6 @@ const Dashboard = ({
                 showNotifications={showNotifications}
                 user={user}
               />
-
-              <Toggler
-                toggleName={
-                  Toggler.TOGGLE_NAMES.myVaAuthExpRedesignAvailableToOptIn
-                }
-              >
-                <Toggler.Enabled>
-                  <NewMyVaToggle />
-                </Toggler.Enabled>
-              </Toggler>
 
               {showMPIConnectionError && (
                 <div className="vads-l-row">

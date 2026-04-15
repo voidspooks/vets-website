@@ -192,7 +192,7 @@ const ClaimsAndAppeals = ({
 
   return (
     <div data-testid="dashboard-section-claims-and-appeals">
-      <h2>Claims and appeals</h2>
+      <h2 className="vads-u-margin-top--4">Claims and appeals</h2>
       <div className="vads-l-row">
         <DashboardWidgetWrapper>
           {hasAPIError && (
