@@ -4,6 +4,7 @@ import App from './containers/App';
 // import ResponseInboxPage from './containers/ResponseInboxPage';
 import ResponseSentPage from './containers/ResponseSentPage';
 import AlertResponseInboxPage from './containers/AlertResponseInboxPage';
+import InboxPage from './containers/InboxPage';
 
 const routes = [
   {
@@ -14,6 +15,10 @@ const routes = [
   {
     path: '/response-sent',
     component: ResponseSentPage,
+  },
+  {
+    path: '/inbox',
+    component: InboxPage,
   },
   {
     path: '/',

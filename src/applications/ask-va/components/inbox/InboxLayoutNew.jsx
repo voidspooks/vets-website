@@ -103,40 +103,42 @@ export default function InboxLayoutNew({
 
   return (
     <div id="inbox">
-      <VaSearchFilter
-        filterOptions={uiFilterOptions}
-        onVaFilterApply={e => {
-          const activeFilters = e.detail.reduce(
-            (accumulator, current) => {
-              const options = current.category.map(({ label }) => label);
-              if (/category/i.test(current.label)) {
-                accumulator.categories = options;
-              } else if (/status/i.test(current.label)) {
-                accumulator.statuses = options;
-              } else if (/inquiry type/i.test(current.label)) {
-                accumulator.types = options;
-              }
-              return accumulator;
-            },
-            {
+      <div id="filters-column">
+        <VaSearchFilter
+          filterOptions={uiFilterOptions}
+          onVaFilterApply={e => {
+            const activeFilters = e.detail.reduce(
+              (accumulator, current) => {
+                const options = current.category.map(({ label }) => label);
+                if (/category/i.test(current.label)) {
+                  accumulator.categories = options;
+                } else if (/status/i.test(current.label)) {
+                  accumulator.statuses = options;
+                } else if (/inquiry type/i.test(current.label)) {
+                  accumulator.types = options;
+                }
+                return accumulator;
+              },
+              {
+                categories: [],
+                statuses: [],
+                types: [],
+              },
+            );
+            setFilters(prev => ({ ...prev, ...activeFilters }));
+            focusElement('#search-description');
+          }}
+          onVaFilterClearAll={() => {
+            setFilters(prev => ({
+              ...prev,
               categories: [],
               statuses: [],
               types: [],
-            },
-          );
-          setFilters(prev => ({ ...prev, ...activeFilters }));
-          focusElement('#search-description');
-        }}
-        onVaFilterClearAll={() => {
-          setFilters(prev => ({
-            ...prev,
-            categories: [],
-            statuses: [],
-            types: [],
-          }));
-          focusElement('#search-description');
-        }}
-      />
+            }));
+            focusElement('#search-description');
+          }}
+        />
+      </div>
       <div id="results-column">
         <h2 className="vads-u-margin--0">Your Ask VA inbox</h2>
         <div id="search-container">

@@ -161,6 +161,7 @@ export default function InboxLayoutOld({
                   filters: { ...filters, inquiryTypes: ['Business'] },
                 })}
                 tabName="Business"
+                sortOrder="lastUpdate.newest"
                 query={filters.query}
                 {...{ filters }}
               />
@@ -172,6 +173,7 @@ export default function InboxLayoutOld({
                   filters: { ...filters, inquiryTypes: ['Personal'] },
                 })}
                 tabName="Personal"
+                sortOrder="lastUpdate.newest"
                 query={filters.query}
                 {...{ filters }}
               />
@@ -184,6 +186,7 @@ export default function InboxLayoutOld({
             inquiriesArray: inquiries,
             filters: { ...filters, inquiryTypes: ['Personal'] },
           })}
+          sortOrder="lastUpdate.newest"
           query={filters.query}
           {...{ filters }}
         />
