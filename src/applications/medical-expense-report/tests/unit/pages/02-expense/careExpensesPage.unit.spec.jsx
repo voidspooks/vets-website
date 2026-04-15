@@ -28,7 +28,7 @@ describe('Care Expenses Pages', () => {
     const formDOM = getFormDOM(form);
     const vaLinks = $$('va-link', formDOM);
     expect(form.getByRole('heading')).to.have.text(careExpensesIntro.title);
-    expect(vaLinks.length).to.equal(4);
+    expect(vaLinks.length).to.equal(6);
   });
   it('renders the care expenses summary', async () => {
     const { careExpensesSummary } = careExpensesPages;

@@ -24,11 +24,6 @@ const ProcessList = () => {
   return (
     <va-process-list>
       <va-process-list-item header="What to know before you fill out this form">
-        {/* <ul>
-          {exampleExpenses.map(item => (
-            <li key={item.id}>{item.name}</li>
-          ))}
-        </ul> */}
         <ul className="vads-u-padding-top--1p5">
           <li>
             You can report expenses that you’ve paid for yourself or for a
@@ -71,18 +66,21 @@ const ProcessList = () => {
           <ul>
             <li>
               Worksheet for a Residential Care, Adult Daycare, or Similar
-              Facility from VA Form 21P-8416
-              <span className="vads-u-display--block">
+              Facility from the PDF version of VA Form 21P-8416
+              <span className="vads-u-display--block vads-u-margin-bottom--2">
                 <va-link
+                  external
                   href="https://www.va.gov/find-forms/about-form-21p-8416/"
                   text="Get VA Form 21P-8416 to download"
                 />
               </span>
             </li>
             <li>
-              Worksheet for In-Home Attendant from VA Form 21P-8416
-              <span className="vads-u-display--block">
+              Worksheet for In-Home Attendant from the PDF version of VA Form
+              21P-8416
+              <span className="vads-u-display--block vads-u-margin-bottom--2">
                 <va-link
+                  external
                   href="https://www.va.gov/find-forms/about-form-21p-8416/"
                   text="Get VA Form 21P-8416 to download"
                 />
@@ -91,8 +89,16 @@ const ProcessList = () => {
             <li>
               Request for Nursing Home Information in Connection with Claim for
               Aid and Attendance (VA Form 21-0779)
-              <span className="vads-u-display--block">
+              <span className="vads-u-display--block vads-u-margin-bottom--2">
                 <va-link
+                  external
+                  href="https://www.va.gov/supporting-forms-for-claims/submit-nursing-home-information-form-21-0779"
+                  text="Submit nursing home information in connection with claim for Aid and Attendance"
+                />
+              </span>
+              <span className="vads-u-display--block vads-u-margin-bottom--2">
+                <va-link
+                  external
                   href="https://www.va.gov/find-forms/about-form-21-0779/"
                   text="Get VA Form 21-0779 to download"
                 />
@@ -101,8 +107,16 @@ const ProcessList = () => {
             <li>
               Examination for Housebound Status or Permanent Need for Regular
               Aid and Attendance form (VA Form 21-2680)
-              <span className="vads-u-display--block">
+              <span className="vads-u-display--block vads-u-margin-bottom--2">
                 <va-link
+                  external
+                  href="https://www.va.gov/pension/aid-attendance-housebound/apply-form-21-2680"
+                  text="Apply for Aid and Attendance benefits or Housebound allowance"
+                />
+              </span>
+              <span className="vads-u-display--block vads-u-margin-bottom--2">
+                <va-link
+                  external
                   href="https://www.va.gov/find-forms/about-form-21-2680/"
                   text="Get VA Form 21-2680 to download"
                 />
