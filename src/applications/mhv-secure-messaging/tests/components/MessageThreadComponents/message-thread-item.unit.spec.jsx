@@ -231,6 +231,30 @@ describe('Message thread item', () => {
     );
   });
 
+  it('OH sent message with null readReceipt hides read receipt text', () => {
+    const customState = {
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvSecureMessagingReadReceipts]: true,
+      },
+      sm: {
+        threadDetails: {
+          isOhMessage: true,
+        },
+      },
+    };
+
+    const message = {
+      ...messageResponse,
+      folderId: DefaultFolders.SENT.id,
+      readReceipt: null,
+    };
+
+    const screen = setup(message, customState);
+
+    expect(screen.queryByText('Not yet opened by your care team')).to.not.exist;
+    expect(screen.queryByText('Opened by your care team')).to.not.exist;
+  });
+
   it('message without attachment does not render attachment icon', () => {
     const messageNoAttachment = {
       ...messageResponse,

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { dateFormat } from '../../util/helpers';
 import useFeatureToggles from '../../hooks/useFeatureToggles';
 
@@ -7,6 +8,7 @@ const MessageThreadMeta = props => {
   const { message, isSent, forPrint } = props;
 
   const { readReceiptsEnabled } = useFeatureToggles();
+  const isOhMessage = useSelector(state => state.sm.threadDetails.isOhMessage);
   const {
     recipientName,
     senderName,
@@ -17,10 +19,13 @@ const MessageThreadMeta = props => {
     readReceipt,
   } = message;
 
-  const readReceiptMessage =
-    readReceipt === null
-      ? 'Not yet opened by your care team'
-      : 'Opened by your care team';
+  const getReadReceiptMessage = () => {
+    if (readReceipt !== null) return 'Opened by your care team';
+    if (isOhMessage) return null;
+    return 'Not yet opened by your care team';
+  };
+
+  const readReceiptMessage = getReadReceiptMessage();
 
   return (
     <div className="message-thread-meta">
@@ -57,7 +62,8 @@ const MessageThreadMeta = props => {
           </span>
         </p>
         {readReceiptsEnabled ? (
-          isSent && (
+          isSent &&
+          readReceiptMessage && (
             <p className="vads-u-font-weight--bold">{readReceiptMessage}</p>
           )
         ) : (

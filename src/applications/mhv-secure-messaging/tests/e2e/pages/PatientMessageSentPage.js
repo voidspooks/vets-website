@@ -87,6 +87,17 @@ class PatientMessageSentPage {
           .and(`contain.text`, text);
       });
   };
+
+  verifyNoReadReceipt = () => {
+    cy.get('[data-testid^="expand-message-button-"]')
+      .not('[data-testid*="for-print"]')
+      .each(el => {
+        cy.wrap(el)
+          .should(`be.visible`)
+          .and(`not.contain.text`, 'Not yet opened by your care team')
+          .and(`not.contain.text`, 'Opened by your care team');
+      });
+  };
 }
 
 export default new PatientMessageSentPage();

@@ -129,4 +129,46 @@ describe('Message thread item', () => {
     expect(screen.getByText('Opened by your care team')).to.exist;
     expect(screen.findByTestId('message-id').textContent).to.not.exist;
   });
+
+  it('renders no read receipt text (OH message sent & unopened, read receipt enabled)', () => {
+    const customState = {
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvSecureMessagingReadReceipts]: true,
+      },
+      sm: {
+        threadDetails: {
+          isOhMessage: true,
+        },
+      },
+    };
+    const message = {
+      ...messageResponse,
+      folderId: DefaultFolders.SENT.id,
+      readReceipt: null,
+    };
+    const screen = setup(message, customState, true);
+
+    expect(screen.queryByText('Not yet opened by your care team')).to.not.exist;
+    expect(screen.queryByText('Opened by your care team')).to.not.exist;
+  });
+
+  it('renders opened text (OH message sent & opened, read receipt enabled)', () => {
+    const customState = {
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvSecureMessagingReadReceipts]: true,
+      },
+      sm: {
+        threadDetails: {
+          isOhMessage: true,
+        },
+      },
+    };
+    const message = {
+      ...messageResponse,
+      folderId: DefaultFolders.SENT.id,
+    };
+    const screen = setup(message, customState, true);
+
+    expect(screen.getByText('Opened by your care team')).to.exist;
+  });
 });

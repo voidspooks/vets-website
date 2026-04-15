@@ -49,4 +49,39 @@ describe('SM SENT MESSAGE READ RECEIPTS', () => {
 
     cy.injectAxeThenAxeCheck(AXE_CONTEXT);
   });
+
+  it('verify OH sent message with no read receipt shows no text', () => {
+    const ohThreadResponse = {
+      ...updatedSingleThreadResponse,
+      data: updatedSingleThreadResponse.data.map((msg, index) => ({
+        ...msg,
+        attributes: {
+          ...msg.attributes,
+          readReceipt: null,
+          ...(index === 0 ? { isOhMessage: true } : {}),
+        },
+      })),
+    };
+
+    PatientMessageSentPage.loadSingleThread(ohThreadResponse);
+    PatientMessageSentPage.verifyNoReadReceipt();
+    cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+  });
+
+  it('verify OH sent message with read receipt shows opened text', () => {
+    const ohThreadResponse = {
+      ...updatedSingleThreadResponse,
+      data: updatedSingleThreadResponse.data.map((msg, index) => ({
+        ...msg,
+        attributes: {
+          ...msg.attributes,
+          ...(index === 0 ? { isOhMessage: true } : {}),
+        },
+      })),
+    };
+
+    PatientMessageSentPage.loadSingleThread(ohThreadResponse);
+    PatientMessageSentPage.verifyReadReceipt(Data.READ_RECEIPT);
+    cy.injectAxeThenAxeCheck(AXE_CONTEXT);
+  });
 });
