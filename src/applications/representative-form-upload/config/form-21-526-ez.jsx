@@ -88,7 +88,7 @@ const form21526Ez = (pathname = null) => {
             },
           },
           bddUploadPage: {
-            path: 'bdd-upload-files',
+            path: 'upload-files-bdd',
             title: 'Upload files',
             uiSchema: bddCustomPage.uiSchema,
             schema: bddCustomPage.schema,
