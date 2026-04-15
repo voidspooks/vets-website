@@ -84,6 +84,7 @@ import {
 import IncorrectForm from '../containers/IncorrectForm';
 import { transform } from './submit-transformer';
 import { applyForceDivWrapperToFormConfig } from './uiSchemaHelpers';
+import { focusH3 } from '../utils/helpers';
 // import prefillTransformer from './prefill-transformer';
 
 const getSeparationDetailsDepends = formData => {
@@ -112,6 +113,8 @@ const formConfig = {
   submitUrl: `${environment.API_URL}/survivors_benefits/v0/form534ez`,
   transformForSubmit: transform,
   trackingPrefix: 'survivors-534ez',
+  useCustomScrollAndFocus: true,
+  scrollAndFocusTarget: focusH3, // scroll and focus fallback
   v3SegmentedProgressBar: true,
   prefillEnabled: true,
   // prefillTransformer,
