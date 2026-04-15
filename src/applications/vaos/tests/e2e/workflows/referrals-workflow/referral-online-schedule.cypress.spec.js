@@ -38,7 +38,7 @@ const referralListResponse = {
       attributes: {
         expirationDate: '2027-01-01',
         uuid: referralId,
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         careType: 'CC',
         referralNumber: 'VA0000005681',
         referralConsultId: '12345',
@@ -54,6 +54,7 @@ const referralDetailResponse = MockReferralDetailResponse.createSuccessResponse(
   {
     id: referralId,
     referralNumber: 'VA0000005681',
+    categoryOfCare: 'PRIMARY CARE',
   },
 );
 
@@ -116,7 +117,7 @@ function navigateToReferralsAndRequests() {
 
   referralsAndRequests.validatePageLoaded();
   referralsAndRequests.assertPendingReferrals({ count: 1 });
-  referralsAndRequests.assertTypeOfCare({ typeOfCare: 'OPTOMETRY' });
+  referralsAndRequests.assertTypeOfCare({ typeOfCare: 'PRIMARY CARE' });
   cy.injectAxeThenAxeCheck();
 }
 

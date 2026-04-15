@@ -29,7 +29,7 @@ class MockReferralListResponse {
     id = `referral-${Math.random()
       .toString(36)
       .substring(2, 10)}`,
-    categoryOfCare = 'OPTOMETRY',
+    categoryOfCare = 'PRIMARY CARE',
     careType = 'CC',
     referralNumber = `VA${Math.floor(1000 + Math.random() * 9000)}`,
     expirationDate = format(addMonths(new Date(), 6), 'yyyy-MM-dd'),
@@ -67,13 +67,13 @@ class MockReferralListResponse {
     return [
       MockReferralListResponse.createReferral({
         id: 'PmDYsBz-egEtG13flMnHUQ==',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'VA0000005682',
         expirationDate: format(addMonths(today, 2), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'oSI3vEVkzuR-JJomdWA6Fw==',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'VA0000006569',
         expirationDate: format(addMonths(today, 6), formatStr),
       }),
@@ -94,64 +94,64 @@ class MockReferralListResponse {
       }),
       MockReferralListResponse.createReferral({
         id: 'not-online-schedulable',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'VA0000007456',
         expirationDate: format(addMonths(today, 4), formatStr),
         onlineSchedule: false,
       }),
       MockReferralListResponse.createReferral({
         id: 'online-schedule-false',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'VA0000007789',
         expirationDate: format(addMonths(today, 4), formatStr),
         onlineSchedule: false,
       }),
       MockReferralListResponse.createReferral({
         id: 'appointment-submit-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'appointment-submit-error',
         expirationDate: format(addMonths(today, 5), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'poll-retry-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'poll-retry-error',
         expirationDate: format(addMonths(today, 5), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'poll-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'poll-error',
         expirationDate: format(new Date(2024, 12, 2), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'draft-no-slots-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'draft-no-slots-error',
         expirationDate: format(new Date(2024, 12, 2), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'referral-without-provider-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'VA0000007123',
         expirationDate: format(addMonths(today, 5), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'details-not-found-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'details-not-found-error',
         expirationDate: format(new Date(2024, 12, 2), formatStr),
       }),
       MockReferralListResponse.createReferral({
         id: 'scheduled-referral',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'scheduled-referral',
         expirationDate: format(addMonths(today, 3), formatStr),
         hasAppointments: true,
       }),
       MockReferralListResponse.createReferral({
         id: 'details-error',
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'details-error',
         expirationDate: format(new Date(2024, 12, 2), formatStr),
       }),
@@ -167,8 +167,7 @@ class MockReferralListResponse {
   static getRandomReferrals(count = 3) {
     const referrals = [];
     for (let i = 0; i < count; i++) {
-      // Use OPTOMETRY and CHIROPRACTIC to test chiro flipper
-      const categoryOfCare = i % 2 === 0 ? 'OPTOMETRY' : 'CHIROPRACTIC';
+      const categoryOfCare = i % 2 === 0 ? 'PRIMARY CARE' : 'OPTOMETRY';
       referrals.push(
         MockReferralListResponse.createReferral({ categoryOfCare }),
       );

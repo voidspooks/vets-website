@@ -28,7 +28,7 @@ describe('VAOS Component: PendingReferralCard', () => {
   it('should display the correct type of care name', () => {
     screen = render(<PendingReferralCard referral={referral} index={0} />);
     const link = screen.container.querySelector(
-      'va-link[text="Optometry referral"]',
+      'va-link[text="Primary Care referral"]',
     );
     expect(link).to.exist;
   });

@@ -34,12 +34,12 @@ describe('VAOS referral generator', () => {
       'selected-slot-referral-111',
     );
   });
-  // Ticket: https://github.com/department-of-veterans-affairs/va.gov-team/issues/139456
-  describe.skip('filterReferrals', () => {
+
+  describe('filterReferrals', () => {
     // Create referrals using the fixture
     const optometryReferral = MockReferralListResponse.createReferral({
-      id: 'test-optometry',
-      categoryOfCare: 'OPTOMETRY',
+      id: 'test-primary-care',
+      categoryOfCare: 'PRIMARY CARE',
     });
     const chiropracticReferral = MockReferralListResponse.createReferral({
       id: 'test-chiropractic',
@@ -59,17 +59,8 @@ describe('VAOS referral generator', () => {
       const filteredReferrals = referralUtil.filterReferrals(referrals);
       expect(filteredReferrals.length).to.equal(1);
       expect(filteredReferrals[0].attributes.categoryOfCare).to.equal(
-        'OPTOMETRY',
+        'PRIMARY CARE',
       );
-    });
-    it('Includes chiropractic when feature is enabled', () => {
-      const filteredReferrals = referralUtil.filterReferrals(referrals, true);
-      expect(filteredReferrals.length).to.equal(2);
-      const categories = filteredReferrals.map(
-        referral => referral.attributes.categoryOfCare,
-      );
-      expect(categories).to.include('OPTOMETRY');
-      expect(categories).to.include('CHIROPRACTIC');
     });
   });
   describe('getAddressString', () => {

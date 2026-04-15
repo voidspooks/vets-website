@@ -719,7 +719,7 @@ const responses = {
       return res.json(
         new MockReferralDraftAppointmentResponse({
           referralNumber: referralId,
-          categoryOfCare: 'OPTOMETRY',
+          categoryOfCare: 'PRIMARY CARE',
           startDate: new Date(),
           noSlotsError: true,
         }),
@@ -786,7 +786,7 @@ const responses = {
     return res.json(
       new MockReferralDraftAppointmentResponse({
         referralNumber: referralId,
-        categoryOfCare: 'OPTOMETRY',
+        categoryOfCare: 'PRIMARY CARE',
         startDate: new Date(),
       }),
     );

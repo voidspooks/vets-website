@@ -9,7 +9,7 @@ class MockReferralDetailResponse {
       id: `referral-${Math.random()
         .toString(36)
         .substring(2, 10)}`,
-      categoryOfCare: 'OPTOMETRY',
+      categoryOfCare: 'PRIMARY CARE',
       hasAppointments: false,
       notFound: false,
       serverError: false,
@@ -42,7 +42,7 @@ class MockReferralDetailResponse {
     id = `referral-${Math.random()
       .toString(36)
       .substring(2, 10)}`,
-    categoryOfCare = 'OPTOMETRY',
+    categoryOfCare = 'PRIMARY CARE',
     careType = 'CC',
     hasAppointments = false,
     referralNumber = 'VA0000005681',

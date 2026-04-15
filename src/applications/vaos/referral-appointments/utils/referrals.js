@@ -13,15 +13,15 @@ const errorUUIDs = [
   'eps-error-appointment-id',
 ];
 
-// const ALLOWED_CATEGORIES_OF_CARE = ['primary-care'];
+const ALLOWED_CATEGORIES_OF_CARE = ['primary care'];
 
 /**
  * Creates a referral list object relative to a start date.
  *
  * @param {String} expirationDate The date in 'yyyy-MM-dd' format for the referral expiration
  * @param {String} uuid The UUID for the referral
- * @param {String} [categoryOfCare='OPTOMETRY'] The category of care for the referral
- * @param {String} [stationId='659'] The station id for the referral
+ * @param {String} [categoryOfCare='PRIMARY CARE'] The category of care for the referral
+ * @param {String} [stationId='534'] The station id for the referral
  * @param {Boolean} [onlineSchedule=true] Whether the referral can be scheduled online
  * @param {String} [careType='CC'] The care type for the referral
  * @param {Boolean} [hasAppointments=false] Whether the referral has appointments
@@ -30,7 +30,7 @@ const errorUUIDs = [
 const createReferralListItem = (
   expirationDate,
   uuid,
-  categoryOfCare = 'OPTOMETRY',
+  categoryOfCare = 'PRIMARY CARE',
   stationId = '534',
   onlineSchedule = true,
   careType = 'CC',
@@ -61,7 +61,7 @@ const createReferralListItem = (
  * These are used to test error handling.
  */
 const errorReferralsList = (errorUUIDs || []).map(uuid => {
-  return createReferralListItem('2025-11-14', uuid);
+  return createReferralListItem('2025-11-14', uuid, 'OPTOMETRY');
 });
 
 /**
@@ -82,7 +82,7 @@ const createReferralById = (
   startDate,
   uuid,
   expirationDate,
-  categoryOfCare = 'OPTOMETRY',
+  categoryOfCare = 'PRIMARY CARE',
   hasProvider = true,
   stationId = '534QD',
   onlineSchedule = true,
@@ -169,27 +169,20 @@ const createReferrals = (
   );
   const referrals = [];
 
-  const categoriesOfCare = ['OPTOMETRY', 'CHIROPRACTIC'];
-
   for (let i = 0; i < numberOfReferrals; i++) {
     const isExpired = i < numberOfExpiringReferrals;
     const uuidBase = isExpired ? expiredUUIDBase : defaultUUIDBase;
-    // make expiration date 6 months from the base date
-    // or 6 months before the base date if expired
-    // and add i days
     const modifiedDate = addDays(
       isExpired ? subMonths(baseDateObject, 6) : addMonths(baseDateObject, 6),
       i,
     );
     const mydFormat = 'yyyy-MM-dd';
     const expirationDate = format(modifiedDate, mydFormat);
-    const categoryOfCare =
-      i % 2 === 0 ? categoriesOfCare[1] : categoriesOfCare[0];
     referrals.push(
       createReferralListItem(
         expirationDate,
         `${uuidBase}${i.toString().padStart(2, '0')}`,
-        categoryOfCare,
+        'PRIMARY CARE',
       ),
     );
   }
@@ -235,18 +228,14 @@ const getReferralProviderKey = id => {
  * @returns {Array} The filtered referrals
  */
 const filterReferrals = referrals => {
-  // const allowedCategories = ALLOWED_CATEGORIES_OF_CARE;
   if (!referrals?.length) {
     return [];
   }
-  // TODO Once we have the appropriate value for 'Primary Care' enum type, we can uncomment the following code
-  // Ticket: https://github.com/department-of-veterans-affairs/va.gov-team/issues/139456
-  return referrals;
-  // return referrals.filter(referral =>
-  //   allowedCategories.includes(
-  //     referral.attributes.categoryOfCare?.toLowerCase(),
-  //   ),
-  // );
+  return referrals.filter(referral =>
+    ALLOWED_CATEGORIES_OF_CARE.includes(
+      referral.attributes.categoryOfCare?.toLowerCase(),
+    ),
+  );
 };
 
 /**

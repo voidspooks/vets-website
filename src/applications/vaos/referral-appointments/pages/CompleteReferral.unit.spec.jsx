@@ -144,7 +144,7 @@ describe('CompleteReferral', () => {
     expect(timeContainer.textContent).to.include('a.m.');
     expect(timeContainer.textContent).to.include('ET');
 
-    expect(getByTestId('appointment-type')).to.have.text('Optometry');
+    expect(getByTestId('appointment-type')).to.have.text('Primary Care');
     expect(getByTestId('appointment-care-type')).to.have.text('Community care');
     expect(getByTestId('appointment-provider-name')).to.have.text(
       'Dr. Moreen S. Rafa',
