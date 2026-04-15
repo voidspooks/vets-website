@@ -33,22 +33,22 @@ const updateUiSchema = formData => {
     ? SUBMISSION_TYPES.NEW
     : SUBMISSION_TYPES.UPDATE;
   return {
-    'ui:title': TITLE_TEXT[submissionType],
-    'ui:options': {
-      labels: SCHEMA_LABELS[submissionType],
+    ...titleUI(TITLE_TEXT[submissionType]),
+    certifierRole: {
+      'ui:options': {
+        labels: SCHEMA_LABELS[submissionType],
+      },
     },
   };
 };
 
 export default {
   uiSchema: {
-    ...titleUI(TITLE_TEXT.new),
     ...descriptionUI(SignInAlert),
     certifierRole: radioUI({
       title: INPUT_LABEL,
-      labels: SCHEMA_LABELS[SUBMISSION_TYPES.NEW],
-      updateUiSchema,
     }),
+    'ui:options': { updateUiSchema },
   },
   schema: {
     type: 'object',
