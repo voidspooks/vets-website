@@ -142,24 +142,18 @@ export async function setTypeOfFacility(store, label) {
  * @returns {Promise string} The url path that was routed to after clicking Continue
  */
 export async function setTypeOfCare(store, label) {
-  const screen = renderWithStoreAndRouter(<TypeOfCarePage />, { store });
-
-  // Find the type of care that matches the label regex
-  const typeOfCare = TYPES_OF_CARE.find(
-    toc => label.test(toc.name) || label.test(toc.label || ''),
+  const { findByLabelText, getByText, history } = renderWithStoreAndRouter(
+    <TypeOfCarePage />,
+    { store },
   );
 
-  // Use shadow DOM compatible event dispatch (VaRadio web component)
-  const radioGroup = await screen.findByTestId('typeOfCareRadio');
-  radioGroup.__events.vaValueChange({
-    detail: { value: typeOfCare.id || typeOfCare.ccId },
-  });
-
-  fireEvent.click(screen.getByText(/Continue/));
-  await waitFor(() => expect(screen.history.push.called).to.be.true);
+  const radioButton = await findByLabelText(label);
+  fireEvent.click(radioButton);
+  fireEvent.click(getByText(/Continue/));
+  await waitFor(() => expect(history.push.called).to.be.true);
   await cleanup();
 
-  return screen.history.push.firstCall.args[0];
+  return history.push.firstCall.args[0];
 }
 
 /**

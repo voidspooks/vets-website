@@ -20,7 +20,6 @@ import {
   setTypeOfCare,
   setTypeOfMentalHealth,
 } from '../../../tests/mocks/setup';
-import { selectRadioButton } from '../../../tests/utils';
 import VAFacilityPage from './VAFacilityPageV2';
 
 describe('VAOS Page: VAFacilityPage eligibility check', () => {
@@ -372,7 +371,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await waitFor(() => {
         screen.findByText(
@@ -442,7 +442,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await screen.findByTestId('eligibilityModal');
 
@@ -507,7 +508,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await screen.findByTestId('eligibilityModal');
       const loadingEvent = global.window.dataLayer.find(
@@ -570,7 +572,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await waitFor(() => {
         expect(screen.history.push.lastCall.args[0]).to.equal(
@@ -619,7 +622,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       });
 
       // Assert
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       await screen.findByTestId('eligibilityModal');
       expect(screen.baseElement).not.to.contain.text(
@@ -672,7 +676,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
 
       // Assert
       // Select facility using VaRadio custom event (shadow DOM compatible)
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
       expect(
         await screen.findByText(
@@ -737,7 +742,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
       const facilityOption = await screen.findByTestId('facility-radio-1');
       expect(facilityOption).to.exist;
       // When the user selects the facility using VaRadio custom event
-      await selectRadioButton('facilitiesRadio', screen, '983');
+      const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+      facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
       fireEvent.click(screen.getByText(/Continue/));
 
       // Then they are presented with the message that they are over the request limit
@@ -805,7 +811,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await selectRadioButton('facilitiesRadio', screen, '983');
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await waitFor(() => {
           expect(screen.history.push.lastCall.args[0]).to.equal(
@@ -865,7 +872,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await selectRadioButton('facilitiesRadio', screen, '983');
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await screen.findByTestId('eligibilityModal');
         expect(screen.getByRole('alertdialog')).to.be.ok;
@@ -934,7 +942,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await selectRadioButton('facilitiesRadio', screen, '983');
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
 
         await waitFor(() =>
@@ -1004,7 +1013,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await selectRadioButton('facilitiesRadio', screen, '983');
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await waitFor(() => {
           expect(screen.history.push.lastCall.args[0]).to.equal(
@@ -1068,7 +1078,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await selectRadioButton('facilitiesRadio', screen, '983');
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
         await screen.findByTestId('eligibilityModal');
         expect(screen.getByRole('alertdialog')).to.be.ok;
@@ -1141,7 +1152,8 @@ describe('VAOS Page: VAFacilityPage eligibility check', () => {
         });
 
         // Assert
-        await selectRadioButton('facilitiesRadio', screen, '983');
+        const facilitiesRadio = await screen.findByTestId('facilitiesRadio');
+        facilitiesRadio.__events.vaValueChange({ detail: { value: '983' } });
         fireEvent.click(screen.getByText(/Continue/));
 
         await waitFor(() =>

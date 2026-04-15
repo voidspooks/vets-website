@@ -59,7 +59,7 @@ describe('VAOS radio button encoding', () => {
     TypeOfCarePageObject.assertUrl();
 
     // Verify radio buttons are visible
-    cy.get('va-radio-option').should('have.length.greaterThan', 0);
+    cy.get('.form-radio-buttons label').should('have.length.greaterThan', 0);
 
     cy.axeCheckBestPractice();
 
@@ -67,16 +67,29 @@ describe('VAOS radio button encoding', () => {
     // Under Latin-1 decoding (forced by cy.intercept above), raw UTF-8
     // bytes 0xC2 0xA0 become "Â " (two chars). With the fix (ASCII escape
     // \00a0), the content is a single non-breaking space regardless of charset.
-    cy.get('va-radio-option')
+    cy.get('.form-radio-buttons label')
       .first()
-      .invoke('attr', 'label')
-      .then(labelText => {
-        // Verify no garbled "Â" character appears in the label
+      .then($label => {
+        const { content } = window.getComputedStyle($label[0], '::before');
+        // CSS content values are returned quoted, e.g. '" "' for a space.
+        // Strip the outer quotes to get the raw string value.
+        const raw = content.replace(/^"|"$/g, '');
+
         expect(
-          labelText,
-          `Label attribute should not contain garbled "Â" character. ` +
-            `Got: ${JSON.stringify(labelText)}. See issue #5350.`,
+          raw,
+          `::before content should be a single non-breaking space character, ` +
+            `not garbled "Â" + nbsp. Got: ${JSON.stringify(
+              content,
+            )}. See issue #5350.`,
         ).to.not.contain('\u00c2');
+
+        expect(
+          raw.length,
+          `::before content should be exactly 1 character (\\u00a0), ` +
+            `not ${raw.length}. Got: ${JSON.stringify(
+              content,
+            )}. See issue #5350.`,
+        ).to.equal(1);
       });
   });
 });
