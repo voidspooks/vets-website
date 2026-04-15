@@ -1,5 +1,8 @@
 import { expect } from 'chai';
-import { mockApiRequest } from '@department-of-veterans-affairs/platform-testing/helpers';
+import {
+  mockApiRequest,
+  resetFetch,
+} from '@department-of-veterans-affairs/platform-testing/helpers';
 import sinon from 'sinon';
 import { Actions } from '../../util/actionTypes';
 import labsAndTests from '../fixtures/labsAndTests.json';
@@ -279,14 +282,24 @@ describe('getImagingStudyThumbnails', () => {
 });
 
 describe('getImagingStudyDicomZip', () => {
+  let clock;
+
+  beforeEach(() => {
+    clock = sinon.useFakeTimers();
+  });
+
+  afterEach(() => {
+    resetFetch();
+    clock.restore();
+    // Reset the module-level dedup guard so tests are order-independent
+    clearLabsAndTestDetails()(() => {});
+  });
+
   it('should dispatch GET_IMAGING_STUDY_DICOM on success', async () => {
     const mockResponse = { dicomZipUrl: 'https://example.com/zip' };
     mockApiRequest(mockResponse);
     const dispatch = sinon.spy();
-    await getImagingStudyDicomZip('study-1', {
-      startDate: '2025-01-01',
-      endDate: '2025-06-01',
-    })(dispatch);
+    await getImagingStudyDicomZip('study-1')(dispatch);
     expect(dispatch.firstCall.args[0].type).to.equal(
       Actions.LabsAndTests.GET_IMAGING_STUDY_DICOM,
     );
@@ -296,7 +309,67 @@ describe('getImagingStudyDicomZip', () => {
   it('should dispatch an alert on error', async () => {
     mockApiRequest(error404, false);
     const dispatch = sinon.spy();
-    await getImagingStudyDicomZip('study-1')(dispatch);
+    await getImagingStudyDicomZip('dicom-err-1')(dispatch);
     expect(typeof dispatch.firstCall.args[0]).to.equal('function');
+  });
+
+  it('should suppress a duplicate call for the same ID within the dedup window', async () => {
+    const mockResponse = { dicomZipUrl: 'https://example.com/zip' };
+    mockApiRequest(mockResponse);
+    const dispatch = sinon.spy();
+
+    await getImagingStudyDicomZip('dedup-1')(dispatch);
+    expect(dispatch.callCount).to.equal(1);
+
+    // Second call with same ID within the window should be suppressed
+    // No need to mock again — the call should never reach the API
+    await getImagingStudyDicomZip('dedup-1')(dispatch);
+    expect(dispatch.callCount).to.equal(1);
+  });
+
+  it('should allow a call for a different ID within the dedup window', async () => {
+    const mockResponse = { dicomZipUrl: 'https://example.com/zip' };
+    mockApiRequest(mockResponse);
+    const dispatch = sinon.spy();
+
+    await getImagingStudyDicomZip('dedup-2a')(dispatch);
+    expect(dispatch.callCount).to.equal(1);
+
+    // Different ID should go through
+    resetFetch();
+    mockApiRequest(mockResponse);
+    await getImagingStudyDicomZip('dedup-2b')(dispatch);
+    expect(dispatch.callCount).to.equal(2);
+  });
+
+  it('should allow the same ID after the dedup window has elapsed', async () => {
+    const mockResponse = { dicomZipUrl: 'https://example.com/zip' };
+    mockApiRequest(mockResponse);
+    const dispatch = sinon.spy();
+
+    await getImagingStudyDicomZip('dedup-3')(dispatch);
+    expect(dispatch.callCount).to.equal(1);
+
+    // Advance past the 1.5s dedup window
+    clock.tick(1500);
+
+    resetFetch();
+    mockApiRequest(mockResponse);
+    await getImagingStudyDicomZip('dedup-3')(dispatch);
+    expect(dispatch.callCount).to.equal(2);
+  });
+
+  it('should suppress a duplicate call even after an error', async () => {
+    mockApiRequest(error404, false);
+    const dispatch = sinon.spy();
+
+    await getImagingStudyDicomZip('dedup-4')(dispatch);
+    // Error dispatches an alert
+    expect(dispatch.callCount).to.equal(1);
+
+    // Same ID within window should still be suppressed (hard limit)
+    // No need to mock again — the call should never reach the API
+    await getImagingStudyDicomZip('dedup-4')(dispatch);
+    expect(dispatch.callCount).to.equal(1);
   });
 });

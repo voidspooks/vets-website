@@ -29,6 +29,7 @@ const useThumbnailPolling = imagingStudyId => {
   const scdfImageThumbnails = useSelector(
     state => state.mr.labsAndTests.scdfImageThumbnails,
   );
+  const scdfDicom = useSelector(state => state.mr.labsAndTests.scdfDicom);
 
   const [pollInterval, setPollInterval] = useState(INITIAL_POLL_INTERVAL);
   const pollStartTime = useRef(null);
@@ -46,7 +47,7 @@ const useThumbnailPolling = imagingStudyId => {
     [dispatch, imagingStudyId],
   );
 
-  // Initial fetch for thumbnails and DICOM
+  // Initial fetch for thumbnails
   useEffect(
     () => {
       if (imagingStudyId) {
@@ -54,10 +55,19 @@ const useThumbnailPolling = imagingStudyId => {
         pollStartTime.current = null;
         hasTimedOut.current = false;
         dispatch(getImagingStudyThumbnails(imagingStudyId));
-        dispatch(getImagingStudyDicomZip(imagingStudyId));
       }
     },
     [dispatch, imagingStudyId],
+  );
+
+  // Fetch DICOM URL once if not already loaded
+  useEffect(
+    () => {
+      if (imagingStudyId && !scdfDicom) {
+        dispatch(getImagingStudyDicomZip(imagingStudyId));
+      }
+    },
+    [dispatch, imagingStudyId, scdfDicom],
   );
 
   // Poll thumbnails with exponential backoff until URLs arrive, error, or timeout

@@ -40,6 +40,7 @@ const setup = (stateOverrides = {}, recordOverrides = {}) => {
     user: {
       profile: {
         isCernerPatient: false,
+        ...stateOverrides.userProfile,
       },
     },
     drupalStaticData: {
@@ -61,16 +62,6 @@ const setup = (stateOverrides = {}, recordOverrides = {}) => {
       },
       alerts: {
         alertList: stateOverrides.alertList || [],
-      },
-    },
-    featureToggles: {
-      loading: false,
-      ...stateOverrides.featureToggles,
-    },
-    user: {
-      profile: {
-        isCernerPatient: false,
-        ...stateOverrides.userProfile,
       },
     },
   };

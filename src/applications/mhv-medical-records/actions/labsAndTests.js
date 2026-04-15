@@ -20,6 +20,9 @@ import {
 } from '../util/helpers';
 import { radiologyRecordHash } from '../util/radiologyUtil';
 
+const lastDicomRequest = { id: null, time: 0 };
+const DICOM_DEDUP_WINDOW_MS = 1500;
+
 export const getLabsAndTestsList = (
   isCurrent = false,
   isAccelerating = false,
@@ -151,6 +154,8 @@ export const mergeImagingStudies = () => async dispatch => {
 };
 
 export const clearLabsAndTestDetails = () => async dispatch => {
+  lastDicomRequest.id = null;
+  lastDicomRequest.time = 0;
   dispatch({ type: Actions.LabsAndTests.CLEAR_DETAIL });
 };
 
@@ -223,11 +228,23 @@ export const getImagingStudyThumbnails = id => async dispatch => {
 
 /**
  * Fetch the presigned DICOM zip download URL for a single accelerated
- * imaging study.
+ * imaging study. Prevents duplicate requests for the same study within
+ * a short window. For duplicate calls, return nothing as the original
+ * request should still be in flight.
  *
  * @param {string} id - The FHIR imaging study identifier
  */
 export const getImagingStudyDicomZip = id => async dispatch => {
+  const now = Date.now();
+  if (
+    id === lastDicomRequest.id &&
+    now - lastDicomRequest.time < DICOM_DEDUP_WINDOW_MS
+  ) {
+    return;
+  }
+  lastDicomRequest.id = id;
+  lastDicomRequest.time = now;
+
   try {
     const response = await getAcceleratedImagingStudyDicomZip({ id });
     dispatch({
