@@ -664,4 +664,19 @@ describe('RecipientsSelect', () => {
       });
     });
   });
+
+  it('displays hint text on the combobox when curated list flow is enabled', () => {
+    const customState = {
+      ...initialState,
+      featureToggles: {
+        [FEATURE_FLAG_NAMES.mhvSecureMessagingCuratedListFlow]: true,
+      },
+    };
+    const screen = setup({ state: customState });
+    const comboBox = screen.getByTestId('compose-recipient-combobox');
+    expect(comboBox).to.have.attribute(
+      'hint',
+      'To search, try entering your type of care, provider name, or any part of your care team name.',
+    );
+  });
 });

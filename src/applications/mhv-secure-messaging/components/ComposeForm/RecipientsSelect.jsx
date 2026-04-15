@@ -322,7 +322,7 @@ const RecipientsSelect = ({
           required
           label="Select a care team"
           name="to"
-          hint="Start typing your care facility or type of care to search."
+          hint="To search, try entering your type of care, provider name, or any part of your care team name."
           value={defaultValue !== undefined ? defaultValue : ''}
           onVaSelect={handleRecipientSelect}
           data-testid="compose-recipient-combobox"
