@@ -8,8 +8,8 @@ on:
       - '**'
 
 concurrency:
-  group: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/production-bypass' && github.ref || github.sha }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/production-bypass' }}
+  group: ${{ github.ref != 'refs/heads/main' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   dependency-review:
@@ -471,7 +471,7 @@ jobs:
       contents: read
     timeout-minutes: 30
     needs: [tests-prep]
-    if: ${{ always() && !cancelled() && needs.tests-prep.outputs.unit-tests-to-stress-test == 'true' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/production-bypass' && needs.tests-prep.result == 'success' }}
+    if: ${{ always() && !cancelled() && needs.tests-prep.outputs.unit-tests-to-stress-test == 'true' && github.ref != 'refs/heads/main' && needs.tests-prep.result == 'success' }}
 
     env:
       APPS_TO_VERIFY: ${{ needs.tests-prep.outputs.apps-to-stress-test }}
@@ -621,7 +621,7 @@ jobs:
 
   linting:
     name: Linting (All)
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass' || github.ref == 'refs/heads/revert/yeoman-update' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/revert/yeoman-update' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -938,8 +938,7 @@ jobs:
       needs.build.result == 'success' &&
       needs.tests-prep.result == 'success' &&
       needs.tests-prep.outputs.cypress-tests-to-stress-test == 'true' &&
-      github.ref != 'refs/heads/main' &&
-      github.ref != 'refs/heads/production-bypass'
+      github.ref != 'refs/heads/main'
     container:
       image: 008577686731.dkr.ecr.us-gov-west-1.amazonaws.com/cypress/browsers:node-22.12.0-chrome-131.0.6778.108-1-ff-133.0-edge-131.0.2903.70-1
       credentials:
@@ -1057,7 +1056,7 @@ jobs:
       checks: write
       id-token: write
       contents: read
-    if: ${{ always() && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/production-bypass' && needs.tests-prep.outputs.cypress-tests-to-stress-test != '[]' && (needs.stress-test-cypress-tests.result == 'success' || needs.stress-test-cypress-tests.result == 'failure') }}
+    if: ${{ always() && github.ref != 'refs/heads/main' && needs.tests-prep.outputs.cypress-tests-to-stress-test != '[]' && (needs.stress-test-cypress-tests.result == 'success' || needs.stress-test-cypress-tests.result == 'failure') }}
     continue-on-error: true
     env:
       APPLICATION_LIST: ${{ needs.testing-reports-prep.outputs.app_list }}
@@ -1325,7 +1324,7 @@ jobs:
     steps:
       - name: Set IS_MASTER_BUILD
         run: |
-          if [[ ${{ github.ref }} == 'refs/heads/main' || ${{ github.ref }} == 'refs/heads/production-bypass' ]]; then
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
               echo "IS_MASTER_BUILD=true" >> $GITHUB_ENV
           else
               echo "IS_MASTER_BUILD=false" >> $GITHUB_ENV
@@ -1446,7 +1445,7 @@ jobs:
     steps:
       - name: Set IS_MASTER_BUILD
         run: |
-          if [[ ${{ github.ref }} == 'refs/heads/main' || ${{ github.ref }} == 'refs/heads/production-bypass' ]]; then
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
               echo "IS_MASTER_BUILD=true" >> $GITHUB_ENV
           else
               echo "IS_MASTER_BUILD=false" >> $GITHUB_ENV
@@ -1579,17 +1578,17 @@ jobs:
       # | Publish Unit Test Coverage Report       |
       # -------------------------------------
       - name: Generate full coverage on main
-        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: yarn test:unit:gha --full-suite --coverage --log-level verbose
 
       - name: Prepare coverage artifact (main)
-        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           mkdir -p qa-standards-dashboard-data/coverage
           cp coverage/coverage-summary.json qa-standards-dashboard-data/coverage/coverage-summary.json
 
       - name: Download Unit Test coverage results
-        if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/production-bypass' }}
+        if: ${{ github.ref != 'refs/heads/main' }}
         uses: ./.github/workflows/download-artifact
         with:
           name: unit-test-coverage
@@ -1615,7 +1614,7 @@ jobs:
         working-directory: qa-standards-dashboard-data
 
       - name: Upload coverage report to S3
-        if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass') && needs.unit-tests.outputs.app_folders == '' }}
+        if: ${{ github.ref == 'refs/heads/main' && needs.unit-tests.outputs.app_folders == '' }}
         run: |
           if [ -f qa-standards-dashboard-data/coverage/coverage-summary.json ]; then
             aws s3 cp qa-standards-dashboard-data/coverage/coverage-summary.json s3://vetsgov-website-builds-s3-upload-test/coverage/coverage-summary.json --acl public-read --region us-gov-west-1
@@ -1659,7 +1658,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack about Cypress test failures
-        if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass') && needs.cypress-tests.result == 'failure' }}
+        if: ${{ github.ref == 'refs/heads/main' && needs.cypress-tests.result == 'failure' }}
         uses: ./.github/workflows/slack-notify
         continue-on-error: true
         env:
@@ -1768,7 +1767,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Notify Slack about Cypress test failures
-        if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass') && needs.cypress-tests.result == 'failure' }}
+        if: ${{ github.ref == 'refs/heads/main' && needs.cypress-tests.result == 'failure' }}
         uses: ./.github/workflows/slack-notify
         continue-on-error: true
         env:
@@ -1875,7 +1874,7 @@ jobs:
         update-e2e-allow-list,
         update-unit-test-allow-list,
       ]
-    if: always() && !cancelled() && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/production-bypass' && ( needs.cypress-tests.result == 'success' || needs.cypress-tests.result == 'failure' || needs.tests-prep.result == 'skipped' )
+    if: always() && !cancelled() && github.ref != 'refs/heads/main' && ( needs.cypress-tests.result == 'success' || needs.cypress-tests.result == 'failure' || needs.tests-prep.result == 'skipped' )
     continue-on-error: true
     steps:
       - name: Checkout
@@ -2217,7 +2216,7 @@ jobs:
   notify-failure:
     name: Notify Failure
     runs-on: ubuntu-22.04
-    if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production-bypass') && (failure() || cancelled()) }}
+    if: ${{ github.ref == 'refs/heads/main' && (failure() || cancelled()) }}
     needs: [deploy, build]
     permissions:
       id-token: write
