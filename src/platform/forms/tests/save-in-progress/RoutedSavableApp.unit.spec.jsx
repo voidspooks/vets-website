@@ -37,6 +37,7 @@ const setup = () => {
 const teardown = () => {
   global.window.addEventListener = oldAddEventListener;
   global.window.sessionStorage.removeItem(wizardStorageKey);
+  delete window.DD_LOGS;
 };
 
 describe('Schemaform <RoutedSavableApp>', () => {
@@ -803,6 +804,7 @@ describe('Schemaform <RoutedSavableApp>', () => {
   });
   it('should route to the first page if returnUrl is not to an active page', () => {
     const formConfig = {
+      formId: '21-526EZ',
       title: 'Testing',
     };
     const currentLocation = {
@@ -821,6 +823,9 @@ describe('Schemaform <RoutedSavableApp>', () => {
     };
     const returnUrl = '/test-99';
     const setFetchFormStatus = sinon.spy();
+
+    const ddLogSpy = sinon.spy();
+    window.DD_LOGS = { logger: { log: ddLogSpy } };
 
     const { rerender } = render(
       <RoutedSavableApp
@@ -856,6 +861,15 @@ describe('Schemaform <RoutedSavableApp>', () => {
     );
 
     expect(router.push.calledWith(currentLocation.pathname)).to.be.true;
+    expect(ddLogSpy.calledOnce).to.be.true;
+    expect(ddLogSpy.firstCall.args[0]).to.equal(
+      'Invalid returnUrl on form resume',
+    );
+    expect(ddLogSpy.firstCall.args[1]).to.deep.include({
+      returnUrl: '/test-99',
+      formId: '21-526EZ',
+    });
+    expect(ddLogSpy.firstCall.args[2]).to.equal('warn');
   });
   it('should load a saved form when starting in the middle of a form and logged in', () => {
     const formConfig = {

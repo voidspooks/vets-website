@@ -17,15 +17,6 @@ describe('onFormLoaded', () => {
       returnUrl: '/some/return/url',
       formData: {},
       router: mockRouter,
-      routes: [
-        {
-          pageList: [
-            { path: '/introduction' },
-            { path: '/some/return/url' },
-            { path: '/disabilities/rated-disabilities' },
-          ],
-        },
-      ],
     };
 
     clearSharedVariables();
@@ -286,107 +277,6 @@ describe('onFormLoaded', () => {
         expect(mockRouter.push.calledWith('/supporting-evidence/orientation'))
           .to.be.true;
       });
-    });
-  });
-
-  describe('returnUrl validation against active pages', () => {
-    const mockPageList = [
-      { path: '/introduction' },
-      { path: '/veteran-information' },
-      { path: '/contact-information' },
-      {
-        path: '/conditions/summary',
-        depends: data => data.hasNewConditions === true,
-      },
-      { path: '/disabilities/rated-disabilities' },
-    ];
-
-    beforeEach(() => {
-      mockProps.routes = [{ pageList: mockPageList }];
-    });
-
-    it('routes to the returnUrl when it points to a valid active page', () => {
-      mockProps.returnUrl = '/veteran-information';
-      mockProps.formData = {};
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/veteran-information')).to.be.true;
-    });
-
-    it('routes to the introduction when returnUrl points to introduction page', () => {
-      mockProps.returnUrl = '/introduction';
-      mockProps.formData = {};
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/introduction')).to.be.true;
-    });
-
-    it('routes to the first page after intro when returnUrl points to a page whose depends returns false', () => {
-      mockProps.returnUrl = '/conditions/summary';
-      mockProps.formData = { hasNewConditions: false };
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      // /conditions/summary is inactive (depends returns false),
-      // so getNextPagePath from /introduction returns /veteran-information
-      expect(mockRouter.push.calledWith('/veteran-information')).to.be.true;
-    });
-
-    it('routes to the first page after intro when returnUrl is undefined', () => {
-      mockProps.returnUrl = undefined;
-      mockProps.formData = {};
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/veteran-information')).to.be.true;
-    });
-
-    it('routes to the first page after intro when returnUrl is an empty string', () => {
-      mockProps.returnUrl = '';
-      mockProps.formData = {};
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/veteran-information')).to.be.true;
-    });
-
-    it('routes to fallback when no pageList is available and returnUrl is unsafe', () => {
-      mockProps.returnUrl = 'http://malicious-site.com';
-      mockProps.formData = {};
-      mockProps.routes = [{}]; // no pageList
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/veteran-information')).to.be.true;
-    });
-
-    it('routes to returnUrl when no pageList is available but returnUrl is a safe relative path', () => {
-      mockProps.returnUrl = '/contact-information';
-      mockProps.formData = {};
-      mockProps.routes = [{}]; // no pageList
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/contact-information')).to.be.true;
-    });
-
-    it('routes to the first page after intro when returnUrl points to a nonexistent page', () => {
-      mockProps.returnUrl = '/nonexistent/page';
-      mockProps.formData = {};
-
-      onFormLoaded(mockProps);
-
-      expect(mockRouter.push.calledOnce).to.be.true;
-      expect(mockRouter.push.calledWith('/veteran-information')).to.be.true;
     });
   });
 });

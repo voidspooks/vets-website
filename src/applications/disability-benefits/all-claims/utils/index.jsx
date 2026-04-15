@@ -14,11 +14,7 @@ import _ from 'platform/utilities/data';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { createSelector } from 'reselect';
-import {
-  checkValidPagePath,
-  getNextPagePath,
-} from 'platform/forms-system/src/js/routing';
-import { dataDogLogger } from 'platform/monitoring/Datadog/utilities';
+
 import {
   add,
   endOfDay,
@@ -1198,7 +1194,7 @@ const isRedirectingFromInvalidBddShaWorkflow = ({
 };
 
 export const onFormLoaded = props => {
-  const { returnUrl, formData, router, routes } = props;
+  const { returnUrl, formData, router } = props;
   const shouldRedirectToModern4142Choice = baseDoNew4142Logic(formData);
   const shouldRevertWhenFlipperOff = redirectWhenFlipperOff(props);
   const shouldRevertWhenNoEvidence = redirectWhenNoEvidence(props);
@@ -1242,32 +1238,6 @@ export const onFormLoaded = props => {
     // V1 page saved but FileInputV3 ON → swap to V3 counterpart
     router.push(V1_TO_V3_UPLOAD_REDIRECTS[returnUrl]);
   } else {
-    const FALLBACK_PATH = '/veteran-information';
-    const pageList = routes?.[routes.length - 1]?.pageList;
-    const isSafeRelativePath =
-      typeof returnUrl === 'string' && returnUrl.startsWith('/');
-
-    if (!pageList) {
-      router.push(isSafeRelativePath ? returnUrl : FALLBACK_PATH);
-      return;
-    }
-
-    const isValidPath = checkValidPagePath(pageList, formData, returnUrl);
-
-    if (!isValidPath) {
-      const fallbackPath =
-        getNextPagePath(pageList, formData, '/introduction') || FALLBACK_PATH;
-      dataDogLogger({
-        message: 'Form 526: invalid returnUrl on resume',
-        attributes: {
-          returnUrl: returnUrl || '(empty)',
-          fallbackPath,
-        },
-        status: 'warn',
-      });
-      router.push(fallbackPath);
-    } else {
-      router.push(returnUrl);
-    }
+    router.push(returnUrl);
   }
 };

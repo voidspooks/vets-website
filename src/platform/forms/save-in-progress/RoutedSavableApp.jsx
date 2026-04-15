@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { dataDogLogger } from 'platform/monitoring/Datadog/utilities';
 
 import FormApp from 'platform/forms-system/src/js/containers/FormApp';
 import {
@@ -248,9 +249,21 @@ class RoutedSavableApp extends React.Component {
       trimmedReturnUrl?.endsWith(path),
     );
 
-    return isValidReturnUrl || isDirectAccessNonFormPath
-      ? returnUrl
-      : this.getFirstNonIntroPagePath(props);
+    if (!isValidReturnUrl && !isDirectAccessNonFormPath) {
+      const fallbackPath = this.getFirstNonIntroPagePath(props);
+      dataDogLogger({
+        message: 'Invalid returnUrl on form resume',
+        attributes: {
+          returnUrl: returnUrl || '(empty)',
+          fallbackPath,
+          formId: props.formConfig?.formId,
+        },
+        status: 'warn',
+      });
+      return fallbackPath;
+    }
+
+    return returnUrl;
   }
 
   removeOnbeforeunload = () => {
