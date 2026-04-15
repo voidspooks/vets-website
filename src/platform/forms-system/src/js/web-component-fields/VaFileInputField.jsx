@@ -11,6 +11,10 @@ import {
   VaProgressUploadAnnounce,
 } from './vaFileInputFieldHelpers';
 import passwordErrorState from '../utilities/file/passwordErrorState';
+import {
+  BACKEND_INCORRECT_PASSWORD_MSG,
+  INCORRECT_PASSWORD_ERROR,
+} from '../validation';
 
 /**
  * Usage uiSchema:
@@ -142,7 +146,11 @@ const VaFileInputField = props => {
 
   // set errors and related statuses based on upload result
   const handleSubmissionErrors = ({ errorMessage, isEncrypted }) => {
-    setError(errorMessage);
+    const _errorMessage =
+      isEncrypted && errorMessage === BACKEND_INCORRECT_PASSWORD_MSG
+        ? INCORRECT_PASSWORD_ERROR
+        : errorMessage;
+    setError(_errorMessage);
     // file was encrypted
     if (isEncrypted) {
       setPasswordSubmissionSuccess(!errorMessage);

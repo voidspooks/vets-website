@@ -604,6 +604,10 @@ export const MISSING_ADDITIONAL_INFO = 'This information is required.';
 export const UTF8_ENCODING_ERROR = "The file's encoding is not valid";
 export const DUPLICATE_FILE_ERROR =
   'You already uploaded this file. Select a different file.';
+export const BACKEND_INCORRECT_PASSWORD_MSG =
+  'Document is locked with a user password';
+export const INCORRECT_PASSWORD_ERROR =
+  'Password is incorrect. Try again or delete file.';
 export function getFileError(file) {
   if (file.errorMessage) {
     return file.errorMessage;

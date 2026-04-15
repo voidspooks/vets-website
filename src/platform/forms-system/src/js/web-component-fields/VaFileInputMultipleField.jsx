@@ -6,6 +6,8 @@ import {
   MISSING_PASSWORD_ERROR,
   MISSING_FILE,
   MISSING_ADDITIONAL_INFO,
+  BACKEND_INCORRECT_PASSWORD_MSG,
+  INCORRECT_PASSWORD_ERROR,
 } from '../validation';
 import {
   useFileUpload,
@@ -193,7 +195,10 @@ const VaFileInputMultipleField = props => {
   // set errors and related statuses based on upload result
   const handleUploadErrors = ({ errorMessage, isEncrypted }, index) => {
     const _errors = [...errors];
-    const _error = errorMessage || null;
+    const _error =
+      isEncrypted && errorMessage === BACKEND_INCORRECT_PASSWORD_MSG
+        ? INCORRECT_PASSWORD_ERROR
+        : errorMessage || null;
     _errors[index] = _error;
     setErrors(_errors);
     // file was encrypted

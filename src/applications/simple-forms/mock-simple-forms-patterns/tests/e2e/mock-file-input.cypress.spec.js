@@ -126,6 +126,34 @@ function testEncryptedPdf() {
   deleteFile();
 }
 
+// test that a wrong password shows the correct error message
+function testEncryptedPdfWrongPassword() {
+  const uploadUrl =
+    formConfig.chapters.fileInput.pages.fileInput.uiSchema.wcv3FileInput[
+      'ui:options'
+    ].fileUploadUrl;
+
+  cy.intercept('POST', uploadUrl, {
+    statusCode: 422,
+    body: { errors: [{ detail: 'Document is locked with a user password' }] },
+  });
+
+  cy.wrap(makeEncryptedPDF()).then(file => {
+    cy.fillVaFileInput(SELECTOR, {}, file);
+    cy.get(`va-file-input[name="${SELECTOR}"]`)
+      .find('va-text-input')
+      .then($el => cy.fillVaTextInput($el, 'wrongpassword'));
+    cy.get(`va-file-input[name="${SELECTOR}"]`)
+      .find('va-button')
+      .click();
+  });
+
+  cy.expectVaFileInputError(/Password is incorrect/i);
+
+  cy.then(() => cy.intercept('POST', uploadUrl, mockFileUpload));
+  deleteFile();
+}
+
 // test files of a type not specified by accept result in an error
 function testRejectFileNotAccepted() {
   const file = makeNotAcceptedFile();
@@ -200,6 +228,7 @@ const testConfig = createTestConfig(
           testInvalidUTF8Encoding();
           testFileSizeLimits();
           testEncryptedPdf();
+          testEncryptedPdfWrongPassword();
           testRejectFileNotAccepted();
           testAdditionalInfo();
           testCancelUpload();
