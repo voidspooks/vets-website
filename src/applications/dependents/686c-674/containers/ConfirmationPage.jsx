@@ -20,13 +20,7 @@ export default function ConfirmationPage() {
   const alertRef = useRef(null);
   const { submission, data } = form;
   const response = submission?.response ?? {};
-  // Only trust Forms API submission IDs for the Form Viewer link.
-  // Do not fallback to local claim identifiers (for example claim guid).
-  const digitalFormsSubmissionId =
-    response?.digitalFormsApi?.submission?.submissionId;
-  const hasDigitalFormsSubmissionId =
-    typeof digitalFormsSubmissionId === 'string' &&
-    digitalFormsSubmissionId.length > 0;
+  const submissionId = response?.digitalFormsApi?.submission?.submissionId;
   const confirmationNumber = response?.attributes?.confirmationNumber;
   const veteranFirstName = data?.veteranInformation?.fullName?.first || '';
   const veteranLastName = data?.veteranInformation?.fullName?.last || '';
@@ -99,7 +93,7 @@ export default function ConfirmationPage() {
       </va-alert>
       <Toggler toggleName={Toggler.TOGGLE_NAMES.dependentsEnableFormViewerMFE}>
         <Toggler.Enabled>
-          {hasDigitalFormsSubmissionId ? (
+          {submissionId ? (
             <section>
               <h2 className="vads-u-margin-top--3 vads-u-margin-bottom--2 save-a-copy">
                 Save a copy of your form
@@ -114,7 +108,9 @@ export default function ConfirmationPage() {
                     external
                     text="Download or print the information you submitted"
                     class="form-renderer"
-                    href={`/my-va/submissions/${digitalFormsSubmissionId}`}
+                    href={
+                      submissionId ? `/my-va/submissions/${submissionId}` : ''
+                    }
                   />
                 </strong>
               </div>

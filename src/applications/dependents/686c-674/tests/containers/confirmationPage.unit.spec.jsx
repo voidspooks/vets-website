@@ -101,7 +101,7 @@ describe('Dependents Form (686c-674) confirmation page', () => {
     expect(window.document.body.innerHTML.length).greaterThan(1);
   });
 
-  it('should render Save a copy of your form section if feature flag is enabled and digitalFormsApi submissionId exists', async () => {
+  it('should render Save a copy of your form section if feature flag is enabled and submissionId exists', async () => {
     const submissionId = 'a1ba50e4-e689-4852-bec7-2a66519f0ed3';
     const { mockStore } = getData({
       featureToggles: {
@@ -170,30 +170,5 @@ describe('Dependents Form (686c-674) confirmation page', () => {
     expect(container.textContent).to.include('Your submission information');
     expect(container.textContent).to.include('Your name');
     expect(container.textContent).to.include('Date submitted');
-  });
-
-  it('should NOT render form viewer link when submissionId is absent but id is present', async () => {
-    const { mockStore } = getData({
-      featureToggles: {
-        [`dependents_enable_form_viewer_mfe`]: true,
-      },
-      submissionResponse: {
-        digitalFormsApi: {
-          submission: {
-            id: 'dbf38595-b2fa-4dd7-90a9-16ca59bfaf18',
-          },
-        },
-      },
-    });
-
-    const { container } = render(
-      <Provider store={mockStore}>
-        <ConfirmationPage />
-      </Provider>,
-    );
-
-    expect(container.textContent).not.to.include('Save a copy of your form');
-    expect(container.textContent).to.include('Your submission information');
-    expect($('va-link[class="form-renderer"]', container)).not.to.exist;
   });
 });

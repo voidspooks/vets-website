@@ -23,13 +23,6 @@ const user = {
     services: [backendServices.USER_PROFILE],
   },
 };
-const userTwo = {
-  ...user,
-  profile: {
-    ...user.profile,
-    accountUuid: 'different-account-uuid',
-  },
-};
 const getData = ({ featureToggles = {} } = {}) => ({
   mockStore: {
     getState: () => ({
@@ -249,71 +242,6 @@ describe('App Component', () => {
 
     await waitFor(() => {
       expect(container.textContent).to.include('We can’t match your records');
-    });
-  });
-
-  it('does not fetch submission when user is not logged in', async () => {
-    selectUserStub.callsFake(() => ({
-      ...user,
-      login: {
-        currentlyLoggedIn: false,
-      },
-    }));
-
-    const { mockStore } = getData({
-      featureToggles: {
-        [`dependents_enable_form_viewer_mfe`]: true,
-        loading: false,
-      },
-    });
-    const mockParams = { id: '12345' };
-
-    render(
-      <Provider store={mockStore}>
-        <App params={mockParams} />
-      </Provider>,
-    );
-
-    sinon.assert.notCalled(apiRequestStub);
-  });
-
-  it('re-fetches when the user identity changes for the same submission id', async () => {
-    const users = [user, userTwo];
-    let userIndex = 0;
-    selectUserStub.callsFake(() => users[userIndex]);
-
-    const { mockStore } = getData({
-      featureToggles: {
-        [`dependents_enable_form_viewer_mfe`]: true,
-        loading: false,
-      },
-    });
-    const mockParams = { id: '12345' };
-    const mockSubmission = {
-      submission: submission.data,
-      template: submission.config,
-    };
-    apiRequestStub.resolves(mockSubmission);
-
-    const view = render(
-      <Provider store={mockStore}>
-        <App params={mockParams} />
-      </Provider>,
-    );
-
-    await waitFor(() => {
-      sinon.assert.calledOnce(apiRequestStub);
-    });
-
-    userIndex = 1;
-    view.rerender(
-      <Provider store={mockStore}>
-        <App params={mockParams} />
-      </Provider>,
-    );
-
-    await waitFor(() => {
-      expect(apiRequestStub.callCount).to.equal(2);
     });
   });
 });

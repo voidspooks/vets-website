@@ -15,8 +15,6 @@ export default function App({ params }) {
   const [isGeneralError, setIsGeneralError] = useState(false);
   const [isUnauthorized, setUnauthorized] = useState(false);
   const user = useSelector(selectUser);
-  const userIsLoggedIn = user?.login?.currentlyLoggedIn;
-  const userIdentifier = user?.profile?.accountUuid;
 
   const {
     TOGGLE_NAMES: { dependentsEnableFormViewerMFE: appToggleKey },
@@ -84,18 +82,9 @@ export default function App({ params }) {
 
   useEffect(
     () => {
-      // Reset stale state between user/session and submission ID changes.
-      setResponse(null);
-      setIsGeneralError(false);
-      setUnauthorized(false);
-
-      if (!userIsLoggedIn || !id) {
-        return;
-      }
-
       getSubmission(id);
     },
-    [id, userIsLoggedIn, userIdentifier],
+    [id],
   );
 
   return (
