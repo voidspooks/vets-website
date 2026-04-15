@@ -163,10 +163,12 @@ describe('Refill Prescriptions V2 Component', () => {
 
     it('shows inner navigation links', async () => {
       const screen = setup();
-      const inProgressLink = await screen.findByTestId('in-progress-inner-nav');
-      expect(inProgressLink).to.exist;
-      const historyLink = await screen.findByTestId('history-inner-nav');
-      expect(historyLink).to.exist;
+      const listLink = await screen.findByTestId('list-inner-nav');
+      expect(listLink).to.exist;
+      const refillStatusLink = await screen.findByTestId(
+        'refill-status-inner-nav',
+      );
+      expect(refillStatusLink).to.exist;
     });
 
     it('shows prescription checkbox with correct description', async () => {
