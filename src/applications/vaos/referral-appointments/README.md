@@ -46,7 +46,6 @@ The following referral UUIDs are configured to test specific error conditions:
 | `details-retry-error` | Tests retry logic for referral details | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=details-retry-error) |
 | `details-error` | Tests general error handling for referral details | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=details-error) |
 | `draft-no-slots-error` | Tests error when no appointment slots are available | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=draft-no-slots-error) |
-| `referral-without-provider-error` | Tests referrals that don't have an assigned provider | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=referral-without-provider-error) |
 | `eps-error-appointment-id` | Tests EPS (appointment system) error handling | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=eps-error-appointment-id) |
 | `out-of-pilot-station` | Tests referrals from stations not in the pilot program (Station ID: 123) | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=out-of-pilot-station) |
 | `online-schedule-false` | Tests behavior when online scheduling is disabled for the referral | [Test locally](http://localhost:3001/my-health/appointments/schedule-referral?id=online-schedule-false) |

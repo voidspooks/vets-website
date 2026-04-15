@@ -72,38 +72,6 @@ describe('VAOS Component: ScheduleReferral', () => {
       expect(sessionStorage.getItem(selectedSlotKey)).to.be.null;
     });
   });
-  it('should display warning alert when provider npi is not available', async () => {
-    const referral = createReferralById(referralDate, '333');
-    // Ensure provider is defined but npi is not available
-    referral.attributes.provider = {
-      npi: null,
-      name: 'Dr. Moreen S. Rafa',
-      facilityName: 'fake facility name',
-    };
-
-    const store = createTestStore();
-
-    const screen = renderWithStoreAndRouter(
-      <ScheduleReferral currentReferral={referral} />,
-      {
-        store,
-      },
-    );
-
-    const alert = await screen.findByTestId('referral-alert');
-    expect(alert).to.exist;
-    expect(alert).to.contain.text(
-      'Online scheduling isn’t available for this referral right now. Call your community care provider or your facility’s community care office to schedule an appointment.',
-    );
-    expect(
-      screen.queryAllByTestId('referral-community-care-office'),
-    ).to.have.length(2);
-
-    // Verify that the schedule appointment button is not rendered
-    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
-    expect(scheduleButton).to.be.null;
-  });
-
   it('should display warning alert when station id is not valid', async () => {
     const referral = createReferralById(referralDate, '444');
     referral.attributes.stationId = '12345';
@@ -123,59 +91,6 @@ describe('VAOS Component: ScheduleReferral', () => {
     expect(
       screen.queryAllByTestId('referral-community-care-office'),
     ).to.have.length(2);
-
-    // Verify that the schedule appointment button is not rendered
-    const scheduleButton = screen.queryByTestId('schedule-appointment-button');
-    expect(scheduleButton).to.be.null;
-  });
-  it('should display schedule appointment button when provider npi is available', async () => {
-    const referral = createReferralById(referralDate, '444');
-    // Add provider data
-    referral.attributes.provider = {
-      name: 'Dr. Jane Smith',
-      npi: '1234567890',
-      facilityName: 'Community Care Clinic',
-    };
-
-    const store = createTestStore();
-
-    const screen = renderWithStoreAndRouter(
-      <ScheduleReferral currentReferral={referral} />,
-      {
-        store,
-      },
-    );
-
-    // Verify that the schedule appointment button is rendered
-    const scheduleButton = await screen.findByTestId(
-      'schedule-appointment-button',
-    );
-    expect(scheduleButton).to.exist;
-    expect(scheduleButton).to.have.attribute(
-      'text',
-      'Schedule your appointment',
-    );
-
-    // Verify warning alert is not displayed
-    const alert = screen.queryByTestId('referral-alert');
-    expect(alert).to.be.null;
-  });
-  it('should handle undefined provider field gracefully', async () => {
-    const referral = createReferralById(referralDate, '555');
-    // Ensure provider is undefined (removed completely)
-    delete referral.attributes.provider;
-
-    const store = createTestStore();
-
-    const screen = renderWithStoreAndRouter(
-      <ScheduleReferral currentReferral={referral} />,
-      {
-        store,
-      },
-    );
-
-    const alert = await screen.findByTestId('referral-alert');
-    expect(alert).to.exist;
 
     // Verify that the schedule appointment button is not rendered
     const scheduleButton = screen.queryByTestId('schedule-appointment-button');

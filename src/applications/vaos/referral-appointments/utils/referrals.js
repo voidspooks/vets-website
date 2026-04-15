@@ -9,7 +9,6 @@ const errorUUIDs = [
   'details-retry-error',
   'details-error',
   'draft-no-slots-error',
-  'referral-without-provider-error',
   'eps-error-appointment-id',
 ];
 

@@ -131,12 +131,6 @@ class MockReferralListResponse {
         expirationDate: format(new Date(2024, 12, 2), formatStr),
       }),
       MockReferralListResponse.createReferral({
-        id: 'referral-without-provider-error',
-        categoryOfCare: 'PRIMARY CARE',
-        referralNumber: 'VA0000007123',
-        expirationDate: format(addMonths(today, 5), formatStr),
-      }),
-      MockReferralListResponse.createReferral({
         id: 'details-not-found-error',
         categoryOfCare: 'PRIMARY CARE',
         referralNumber: 'details-not-found-error',

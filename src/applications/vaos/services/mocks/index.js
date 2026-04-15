@@ -642,15 +642,6 @@ const responses = {
       );
     }
 
-    if (req.params.referralId === 'referral-without-provider-error') {
-      return res.json(
-        new MockReferralDetailResponse({
-          id: req.params.referralId,
-          provider: null,
-        }),
-      );
-    }
-
     if (req.params.referralId === 'online-schedule-false') {
       return res.json(
         new MockReferralDetailResponse({
