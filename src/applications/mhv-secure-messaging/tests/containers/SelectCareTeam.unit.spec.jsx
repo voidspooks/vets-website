@@ -1332,7 +1332,9 @@ describe('SelectCareTeam', () => {
       expect(screen.container.querySelector('h1')).to.exist;
 
       // Should render the BlockedTriageGroupAlert as va-alert-expandable (ALERT style)
-      const alert = screen.container.querySelector('va-alert-expandable');
+      const alert = screen.container.querySelector(
+        'va-alert-expandable[data-testid="blocked-triage-group-alert"]',
+      );
       expect(alert).to.exist;
       expect(alert.getAttribute('status')).to.equal('warning');
       expect(alert.getAttribute('trigger')).to.include(
@@ -1352,7 +1354,7 @@ describe('SelectCareTeam', () => {
       expect(combobox).to.not.exist;
     });
 
-    it('should render BlockedTriageGroupAlert with INFO style when single facility is blocked', () => {
+    it('should render BlockedTriageGroupAlert with ALERT style when single facility is blocked', () => {
       const singleFacilityBlockedState = {
         ...initialState,
         drupalStaticData: {
@@ -1395,17 +1397,27 @@ describe('SelectCareTeam', () => {
       // Should render the h1
       expect(screen.container.querySelector('h1')).to.exist;
 
-      // Should render the BlockedTriageGroupAlert as va-alert (INFO style)
-      const alert = screen.container.querySelector('va-alert');
+      // Should render the BlockedTriageGroupAlert as va-alert-expandable (ALERT style)
+      const alert = screen.container.querySelector(
+        'va-alert-expandable[data-testid="blocked-triage-group-alert"]',
+      );
       expect(alert).to.exist;
-      expect(alert.getAttribute('status')).to.equal('info');
+      expect(alert.getAttribute('status')).to.equal('warning');
+      expect(alert.getAttribute('trigger')).to.include(
+        "can't send messages to",
+      );
+
+      // Should render the find VA health facility link
+      const link = alert.querySelector('va-link-action');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.equal('/find-locations/');
 
       // Should still render the care system selection
       const radioGroup = screen.container.querySelector('va-radio');
       expect(radioGroup).to.exist;
     });
 
-    it('should render BlockedTriageGroupAlert with INFO style when individual teams are blocked', () => {
+    it('should render BlockedTriageGroupAlert with ALERT style when individual teams are blocked', () => {
       const blockedTeamsState = {
         ...initialState,
         sm: {
@@ -1439,10 +1451,20 @@ describe('SelectCareTeam', () => {
       // Should render the h1
       expect(screen.container.querySelector('h1')).to.exist;
 
-      // Should render the BlockedTriageGroupAlert as va-alert (INFO style)
-      const alert = screen.container.querySelector('va-alert');
+      // Should render the BlockedTriageGroupAlert as va-alert-expandable (ALERT style)
+      const alert = screen.container.querySelector(
+        'va-alert-expandable[data-testid="blocked-triage-group-alert"]',
+      );
       expect(alert).to.exist;
-      expect(alert.getAttribute('status')).to.equal('info');
+      expect(alert.getAttribute('status')).to.equal('warning');
+      expect(alert.getAttribute('trigger')).to.include(
+        "can't send messages to",
+      );
+
+      // Should render the find VA health facility link
+      const link = alert.querySelector('va-link-action');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.equal('/find-locations/');
 
       // Should still render the care system selection
       const radioGroup = screen.container.querySelector('va-radio');

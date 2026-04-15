@@ -577,7 +577,7 @@ const SelectCareTeam = () => {
       {showBlockedAlert && (
         <div className="vads-u-margin-bottom--3 vads-u-margin-top--2">
           <BlockedTriageGroupAlert
-            alertStyle={BlockedTriageAlertStyles.INFO}
+            alertStyle={BlockedTriageAlertStyles.ALERT}
             parentComponent={ParentComponent.FOLDER_HEADER}
           />
         </div>
