@@ -942,7 +942,7 @@ export const flattenAttachments = formData => {
 };
 
 /**
- * Adds attachmentId: L702 to separationHealthAssessmentUploads entries that are missing it.
+ * Adds attachmentId: L1839 to separationHealthAssessmentUploads entries that are missing it.
  * This is called at submit time for V1 SHA uploads (which intentionally omit attachmentId
  * from form data to prevent the file-type dropdown from rendering in the UI).
  *
@@ -958,7 +958,7 @@ export const setSeparationHealthAssessmentAttachmentId = formData => {
     // Only add attachmentId if it's missing (V1 path without dropdown)
     // Preserve any existing attachmentId (V3 path with additionalData)
     if (!upload.attachmentId) {
-      return { ...upload, attachmentId: 'L702' };
+      return { ...upload, attachmentId: 'L1839' };
     }
     return upload;
   });

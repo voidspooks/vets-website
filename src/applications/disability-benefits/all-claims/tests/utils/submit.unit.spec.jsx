@@ -2185,7 +2185,7 @@ describe('addFileAttachments', () => {
         {
           name: 'sha-part-a.pdf',
           confirmationCode: 'sha-code-123',
-          attachmentId: 'L702',
+          attachmentId: 'L1839',
           size: 1024,
           type: 'application/pdf',
         },
@@ -2198,7 +2198,7 @@ describe('addFileAttachments', () => {
     expect(result.attachments).to.have.lengthOf(1);
     expect(result.attachments[0].name).to.equal('sha-part-a.pdf');
     expect(result.attachments[0].confirmationCode).to.equal('sha-code-123');
-    expect(result.attachments[0].attachmentId).to.equal('L702');
+    expect(result.attachments[0].attachmentId).to.equal('L1839');
     expect(result).to.not.have.property('separationHealthAssessmentUploads');
     expect(result.veteranFullName).to.deep.equal({
       first: 'Sam',
@@ -2212,7 +2212,7 @@ describe('addFileAttachments', () => {
         {
           name: 'sha-part-a.pdf',
           confirmationCode: 'sha-code-123',
-          attachmentId: 'L702',
+          attachmentId: 'L1839',
           size: 1024,
           type: 'application/pdf',
         },
@@ -2236,14 +2236,14 @@ describe('addFileAttachments', () => {
     );
     expect(names).to.include('sha-part-a.pdf');
     expect(names).to.include('buddy-statement.pdf');
-    expect(shaAttachment.attachmentId).to.equal('L702');
+    expect(shaAttachment.attachmentId).to.equal('L1839');
     expect(result).to.not.have.property('separationHealthAssessmentUploads');
     expect(result).to.not.have.property('additionalDocuments');
   });
 });
 
 describe('setSeparationHealthAssessmentAttachmentId', () => {
-  it('should add attachmentId L702 to uploads missing it', () => {
+  it('should add attachmentId L1839 to uploads missing it', () => {
     const formData = {
       separationHealthAssessmentUploads: [
         { name: 'sha.pdf', confirmationCode: 'abc123' },
@@ -2251,19 +2251,19 @@ describe('setSeparationHealthAssessmentAttachmentId', () => {
     };
     const result = setSeparationHealthAssessmentAttachmentId(formData);
     expect(result.separationHealthAssessmentUploads[0].attachmentId).to.equal(
-      'L702',
+      'L1839',
     );
   });
 
   it('should preserve existing attachmentId', () => {
     const formData = {
       separationHealthAssessmentUploads: [
-        { name: 'sha.pdf', confirmationCode: 'abc123', attachmentId: 'L702' },
+        { name: 'sha.pdf', confirmationCode: 'abc123', attachmentId: 'L12345' },
       ],
     };
     const result = setSeparationHealthAssessmentAttachmentId(formData);
     expect(result.separationHealthAssessmentUploads[0].attachmentId).to.equal(
-      'L702',
+      'L12345',
     );
   });
 
@@ -2307,7 +2307,7 @@ describe('salvageOutmodedBddSha', () => {
     const result = salvageOutmodedBddSha(formData);
     expect(result).to.not.equal(formData);
     expect(result.attachments).to.have.lengthOf(1);
-    expect(result.attachments[0].attachmentId).to.equal('L702');
+    expect(result.attachments[0].attachmentId).to.equal('L1839');
     expect(result.attachments[0].name).to.equal('sha.pdf');
   });
 
@@ -2315,13 +2315,13 @@ describe('salvageOutmodedBddSha', () => {
     const formData = makeBddFormData({
       disability526NewBddShaEnforcementWorkflowEnabled: false,
       separationHealthAssessmentUploads: [
-        { name: 'sha.pdf', confirmationCode: 'abc123', attachmentId: 'L702' },
+        { name: 'sha.pdf', confirmationCode: 'abc123', attachmentId: 'L12345' },
       ],
     });
     const result = salvageOutmodedBddSha(formData);
     expect(result).to.not.equal(formData);
     expect(result.attachments).to.have.lengthOf(1);
-    expect(result.attachments[0].attachmentId).to.equal('L702');
+    expect(result.attachments[0].attachmentId).to.equal('L12345');
   });
 
   it('should remove separationHealthAssessmentUploads after salvaging to prevent duplicates', () => {
@@ -2349,7 +2349,7 @@ describe('salvageOutmodedBddSha', () => {
     expect(result.attachments).to.have.lengthOf(2);
     expect(result.attachments[0].name).to.equal('existing.pdf');
     expect(result.attachments[1].name).to.equal('sha.pdf');
-    expect(result.attachments[1].attachmentId).to.equal('L702');
+    expect(result.attachments[1].attachmentId).to.equal('L1839');
   });
 
   it('should be a no-op when no SHA uploads exist', () => {

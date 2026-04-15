@@ -17,7 +17,7 @@ import {
 } from '../constants';
 
 const SHA_ACCEPTED_FILE_TYPES = '.pdf,.jpg,.jpeg,.png';
-const SHA_ATTACHMENT_ID = 'L702';
+const SHA_ATTACHMENT_ID = 'L1839';
 const SHA_HINT_TEXT = `You can upload .pdf, .jpg, .jpeg, or .png files. Each file should be no larger than ${MAX_FILE_SIZE_MB} MB for non-PDF files or ${MAX_PDF_FILE_SIZE_MB} MB for PDF files. Larger files may take longer to upload, depending on the internet connection.`;
 
 const parseShaResponse = (response, file) => ({

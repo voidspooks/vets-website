@@ -427,7 +427,7 @@ describe('SHA upload attachment transformation', () => {
           {
             name: 'sha-part-a.pdf',
             confirmationCode: 'sha-code-123',
-            attachmentId: 'L702',
+            attachmentId: 'L1839',
             size: 1024,
             type: 'application/pdf',
           },
@@ -442,7 +442,7 @@ describe('SHA upload attachment transformation', () => {
       attachment =>
         attachment.name === 'sha-part-a.pdf' &&
         attachment.confirmationCode === 'sha-code-123' &&
-        attachment.attachmentId === 'L702',
+        attachment.attachmentId === 'L1839',
     );
     expect(hasShaAttachment).to.be.true;
     expect(result.form526).to.not.have.property(
@@ -472,7 +472,7 @@ describe('SHA upload attachment transformation', () => {
           {
             name: 'sha-part-a.pdf',
             confirmationCode: 'sha-code-123',
-            attachmentId: 'L702',
+            attachmentId: 'L1839',
             size: 1024,
             type: 'application/pdf',
           },
@@ -486,14 +486,14 @@ describe('SHA upload attachment transformation', () => {
     expect(result.form526.attachments[0]).to.include({
       name: 'sha-part-a.pdf',
       confirmationCode: 'sha-code-123',
-      attachmentId: 'L702',
+      attachmentId: 'L1839',
     });
     expect(result.form526).to.not.have.property(
       'separationHealthAssessmentUploads',
     );
   });
 
-  it('adds attachmentId: L702 to V1 SHA uploads that are missing it', () => {
+  it('adds attachmentId: L1839 to V1 SHA uploads that are missing it', () => {
     const form = {
       data: {
         ...minimalBddData.data,
@@ -530,7 +530,7 @@ describe('SHA upload attachment transformation', () => {
       attachment => attachment.name === 'sha-part-a.pdf',
     );
     expect(shaAttachment).to.exist;
-    expect(shaAttachment.attachmentId).to.equal('L702');
+    expect(shaAttachment.attachmentId).to.equal('L1839');
     expect(shaAttachment.confirmationCode).to.equal('sha-code-123');
   });
 
@@ -556,7 +556,7 @@ describe('SHA upload attachment transformation', () => {
           {
             name: 'sha-part-a.pdf',
             confirmationCode: 'sha-code-123',
-            attachmentId: 'L702',
+            attachmentId: 'L12345',
             size: 1024,
             type: 'application/pdf',
             // V3 path already includes attachmentId via additionalData
@@ -571,6 +571,6 @@ describe('SHA upload attachment transformation', () => {
     const shaAttachment = result.form526.attachments.find(
       attachment => attachment.name === 'sha-part-a.pdf',
     );
-    expect(shaAttachment.attachmentId).to.equal('L702');
+    expect(shaAttachment.attachmentId).to.equal('L12345');
   });
 });

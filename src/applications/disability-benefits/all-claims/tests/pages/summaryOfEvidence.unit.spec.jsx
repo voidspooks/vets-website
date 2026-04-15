@@ -57,7 +57,7 @@ describe('Summary of Evidence', () => {
   ];
 
   const separationHealthAssessmentUploads = [
-    { name: 'sha-a.pdf', confirmationCode: 'abc123', attachmentId: 'L702' },
+    { name: 'sha-a.pdf', confirmationCode: 'abc123', attachmentId: 'L1839' },
   ];
 
   const bddServiceInformation = {

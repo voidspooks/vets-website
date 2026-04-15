@@ -66,7 +66,7 @@ describe('separationHealthAssessmentUpload page', () => {
       expect(result).to.deep.equal({
         name: 'sha-part-a.pdf',
         confirmationCode: 'sha-guid-123',
-        attachmentId: 'L702',
+        attachmentId: 'L1839',
         file,
       });
     });
@@ -76,7 +76,7 @@ describe('separationHealthAssessmentUpload page', () => {
 
       const result = parseResponse(undefined, undefined);
 
-      expect(result.attachmentId).to.equal('L702');
+      expect(result.attachmentId).to.equal('L1839');
       expect(result.confirmationCode).to.be.undefined;
       expect(result.name).to.be.undefined;
       expect(result.file).to.be.undefined;
