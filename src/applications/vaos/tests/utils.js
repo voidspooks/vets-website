@@ -22,3 +22,15 @@ export function textMatcher({ htmlElement = 'span', text } = {}) {
 
   return _textMatcher;
 }
+
+/**
+ * Helper to select a radio button option using VaRadio custom events
+ * (shadow DOM compatible)
+ * @param {String} testId - The data-testid of the radio button set
+ * @param {Object} screen - RTL screen object
+ * @param {string} value - The value of the item to test, such as the TypeOfCareId
+ */
+export async function selectRadioButton(testId, screen, value) {
+  const radioButton = await screen.findByTestId(testId);
+  radioButton.__events.vaValueChange({ detail: { value } });
+}

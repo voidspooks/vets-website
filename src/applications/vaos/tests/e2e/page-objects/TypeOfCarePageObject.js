@@ -24,7 +24,18 @@ class TypeOfCarePageObject extends PageObject {
   }
 
   selectTypeOfCare(label) {
-    this.selectRadioButton(label);
+    if (label instanceof RegExp) {
+      cy.get('va-radio-option').then($options => {
+        const matchingOption = [...$options].find(option =>
+          label.test(option.getAttribute('label')),
+        );
+        if (matchingOption) {
+          cy.wrap(matchingOption).click();
+        }
+      });
+    } else {
+      cy.get(`va-radio-option[label="${label}"]`).click();
+    }
     return this;
   }
 }
