@@ -11,7 +11,7 @@ describe('Medications Details Page Breadcrumbs', () => {
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     detailsPage.clickMedicationsListPageBreadcrumbsOnDetailsPage();
     listPage.verifyNavigationToListPageAfterClickingBreadcrumbMedications();
     cy.injectAxe();

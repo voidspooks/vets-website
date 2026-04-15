@@ -23,10 +23,10 @@ export const createBreadcrumbs = (location, currentPage) => {
   ];
   const {
     subdirectories,
-    MEDICATIONS_IN_PROGRESS,
+    MEDICATIONS_REFILL_STATUS,
     MEDICATIONS_REFILL,
     MEDICATIONS_URL,
-    MEDICATIONS_HISTORY,
+    MEDICATIONS_LIST,
   } = medicationsUrls;
 
   if (pathname === subdirectories.BASE) {
@@ -37,27 +37,27 @@ export const createBreadcrumbs = (location, currentPage) => {
       },
     ]);
   }
+  if (pathname.includes(subdirectories.REFILL_STATUS)) {
+    return defaultBreadcrumbs.concat([
+      { href: MEDICATIONS_URL, label: 'Medications' },
+      {
+        href: MEDICATIONS_REFILL_STATUS,
+        label: 'Refill Status medications',
+      },
+    ]);
+  }
   if (pathname.includes(subdirectories.REFILL)) {
     return defaultBreadcrumbs.concat([
       { href: MEDICATIONS_URL, label: 'Medications' },
       { href: MEDICATIONS_REFILL, label: 'Refill prescriptions' },
     ]);
   }
-  if (pathname.includes(subdirectories.IN_PROGRESS)) {
+  if (pathname.includes(subdirectories.LIST)) {
     return defaultBreadcrumbs.concat([
       { href: MEDICATIONS_URL, label: 'Medications' },
       {
-        href: MEDICATIONS_IN_PROGRESS,
-        label: 'In-progress medications',
-      },
-    ]);
-  }
-  if (pathname.includes(subdirectories.HISTORY)) {
-    return defaultBreadcrumbs.concat([
-      { href: MEDICATIONS_URL, label: 'Medications' },
-      {
-        href: MEDICATIONS_HISTORY,
-        label: 'Medication history',
+        href: MEDICATIONS_LIST,
+        label: 'Medication list',
       },
     ]);
   }

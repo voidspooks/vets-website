@@ -4,13 +4,13 @@ import { Data } from './utils/constants';
 import MedicationsListPage from './pages/MedicationsListPage';
 import pendingRxDetails from './fixtures/pending-prescriptions-details.json';
 
-describe('Medication History Page Pending New Rx (management improvements enabled)', () => {
-  it('visits Medication History Page Pending New Prescriptions', () => {
+describe('Medication List Page Pending New Rx (management improvements enabled)', () => {
+  it('visits Medication List Page Pending New Prescriptions', () => {
     const site = new MedicationsSite();
     site.loginWithManagementImprovements();
     const listPage = new MedicationsListPage();
 
-    listPage.visitMedicationHistoryPageURL(pendingPrescriptions);
+    listPage.visitMedicationListPageURL(pendingPrescriptions);
     listPage.verifyPendingNewRxInfoTextOnMedicationCardOnListPage(
       Data.PENDING_RX_CARD_INFO,
     );
@@ -31,7 +31,7 @@ describe('Medications List Page Pending New Rx (management improvements disabled
     site.login();
     listPage.visitMedicationsListPageURL(pendingPrescriptions);
     cy.url().should('include', '/my-health/medications');
-    cy.url().should('not.include', '/history');
+    cy.url().should('not.include', '/list');
     cy.get('[data-testid="pending-renewal-rx"]').should('not.exist');
     cy.injectAxe();
     cy.axeCheck('main');

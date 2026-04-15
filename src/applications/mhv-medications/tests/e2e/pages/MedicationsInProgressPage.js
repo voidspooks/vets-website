@@ -5,14 +5,14 @@ class MedicationsInProgressPage {
     cy.intercept('GET', '/my_health/v1/prescriptions*', fixture).as(
       'prescriptions',
     );
-    cy.visit(medicationsUrls.MEDICATIONS_IN_PROGRESS);
+    cy.visit(medicationsUrls.MEDICATIONS_REFILL_STATUS);
   };
 
   visitPageWithError = errorResponse => {
     cy.intercept('GET', '/my_health/v1/prescriptions*', errorResponse).as(
       'prescriptionsError',
     );
-    cy.visit(medicationsUrls.MEDICATIONS_IN_PROGRESS);
+    cy.visit(medicationsUrls.MEDICATIONS_REFILL_STATUS);
   };
 
   verifyHeading = () => {

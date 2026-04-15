@@ -16,7 +16,7 @@ describe('Medications Details Page AAL API Call', () => {
     cy.intercept('POST', `${Paths.INTERCEPT.AAL}`, aalRequestBody).as(
       'aalRequest',
     );
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     cy.wait('@aalRequest').then(interception => {
       expect(interception).to.exist;
       expect(interception.response.statusCode).to.equal(200);
@@ -35,7 +35,7 @@ describe('Medications Details Page AAL API Call', () => {
       });
     });
     detailsPage.clickMedicationsListPageBreadcrumbsOnDetailsPage();
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     cy.get('@aalRequest.all').should('have.length', 1);
     cy.injectAxe();
     cy.axeCheck('main');

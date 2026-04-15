@@ -28,7 +28,7 @@ describe('Medications Breadcrumb Navigation To List Page', () => {
     site.verifyPaginationPrescriptionsDisplayed(1, 10, listLength);
     site.loadVAPaginationNextPrescriptions(2, mockRxPageTwo);
     site.verifyPaginationPrescriptionsDisplayed(11, 20, listLength);
-    detailsPage.clickMedicationHistoryAndDetailsLink(prescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(prescriptionDetails);
     detailsPage.clickMedicationsListPageTwoBreadcrumbsOnDetailsPageAndVerifyNavigation(
       11,
       20,

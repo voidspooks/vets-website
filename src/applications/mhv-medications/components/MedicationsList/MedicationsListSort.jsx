@@ -22,7 +22,7 @@ const MedicationsListSort = props => {
   const isManagementImprovementsEnabled = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
-  const route = isManagementImprovementsEnabled ? `/history` : `/`;
+  const route = isManagementImprovementsEnabled ? `/list` : `/`;
   const selectedSortOption = useSelector(selectSortOption);
 
   const activeSortingOptions = isManagementImprovementsEnabled

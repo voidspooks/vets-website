@@ -3,12 +3,12 @@ import sinon from 'sinon';
 import React from 'react';
 import { cleanup, fireEvent } from '@testing-library/react';
 import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
-import MedicationHistoryFilter, {
+import MedicationListFilter, {
   FILTER_OPTIONS,
-} from '../../../components/MedicationHistory/MedicationHistoryFilter';
+} from '../../../components/MedicationList/MedicationListFilter';
 import reducers from '../../../reducers';
 
-describe('MedicationHistoryFilter component', () => {
+describe('MedicationListFilter component', () => {
   let updateFilterSpy;
 
   const defaultInitialState = {
@@ -28,7 +28,7 @@ describe('MedicationHistoryFilter component', () => {
     updateFilterSpy = sinon.spy();
 
     return renderWithStoreAndRouterV6(
-      <MedicationHistoryFilter
+      <MedicationListFilter
         updateFilter={updateFilterSpy}
         isLoading={isLoading}
       />,
@@ -50,7 +50,7 @@ describe('MedicationHistoryFilter component', () => {
 
   it('renders the filter radio group with correct label', () => {
     const screen = setup();
-    const radioGroup = screen.getByTestId('medication-history-filter');
+    const radioGroup = screen.getByTestId('medication-list-filter');
     expect(radioGroup).to.exist;
     expect(radioGroup.getAttribute('label')).to.equal(
       'Select medications to show in list',
@@ -60,7 +60,7 @@ describe('MedicationHistoryFilter component', () => {
   it('renders all filter options', () => {
     const screen = setup();
     FILTER_OPTIONS.forEach(({ key }) => {
-      expect(screen.getByTestId(`medication-history-filter-option-${key}`)).to
+      expect(screen.getByTestId(`medication-list-filter-option-${key}`)).to
         .exist;
     });
   });
@@ -69,7 +69,7 @@ describe('MedicationHistoryFilter component', () => {
     const screen = setup();
     FILTER_OPTIONS.forEach(({ key, label }) => {
       const radioOption = screen.getByTestId(
-        `medication-history-filter-option-${key}`,
+        `medication-list-filter-option-${key}`,
       );
       expect(radioOption.getAttribute('label')).to.equal(label);
     });
@@ -78,7 +78,7 @@ describe('MedicationHistoryFilter component', () => {
   it('has ALL_MEDICATIONS checked by default', () => {
     const screen = setup();
     const allMedsOption = screen.getByTestId(
-      'medication-history-filter-option-ALL_MEDICATIONS',
+      'medication-list-filter-option-ALL_MEDICATIONS',
     );
     expect(allMedsOption.getAttribute('checked')).to.equal('true');
   });
@@ -119,7 +119,7 @@ describe('MedicationHistoryFilter component', () => {
   it('updates internal state when a radio option changes', () => {
     const screen = setup();
     // Simulate the web component's vaValueChange event on the parent radio group
-    const radioGroup = screen.getByTestId('medication-history-filter');
+    const radioGroup = screen.getByTestId('medication-list-filter');
     radioGroup.__events.vaValueChange({ detail: { value: 'ACTIVE' } });
 
     // Click Update list to verify the new value is passed
@@ -131,14 +131,12 @@ describe('MedicationHistoryFilter component', () => {
   it('renders exactly 4 filter options', () => {
     const screen = setup();
     expect(FILTER_OPTIONS).to.have.lengthOf(4);
-    expect(screen.getByTestId('medication-history-filter-option-ACTIVE')).to
+    expect(screen.getByTestId('medication-list-filter-option-ACTIVE')).to.exist;
+    expect(screen.getByTestId('medication-list-filter-option-RENEWAL')).to
       .exist;
-    expect(screen.getByTestId('medication-history-filter-option-RENEWAL')).to
+    expect(screen.getByTestId('medication-list-filter-option-INACTIVE')).to
       .exist;
-    expect(screen.getByTestId('medication-history-filter-option-INACTIVE')).to
-      .exist;
-    expect(
-      screen.getByTestId('medication-history-filter-option-ALL_MEDICATIONS'),
-    ).to.exist;
+    expect(screen.getByTestId('medication-list-filter-option-ALL_MEDICATIONS'))
+      .to.exist;
   });
 });

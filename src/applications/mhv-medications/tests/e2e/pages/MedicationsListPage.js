@@ -390,7 +390,7 @@ class MedicationsListPage {
 
   verifyNonVAPrescriptionNameOnListPage = () => {
     cy.get(
-      '[data-testid="medication-list"] > :nth-child(5) [data-testid="medications-history-details-link"]',
+      '[data-testid="medication-list"] > :nth-child(5) [data-testid="medications-list-details-link"]',
     ).should('contain', `${nonVARx.data.attributes.prescriptionName}`);
   };
 
@@ -483,25 +483,23 @@ class MedicationsListPage {
   };
 
   validateMedicationsListSortedAlphabeticallyByStatus = sortedData => {
-    cy.get('[data-testid="medications-history-details-link"]').then(
-      $nameEls => {
-        const seen = new Set();
-        const actualUniqueNames = [...$nameEls]
-          .map(el => el.textContent.trim())
-          .filter(name => {
-            if (seen.has(name)) return false;
-            seen.add(name);
-            return true;
-          });
+    cy.get('[data-testid="medications-list-details-link"]').then($nameEls => {
+      const seen = new Set();
+      const actualUniqueNames = [...$nameEls]
+        .map(el => el.textContent.trim())
+        .filter(name => {
+          if (seen.has(name)) return false;
+          seen.add(name);
+          return true;
+        });
 
-        const expectedUniqueNames = sortedData.data.map(
-          rx => rx.attributes.prescriptionName,
-        );
-        expect(actualUniqueNames).to.deep.equal(
-          expectedUniqueNames.slice(0, actualUniqueNames.length),
-        );
-      },
-    );
+      const expectedUniqueNames = sortedData.data.map(
+        rx => rx.attributes.prescriptionName,
+      );
+      expect(actualUniqueNames).to.deep.equal(
+        expectedUniqueNames.slice(0, actualUniqueNames.length),
+      );
+    });
   };
 
   verifyPaginationDisplayedforSortAlphabeticallyByStatus = (
@@ -561,17 +559,15 @@ class MedicationsListPage {
   };
 
   validateMedicationsListSorted = sortedData => {
-    cy.get('[data-testid="medications-history-details-link"]').then(
-      $nameEls => {
-        const actualNames = [...$nameEls]
-          .map(el => el.textContent.trim())
-          .slice(0, 20);
-        const expectedNames = sortedData.data
-          .map(rx => rx.attributes.prescriptionName)
-          .slice(0, 20);
-        expect(actualNames).to.deep.equal(expectedNames);
-      },
-    );
+    cy.get('[data-testid="medications-list-details-link"]').then($nameEls => {
+      const actualNames = [...$nameEls]
+        .map(el => el.textContent.trim())
+        .slice(0, 20);
+      const expectedNames = sortedData.data
+        .map(rx => rx.attributes.prescriptionName)
+        .slice(0, 20);
+      expect(actualNames).to.deep.equal(expectedNames);
+    });
   };
 
   verifyPaginationDisplayedforSortAlphabeticallyByName = (
@@ -662,7 +658,7 @@ class MedicationsListPage {
 
   verifyDiscontinuedMedicationNameIsVisibleOnListPage = () => {
     cy.get(
-      '[data-testid="medication-list"] > :nth-child(6) [data-testid="medications-history-details-link"]',
+      '[data-testid="medication-list"] > :nth-child(6) [data-testid="medications-list-details-link"]',
     ).should('be.visible');
   };
 
@@ -827,7 +823,7 @@ class MedicationsListPage {
 
   verifyNameOfFirstRxOnMedicationsList = rxName => {
     cy.get(
-      '.landing-page-content > [data-testid="medication-list"] > :nth-child(1) [data-testid="medications-history-details-link"]',
+      '.landing-page-content > [data-testid="medication-list"] > :nth-child(1) [data-testid="medications-list-details-link"]',
     ).should('contain', rxName);
   };
 
@@ -869,7 +865,7 @@ class MedicationsListPage {
     cy.visit(medicationsUrls.MEDICATIONS_URL);
   };
 
-  visitMedicationHistoryPageURL = medication => {
+  visitMedicationListPageURL = medication => {
     cy.intercept('GET', `${Paths.DELAY_ALERT}`, medication).as(
       'delayAlertRxList',
     );
@@ -885,7 +881,7 @@ class MedicationsListPage {
     cy.intercept('POST', '/my_health/v1/tooltips', tooltipVisible).as(
       'tooltipsVisible',
     );
-    cy.visit(medicationsUrls.MEDICATIONS_HISTORY);
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
     cy.wait('@medicationsHistoryList');
   };
 

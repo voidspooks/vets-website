@@ -12,7 +12,7 @@ describe('Medications Details Page Download TXT Refill History field', () => {
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     listPage.clickPrintOrDownloadThisListDropDown();
     detailsPage.verifyFocusOnPrintOrDownloadDropdownButtonOnDetailsPage();
     detailsPage.clickDownloadMedicationsDetailsAsTxtOnDetailsPage();

@@ -115,8 +115,8 @@ describe('Medications Breadcrumbs', () => {
     });
   });
 
-  it('renders breadcrumbs on IN_PROGRESS route', async () => {
-    const screen = setup({}, [medicationsUrls.subdirectories.IN_PROGRESS]);
+  it('renders breadcrumbs on REFILL_STATUS route', async () => {
+    const screen = setup({}, [medicationsUrls.subdirectories.REFILL_STATUS]);
 
     await waitFor(() => {
       const element = screen.container.querySelector('va-breadcrumbs');
@@ -126,8 +126,8 @@ describe('Medications Breadcrumbs', () => {
     });
   });
 
-  it('renders breadcrumbs on HISTORY route', async () => {
-    const screen = setup({}, [medicationsUrls.subdirectories.HISTORY]);
+  it('renders breadcrumbs on LIST route', async () => {
+    const screen = setup({}, [medicationsUrls.subdirectories.LIST]);
 
     await waitFor(() => {
       const element = screen.container.querySelector('va-breadcrumbs');

@@ -460,7 +460,7 @@ const MedicationsListCard = ({ rx }) => {
           data-dd-action-name={
             dataDogActionNames.medicationsListPage.MEDICATION_NAME_LINK_IN_CARD
           }
-          data-testid="medications-history-details-link"
+          data-testid="medications-list-details-link"
           className="vads-u-font-weight--bold"
           to={getPrescriptionDetailUrl(rx)}
         >

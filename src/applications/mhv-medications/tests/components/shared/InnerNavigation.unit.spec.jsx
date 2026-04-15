@@ -35,8 +35,8 @@ describe('InnerNavigation component', () => {
   it('renders all three tabs', () => {
     const screen = setup();
     expect(screen.getByTestId('landing-inner-nav')).to.exist;
-    expect(screen.getByTestId('history-inner-nav')).to.exist;
-    expect(screen.getByTestId('in-progress-inner-nav')).to.exist;
+    expect(screen.getByTestId('list-inner-nav')).to.exist;
+    expect(screen.getByTestId('refill-status-inner-nav')).to.exist;
   });
 
   describe('desktop labels', () => {
@@ -64,16 +64,16 @@ describe('InnerNavigation component', () => {
       expect(link.getAttribute('aria-current')).to.equal('page');
     });
 
-    it('marks the history tab as active when on /history', () => {
-      const screen = setup(Paths.HISTORY);
-      const link = screen.getByTestId('history-inner-nav').querySelector('a');
+    it('marks the list tab as active when on /list', () => {
+      const screen = setup(Paths.LIST);
+      const link = screen.getByTestId('list-inner-nav').querySelector('a');
       expect(link.getAttribute('aria-current')).to.equal('page');
     });
 
-    it('marks the in-progress tab as active when on /in-progress', () => {
-      const screen = setup(Paths.IN_PROGRESS);
+    it('marks the refill status tab as active when on /refill-status', () => {
+      const screen = setup(Paths.REFILL_STATUS);
       const link = screen
-        .getByTestId('in-progress-inner-nav')
+        .getByTestId('refill-status-inner-nav')
         .querySelector('a');
       expect(link.getAttribute('aria-current')).to.equal('page');
     });
@@ -81,10 +81,10 @@ describe('InnerNavigation component', () => {
     it('does not mark non-active tabs with aria-current', () => {
       const screen = setup('/');
       const historyLink = screen
-        .getByTestId('history-inner-nav')
+        .getByTestId('list-inner-nav')
         .querySelector('a');
       const inProgressLink = screen
-        .getByTestId('in-progress-inner-nav')
+        .getByTestId('refill-status-inner-nav')
         .querySelector('a');
       expect(historyLink.getAttribute('aria-current')).to.be.null;
       expect(inProgressLink.getAttribute('aria-current')).to.be.null;

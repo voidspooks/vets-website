@@ -1,7 +1,7 @@
 export const Paths = {
   LANDING: '/',
-  HISTORY: '/history',
-  IN_PROGRESS: '/in-progress',
+  LIST: '/list',
+  REFILL_STATUS: '/refill-status',
 };
 
 export const InnerNavigationPaths = [
@@ -12,14 +12,14 @@ export const InnerNavigationPaths = [
     datatestid: 'landing-inner-nav',
   },
   {
-    path: Paths.HISTORY,
+    path: Paths.LIST,
     label: 'Medications List',
     mobileLabel: 'Meds list',
-    datatestid: 'history-inner-nav',
+    datatestid: 'list-inner-nav',
   },
   {
-    path: Paths.IN_PROGRESS,
+    path: Paths.REFILL_STATUS,
     label: 'Refill Status',
-    datatestid: 'in-progress-inner-nav',
+    datatestid: 'refill-status-inner-nav',
   },
 ];

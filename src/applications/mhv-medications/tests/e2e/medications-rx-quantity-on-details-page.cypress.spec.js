@@ -17,7 +17,7 @@ describe('Medications Details Page RX Quantity', () => {
 
   it('visits Medications Details Page RX Quantity', () => {
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     detailsPage.verifyPrescriptionQuantityOnDetailsPage(
       mockPrescriptionDetails.data.attributes.quantity,
     );

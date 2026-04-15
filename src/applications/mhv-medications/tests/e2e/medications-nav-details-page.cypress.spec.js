@@ -11,7 +11,7 @@ describe('verify navigation to medication details Page', () => {
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
 
     detailsPage.verifyPrescriptionsNumber(
       mockPrescriptionDetails.data.attributes.prescriptionNumber,

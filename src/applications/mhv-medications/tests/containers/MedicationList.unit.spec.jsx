@@ -4,17 +4,17 @@ import React from 'react';
 import { cleanup, fireEvent } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
-import * as useFetchMedicationHistoryModule from '../../hooks/MedicationHistory/useFetchMedicationHistory';
+import * as useFetchMedicationListModule from '../../hooks/MedicationList/useFetchMedicationList';
 import * as allergiesApiModule from '../../api/allergiesApi';
 import * as prescriptionsApiModule from '../../api/prescriptionsApi';
 import { stubAllergiesApi } from '../testing-utils';
-import MedicationHistory from '../../containers/MedicationHistory';
+import MedicationList from '../../containers/MedicationList';
 import reducers from '../../reducers';
 import { dataDogActionNames } from '../../util/dataDogConstants';
 
-describe('MedicationHistory container', () => {
+describe('MedicationList container', () => {
   let sandbox;
-  let useFetchMedicationHistoryStub;
+  let useFetchMedicationListStub;
 
   const mockPrescriptions = [
     {
@@ -78,7 +78,7 @@ describe('MedicationHistory container', () => {
       pagination,
       meta,
     };
-    return useFetchMedicationHistoryStub.returns({
+    return useFetchMedicationListStub.returns({
       prescriptions,
       prescriptionsData: resolvedData,
       prescriptionsApiError,
@@ -114,10 +114,10 @@ describe('MedicationHistory container', () => {
   };
 
   const setup = (initialState = defaultInitialState) => {
-    return renderWithStoreAndRouterV6(<MedicationHistory />, {
+    return renderWithStoreAndRouterV6(<MedicationList />, {
       initialState,
       reducers,
-      initialEntries: ['/history'],
+      initialEntries: ['/list'],
       additionalMiddlewares: [
         allergiesApiModule.allergiesApi.middleware,
         prescriptionsApiModule.prescriptionsApi.middleware,
@@ -128,9 +128,9 @@ describe('MedicationHistory container', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     stubAllergiesApi({ sandbox });
-    useFetchMedicationHistoryStub = sandbox.stub(
-      useFetchMedicationHistoryModule,
-      'useFetchMedicationHistory',
+    useFetchMedicationListStub = sandbox.stub(
+      useFetchMedicationListModule,
+      'useFetchMedicationList',
     );
   });
 
@@ -171,7 +171,7 @@ describe('MedicationHistory container', () => {
     });
   });
 
-  it('displays the in-progress medications link', async () => {
+  it('displays the refill-status medications link', async () => {
     stubFetchHook({
       prescriptionsData: {
         prescriptions: mockPrescriptions,
@@ -185,7 +185,7 @@ describe('MedicationHistory container', () => {
         name: /Refill Status/i,
       });
       expect(link).to.exist;
-      expect(link.getAttribute('href')).to.equal('/in-progress');
+      expect(link.getAttribute('href')).to.equal('/refill-status');
       expect(link.getAttribute('data-dd-action-name')).to.equal(
         dataDogActionNames.medicationsHistoryPage
           .GO_TO_YOUR_IN_PROGRESS_MEDICATIONS_LINK,
@@ -292,7 +292,7 @@ describe('MedicationHistory container', () => {
       });
       const screen = setup();
       await waitFor(() => {
-        expect(screen.getByTestId('medication-history-heading')).to.exist;
+        expect(screen.getByTestId('medication-list-heading')).to.exist;
       });
     });
 
@@ -310,7 +310,7 @@ describe('MedicationHistory container', () => {
         },
       });
       const screen = setup();
-      expect(screen.queryByTestId('medication-history-filter')).to.be.null;
+      expect(screen.queryByTestId('medication-list-filter')).to.be.null;
     });
 
     it('shows NoFilterMatches when filter returns 0 results but other filters have results', () => {
@@ -329,7 +329,7 @@ describe('MedicationHistory container', () => {
       });
       const screen = setup();
       expect(screen.getByTestId('zero-filter-results')).to.exist;
-      expect(screen.getByTestId('medication-history-filter')).to.exist;
+      expect(screen.getByTestId('medication-list-filter')).to.exist;
     });
 
     it('does not render PrintDownloadCard when no medications are loaded', () => {
@@ -370,13 +370,13 @@ describe('MedicationHistory container', () => {
   });
 
   describe('filter integration', () => {
-    it('renders the MedicationHistoryFilter when medications exist', () => {
+    it('renders the MedicationListFilter when medications exist', () => {
       stubFetchHook({
         prescriptions: mockPrescriptions,
         pagination: mockPagination,
       });
       const screen = setup();
-      expect(screen.getByTestId('medication-history-filter')).to.exist;
+      expect(screen.getByTestId('medication-list-filter')).to.exist;
     });
 
     it('renders filter radio options for hardcoded filter options', () => {
@@ -386,13 +386,13 @@ describe('MedicationHistory container', () => {
       });
       const screen = setup();
       expect(
-        screen.getByTestId('medication-history-filter-option-ALL_MEDICATIONS'),
+        screen.getByTestId('medication-list-filter-option-ALL_MEDICATIONS'),
       ).to.exist;
-      expect(screen.getByTestId('medication-history-filter-option-ACTIVE')).to
+      expect(screen.getByTestId('medication-list-filter-option-ACTIVE')).to
         .exist;
-      expect(screen.getByTestId('medication-history-filter-option-RENEWAL')).to
+      expect(screen.getByTestId('medication-list-filter-option-RENEWAL')).to
         .exist;
-      expect(screen.getByTestId('medication-history-filter-option-INACTIVE')).to
+      expect(screen.getByTestId('medication-list-filter-option-INACTIVE')).to
         .exist;
     });
 
@@ -413,7 +413,7 @@ describe('MedicationHistory container', () => {
       const screen = setup();
 
       // Select the ACTIVE filter option via the parent radio group
-      const radioGroup = screen.getByTestId('medication-history-filter');
+      const radioGroup = screen.getByTestId('medication-list-filter');
       radioGroup.__events.vaValueChange({ detail: { value: 'ACTIVE' } });
 
       // Click the Update list button
@@ -422,7 +422,7 @@ describe('MedicationHistory container', () => {
 
       await waitFor(() => {
         // The filter component dispatches setFilterOption to Redux
-        expect(screen.getByTestId('medication-history-filter')).to.exist;
+        expect(screen.getByTestId('medication-list-filter')).to.exist;
       });
     });
 

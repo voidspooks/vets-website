@@ -8,14 +8,14 @@ import configureStore from 'redux-mock-store';
 import * as sinon from 'sinon';
 import { MemoryRouter } from 'react-router-dom-v5-compat';
 import * as prescriptionsApiModule from '../../../api/prescriptionsApi';
-import { useFetchMedicationHistory } from '../../../hooks/MedicationHistory/useFetchMedicationHistory';
+import { useFetchMedicationList } from '../../../hooks/MedicationList/useFetchMedicationList';
 import {
   rxListSortingOptions,
   rxListSortingOptionsV2,
   ALL_MEDICATIONS_FILTER_KEY,
   ACTIVE_FILTER_KEY,
 } from '../../../util/constants';
-import { getFilterUrl } from '../../../components/MedicationHistory/MedicationHistoryFilter';
+import { getFilterUrl } from '../../../components/MedicationList/MedicationListFilter';
 
 const CERNER_PILOT_TOGGLE = 'mhv_medications_cerner_pilot';
 const V2_STATUS_MAPPING_TOGGLE = 'mhv_medications_v2_status_mapping';
@@ -117,7 +117,7 @@ const getMockQueryResponse = (overrides = {}) => ({
   ...overrides,
 });
 
-describe('useFetchMedicationHistory', () => {
+describe('useFetchMedicationList', () => {
   let sandbox;
   let useGetPrescriptionsListQueryStub;
 
@@ -139,7 +139,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -164,7 +164,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -181,7 +181,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -198,7 +198,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -222,7 +222,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -240,7 +240,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -259,7 +259,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         expect(useGetPrescriptionsListQueryStub.called).to.be.true;
@@ -281,7 +281,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore, 3);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -300,7 +300,7 @@ describe('useFetchMedicationHistory', () => {
       const mockStore = createMockStore();
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(25), { wrapper });
+      renderHook(() => useFetchMedicationList(25), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -318,7 +318,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -338,7 +338,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -360,7 +360,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -378,7 +378,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -399,7 +399,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -423,7 +423,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -446,7 +446,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -471,7 +471,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -496,7 +496,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), { wrapper });
+      renderHook(() => useFetchMedicationList(), { wrapper });
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
@@ -518,7 +518,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      const { result } = renderHook(() => useFetchMedicationHistory(), {
+      const { result } = renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 
@@ -543,7 +543,7 @@ describe('useFetchMedicationHistory', () => {
       });
       const wrapper = createTestWrapper(mockStore);
 
-      renderHook(() => useFetchMedicationHistory(), {
+      renderHook(() => useFetchMedicationList(), {
         wrapper,
       });
 

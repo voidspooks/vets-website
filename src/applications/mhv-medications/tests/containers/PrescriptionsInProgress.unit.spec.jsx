@@ -78,7 +78,7 @@ describe('PrescriptionsInProgress container', () => {
     return renderWithStoreAndRouterV6(<PrescriptionsInProgress />, {
       initialState,
       reducers,
-      initialEntries: ['/in-progress'],
+      initialEntries: ['/refill-status'],
     });
   };
 
@@ -121,14 +121,14 @@ describe('PrescriptionsInProgress container', () => {
     ).to.exist;
   });
 
-  it('displays the medication history link', () => {
+  it('displays the medication list link', () => {
     stubFetchHook(mockCategorizedPrescriptions);
     const screen = setup();
     const link = screen.getByRole('link', {
       name: /Medications List/i,
     });
     expect(link).to.exist;
-    expect(link.getAttribute('href')).to.equal('/history');
+    expect(link.getAttribute('href')).to.equal('/list');
     expect(link.getAttribute('data-dd-action-name')).to.equal(
       dataDogActionNames.inProgressPage
         .GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK,

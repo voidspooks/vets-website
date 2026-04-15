@@ -11,7 +11,7 @@ describe('verify navigation to medication details Page Date Field', () => {
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     detailsPage.verifyPrescriptionsExpirationDate('April 14, 2024');
     detailsPage.verifyPrescriptionsOrderedDate();
     cy.injectAxe();

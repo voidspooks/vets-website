@@ -42,10 +42,10 @@ describe('RenewableMedsNote', () => {
     expect(link).to.contain.text('Go to your list of renewable medications');
   });
 
-  it('link navigates to /history', () => {
+  it('link navigates to /list', () => {
     const { getByTestId } = setup();
     const link = getByTestId('test-renewable-meds-link');
-    expect(link.getAttribute('href')).to.equal('/history');
+    expect(link.getAttribute('href')).to.equal('/list');
   });
 
   it('calls onLinkClick when the link is clicked', () => {

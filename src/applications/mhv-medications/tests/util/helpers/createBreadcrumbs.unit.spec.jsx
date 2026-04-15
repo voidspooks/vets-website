@@ -68,32 +68,32 @@ describe('createBreadcrumbs', () => {
     ]);
   });
 
-  it('should return breadcrumbs for the IN_PROGRESS path', () => {
+  it('should return breadcrumbs for the REFILL_STATUS path', () => {
     const breadcrumbs = createBreadcrumbs(
-      locationMock(medicationsUrls.subdirectories.IN_PROGRESS),
+      locationMock(medicationsUrls.subdirectories.REFILL_STATUS),
       1,
     );
     expect(breadcrumbs).to.deep.equal([
       ...defaultBreadcrumbs,
       { href: medicationsUrls.MEDICATIONS_URL, label: 'Medications' },
       {
-        href: medicationsUrls.MEDICATIONS_IN_PROGRESS,
-        label: 'In-progress medications',
+        href: medicationsUrls.MEDICATIONS_REFILL_STATUS,
+        label: 'Refill Status medications',
       },
     ]);
   });
 
-  it('should return breadcrumbs for the HISTORY path', () => {
+  it('should return breadcrumbs for the LIST path', () => {
     const breadcrumbs = createBreadcrumbs(
-      locationMock(medicationsUrls.subdirectories.HISTORY),
+      locationMock(medicationsUrls.subdirectories.LIST),
       1,
     );
     expect(breadcrumbs).to.deep.equal([
       ...defaultBreadcrumbs,
       { href: medicationsUrls.MEDICATIONS_URL, label: 'Medications' },
       {
-        href: medicationsUrls.MEDICATIONS_HISTORY,
-        label: 'Medication history',
+        href: medicationsUrls.MEDICATIONS_LIST,
+        label: 'Medication list',
       },
     ]);
   });

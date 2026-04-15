@@ -26,7 +26,7 @@ describe('Medications List Page standardize error message', () => {
     cy.intercept('GET', '/my_health/v1/prescriptions/232323', errorResponse).as(
       'errorResponse',
     );
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     cy.visit('/my-health/medications/prescription/232323');
     detailsPage.verifyResponseForRecordNotFoundForStandardizeErrorMessage();
   });

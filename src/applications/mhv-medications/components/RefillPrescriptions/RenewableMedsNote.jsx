@@ -16,7 +16,7 @@ const RenewableMedsNote = ({ testId, className, onLinkClick }) => {
       <Link
         data-testid={testId}
         className="vads-u-margin-top--2 vads-u-display--block"
-        to="/history"
+        to="/list"
         onClick={onLinkClick}
         data-dd-action-name={
           dataDogActionNames.refillPage

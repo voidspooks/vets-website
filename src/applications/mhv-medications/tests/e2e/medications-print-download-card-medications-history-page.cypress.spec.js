@@ -2,7 +2,7 @@ import MedicationsSite from './med_site/MedicationsSite';
 import rxList from './fixtures/listOfPrescriptions.json';
 import MedicationsListPage from './pages/MedicationsListPage';
 
-describe('Medications History Page Print Download Card', () => {
+describe('Medications List Page Print Download Card', () => {
   beforeEach(() => {
     const site = new MedicationsSite();
     const listPage = new MedicationsListPage();
@@ -23,7 +23,7 @@ describe('Medications History Page Print Download Card', () => {
       'exportPrescriptions',
     );
     listPage.visitMedicationsListPageURL(rxList);
-    cy.visit('/my-health/medications/history');
+    cy.visit('/my-health/medications/list');
     cy.injectAxe();
   });
 

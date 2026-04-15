@@ -56,7 +56,7 @@ export const getFilterUrl = (key, _isCernerPilot, _isV2StatusMapping) => {
 
 const DEFAULT_FILTER = 'ALL_MEDICATIONS';
 
-const MedicationHistoryFilter = ({ updateFilter, isLoading }) => {
+const MedicationListFilter = ({ updateFilter, isLoading }) => {
   const dispatch = useDispatch();
   const filterOption = useSelector(selectFilterOption);
   const [selectedFilterOption, setSelectedFilterOption] = useState(
@@ -84,11 +84,11 @@ const MedicationHistoryFilter = ({ updateFilter, isLoading }) => {
   };
 
   return (
-    <div className="medication-history-filter vads-u-margin-top--3">
+    <div className="medication-list-filter vads-u-margin-top--3">
       <VaRadio
         label="Select medications to show in list"
         label-header-level={2}
-        data-testid="medication-history-filter"
+        data-testid="medication-list-filter"
         onVaValueChange={handleFilterOptionChange}
         className="vads-u-margin-top--0"
         uswds
@@ -102,10 +102,10 @@ const MedicationHistoryFilter = ({ updateFilter, isLoading }) => {
           >
             <VaRadioOption
               label={label}
-              name="medication-history-filter-group"
+              name="medication-list-filter-group"
               value={key}
               checked={selectedFilterOption === key}
-              data-testid={`medication-history-filter-option-${key}`}
+              data-testid={`medication-list-filter-option-${key}`}
             />
           </span>
         ))}
@@ -121,9 +121,9 @@ const MedicationHistoryFilter = ({ updateFilter, isLoading }) => {
   );
 };
 
-MedicationHistoryFilter.propTypes = {
+MedicationListFilter.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   updateFilter: PropTypes.func.isRequired,
 };
 
-export default MedicationHistoryFilter;
+export default MedicationListFilter;

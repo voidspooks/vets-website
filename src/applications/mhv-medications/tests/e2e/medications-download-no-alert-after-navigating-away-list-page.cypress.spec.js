@@ -23,7 +23,7 @@ describe('Medications Download PDF no alert after navigating away from Med List 
     );
 
     site.verifyDownloadedFile();
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     listPage.verifyDownloadSuccessMessageBannerNotVisibleAfterReload();
     cy.injectAxe();
     cy.axeCheck('main');
@@ -36,7 +36,7 @@ describe('Medications Download PDF no alert after navigating away from Med List 
       Data.DOWNLOAD_SUCCESS_ALERT_CONTENT,
     );
     site.verifyDownloadedFile({ format: DownloadFormat.TXT });
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     listPage.verifyDownloadSuccessMessageBannerNotVisibleAfterReload();
     cy.injectAxe();
     cy.axeCheck('main');

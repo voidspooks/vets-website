@@ -94,9 +94,7 @@ describe('Medication card component', () => {
       prescriptionName: '',
       dispStatus: 'Active: Non-VA',
     });
-    const medicationName = screen.getByTestId(
-      'medications-history-details-link',
-    );
+    const medicationName = screen.getByTestId('medications-list-details-link');
     fireEvent.click(medicationName);
     expect(screen);
   });
@@ -380,7 +378,7 @@ describe('Medication card component', () => {
         expect(screen.getByTestId('non-VA-prescription')).to.have.text(
           NON_VA_MEDICATION_MESSAGE,
         );
-        expect(screen.getByTestId('medications-history-details-link')).to.exist;
+        expect(screen.getByTestId('medications-list-details-link')).to.exist;
         expect(screen.queryByTestId('rx-last-filled-info')).to.not.exist;
         expect(screen.queryByTestId('rxStatus')).to.not.exist;
         expect(screen.queryByTestId('rx-number')).to.not.exist;
@@ -491,7 +489,7 @@ describe('Medication card component', () => {
           transferredRx,
           managementImprovementsState,
         );
-        expect(getByTestId('medications-history-details-link')).to.exist;
+        expect(getByTestId('medications-list-details-link')).to.exist;
       });
 
       it('renders with gray background card', () => {
@@ -974,7 +972,7 @@ describe('Medication card component', () => {
       orderableItem: 'Amoxicillin 500mg Capsules', // fallback text
     };
     const screen = setup(rx);
-    const link = screen.getByTestId('medications-history-details-link');
+    const link = screen.getByTestId('medications-list-details-link');
     expect(link).to.exist;
     expect(link.textContent).to.include('Amoxicillin 500mg Capsules');
   });
@@ -986,7 +984,7 @@ describe('Medication card component', () => {
       orderableItem: 'Fallback should not be used',
     };
     const screen = setup(rx);
-    const link = screen.getByTestId('medications-history-details-link');
+    const link = screen.getByTestId('medications-list-details-link');
     expect(link).to.exist;
     expect(link.textContent).to.include('Atorvastatin');
   });
@@ -1026,7 +1024,7 @@ describe('Medication card component', () => {
 
   it('does not render aria-describedby attribute on the link', () => {
     const screen = setup();
-    const link = screen.getByTestId('medications-history-details-link');
+    const link = screen.getByTestId('medications-list-details-link');
     expect(link.getAttribute('aria-describedby')).to.be.null;
   });
   describe('Status display edge cases', () => {

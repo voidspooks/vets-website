@@ -16,7 +16,7 @@ describe('Medications Details Page Provider Name', () => {
   });
   it('visits Medications Details Page Provider First Last Name', () => {
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     detailsPage.verifyProviderFirstLastNameOnDetailsPage(
       Data.PROVIDER_FULL_NAME,
     );

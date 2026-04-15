@@ -9,7 +9,7 @@ describe('Medication History Page Pending Rx Renew (management improvements enab
     const site = new MedicationsSite();
     const listPage = new MedicationsListPage();
     site.loginWithManagementImprovements();
-    listPage.visitMedicationHistoryPageURL(pendingPrescriptions);
+    listPage.visitMedicationListPageURL(pendingPrescriptions);
     listPage.verifyPendingRenewalInfoTextOnMedicationCardOnListPage(
       Data.PENDING_RENEW_TEXT,
     );
@@ -30,7 +30,7 @@ describe('Medications List Page Pending Rx Renew (management improvements disabl
     site.login();
     listPage.visitMedicationsListPageURL(pendingPrescriptions);
     cy.url().should('include', '/my-health/medications');
-    cy.url().should('not.include', '/history');
+    cy.url().should('not.include', '/list');
     cy.get('[data-testid="pending-renewal-rx"]').should('not.exist');
     cy.injectAxe();
     cy.axeCheck('main');

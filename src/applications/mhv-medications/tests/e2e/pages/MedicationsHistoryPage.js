@@ -4,7 +4,7 @@ import rxList from '../fixtures/listOfPrescriptions.json';
 
 class MedicationsHistoryPage {
   visitPage = () => {
-    cy.visit(medicationsUrls.MEDICATIONS_HISTORY);
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
   };
 
   visitPageWithPrescriptions = (medications = rxList) => {
@@ -16,7 +16,7 @@ class MedicationsHistoryPage {
       '/my_health/v1/medical_records/allergies',
       allergies,
     ).as('allergies');
-    cy.visit(medicationsUrls.MEDICATIONS_HISTORY);
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
   };
 
   visitPageWithApiError = () => {
@@ -32,7 +32,7 @@ class MedicationsHistoryPage {
         ],
       },
     }).as('prescriptionsError');
-    cy.visit(medicationsUrls.MEDICATIONS_HISTORY);
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
     cy.wait('@prescriptionsError');
   };
 
@@ -49,11 +49,11 @@ class MedicationsHistoryPage {
         filterCount: {},
       },
     }).as('emptyPrescriptions');
-    cy.visit(medicationsUrls.MEDICATIONS_HISTORY);
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
   };
 
   verifyHeading = () => {
-    cy.findByTestId('medication-history-heading').should(
+    cy.findByTestId('medication-list-heading').should(
       'have.text',
       'Medication history',
     );
@@ -64,7 +64,10 @@ class MedicationsHistoryPage {
   };
 
   verifyRefillStatusLink = () => {
-    cy.findByTestId('in-progress-inner-nav').should('contain', 'Refill Status');
+    cy.findByTestId('refill-status-inner-nav').should(
+      'contain',
+      'Refill Status',
+    );
   };
 
   verifyRefillLink = () => {
@@ -83,7 +86,7 @@ class MedicationsHistoryPage {
   };
 
   verifyMedicationCardVisible = () => {
-    cy.get('[data-testid="medications-history-details-link"]')
+    cy.get('[data-testid="medications-list-details-link"]')
       .first()
       .should('exist');
   };

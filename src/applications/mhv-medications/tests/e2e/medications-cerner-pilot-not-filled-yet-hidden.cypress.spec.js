@@ -59,10 +59,10 @@ describe('Medications Details Page - Cerner Pilot Enabled - Not Filled Yet Hidde
 
     // Click on medication details link (card number 1)
     cy.get(
-      '[data-testid="medication-list"] > :nth-child(1) [data-testid="medications-history-details-link"]',
+      '[data-testid="medication-list"] > :nth-child(1) [data-testid="medications-list-details-link"]',
     ).should('be.visible');
     cy.get(
-      '[data-testid="medication-list"] > :nth-child(1) [data-testid="medications-history-details-link"]',
+      '[data-testid="medication-list"] > :nth-child(1) [data-testid="medications-list-details-link"]',
     )
       .first()
       .click({ waitForAnimations: true });

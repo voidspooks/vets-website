@@ -9,7 +9,7 @@ import PrintDownloadCard from '../components/shared/PrintDownloadCard';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import MedicationsList from '../components/MedicationsList/MedicationsList';
 import MedicationsListSort from '../components/MedicationsList/MedicationsListSort';
-import { useFetchMedicationHistory } from '../hooks/MedicationHistory/useFetchMedicationHistory';
+import { useFetchMedicationList } from '../hooks/MedicationList/useFetchMedicationList';
 import { pageType } from '../util/dataDogConstants';
 import {
   rxListSortingOptions,
@@ -24,7 +24,7 @@ import {
 import { setSortOption, setFilterOption } from '../redux/preferencesSlice';
 import EmptyPrescriptionContent from '../components/MedicationsList/EmptyPrescriptionContent';
 import NoFilterMatches from '../components/MedicationsList/NoFilterMatches';
-import MedicationHistoryFilter from '../components/MedicationHistory/MedicationHistoryFilter';
+import MedicationListFilter from '../components/MedicationList/MedicationListFilter';
 import InnerNavigation from '../components/shared/InnerNavigation';
 
 import { useGetAllergiesQuery } from '../api/allergiesApi';
@@ -43,7 +43,7 @@ import {
 } from '../util/selectors';
 import MedicationResources from '../components/shared/MedicationResources';
 
-const MedicationHistory = () => {
+const MedicationList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -104,7 +104,7 @@ const MedicationHistory = () => {
     prescriptionsData,
     prescriptionsApiError,
     isLoading,
-  } = useFetchMedicationHistory();
+  } = useFetchMedicationList();
 
   const { pagination, meta = {} } = prescriptionsData || {};
   const filteredList = useMemo(() => prescriptionsData?.prescriptions || [], [
@@ -189,7 +189,7 @@ const MedicationHistory = () => {
   const updateFilter = newFilterOption => {
     if (newFilterOption !== selectedFilterOption) {
       setLoadingMessage('Filtering your medications...');
-      navigate('/history', { replace: true });
+      navigate('/list', { replace: true });
     }
   };
 
@@ -198,7 +198,7 @@ const MedicationHistory = () => {
       setLoadingMessage('Sorting your medications...');
       dispatch(setSortOption(newSortOption));
       resetExportState();
-      navigate('/history', { replace: true });
+      navigate('/list', { replace: true });
     }
   };
 
@@ -235,7 +235,7 @@ const MedicationHistory = () => {
     }
     return (
       <>
-        <MedicationHistoryFilter
+        <MedicationListFilter
           updateFilter={updateFilter}
           isLoading={isLoading}
         />
@@ -277,7 +277,7 @@ const MedicationHistory = () => {
 
   return (
     <div>
-      <h1 data-testid="medication-history-heading">Medication history</h1>
+      <h1 data-testid="medication-list-heading">Medication history</h1>
       {prescriptionsApiError && (
         <ApiErrorNotification errorType="access" content="medications" />
       )}
@@ -289,4 +289,4 @@ const MedicationHistory = () => {
   );
 };
 
-export default MedicationHistory;
+export default MedicationList;

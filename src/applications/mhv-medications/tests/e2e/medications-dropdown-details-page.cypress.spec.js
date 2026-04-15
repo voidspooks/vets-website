@@ -11,7 +11,7 @@ describe('Medications Details Page DropDown', () => {
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     detailsPage.clickWhatToKnowAboutMedicationsDropDown();
     detailsPage.verifyTextInsideDropDownOnDetailsPage();
     cy.injectAxe();

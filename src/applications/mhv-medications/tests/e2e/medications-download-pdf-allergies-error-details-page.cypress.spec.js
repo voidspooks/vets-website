@@ -10,7 +10,7 @@ describe('Medications Details Page Download pdf error when allergies api fails o
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsLinkWhenNoAllergiesAPICallFails();
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     listPage.clickPrintOrDownloadThisListDropDown();
     detailsPage.verifyDownloadMedicationsDetailsAsPDFButtonOnDetailsPage();
     detailsPage.clickDownloadMedicationDetailsAsPdfOnDetailsPage();

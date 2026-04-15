@@ -20,7 +20,7 @@ describe('Medications details Page Back Browser', () => {
     cy.injectAxe();
     cy.axeCheck('main');
     site.loadVAPaginationNextPrescriptions(2, mockRxPageTwo);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     cy.go('back');
     site.verifyPaginationPrescriptionsDisplayed(11, 20, threadLength);
   });

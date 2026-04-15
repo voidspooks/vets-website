@@ -12,7 +12,7 @@ import {
   selectSortOption,
   selectFilterOption,
 } from '../../selectors/selectPreferences';
-import { getFilterUrl } from '../../components/MedicationHistory/MedicationHistoryFilter';
+import { getFilterUrl } from '../../components/MedicationList/MedicationListFilter';
 import {
   selectCernerPilotFlag,
   selectV2StatusMappingFlag,
@@ -37,7 +37,7 @@ const resolveSortEndpoint = (key, isManagementImprovements) => {
   );
 };
 
-export const useFetchMedicationHistory = (perPage = 10) => {
+export const useFetchMedicationList = (perPage = 10) => {
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
 

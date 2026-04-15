@@ -43,7 +43,7 @@ const MedicationsList = props => {
     selectedSortOption
   ]?.LABEL.toLowerCase();
 
-  const route = isManagementImprovementsEnabled ? `/history` : `/`;
+  const route = isManagementImprovementsEnabled ? `/list` : `/`;
   const perPage = 10;
 
   const displaynumberOfPrescriptionsSelector =

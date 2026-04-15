@@ -33,12 +33,12 @@ describe('Medications Refill Page - Renewable Meds Link Navigation', () => {
     cy.wait('@prescriptionsList');
 
     // Verify navigation to history page
-    cy.url().should('include', '/history');
+    cy.url().should('include', '/list');
 
     // Verify the RENEWAL filter is active by checking the radio button state.
     // The onClick handler dispatches setFilterOption('RENEWAL') to Redux before navigation,
     // which the history page reads on mount to pre-select the filter.
-    cy.get('[data-testid="medication-history-filter-option-RENEWAL"]').should(
+    cy.get('[data-testid="medication-list-filter-option-RENEWAL"]').should(
       'have.attr',
       'checked',
     );
@@ -70,10 +70,10 @@ describe('Medications Refill Page - Renewable Meds Link Navigation', () => {
     cy.wait('@prescriptionsList');
 
     // Verify navigation to history page
-    cy.url().should('include', '/history');
+    cy.url().should('include', '/list');
 
     // Verify the RENEWAL filter is active
-    cy.get('[data-testid="medication-history-filter-option-RENEWAL"]').should(
+    cy.get('[data-testid="medication-list-filter-option-RENEWAL"]').should(
       'have.attr',
       'checked',
     );

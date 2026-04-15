@@ -11,7 +11,7 @@ describe('Navigate to Print DropDown on Details Page', () => {
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsListPageURL(rxList);
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     cy.injectAxe();
     cy.axeCheck('main');
     detailsPage.clickPrintOrDownloadThisPageDropDownOnDetailsPage();

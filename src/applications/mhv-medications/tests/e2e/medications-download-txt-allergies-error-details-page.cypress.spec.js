@@ -10,7 +10,7 @@ describe('Medications Details Page Download Txt Error when Allergies API call Fa
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsLinkWhenNoAllergiesAPICallFails();
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     listPage.clickPrintOrDownloadThisListDropDown();
     detailsPage.clickDownloadMedicationsDetailsAsTxtOnDetailsPage();
     listPage.verifyFocusOnDownloadFailureAlertBanner();

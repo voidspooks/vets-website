@@ -10,7 +10,7 @@ describe('Navigate to Print Error Message when Allergies API Fails on Details Pa
     const detailsPage = new MedicationsDetailsPage();
     site.login();
     listPage.visitMedicationsLinkWhenNoAllergiesAPICallFails();
-    detailsPage.clickMedicationHistoryAndDetailsLink(mockPrescriptionDetails);
+    detailsPage.clickMedicationListAndDetailsLink(mockPrescriptionDetails);
     listPage.clickPrintOrDownloadThisListDropDown();
     detailsPage.clickPrintThisPageButtonOnDetailsPage();
     listPage.verifyPrintErrorMessageForAllergiesAPICallFail();
