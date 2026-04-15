@@ -13,8 +13,7 @@ const errorUUIDs = [
   'eps-error-appointment-id',
 ];
 
-const ALLOWED_CATEGORIES_OF_CARE = ['optometry'];
-const CHIRO_FEATURE_ALLOWED_CATEGORY = ['chiropractic'];
+// const ALLOWED_CATEGORIES_OF_CARE = ['primary-care'];
 
 /**
  * Creates a referral list object relative to a start date.
@@ -235,26 +234,19 @@ const getReferralProviderKey = id => {
  * @param {Array} referrals The referrals to filter
  * @returns {Array} The filtered referrals
  */
-const filterReferrals = (
-  referrals,
-  featureCCDirectSchedulingChiropractic = false,
-) => {
-  let allowedCategories = ALLOWED_CATEGORIES_OF_CARE;
+const filterReferrals = referrals => {
+  // const allowedCategories = ALLOWED_CATEGORIES_OF_CARE;
   if (!referrals?.length) {
     return [];
   }
-  if (featureCCDirectSchedulingChiropractic) {
-    // Add chiropractic to allowed categories if feature is on
-    allowedCategories = [
-      ...allowedCategories,
-      ...CHIRO_FEATURE_ALLOWED_CATEGORY,
-    ];
-  }
-  return referrals.filter(referral =>
-    allowedCategories.includes(
-      referral.attributes.categoryOfCare?.toLowerCase(),
-    ),
-  );
+  // TODO Once we have the appropriate value for 'Primary Care' enum type, we can uncomment the following code
+  // Ticket: https://github.com/department-of-veterans-affairs/va.gov-team/issues/139456
+  return referrals;
+  // return referrals.filter(referral =>
+  //   allowedCategories.includes(
+  //     referral.attributes.categoryOfCare?.toLowerCase(),
+  //   ),
+  // );
 };
 
 /**

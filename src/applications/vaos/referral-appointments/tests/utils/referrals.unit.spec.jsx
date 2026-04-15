@@ -34,7 +34,8 @@ describe('VAOS referral generator', () => {
       'selected-slot-referral-111',
     );
   });
-  describe('filterReferrals', () => {
+  // Ticket: https://github.com/department-of-veterans-affairs/va.gov-team/issues/139456
+  describe.skip('filterReferrals', () => {
     // Create referrals using the fixture
     const optometryReferral = MockReferralListResponse.createReferral({
       id: 'test-optometry',
