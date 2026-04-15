@@ -340,7 +340,7 @@ export const FORM_21_4502 = {
     PENALTY_TEXT:
       'The law provides severe penalties, which include fine or imprisonment or both, for the willful submission of any statement or evidence of a material fact, knowing it to be false, or for the fraudulent acceptance of any payment to which you are not entitled.',
     CERTIFY_LICENSING_TITLE:
-      'I have read and understand the Application for Vehicle and Equipment Certification.',
+      'I have read and understand the Application for Conveyance and Equipment Certification.',
     CERTIFY_LICENSING_HEADING:
       'Application for Conveyance and Equipment Certification',
     CERTIFY_LICENSING_DESCRIPTION:

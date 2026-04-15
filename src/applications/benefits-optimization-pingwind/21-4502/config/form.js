@@ -14,6 +14,7 @@ import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
 import getHelp from '../../shared/components/GetFormHelp';
 import transformForSubmit from './submit-transformer';
+import prefillTransformer from './prefill-transformer';
 
 import EligibilityFormPage from '../pages/eligibility';
 import personalInfoBasic from '../pages/personalInfoBasic';
@@ -87,6 +88,7 @@ const formConfig = {
   onFormLoaded: handleFormLoaded,
   version: 0,
   prefillEnabled: true,
+  prefillTransformer,
   transformForSubmit,
   savedFormMessages: {
     notFound:

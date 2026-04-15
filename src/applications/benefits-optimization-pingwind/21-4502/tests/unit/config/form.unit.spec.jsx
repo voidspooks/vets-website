@@ -3,12 +3,13 @@ import sinon from 'sinon';
 import formConfig from '../../../config/form';
 
 describe('21-4502 form config', () => {
-  it('is an object with formId, rootUrl, and transformForSubmit', () => {
+  it('is an object with formId, rootUrl, transformForSubmit, and prefillTransformer', () => {
     expect(formConfig).to.be.an('object');
     expect(formConfig.formId).to.equal('21-4502');
     expect(formConfig).to.have.property('rootUrl');
     expect(formConfig.rootUrl).to.be.a('string');
     expect(formConfig.transformForSubmit).to.be.a('function');
+    expect(formConfig.prefillTransformer).to.be.a('function');
   });
 
   it('has correct URLs and tracking prefix', () => {

@@ -1,7 +1,7 @@
 {
   "title": "VA.gov Applications Manifest Catalog",
   "description": "Catalog of all applications in src/applications with their manifest.json metadata for reference",
-  "totalApplications": 154,
+  "totalApplications": 155,
   "applications": [
     {
       "directoryPath": "src/applications/_mock-form",
