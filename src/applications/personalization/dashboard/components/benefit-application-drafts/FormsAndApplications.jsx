@@ -219,7 +219,7 @@ const FormsAndApplications = ({
               style={{ overflow: 'hidden' }}
               data-testid="applications-in-progress-list"
             >
-              <div className="vads-l-row vads-u-margin-right--neg3">
+              <div className="vads-l-row">
                 {inProgressCardList.map(card => (
                   <DashboardWidgetWrapper key={card.formId}>
                     <ApplicationCard {...card} />
@@ -253,7 +253,7 @@ const FormsAndApplications = ({
                   style={{ overflow: 'hidden' }}
                   data-testid="applications-completed-list"
                 >
-                  <div className="vads-l-row vads-u-margin-right--neg3">
+                  <div className="vads-l-row">
                     {completedCardList.map(card => (
                       <DashboardWidgetWrapper key={card.formId}>
                         <ApplicationCard {...card} />
