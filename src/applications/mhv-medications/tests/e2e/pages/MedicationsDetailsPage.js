@@ -228,11 +228,18 @@ class MedicationsDetailsPage {
     });
   };
 
-  verifyNonVAStatusDropDownDefinition = () => {
-    cy.get('[data-testid="nonVA-status-definition"] > :nth-child(1)').should(
-      'contain',
-      'this isn’t a prescription you filled through a VA pharmacy.',
-    );
+  verifyNonVAStatusDropDownDefinition = (isMedsImprovements = false) => {
+    if (isMedsImprovements) {
+      cy.get('[data-testid="nonVA-status-definition"] > :nth-child(1)').should(
+        'contain',
+        'A VA provider entered this medication in your records. But you didn’t get this medication through a VA pharmacy.',
+      );
+    } else {
+      cy.get('[data-testid="nonVA-status-definition"] > :nth-child(1)').should(
+        'contain',
+        'this isn’t a prescription you filled through a VA pharmacy.',
+      );
+    }
   };
 
   verifyActiveNonVAStatusDisplayedOnDetailsPage = status => {

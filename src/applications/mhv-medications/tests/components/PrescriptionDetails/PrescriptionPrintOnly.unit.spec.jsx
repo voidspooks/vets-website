@@ -35,6 +35,7 @@ describe('Prescription print only container', () => {
       isDetailsRx: false,
       isCernerPilot: false,
       isV2StatusMapping: false,
+      isMedsImprovements: false,
     },
   ) => {
     const rx = {
@@ -48,6 +49,8 @@ describe('Prescription print only container', () => {
           params.isCernerPilot || false,
         [FEATURE_FLAG_NAMES.mhvMedicationsV2StatusMapping]:
           params.isV2StatusMapping || false,
+        [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]:
+          params.isMedsImprovements || false,
       },
     };
 
@@ -108,23 +111,47 @@ describe('Prescription print only container', () => {
   });
 
   describe('Non-VA prescriptions', () => {
-    it('should render Non-VA rx details', () => {
-      const screen = setup({
-        va: false,
-        isDetailsRx: false,
-        isCernerPilot: false,
+    describe('when medications management improvements flag is enabled', () => {
+      it('should render updated Non-VA status definition text', () => {
+        const screen = setup({
+          va: false,
+          isDetailsRx: false,
+          isCernerPilot: false,
+          isMedsImprovements: true,
+        });
+        expect(
+          screen.getByText(
+            'A VA provider entered this medication in your records. But you didn’t get this medication through a VA pharmacy.',
+          ),
+        ).to.exist;
       });
-      expect(screen.findByText('Instructions:')).to.exist;
-      expect(screen.findByText('Reason for use')).to.exist;
-      expect(screen.findByText('Status:')).to.exist;
-      expect(
-        screen.findByText(
-          `A VA provider added this medication record in your VA medical records.
-        But this isn't a prescription you filled through a VA pharmacy. You
-        can't request refills or manage this medication through this online
-        tool.`,
-        ),
-      ).to.exist;
+    });
+
+    describe('when medications management improvements flag is disabled', () => {
+      it('should render original Non-VA status definition text', () => {
+        const screen = setup({
+          va: false,
+          isDetailsRx: false,
+          isCernerPilot: false,
+          isMedsImprovements: false,
+        });
+        expect(
+          screen.getByText(
+            'A VA provider added this medication record in your VA medical records. But this isn’t a prescription you filled through a VA pharmacy. You can’t request refills or manage this medication through this online tool.',
+          ),
+        ).to.exist;
+      });
+      it('should render Non-VA rx basic fields', () => {
+        const screen = setup({
+          va: false,
+          isDetailsRx: false,
+          isCernerPilot: false,
+          isMedsImprovements: false,
+        });
+        expect(screen.findByText('Instructions:')).to.exist;
+        expect(screen.findByText('Reason for use')).to.exist;
+        expect(screen.findByText('Status:')).to.exist;
+      });
     });
   });
 

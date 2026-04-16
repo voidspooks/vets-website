@@ -24,6 +24,7 @@ import {
   selectCernerPilotFlag,
   selectPendingMedsFlag,
   selectV2StatusMappingFlag,
+  selectMedicationsManagementImprovementsFlag,
 } from '../../util/selectors';
 import {
   getStatusDefinitions,
@@ -34,6 +35,9 @@ const PrescriptionPrintOnly = props => {
   const { rx, refillHistory, isDetailsRx } = props;
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
+  const isMedsImprovements = useSelector(
+    selectMedicationsManagementImprovementsFlag,
+  );
   const showRefillHistory = getShowRefillHistory(refillHistory);
   const pharmacyPhone = pharmacyPhoneNumber(rx);
   const latestTrackingStatus = rx?.trackingList?.[0];
@@ -71,10 +75,9 @@ const PrescriptionPrintOnly = props => {
         <strong>Status:</strong> {rxStatus}
       </p>
       <p>
-        A VA provider added this medication record in your VA medical records.
-        But this isn’t a prescription you filled through a VA pharmacy. You
-        can’t request refills or manage this medication through this online
-        tool.
+        {isMedsImprovements
+          ? 'A VA provider entered this medication in your records. But you didn’t get this medication through a VA pharmacy.'
+          : 'A VA provider added this medication record in your VA medical records. But this isn’t a prescription you filled through a VA pharmacy. You can’t request refills or manage this medication through this online tool.'}
       </p>
       <p className="vads-u-margin-bottom--neg2">
         <strong>Non-VA medications include these types:</strong>

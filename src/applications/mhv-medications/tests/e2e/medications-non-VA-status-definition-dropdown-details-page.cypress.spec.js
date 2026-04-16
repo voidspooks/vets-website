@@ -19,4 +19,25 @@ describe('Medications Details Page NonVARx Status DropDown', () => {
     detailsPage.clickWhatDoesThisStatusMeanDropDown();
     detailsPage.verifyNonVAStatusDropDownDefinition();
   });
+
+  it('displays updated Non-VA status definition when MedicationsManagementImprovement flag is enabled', () => {
+    const site = new MedicationsSite();
+    const listPage = new MedicationsListPage();
+    const detailsPage = new MedicationsDetailsPage();
+    const cardNumber = 5;
+    site.loginWithManagementImprovements();
+    listPage.visitMedicationHistoryPageURL(rxList);
+    cy.injectAxe();
+    cy.axeCheck('main');
+    // Add intercept with station_number query param for prescription details API
+    cy.intercept(
+      'GET',
+      `/my_health/v1/prescriptions/${nonVARx.data.attributes.prescriptionId}?*`,
+      nonVARx,
+    ).as('prescriptionDetailsWithStation');
+    detailsPage.clickMedicationDetailsLink(nonVARx, cardNumber);
+    detailsPage.verifyActiveNonVAStatusDisplayedOnDetailsPage('Active: Non-VA');
+    detailsPage.clickWhatDoesThisStatusMeanDropDown();
+    detailsPage.verifyNonVAStatusDropDownDefinition(true);
+  });
 });

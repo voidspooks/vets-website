@@ -6,12 +6,17 @@ import NonVaPrescription from '../../../components/PrescriptionDetails/NonVaPres
 
 describe('nonVaPrescription details container', () => {
   const prescription = nonVaRxDetailsResponse.data.attributes;
-  const setup = (rx = prescription, { isCernerPilot = false } = {}) => {
+  const setup = (
+    rx = prescription,
+    { isCernerPilot = false, isMedsImprovements = false } = {},
+  ) => {
     return renderWithStoreAndRouterV6(<NonVaPrescription {...rx} />, {
       initialState: {
         featureToggles: {
           // eslint-disable-next-line camelcase
           mhv_medications_cerner_pilot: isCernerPilot,
+          // eslint-disable-next-line camelcase
+          mhv_medications_management_improvements: isMedsImprovements,
         },
       },
       reducers: {},
@@ -98,5 +103,15 @@ describe('nonVaPrescription details container', () => {
     const screen = setup(prescription, { isCernerPilot: true });
 
     expect(screen.queryByTestId('rx-reason-for-use')).to.be.null;
+  });
+
+  describe('when medications management improvements flag is enabled', () => {
+    it('displays updated status definition text', () => {
+      const { getByTestId } = setup(prescription, { isMedsImprovements: true });
+      const statusDefinition = getByTestId('nonVA-status-definition');
+      expect(statusDefinition).to.contain.text(
+        'A VA provider entered this medication in your records. But you didn’t get this medication through a VA pharmacy.',
+      );
+    });
   });
 });

@@ -6,13 +6,19 @@ import {
   dateFormat,
   displayProviderName,
 } from '../../util/helpers';
-import { selectCernerPilotFlag } from '../../util/selectors';
+import {
+  selectCernerPilotFlag,
+  selectMedicationsManagementImprovementsFlag,
+} from '../../util/selectors';
 import ExtraDetails from '../shared/ExtraDetails';
 import { dataDogActionNames, pageType } from '../../util/dataDogConstants';
 import { ACTIVE_NON_VA } from '../../util/constants';
 
 const NonVaPrescription = prescription => {
   const isCernerPilot = useSelector(selectCernerPilotFlag);
+  const isMedsImprovements = useSelector(
+    selectMedicationsManagementImprovementsFlag,
+  );
 
   const content = () => {
     return (
@@ -43,29 +49,28 @@ const NonVaPrescription = prescription => {
                 dataDogActionNames.detailsPage.STATUS_INFO_DROPDOWN
               }
             >
-              <ul className="non-va-ul" data-testid="nonVA-status-definition">
-                <li>
-                  A VA provider added this medication record in your VA medical
-                  records. But this isn’t a prescription you filled through a VA
-                  pharmacy. You can’t request refills or manage this medication
-                  through this online tool.
-                </li>
-                <li>
+              <div data-testid="nonVA-status-definition">
+                <p className="vads-u-margin-bottom--2">
+                  {isMedsImprovements
+                    ? 'A VA provider entered this medication in your records. But you didn’t get this medication through a VA pharmacy.'
+                    : "A VA provider added this medication record in your VA medical records. But this isn’t a prescription you filled through a VA pharmacy. You can't request refills or manage this medication through this online tool."}
+                </p>
+                <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
                   Non-VA medications include these types:
-                  <ul>
-                    <li>Prescriptions you filled through a non-VA pharmacy</li>
-                    <li>
-                      Over-the-counter medications, supplements, and herbal
-                      remedies
-                    </li>
-                    <li>Sample medications a provider gave you</li>
-                    <li>
-                      Other drugs you’re taking that you don’t have a
-                      prescription for, including recreational drugs
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+                </p>
+                <ul className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+                  <li>Prescriptions you filled through a non-VA pharmacy</li>
+                  <li>
+                    Over-the-counter medications, supplements, and herbal
+                    remedies
+                  </li>
+                  <li>Sample medications a provider gave you</li>
+                  <li>
+                    Other drugs you’re taking that you don’t have a prescription
+                    for, including recreational drugs
+                  </li>
+                </ul>
+              </div>
             </va-additional-info>
           </div>
         </section>
