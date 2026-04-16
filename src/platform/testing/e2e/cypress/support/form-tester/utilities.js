@@ -54,7 +54,7 @@ export const createTestConfig = (config, manifest = {}, formConfig = {}) => {
 export default function inProgressMock({
   prefill = {},
   returnUrl,
-  version,
+  version = 0,
 } = {}) {
   const date = Date.now();
   return {

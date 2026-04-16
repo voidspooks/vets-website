@@ -1,5 +1,8 @@
 /* eslint-disable camelcase */
-const mockUser = {
+const createMockUserInProgress = ({
+  birthDate = '1976-11-18',
+  returnUrl = '/veteran-service/veteran-information',
+} = {}) => ({
   data: {
     id: '',
     type: 'users_scaffolds',
@@ -14,14 +17,35 @@ const mockUser = {
         middle_name: 'E',
         last_name: 'Hunter',
         gender: 'M',
-        birth_date: '1948-11-18',
+        birth_date: birthDate,
         verified: true,
       },
       veteran_status: {
         status: 'OK',
         is_veteran: true,
       },
-      inProgressForms: [],
+      inProgressForms: [
+        {
+          form: '10-10EZR',
+          metadata: {
+            version: 0,
+            returnUrl,
+            savedAt: 1739200257608,
+            submission: {
+              status: false,
+              errorMessage: false,
+              id: false,
+              timestamp: false,
+              hasAttemptedSubmit: false,
+            },
+            createdAt: 1739200226,
+            expiresAt: 32472162000,
+            lastUpdated: 1739200257,
+            inProgressFormId: 12345,
+          },
+          lastUpdated: 1739200257,
+        },
+      ],
       prefillsAvailable: ['10-10EZR'],
       services: [
         'facilities',
@@ -107,7 +131,6 @@ const mockUser = {
   meta: {
     errors: null,
   },
-};
-/* eslint-enable camelcase */
+});
 
-export default mockUser;
+export default createMockUserInProgress;

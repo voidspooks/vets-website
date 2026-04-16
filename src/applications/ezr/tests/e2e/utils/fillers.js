@@ -5,6 +5,16 @@ import {
   fillTextWebComponent,
 } from '../helpers';
 
+export const fillPrivacyAgreementAndSubmit = () => {
+  cy.get('va-checkbox[name="privacyAgreementAccepted"]')
+    .scrollIntoView()
+    .shadow()
+    .find('label')
+    .click();
+  cy.findByText(/submit/i, { selector: 'button' }).click();
+  cy.location('pathname').should('include', '/confirmation');
+};
+
 export const fillVeteranIncome = (testData, clearInput = false) => {
   if (clearInput) {
     clearVeteranIncome();

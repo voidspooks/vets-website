@@ -24,7 +24,9 @@ const featureFlagObject = normalizeFeatureFlags(featureToggles.data.features);
 const testConfig = createTestConfig(
   {
     dataPrefix: 'data',
-    dataSets: ['maximal-test', 'minimal-test'],
+    dataSets: Cypress.env('CI')
+      ? ['minimal-test']
+      : ['maximal-test', 'minimal-test'],
     fixtures: { data: path.join(__dirname, 'fixtures/data') },
     pageHooks: {
       introduction: ({ afterHook }) => {

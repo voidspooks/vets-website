@@ -1,0 +1,40 @@
+{
+  "formData": {
+    "veteranFullName": { "first": "Julio", "middle": "E", "last": "Hunter" },
+    "gender": "M",
+    "veteranDateOfBirth": "1948-11-18",
+    "veteranSocialSecurityNumber": "796378321",
+    "homePhone": "6575107441",
+    "email": "vets.gov.user+71@gmail.com",
+    "isMedicaidEligible": false,
+    "veteranAddress": {
+      "country": "USA",
+      "street": "123 Main St",
+      "city": "Springfield",
+      "state": "OH",
+      "postalCode": "54321"
+    },
+    "view:doesMailingMatchHomeAddress": true,
+    "view:maritalStatus": {
+      "maritalStatus": "Never Married"
+    },
+    "view:isEnrolledMedicarePartA": false
+  },
+  "metadata": {
+    "version": 0,
+    "prefill": true,
+    "returnUrl": "/military-service/toxic-exposure",
+    "savedAt": 1739200257608,
+    "submission": {
+      "status": false,
+      "errorMessage": false,
+      "id": false,
+      "timestamp": false,
+      "hasAttemptedSubmit": false
+    },
+    "createdAt": 1739200226,
+    "expiresAt": 32472162000,
+    "lastUpdated": 1739200257,
+    "inProgressFormId": 12345
+  }
+}
