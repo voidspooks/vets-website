@@ -63,10 +63,8 @@ import ClaimFormSideNav from './components/ClaimFormSideNav';
 import ClaimFormSideNavErrorBoundary from './components/ClaimFormSideNavErrorBoundary';
 import NavButtonsWithTracking from './components/NavButtonsWithTracking';
 import useMediaQuery from './hooks/useMediaQuery';
-import {
-  trackFormStarted,
-  trackFormSubmitted,
-} from './utils/tracking/datadogRumTracking';
+import { trackFormStarted } from './utils/tracking/datadogRumTracking';
+import { trackFormSubmitted } from './utils/tracking/submissionRumTracking';
 
 // formConfig must be mutated in place because the platform forms system reads it
 // from route objects built at module load time via createRoutesWithSaveInProgress(formConfig).
@@ -80,7 +78,8 @@ const defaultSubmit = formConfig.submit;
 formConfig.submit = (submittedForm, formConfigParam, options) => {
   return defaultSubmit(submittedForm, formConfigParam, options).then(
     result => {
-      trackFormSubmitted();
+      // Single entry point for all submit-time tracking.
+      trackFormSubmitted(submittedForm?.data);
       return result;
     },
     error => Promise.reject(error),

@@ -12,7 +12,7 @@ import { findHighImpactFieldEntryForPath } from '../utils/sideNav/highImpactFiel
 import {
   trackSideNavChapterClick,
   trackMobileAccordionClick,
-} from '../utils/tracking/datadogRumTracking';
+} from '../utils/tracking/sideNavRumTracking';
 
 const DISABLED_STYLE =
   'vads-u-margin--0 vads-u-padding-y--1 vads-u-padding-left--2 vads-u-padding-right--0p5 vads-u-color--gray vads-u-border-color--gray-lightest vads-u-border-bottom--1px';

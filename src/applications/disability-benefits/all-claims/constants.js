@@ -355,6 +355,11 @@ export const TRACKING_526EZ_SIDENAV_CLICKS = '21-526EZ_sideNavClickCount';
 export const TRACKING_526EZ_SIDENAV_FORM_START = '21-526EZ_formStartTracked';
 export const TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE = '21-526EZ_sidenavEnabled';
 
+// BDD SHA tracking session storage keys
+export const TRACKING_526EZ_BDD_SESSION_COUNT = '21-526EZ_bddSessionCount';
+export const TRACKING_526EZ_BDD_SHOWN_SHA_INTRO = '21-526EZ_bddShownShaIntro';
+export const TRACKING_526EZ_BDD_SHOWN_SHA_UPLOAD = '21-526EZ_bddShownShaUpload';
+
 // sessionStorage key used for the user entered separation date in the wizard
 // used by the first page of the form to populate the form data
 export const SAVED_SEPARATION_DATE = 'savedSeparationDate';

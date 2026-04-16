@@ -58,9 +58,7 @@ describe('separationHealthAssessmentUploadV1 page', () => {
     });
 
     it('shows SHA-specific upload guidance text', () => {
-      const { getByText } = render(
-        <div>{uploadField['ui:description']()}</div>,
-      );
+      const { getByText } = render(<div>{uploadField['ui:description']}</div>);
 
       expect(
         getByText(

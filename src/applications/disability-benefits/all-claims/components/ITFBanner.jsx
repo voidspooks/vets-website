@@ -6,6 +6,7 @@ import { Link } from 'react-router';
 import { focusElement } from 'platform/utilities/ui';
 import { dismissITFMessage as dismissITFMessageAction } from '../actions';
 import { trackFormResumption } from '../utils/tracking/datadogRumTracking';
+import { initBddSessionTracking } from '../utils/tracking/bddShaRumTracking';
 import {
   TRACKING_526EZ_SIDENAV_BACK_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_CONTINUE_BUTTON_CLICKS,
@@ -35,6 +36,7 @@ export class ITFBanner extends React.Component {
         // Storage access blocked - silent fail
       }
       trackFormResumption();
+      initBddSessionTracking();
     }
   }
 

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   fileInputMultipleUI,
   fileInputMultipleSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { trackShaPageSeen } from '../utils/tracking/bddShaRumTracking';
 import {
   UPLOAD_URL,
   FILE_UPLOAD_TITLE,
@@ -27,13 +28,16 @@ const parseShaResponse = (response, file) => ({
   file,
 });
 
-export const uiSchema = {
-  'ui:title': (
-    <h3 className="vads-u-margin-y--0 vads-u-color--base">
-      Upload your Separation Health Assessment
-    </h3>
-  ),
-  'ui:description': (
+/**
+ * Tracks that the SHA upload page has been seen.
+ * Rendered as part of ui:description so it fires on page mount.
+ */
+const ShaUploadDescription = () => {
+  useEffect(() => {
+    trackShaPageSeen('upload');
+  }, []);
+
+  return (
     <>
       <p>
         Upload your Separation Health Assessment (self-assessment, also called
@@ -41,7 +45,16 @@ export const uiSchema = {
       </p>
       {additionalInfo}
     </>
+  );
+};
+
+export const uiSchema = {
+  'ui:title': (
+    <h3 className="vads-u-margin-y--0 vads-u-color--base">
+      Upload your Separation Health Assessment
+    </h3>
   ),
+  'ui:description': <ShaUploadDescription />,
   separationHealthAssessmentUploads: {
     ...fileInputMultipleUI({
       title: FILE_UPLOAD_TITLE,

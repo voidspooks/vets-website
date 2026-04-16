@@ -12,6 +12,10 @@ import { checkValidations } from '../utils/submit';
 import { getBddShaUploads } from '../utils';
 import { renderFileList } from '../content/evidenceRequest';
 import { SeparationHealthAssessmentWarningAlert } from '../content/separationHealthAssessmentWarningAlert';
+import {
+  trackShaDestructiveModal,
+  trackShaPageSeen,
+} from '../utils/tracking/bddShaRumTracking';
 
 const selectionField = 'view:hasSeparationHealthAssessment';
 const missingSelectionErrorMessage = 'You must provide a response';
@@ -27,6 +31,7 @@ export const SeparationHealthAssessment = ({
   updatePage,
 }) => {
   const hasSeparationHealthAssessment = _.get(selectionField, data, null);
+  trackShaPageSeen('intro');
   const [hasError, setHasError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -108,7 +113,7 @@ export const SeparationHealthAssessment = ({
         // Capture the submit button that triggered this action
         const button = event.target.closest('button');
         setFocusReturnTarget(button);
-
+        trackShaDestructiveModal();
         setModalVisible(true);
       } else {
         setAlertVisible(false);
@@ -125,7 +130,7 @@ export const SeparationHealthAssessment = ({
       ) {
         // Capture the button that triggered this action
         setFocusReturnTarget(event.currentTarget);
-
+        trackShaDestructiveModal();
         setModalVisible(true);
       } else {
         setAlertVisible(false);

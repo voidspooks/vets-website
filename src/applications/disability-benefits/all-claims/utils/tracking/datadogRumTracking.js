@@ -1,11 +1,15 @@
 import { VA_FORM_IDS } from '@department-of-veterans-affairs/platform-forms/constants';
-import { datadogRum } from '@datadog/browser-rum';
 import {
   TRACKING_526EZ_SIDENAV_BACK_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_CONTINUE_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE,
   TRACKING_526EZ_SIDENAV_CLICKS,
 } from '../../constants';
+import * as datadogRumAddActionModule from './datadogRumAddAction';
+
+// ──────────────────────────────────────────────
+// Shared helpers — used by sidenav, BDD SHA, and generic tracking
+// ──────────────────────────────────────────────
 
 /**
  * Helper function to track DataDog RUM actions
@@ -15,9 +19,9 @@ import {
  * @param {string} actionName - Name of the action to track
  * @param {object} properties - Properties to attach to the action
  */
-const trackAction = (actionName, properties) => {
+export const trackAction = (actionName, properties) => {
   try {
-    datadogRum.addAction(actionName, properties);
+    datadogRumAddActionModule.datadogRumAddAction(actionName, properties);
   } catch (error) {
     // Silent fail - tracking should never break the form
   }
@@ -30,7 +34,7 @@ const trackAction = (actionName, properties) => {
  * @param {string} storageKey - The sessionStorage key to increment
  * @returns {number} The new click count
  */
-const incrementClickCounter = storageKey => {
+export const incrementClickCounter = storageKey => {
   let count = 1;
   try {
     const currentCount = parseInt(
@@ -52,7 +56,7 @@ const incrementClickCounter = storageKey => {
  *
  * @returns {object} Object containing backButtonClickCount, continueButtonClickCount, sideNavClickCount (only if > 0)
  */
-const getClickCounts = () => {
+export const getClickCounts = () => {
   const counts = {};
   try {
     const backButtonCount = parseInt(
@@ -81,13 +85,13 @@ const getClickCounts = () => {
 
 /**
  * Reads common tracking defaults from sessionStorage and the browser.
- * Centralizes the two values every tracking function needs:
+ * Provides values commonly needed by tracking functions:
  * - sidenav526ezEnabled: written once by Form526EZApp on mount
  * - sourcePath: current window pathname
  *
  * @returns {{ sourcePath: string, sidenav526ezEnabled: boolean|undefined }}
  */
-const getSideNavTrackingDefaults = () => {
+export const getTrackingDefaults = () => {
   let sidenav526ezEnabled;
   let sourcePath = '';
 
@@ -111,13 +115,17 @@ const getSideNavTrackingDefaults = () => {
   };
 };
 
+// ──────────────────────────────────────────────
+// Generic form tracking
+// ──────────────────────────────────────────────
+
 /**
  * Tracks back button clicks in the 526EZ form
  * Maintains a session-based click counter and reads tracking defaults
  * from sessionStorage / window.location for DataDog RUM tracking
  */
 export const trackBackButtonClick = () => {
-  const { sourcePath, sidenav526ezEnabled } = getSideNavTrackingDefaults();
+  const { sourcePath, sidenav526ezEnabled } = getTrackingDefaults();
   incrementClickCounter(TRACKING_526EZ_SIDENAV_BACK_BUTTON_CLICKS);
 
   const properties = {
@@ -139,7 +147,7 @@ export const trackBackButtonClick = () => {
  * from sessionStorage / window.location for DataDog RUM tracking
  */
 export const trackContinueButtonClick = () => {
-  const { sourcePath, sidenav526ezEnabled } = getSideNavTrackingDefaults();
+  const { sourcePath, sidenav526ezEnabled } = getTrackingDefaults();
   incrementClickCounter(TRACKING_526EZ_SIDENAV_CONTINUE_BUTTON_CLICKS);
 
   const properties = {
@@ -158,12 +166,16 @@ export const trackContinueButtonClick = () => {
 /**
  * Tracks when user starts the form from introduction page
  * This tracks the initial form start event (not resumption)
+ *
+ * @param {boolean} isBddForm - Whether this form is started as a BDD claim
+ *
  */
-export const trackFormStarted = () => {
-  const { sourcePath, sidenav526ezEnabled } = getSideNavTrackingDefaults();
+export const trackFormStarted = (isBddForm = false) => {
+  const { sourcePath, sidenav526ezEnabled } = getTrackingDefaults();
 
   const properties = {
     formId: VA_FORM_IDS.FORM_21_526EZ,
+    isBdd: Boolean(isBddForm),
     sourcePath,
     ...getClickCounts(),
   };
@@ -172,10 +184,7 @@ export const trackFormStarted = () => {
     properties.sidenav526ezEnabled = sidenav526ezEnabled;
   }
 
-  trackAction(
-    'Form started - User began form from introduction page',
-    properties,
-  );
+  trackAction('21-526EZ_claimStarted', properties);
 };
 
 /**
@@ -183,7 +192,7 @@ export const trackFormStarted = () => {
  * This tracks form resumption (not initial start)
  */
 export const trackFormResumption = () => {
-  const { sourcePath, sidenav526ezEnabled } = getSideNavTrackingDefaults();
+  const { sourcePath, sidenav526ezEnabled } = getTrackingDefaults();
 
   const properties = {
     formId: VA_FORM_IDS.FORM_21_526EZ,
@@ -196,75 +205,4 @@ export const trackFormResumption = () => {
   }
 
   trackAction('Form resumption - Saved form loaded', properties);
-};
-
-/**
- * Tracks side nav chapter clicks
- * This tracks when users navigate via the side navigation menu
- * Maintains a session-based click counter shared with mobile accordion clicks
- *
- * @param {object} params - Parameters for tracking
- * @param {object} params.pageData - Page data including key, label, and path
- * @param {string} params.pathname - Current page pathname before navigation
- */
-export const trackSideNavChapterClick = (params = {}) => {
-  const { pageData = {}, pathname = '' } = params;
-  incrementClickCounter(TRACKING_526EZ_SIDENAV_CLICKS);
-
-  const properties = {
-    formId: VA_FORM_IDS.FORM_21_526EZ,
-    chapterTitle: pageData?.label || '',
-    sourcePath: pathname,
-    ...getClickCounts(),
-  };
-
-  trackAction('Side navigation - Chapter clicked', properties);
-};
-
-/**
- * Tracks form submission attempts
- * This tracks when the user clicks the submit button on the 526EZ form
- */
-export const trackFormSubmitted = () => {
-  const { sourcePath, sidenav526ezEnabled } = getSideNavTrackingDefaults();
-
-  const properties = {
-    formId: VA_FORM_IDS.FORM_21_526EZ,
-    sourcePath,
-    ...getClickCounts(),
-  };
-
-  if (sidenav526ezEnabled !== undefined) {
-    properties.sidenav526ezEnabled = sidenav526ezEnabled;
-  }
-
-  trackAction('Form submission - Submit button clicked', properties);
-};
-
-/**
- * Tracks mobile sidenav accordion expand/collapse
- * This tracks when users interact with the mobile accordion to show/hide navigation
- * Maintains a session-based click counter shared with chapter clicks
- *
- * @param {object} params - Parameters for tracking
- * @param {string} params.pathname - Current page pathname
- * @param {string} params.state - Accordion state: 'expanded' or 'collapsed'
- * @param {string} params.accordionTitle - Title of the accordion (e.g., "Form steps")
- */
-export const trackMobileAccordionClick = ({
-  pathname = '',
-  state = '',
-  accordionTitle = '',
-} = {}) => {
-  incrementClickCounter(TRACKING_526EZ_SIDENAV_CLICKS);
-
-  const properties = {
-    formId: VA_FORM_IDS.FORM_21_526EZ,
-    state,
-    accordionTitle,
-    sourcePath: pathname,
-    ...getClickCounts(),
-  };
-
-  trackAction('Side navigation - Mobile accordion clicked', properties);
 };

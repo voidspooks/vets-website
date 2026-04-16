@@ -1,5 +1,6 @@
 import React from 'react';
 import { DBQ_URL } from '../constants';
+import { trackShaDownloadLinkClicked } from '../utils/tracking/bddShaRumTracking';
 
 export const headerCopy = 'Submit your Separation Health Assessment';
 
@@ -20,6 +21,7 @@ export const SeparationHealthAssessmentWarningAlert = () => {
         <p>
           <va-link
             href={DBQ_URL}
+            onClick={trackShaDownloadLinkClicked}
             text="Download your Separation Health Assessment"
             external
           />

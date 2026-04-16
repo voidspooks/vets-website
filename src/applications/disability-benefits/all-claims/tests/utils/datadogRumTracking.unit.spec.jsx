@@ -1,28 +1,27 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as datadogBrowserRum from '@datadog/browser-rum';
 import { VA_FORM_IDS } from '@department-of-veterans-affairs/platform-forms/constants';
+import * as datadogRumAddActionModule from '../../utils/tracking/datadogRumAddAction';
 import {
   trackBackButtonClick,
   trackContinueButtonClick,
   trackFormStarted,
   trackFormResumption,
-  trackSideNavChapterClick,
-  trackFormSubmitted,
-  trackMobileAccordionClick,
 } from '../../utils/tracking/datadogRumTracking';
 import {
   TRACKING_526EZ_SIDENAV_BACK_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_CONTINUE_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE,
-  TRACKING_526EZ_SIDENAV_CLICKS,
 } from '../../constants';
 
 describe('datadogRumTracking', () => {
   let addActionStub;
 
   beforeEach(() => {
-    addActionStub = sinon.stub(datadogBrowserRum.datadogRum, 'addAction');
+    addActionStub = sinon.stub(
+      datadogRumAddActionModule,
+      'datadogRumAddAction',
+    );
     sessionStorage.clear();
   });
 
@@ -141,9 +140,7 @@ describe('datadogRumTracking', () => {
       expect(addActionStub.calledOnce).to.be.true;
 
       const [actionName, properties] = addActionStub.firstCall.args;
-      expect(actionName).to.equal(
-        'Form started - User began form from introduction page',
-      );
+      expect(actionName).to.equal('21-526EZ_claimStarted');
       expect(properties).to.include({
         formId: VA_FORM_IDS.FORM_21_526EZ,
         sidenav526ezEnabled: true,
@@ -156,10 +153,7 @@ describe('datadogRumTracking', () => {
     });
 
     it('does not throw when datadogRum.addAction fails', () => {
-      addActionStub.restore();
-      addActionStub = sinon
-        .stub(datadogBrowserRum.datadogRum, 'addAction')
-        .throws(new Error('fail'));
+      addActionStub.throws(new Error('fail'));
 
       expect(() => trackFormStarted()).to.not.throw();
     });
@@ -190,182 +184,14 @@ describe('datadogRumTracking', () => {
     });
   });
 
-  describe('trackSideNavChapterClick', () => {
-    it('tracks side nav chapter clicks', () => {
-      const pageData = {
-        label: 'Veteran details',
-        key: 'veteran-info',
-        path: '/veteran-information',
-      };
-      const pathname = '/disabilities/conditions';
-
-      trackSideNavChapterClick({ pageData, pathname });
-
-      expect(addActionStub.calledOnce).to.be.true;
-      expect(sessionStorage.getItem(TRACKING_526EZ_SIDENAV_CLICKS)).to.equal(
-        '1',
-      );
-
-      const [actionName, properties] = addActionStub.firstCall.args;
-      expect(actionName).to.equal('Side navigation - Chapter clicked');
-      expect(properties).to.deep.include({
-        formId: VA_FORM_IDS.FORM_21_526EZ,
-        chapterTitle: 'Veteran details',
-        sourcePath: '/disabilities/conditions',
-        sideNavClickCount: 1,
-      });
-    });
-
-    it('increments click counter across multiple chapter clicks', () => {
-      const pageData1 = { label: 'Chapter 1' };
-      const pageData2 = { label: 'Chapter 2' };
-      const pathname = '/test-path';
-
-      trackSideNavChapterClick({ pageData: pageData1, pathname });
-      trackSideNavChapterClick({ pageData: pageData2, pathname });
-
-      expect(sessionStorage.getItem(TRACKING_526EZ_SIDENAV_CLICKS)).to.equal(
-        '2',
-      );
-
-      const secondCallProps = addActionStub.secondCall.args[1];
-      expect(secondCallProps.sideNavClickCount).to.equal(2);
-      expect(secondCallProps.chapterTitle).to.equal('Chapter 2');
-    });
-
-    it('does not throw with missing params and tracks with defaults', () => {
-      expect(() => trackSideNavChapterClick()).to.not.throw();
-
-      expect(addActionStub.calledOnce).to.be.true;
-      const [, properties] = addActionStub.firstCall.args;
-      expect(properties.chapterTitle).to.equal('');
-      expect(properties.sourcePath).to.equal('');
-    });
-  });
-
-  describe('trackFormSubmitted', () => {
-    it('tracks form submission', () => {
-      sessionStorage.setItem(TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE, 'true');
-
-      trackFormSubmitted();
-
-      expect(addActionStub.calledOnce).to.be.true;
-
-      const [actionName, properties] = addActionStub.firstCall.args;
-      expect(actionName).to.equal('Form submission - Submit button clicked');
-      expect(properties).to.include({
-        formId: VA_FORM_IDS.FORM_21_526EZ,
-        sidenav526ezEnabled: true,
-      });
-      expect(properties.sourcePath).to.be.a('string');
-      // Should not have click counts if user hasn't clicked anything
-      expect(properties).to.not.have.property('backButtonClickCount');
-      expect(properties).to.not.have.property('continueButtonClickCount');
-      expect(properties).to.not.have.property('sideNavClickCount');
-    });
-
-    it('works without sidenav toggle', () => {
-      trackFormSubmitted();
-
-      const [, properties] = addActionStub.firstCall.args;
-      expect(properties).to.not.have.property('sidenav526ezEnabled');
-    });
-  });
-
-  describe('trackMobileAccordionClick', () => {
-    it('tracks mobile accordion expand', () => {
-      const params = {
-        pathname: '/veteran-information',
-        state: 'expanded',
-        accordionTitle: 'Form steps',
-      };
-
-      trackMobileAccordionClick(params);
-
-      expect(addActionStub.calledOnce).to.be.true;
-      expect(sessionStorage.getItem(TRACKING_526EZ_SIDENAV_CLICKS)).to.equal(
-        '1',
-      );
-
-      const [actionName, properties] = addActionStub.firstCall.args;
-      expect(actionName).to.equal('Side navigation - Mobile accordion clicked');
-      expect(properties).to.deep.include({
-        formId: VA_FORM_IDS.FORM_21_526EZ,
-        state: 'expanded',
-        accordionTitle: 'Form steps',
-        sourcePath: '/veteran-information',
-        sideNavClickCount: 1,
-      });
-    });
-
-    it('tracks mobile accordion collapse', () => {
-      const params = {
-        pathname: '/disabilities/conditions',
-        state: 'collapsed',
-        accordionTitle: 'Form steps',
-      };
-
-      trackMobileAccordionClick(params);
-
-      const [, properties] = addActionStub.firstCall.args;
-      expect(properties.state).to.equal('collapsed');
-    });
-
-    it('shares click counter with chapter clicks', () => {
-      const pageData = { label: 'Test Chapter' };
-      const pathname = '/test';
-
-      trackSideNavChapterClick({ pageData, pathname });
-      trackMobileAccordionClick({
-        pathname,
-        state: 'expanded',
-        accordionTitle: 'Steps',
-      });
-
-      expect(sessionStorage.getItem(TRACKING_526EZ_SIDENAV_CLICKS)).to.equal(
-        '2',
-      );
-
-      const secondCallProps = addActionStub.secondCall.args[1];
-      expect(secondCallProps.sideNavClickCount).to.equal(2);
-    });
-
-    it('does not throw with missing params and tracks with defaults', () => {
-      expect(() => trackMobileAccordionClick()).to.not.throw();
-
-      expect(addActionStub.calledOnce).to.be.true;
-      const [, properties] = addActionStub.firstCall.args;
-      expect(properties.sourcePath).to.equal('');
-      expect(properties.state).to.equal('');
-      expect(properties.accordionTitle).to.equal('');
-    });
-  });
-
   describe('error handling', () => {
     it('continues silently when tracking fails', () => {
-      addActionStub.restore();
-      addActionStub = sinon
-        .stub(datadogBrowserRum.datadogRum, 'addAction')
-        .throws(new Error('Tracking service unavailable'));
+      addActionStub.throws(new Error('Tracking service unavailable'));
 
       expect(() => trackBackButtonClick()).to.not.throw();
       expect(() => trackContinueButtonClick()).to.not.throw();
       expect(() => trackFormStarted()).to.not.throw();
       expect(() => trackFormResumption()).to.not.throw();
-      expect(() => trackFormSubmitted()).to.not.throw();
-      expect(() =>
-        trackSideNavChapterClick({
-          pageData: { label: 'Test' },
-          pathname: '/test',
-        }),
-      ).to.not.throw();
-      expect(() =>
-        trackMobileAccordionClick({
-          pathname: '/test',
-          state: 'expanded',
-          accordionTitle: 'Test',
-        }),
-      ).to.not.throw();
     });
   });
 });

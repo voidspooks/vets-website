@@ -6,7 +6,7 @@
  * is OFF. Once FileInputV3 is fully rolled out, this page can be removed.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import fileUploadUI from 'platform/forms-system/src/js/definitions/file';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 
@@ -18,6 +18,7 @@ import {
   MAX_FILE_SIZE_BYTES,
   MAX_PDF_FILE_SIZE_BYTES,
 } from '../constants';
+import { trackShaPageSeen } from '../utils/tracking/bddShaRumTracking';
 
 const MAXIMUM_NUMBER_OF_FILES = 20;
 
@@ -49,6 +50,37 @@ const fileUploadUi = fileUploadUI(
   },
 );
 
+/**
+ * Tracks that the SHA upload page has been seen.
+ * Rendered as part of ui:description so it fires on page mount.
+ */
+const ShaUploadDescription = () => {
+  useEffect(() => {
+    trackShaPageSeen('upload');
+  }, []);
+
+  return (
+    <div>
+      <p>
+        You can upload your file in a .pdf, .jpg, .jpeg, or .png format. You’ll
+        first need to scan a copy of your file onto your computer or mobile
+        phone. You can then upload the file from there.
+      </p>
+      <p>Guidelines for uploading a file:</p>
+      <ul>
+        <li>File types you can upload: .pdf, .jpg, .jpeg, or .png</li>
+        <li>Maximum number of files: {MAXIMUM_NUMBER_OF_FILES}</li>
+        <li>{`Maximum non-PDF file size: ${MAX_FILE_SIZE_MB}MB`}</li>
+        <li>{`Maximum PDF file size: ${MAX_PDF_FILE_SIZE_MB}MB`}</li>
+      </ul>
+      <p>
+        A 1MB file equals about 500 pages of text. A photo is usually about 6MB.
+        Large files can take longer to upload with a slow internet connection.
+      </p>
+    </div>
+  );
+};
+
 export const uiSchema = {
   'view:separationHealthAssessmentUploadTitle': {
     'ui:title': (
@@ -67,27 +99,7 @@ export const uiSchema = {
     // Utilizing custom JSX instead of FileUploadDescriptions component because file type and max file size +
     // requirements are specific to supporting future upload validation efforts and this V1 version of upload is a
     // temporary holdover.
-    'ui:description': () => (
-      <div>
-        <p>
-          You can upload your file in a .pdf, .jpg, .jpeg, or .png format.
-          You’ll first need to scan a copy of your file onto your computer or
-          mobile phone. You can then upload the file from there.
-        </p>
-        <p>Guidelines for uploading a file:</p>
-        <ul>
-          <li>File types you can upload: .pdf, .jpg, .jpeg, or .png</li>
-          <li>Maximum number of files: {MAXIMUM_NUMBER_OF_FILES}</li>
-          <li>{`Maximum non-PDF file size: ${MAX_FILE_SIZE_MB}MB`}</li>
-          <li>{`Maximum PDF file size: ${MAX_PDF_FILE_SIZE_MB}MB`}</li>
-        </ul>
-        <p>
-          A 1MB file equals about 500 pages of text. A photo is usually about
-          6MB. Large files can take longer to upload with a slow internet
-          connection.
-        </p>
-      </div>
-    ),
+    'ui:description': <ShaUploadDescription />,
     'ui:confirmationField': ({ formData }) => ({
       data: formData?.map(item => item.name || item.fileName),
       label: 'Uploaded file(s)',
