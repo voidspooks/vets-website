@@ -106,6 +106,7 @@ const FormApp = props => {
         currentPath={trimmedPathname}
         isLoggedIn={props.isLoggedIn}
         inProgressFormId={props.inProgressFormId}
+        location={currentLocation}
       />
     );
 

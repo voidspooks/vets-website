@@ -85,7 +85,9 @@ const ArrayBuilderSummaryReviewPage = ({
               arrayData,
               customPageProps.data,
             )}
-            onClick={addAnotherItemButtonClick}
+            onClick={() =>
+              addAnotherItemButtonClick(customPageProps.chapterKey)
+            }
             name={`${arrayBuilderOptions.nounPlural}AddButton`}
             primary
             uswds

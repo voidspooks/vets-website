@@ -634,8 +634,8 @@ describe('<ReviewCollapsibleChapter>', () => {
       />,
     );
 
-    expect(wrapper.find('va-accordion-item').html()).to.contain(
-      `<h3 slot="headline">${testChapterTitle}</h3>`,
+    expect(wrapper.find('va-accordion-item').prop('header')).to.equal(
+      testChapterTitle,
     );
 
     const titleDiv = wrapper.find('h4.form-review-panel-page-header');
@@ -697,8 +697,8 @@ describe('<ReviewCollapsibleChapter>', () => {
       />,
     );
 
-    expect(wrapper.find('va-accordion-item').html()).to.contain(
-      `<h3 slot="headline">${testChapterTitle}</h3>`,
+    expect(wrapper.find('va-accordion-item').prop('header')).to.equal(
+      testChapterTitle,
     );
 
     const titleDiv = wrapper.find('.form-review-panel-page-header');
@@ -769,8 +769,8 @@ describe('<ReviewCollapsibleChapter>', () => {
       />,
     );
 
-    expect(wrapper.find('va-accordion-item').html()).to.contain(
-      `<h3 slot="headline">${testChapterTitleFromFunction}</h3>`,
+    expect(wrapper.find('va-accordion-item').prop('header')).to.equal(
+      testChapterTitleFromFunction,
     );
 
     wrapper.unmount();

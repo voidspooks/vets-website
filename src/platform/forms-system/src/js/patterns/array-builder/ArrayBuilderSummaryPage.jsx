@@ -312,7 +312,7 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
       [hasReviewError, showUpdatedAlert, showRemovedAlert],
     );
 
-    function addAnotherItemButtonClick() {
+    function addAnotherItemButtonClick(chapterKey = null) {
       const index = arrayData ? arrayData.length : 0;
       const path = createArrayBuilderItemAddPath({
         path: getFirstItemPagePath(
@@ -330,6 +330,7 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
 
       props.goToPath(path, {
         force: true,
+        chapterKey,
       });
     }
 

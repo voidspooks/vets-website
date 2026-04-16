@@ -74,7 +74,7 @@ class ReviewCollapsibleChapter extends React.Component {
 
   goToPath = (customPath, options = {}) => {
     const { form, pageList, location } = this.props;
-    const { force } = options;
+    const { force, chapterKey } = options;
 
     const path =
       customPath &&
@@ -82,7 +82,12 @@ class ReviewCollapsibleChapter extends React.Component {
         ? customPath
         : getPreviousPagePath(pageList, form.data, location.pathname);
 
-    this.props.router.push(path);
+    const { pathname, search } = new URL(path, window.location.origin);
+    this.props.router.push({
+      pathname,
+      search,
+      state: { chapterKey },
+    });
   };
 
   shouldHideExpandedPageTitle = (expandedPages, chapterTitle, pageTitle) =>
@@ -366,6 +371,7 @@ class ReviewCollapsibleChapter extends React.Component {
           <div>
             <page.CustomPage
               name={page.pageKey}
+              chapterKey={this.props.chapterKey}
               title={page.title}
               trackingPrefix={props.form.trackingPrefix}
               uploadFile={props.uploadFile}
@@ -405,6 +411,7 @@ class ReviewCollapsibleChapter extends React.Component {
         <div>
           <page.CustomPageReview
             key={`${page.pageKey}Review${page.index ?? ''}`}
+            chapterKey={this.props.chapterKey}
             editPage={() => this.handleEdit(page.pageKey, !editing, page.index)}
             name={page.pageKey}
             title={page.title}
@@ -472,13 +479,9 @@ class ReviewCollapsibleChapter extends React.Component {
           data-unviewed-pages={this.props.hasUnviewedPages}
           open={this.props.open}
           bordered
-          uswds
+          header={chapterTitle}
+          level={isMinimalHeaderApp() ? 2 : 3}
         >
-          {isMinimalHeaderApp() ? (
-            <h2 slot="headline">{chapterTitle}</h2>
-          ) : (
-            <h3 slot="headline">{chapterTitle}</h3>
-          )}
           {this.props.hasUnviewedPages && (
             <va-icon slot="icon" icon="error" class="vads-u-color--secondary" />
           )}

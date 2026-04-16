@@ -27,6 +27,7 @@ export default function FormNav(props) {
     formData,
     isLoggedIn,
     inProgressFormId,
+    location,
   } = props;
 
   const PROGRESS_BAR_HEADER_LEVEL = '2';
@@ -138,6 +139,23 @@ export default function FormNav(props) {
         !activeElement?.closest('.accordion-header') &&
         !isVaSelect
       ) {
+        const { chapterKey } = location?.state || {};
+        if (chapterKey) {
+          const accordion = document.querySelector(
+            `va-accordion-item[data-chapter="${chapterKey}"]`,
+          );
+          if (accordion) {
+            const selector = isMinimalHeaderApp() ? 'h2' : 'h3';
+            focusElement(selector, {}, accordion);
+            // scroll after focus has completed
+            requestAnimationFrame(() =>
+              scrollTo(`chapter${chapterKey}ScrollElement`),
+            );
+          }
+
+          return;
+        }
+
         // Ensure scrollTo is only called when necessary
         if (!hideFormNavProgress && !isMinimalHeaderApp()) {
           scrollTo('topScrollElement');
@@ -156,7 +174,14 @@ export default function FormNav(props) {
         }
       }
     },
-    [current, hideFormNavProgress, index, page.chapterKey, focusAfterRender],
+    [
+      current,
+      hideFormNavProgress,
+      index,
+      page.chapterKey,
+      focusAfterRender,
+      location?.state?.chapterKey,
+    ],
   );
 
   const v3SegmentedProgressBar = formConfig?.v3SegmentedProgressBar;
@@ -208,5 +233,10 @@ FormNav.propTypes = {
   formData: PropTypes.shape({}),
   inProgressFormId: PropTypes.number,
   isLoggedIn: PropTypes.bool,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object,
+    state: PropTypes.object,
+  }),
   testFocus: PropTypes.func,
 };

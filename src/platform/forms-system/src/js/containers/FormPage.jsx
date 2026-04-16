@@ -230,7 +230,7 @@ class FormPage extends React.Component {
       route: { pageList },
       location,
     } = this.props;
-    const { force } = options;
+    const { force, chapterKey } = options;
 
     const path =
       customPath &&
@@ -238,7 +238,12 @@ class FormPage extends React.Component {
         ? customPath
         : getPreviousPagePath(pageList, form.data, location.pathname);
 
-    this.props.router.push(path);
+    const { pathname, search } = new URL(path, window.location.origin);
+    this.props.router.push({
+      pathname,
+      search,
+      state: { chapterKey },
+    });
   };
 
   onContinue = () => {

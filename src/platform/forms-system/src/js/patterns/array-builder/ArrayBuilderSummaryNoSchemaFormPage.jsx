@@ -66,7 +66,8 @@ const ArrayBuilderSummaryNoSchemaFormPage = ({
                 arrayData,
                 customPageProps.data,
               )}
-              onClick={addAnotherItemButtonClick}
+              // arrow function prevents the DOM Event from being passed as chapterKey
+              onClick={() => addAnotherItemButtonClick()}
               name={`${arrayBuilderOptions.nounPlural}AddLink`}
             />
           </div>
@@ -83,7 +84,8 @@ const ArrayBuilderSummaryNoSchemaFormPage = ({
                 arrayData,
                 customPageProps.data,
               )}
-              onClick={addAnotherItemButtonClick}
+              // arrow function prevents the DOM Event from being passed as chapterKey
+              onClick={() => addAnotherItemButtonClick()}
               name={`${arrayBuilderOptions.nounPlural}AddButton`}
               primary
               uswds

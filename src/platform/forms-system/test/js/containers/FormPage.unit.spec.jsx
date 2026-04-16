@@ -472,7 +472,15 @@ describe('Schemaform <FormPage>', () => {
     );
 
     fireEvent.click(getByText(/go/));
-    expect(router.push.calledWith('/testing?index=3')).to.be.true;
+    expect(
+      router.push.calledWith(
+        sinon.match({
+          pathname: '/testing',
+          search: '?index=3',
+          state: {},
+        }),
+      ),
+    ).to.be.true;
   });
   it('should go back to the previous page if the custom path is invalid', () => {
     const router = {
@@ -513,7 +521,14 @@ describe('Schemaform <FormPage>', () => {
     );
 
     fireEvent.click(getByText(/go/));
-    expect(router.push.calledWith('/testing')).to.be.true;
+    expect(
+      router.push.calledWith(
+        sinon.match({
+          pathname: '/testing',
+          search: '',
+        }),
+      ),
+    ).to.be.true;
   });
   it('should not show a Back button on the first page', () => {
     const { container } = render(

@@ -5,6 +5,7 @@
 import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { setData } from '~/platform/forms-system/src/js/actions';
 import {
   VaButton,
@@ -44,6 +45,7 @@ const ArrayBuilderCancelButton = ({
   className,
   reviewRoute,
   required,
+  location,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const cancelButtonRef = useRef(null);
@@ -113,7 +115,8 @@ const ArrayBuilderCancelButton = ({
           ? introRoute
           : summaryRoute;
     }
-    goToPath(formatPath(path));
+    const { chapterKey } = location?.state || {};
+    goToPath(formatPath(path), { chapterKey });
   }
 
   return (
@@ -192,9 +195,12 @@ ArrayBuilderCancelButton.propTypes = {
   summaryRoute: PropTypes.string.isRequired,
   className: PropTypes.string,
   introRoute: PropTypes.string,
+  location: PropTypes.object,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ArrayBuilderCancelButton);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(ArrayBuilderCancelButton),
+);
