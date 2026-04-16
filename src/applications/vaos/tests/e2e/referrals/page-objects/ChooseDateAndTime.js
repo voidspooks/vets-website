@@ -52,16 +52,32 @@ export class ChooseDateAndTimePageObject extends PageObject {
   }
 
   /**
-   * Validates that an API error message is displayed when draft referral appointment fails to load
+   * Validates that a CC API error message is displayed when draft referral appointment fails to load
    */
   assertApiError() {
-    // This uses curly apostrophes as required by VA style guidelines
-    cy.findByText(/We’re sorry. We’ve run into a problem/i).should('exist');
+    cy.findByTestId('error').should('exist');
+    cy.findByText(/We\u2019re sorry. We\u2019ve run into a problem/i).should(
+      'exist',
+    );
+    cy.findByTestId('referral-community-care-office').should('exist');
     return this;
   }
 
   /**
-   * Validates that no slots available warning is shown
+   * Validates that a VA API error message is displayed when draft referral appointment fails to load
+   */
+  assertApiErrorVA() {
+    cy.findByTestId('error').should('exist');
+    cy.findByText(/This tool isn\u2019t working right now/i).should('exist');
+    cy.findByText(
+      /you can call your local VA health care facility to schedule this appointment/i,
+    ).should('exist');
+    cy.findByTestId('find-va-facility-link').should('exist');
+    return this;
+  }
+
+  /**
+   * Validates that no slots available warning is shown for community care
    */
   assertNoSlotsAvailableAlert() {
     cy.findByTestId('no-slots-alert').within(() => {
@@ -70,6 +86,22 @@ export class ChooseDateAndTimePageObject extends PageObject {
         /Call this provider or your facility’s community care office to schedule an appointment./,
       ).should('exist');
       cy.findByTestId('referral-community-care-office').should('exist');
+    });
+    return this;
+  }
+
+  /**
+   * Validates that no slots available warning is shown for VA appointments
+   */
+  assertNoSlotsAvailableAlertVA() {
+    cy.findByTestId('no-slots-alert').within(() => {
+      cy.findByText(
+        /We couldn’t find an appointment for your selected date/,
+      ).should('exist');
+      cy.findByText(
+        /To find an available date to schedule this appointment, you can call your local VA health care facility./,
+      ).should('exist');
+      cy.findByTestId('find-va-facility-link').should('exist');
     });
     return this;
   }

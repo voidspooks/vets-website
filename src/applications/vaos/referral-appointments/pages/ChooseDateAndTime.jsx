@@ -16,6 +16,7 @@ import { routeToCCPage } from '../flow';
 
 export const ChooseDateAndTime = props => {
   const { attributes: currentReferral } = props.currentReferral;
+  const isVAAppointment = currentReferral.careType === 'VA';
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -114,6 +115,8 @@ export const ChooseDateAndTime = props => {
       hasEyebrow
       apiFailure={failed || isProviderSlotsError}
       heading={scheduleHeader}
+      errorAlertLinkNewTab
+      isVAAppointment={isVAAppointment}
     >
       <DateAndTimeContent
         draftAppointmentInfo={providerSlotsInfo}

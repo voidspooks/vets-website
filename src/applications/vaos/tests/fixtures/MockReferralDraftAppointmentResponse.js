@@ -15,6 +15,7 @@ class MockReferralDraftAppointmentResponse {
     this.options = {
       referralNumber: 'PmDYsBz-egEtG13flMnHUQ==',
       categoryOfCare: 'Physical Therapy',
+      careType: 'CC',
       notFound: false,
       serverError: false,
       numberOfSlots: 3,
@@ -176,6 +177,7 @@ class MockReferralDraftAppointmentResponse {
   toJSON() {
     const {
       referralNumber,
+      careType,
       notFound,
       serverError,
       noSlotsError,
@@ -233,7 +235,7 @@ class MockReferralDraftAppointmentResponse {
         type: 'draft_appointment',
         attributes: {
           referralNumber,
-          careType: 'CC',
+          careType,
           provider,
           slots: mockSlots,
           drivetime: {

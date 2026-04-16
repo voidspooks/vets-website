@@ -21,12 +21,35 @@ export class CompleteReferralPageObject extends PageObject {
    * Validates appointment details are displayed correctly
    */
   assertAppointmentDetails() {
-    cy.findByTestId('appointment-date').should('exist');
-    cy.findByTestId('appointment-time').should('exist');
+    cy.findByTestId('appointment-date-container').should('exist');
+    cy.findByTestId('appointment-time-container').should('exist');
     cy.findByTestId('appointment-type').should('exist');
     cy.findByTestId('appointment-modality').should('exist');
-    // TODO: appointment-clinic is not available add when available
-    // cy.findByTestId('appointment-clinic').should('exist');
+    return this;
+  }
+
+  /**
+   * Validates CC-specific appointment content (provider name + Community care)
+   */
+  assertCCAppointment() {
+    cy.findByTestId('appointment-care-type').should(
+      'contain.text',
+      'Community care',
+    );
+    cy.findByTestId('appointment-provider-name').should('exist');
+    cy.findByTestId('appointment-organization-name').should('exist');
+    return this;
+  }
+
+  /**
+   * Validates VA-specific appointment content (clinic name + VA care)
+   */
+  assertVAAppointment() {
+    cy.findByTestId('appointment-care-type').should('contain.text', 'VA care');
+    cy.findByTestId('appointment-clinic-name')
+      .should('exist')
+      .and('contain.text', 'Clinic:');
+    cy.findByTestId('appointment-organization-name').should('exist');
     return this;
   }
 
@@ -49,7 +72,7 @@ export class CompleteReferralPageObject extends PageObject {
     cy.findByTestId('error-alert').within(() => {
       // This uses curly apostrophes as required by VA style guidelines
       cy.findByText(
-        /We’re sorry. Call your community care provider at/i,
+        /We’re sorry. Call your facility’s community care office to schedule an appointment/i,
       ).should('exist');
       cy.findByTestId('referral-community-care-office').should('exist');
     });
@@ -72,7 +95,7 @@ export class CompleteReferralPageObject extends PageObject {
   assertNotBookedErrorAlert() {
     cy.findByTestId('warning-alert').within(() => {
       cy.findByText(
-        /Try refreshing this page. If it still doesn’t work, call your community care provider at/i,
+        /Try refreshing this page. If it still doesn’t work, call your facility’s community care office to schedule an appointment./i,
       ).should('exist');
       cy.findByTestId('referral-community-care-office').should('exist');
     });

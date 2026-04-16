@@ -105,8 +105,8 @@ export const CompleteReferral = props => {
         hasEyebrow
         heading={
           timedOut
-            ? 'We\u2019re having trouble scheduling this appointment'
-            : 'We can\u2019t schedule this appointment online'
+            ? 'We’re having trouble scheduling this appointment'
+            : 'We can’t schedule this appointment online'
         }
       >
         <va-alert
@@ -116,12 +116,8 @@ export const CompleteReferral = props => {
         >
           <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
             {timedOut
-              ? `Try refreshing this page. If it still doesn\u2019t work, call your community care provider at  ${
-                  currentReferral.provider.phone
-                } or your facility\u2019s community care office to schedule an appointment.`
-              : `We\u2019re sorry. Call your community care provider at ${
-                  currentReferral.provider.phone
-                } or your facility\u2019s community care office to schedule an appointment.`}
+              ? 'Try refreshing this page. If it still doesn’t work, call your facility’s community care office to schedule an appointment.'
+              : 'We’re sorry. Call your facility’s community care office to schedule an appointment'}
           </p>
           <FindCommunityCareOfficeLink />
         </va-alert>
@@ -150,7 +146,7 @@ export const CompleteReferral = props => {
     >
       {!!referralLoaded && (
         <>
-          <p>We&#x2019;ve confirmed your appointment.</p>
+          <p>We’ve confirmed your appointment.</p>
           <ConfirmationAppointmentCard
             date={attributes.start}
             timezone={attributes.provider.location.timezone}

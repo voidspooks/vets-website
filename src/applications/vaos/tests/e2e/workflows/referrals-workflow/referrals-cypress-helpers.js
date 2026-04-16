@@ -57,10 +57,40 @@ export function mockReferralDetailGetApi({
 }
 
 /**
- * Function to mock the 'GET' epsApi appointment details endpoint with polling behavior.
+ * Function to mock the 'GET' unified booking endpoint.
+ *
+ * @example GET '/vaos/v2/unified_bookings/:id'
+ *
+ * @export
+ * @param {Object} arguments - Function arguments.
+ * @param {string} [arguments.id] - The ID of the appointment to get details for.
+ * @param {Object} [arguments.response] - The response to return from the mock api call.
+ * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
+ */
+export function mockUnifiedBookingGetApi({
+  id = '*',
+  response: data,
+  responseCode = 200,
+} = {}) {
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: `/vaos/v2/unified_bookings/${id}`,
+    },
+    req => {
+      req.reply({
+        statusCode: responseCode,
+        body: data,
+      });
+    },
+  ).as('v2:get:unifiedBooking');
+}
+
+/**
+ * Function to mock the 'GET' unified booking endpoint with polling behavior.
  * Returns the first response for the specified number of requests, then switches to the second response.
  *
- * @example GET '/vaos/v2/epsApi/appointments/:id'
+ * @example GET '/vaos/v2/unified_bookings/:id'
  *
  * @export
  * @param {Object} arguments - Function arguments.
@@ -95,7 +125,7 @@ export function mockAppointmentDetailsApiWithPolling({
         body: responseData,
       });
     },
-  ).as('v2:get:appointmentDetails:polling');
+  ).as('v2:get:unifiedBooking:polling');
 }
 
 /**

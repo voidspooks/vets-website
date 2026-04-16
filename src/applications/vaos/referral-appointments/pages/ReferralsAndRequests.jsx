@@ -54,7 +54,10 @@ export default function ReferralsAndRequests() {
 
   if (referralError && appointmentError) {
     return (
-      <ReferralLayout>
+      <ReferralLayout heading="Referrals and requests">
+        <p className="vads-u-margin-top--0p5">
+          Find your requested appointments and community care referrals.
+        </p>
         <InfoAlert
           status="error"
           headline="We’re sorry. We’ve run into a problem"
@@ -68,7 +71,12 @@ export default function ReferralsAndRequests() {
 
   return (
     <ReferralLayout heading="Referrals and requests">
-      <h2 data-testid="referrals-heading">Community care referrals</h2>
+      <p className="vads-u-margin-top--0p5">
+        Find your requested appointments and community care referrals.
+      </p>
+      <h2 className="vads-u-margin-top--0" data-testid="referrals-heading">
+        Community care referrals
+      </h2>
       <p data-testid="referrals-text">
         Your care team approved these referrals. You can schedule some of your
         referrals online using direct scheduling.
@@ -76,7 +84,7 @@ export default function ReferralsAndRequests() {
       <p>
         <va-link
           href="https://www.va.gov/resources/how-to-get-community-care-referrals-and-schedule-appointments/"
-          text="Find out more about community care referrals"
+          text="Find out more about community care referral"
         />
       </p>
       <ReferralList

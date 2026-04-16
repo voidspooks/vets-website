@@ -83,7 +83,7 @@ describe('VAOS Component: PendingReferralCard', () => {
     );
   });
 
-  it('should not set href on va-link when onlineSchedule is false', () => {
+  it('should set href on va-link when onlineSchedule is false', () => {
     const offlineReferral = {
       ...referral,
       onlineSchedule: false,
@@ -92,7 +92,9 @@ describe('VAOS Component: PendingReferralCard', () => {
       <PendingReferralCard referral={offlineReferral} index={0} />,
     );
     const link = screen.container.querySelector('va-link');
-    expect(link.getAttribute('href')).to.be.null;
+    expect(link.getAttribute('href')).to.equal(
+      'schedule-referral?id=add2f0f4-a1ea-4dea-a504-a54ab57c68&referrer=referrals-requests',
+    );
   });
 
   it('should apply borderTop class only when index is 0', () => {

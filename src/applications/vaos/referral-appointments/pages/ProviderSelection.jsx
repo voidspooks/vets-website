@@ -6,6 +6,7 @@ import ProviderSelectionCard from '../components/ProviderSelectionCard';
 import FindCCFacilityLink from '../components/FindCCFacilityLink';
 import { useGetReferralProvidersQuery } from '../../redux/api/vaosApi';
 import { setFormCurrentPage } from '../redux/actions';
+import InfoAlert from '../../components/InfoAlert';
 
 const PER_PAGE = 5;
 
@@ -50,10 +51,61 @@ export default function ProviderSelection({ currentReferral }) {
     );
   }
 
+  if (isError) {
+    return (
+      <ReferralLayout
+        hasEyebrow
+        heading="Which provider do you want to schedule with?"
+      >
+        <InfoAlert
+          status="error"
+          testId="provider-selection-error-alert"
+          headline="You can’t schedule an appointment online right now"
+        >
+          <p>
+            We’re sorry. There’s a problem with our system. Try again later.
+          </p>
+          <p className="vads-u-margin-bottom--0">
+            If you need to schedule now, call your VA facility.
+          </p>
+          <va-link href="/find-locations" text="Find a VA health facility" />
+        </InfoAlert>
+      </ReferralLayout>
+    );
+  }
+
+  if (!isLoading && providers.length === 0) {
+    return (
+      <ReferralLayout
+        hasEyebrow
+        heading="Which provider do you want to schedule with?"
+      >
+        <InfoAlert
+          status="warning"
+          testId="no-providers-alert"
+          headline="You can’t schedule this appointment online"
+        >
+          <p>We couldn’t find any appointment times for online scheduling.</p>
+          <p>You’ll need to call the facility to schedule an appointment.</p>
+          <p className="vads-u-font-weight--bold vads-u-margin-bottom--0">
+            {facilityDetails.name}
+          </p>
+          <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+            <strong>Main phone:</strong>{' '}
+            <va-telephone contact={facilityDetails.phone || '###-###-####'} /> (
+            <va-telephone contact="711" tty />)
+          </p>
+          <p className="vads-u-margin-top--2">
+            Or you can choose a different facility.
+          </p>
+        </InfoAlert>
+      </ReferralLayout>
+    );
+  }
+
   return (
     <ReferralLayout
       hasEyebrow
-      apiFailure={isError}
       heading="Which provider do you want to schedule with?"
     >
       <div>

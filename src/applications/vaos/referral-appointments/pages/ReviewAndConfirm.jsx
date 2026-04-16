@@ -339,7 +339,8 @@ const ReviewAndConfirm = props => {
           </>
         )}
         {createFailed &&
-          !createLoading && (
+          !createLoading &&
+          (isCommunityCare ? (
             <va-alert
               status="error"
               data-testid="create-error-alert"
@@ -357,7 +358,35 @@ const ReviewAndConfirm = props => {
                 <FindCommunityCareOfficeLink />
               </p>
             </va-alert>
-          )}
+          ) : (
+            <va-alert
+              status="error"
+              data-testid="create-error-alert"
+              class="vads-u-margin-top--4"
+            >
+              <h3>We couldn’t schedule this appointment</h3>
+              <p className="vads-u-margin-top--1 vads-u-margin-bottom--1">
+                We’re sorry. Something went wrong when we tried to schedule your
+                appointment. Try again later. Or call your facility to help with
+                your appointment.
+              </p>
+              <p
+                className="vads-u-margin-top--0 vads-u-margin-bottom--0"
+                data-testid="va-facility-info"
+              >
+                <strong>
+                  {draftAppointmentInfo?.attributes?.provider?.location?.name}
+                </strong>
+                <br />
+                <strong>Main phone:</strong>{' '}
+                <va-telephone
+                  contact={draftAppointmentInfo?.attributes?.provider?.phone}
+                />
+                <br />
+                <va-telephone contact="711" tty />
+              </p>
+            </va-alert>
+          ))}
       </div>
     </ReferralLayout>
   );

@@ -21,12 +21,19 @@ export default function ReferralLayout({
   heading,
   loadingMessage,
   errorBody = '',
+  errorAlertLinkNewTab = false,
+  isVAAppointment = false,
 }) {
   const location = useLocation();
   const dispatch = useDispatch();
 
   const content = apiFailure ? (
-    <ErrorAlert body={errorBody} showFindCCFacilityLink />
+    <ErrorAlert
+      body={errorBody}
+      showFindCCFacilityLink
+      newTab={errorAlertLinkNewTab}
+      isVAAppointment={isVAAppointment}
+    />
   ) : (
     children
   );
@@ -95,8 +102,10 @@ export default function ReferralLayout({
 ReferralLayout.propTypes = {
   apiFailure: PropTypes.bool,
   children: PropTypes.node,
+  errorAlertLinkNewTab: PropTypes.bool,
   errorBody: PropTypes.string,
   hasEyebrow: PropTypes.bool,
   heading: PropTypes.string,
+  isVAAppointment: PropTypes.bool,
   loadingMessage: PropTypes.string,
 };

@@ -85,7 +85,7 @@ export default function ScheduleReferral(props) {
                 Call your community care provider or your facility’s community
                 care office to schedule an appointment.
               </p>
-              <FindCommunityCareOfficeLink />
+              <FindCommunityCareOfficeLink newTab />
             </va-alert>
           )}
 

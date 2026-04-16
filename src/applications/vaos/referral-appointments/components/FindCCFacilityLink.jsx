@@ -1,13 +1,33 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import NewTabAnchor from '../../components/NewTabAnchor';
 
-const FindCommunityCareOfficeLink = () => {
+const ccFacilityHref =
+  '/COMMUNITYCARE/providers/Care-Coordination-Facilities.asp';
+
+const FindCommunityCareOfficeLink = ({ newTab }) => {
+  if (newTab) {
+    return (
+      <NewTabAnchor
+        href={ccFacilityHref}
+        data-testid="referral-community-care-office"
+      >
+        Find your community care office
+      </NewTabAnchor>
+    );
+  }
+
   return (
     <va-link
-      href="/COMMUNITYCARE/providers/Care-Coordination-Facilities.asp"
+      href={ccFacilityHref}
       text="Find your community care office"
       data-testid="referral-community-care-office"
     />
   );
+};
+
+FindCommunityCareOfficeLink.propTypes = {
+  newTab: PropTypes.bool,
 };
 
 export default FindCommunityCareOfficeLink;

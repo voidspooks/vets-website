@@ -11,6 +11,7 @@ import FullWidthLayout from '../../../components/FullWidthLayout';
 import EpsAppointmentDetailCard from './EpsAppointmentDetailCard';
 import EpsCancellationLayout from '../../../components/layouts/EpsCancellationLayout';
 import EpsAppointmentHeading from './EpsAppointmentHeading';
+import FindCommunityCareOfficeLink from '../../../referral-appointments/components/FindCCFacilityLink';
 
 export default function EpsAppointmentDetailsPage() {
   const [cancelAppointment, setCancelAppointment] = useState({
@@ -51,16 +52,10 @@ export default function EpsAppointmentDetailsPage() {
           >
             <h3>We’re sorry, we can’t find your appointment</h3>
             <p>
-              Try searching this appointment on your appointment list or call
-              your your facility.
+              Something went wrong on our end. Please try again later. If you
+              need help, call your facility’s community care office.
             </p>
-            <p className="vads-u-margin-y--0p5">
-              <va-link
-                data-testid="view-claim-link"
-                href="/my-health/appointments"
-                text="Go to appointments"
-              />
-            </p>
+            <FindCommunityCareOfficeLink />
           </va-alert>
         </div>
       </PageLayout>

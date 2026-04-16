@@ -15,6 +15,8 @@ import { getTimezoneDescByTimeZoneString } from '../../utils/timezone';
 import { getReferralSlotKey } from '../utils/referrals';
 import { scrollAndFocus } from '../../utils/scrollAndFocus';
 import FindCommunityCareOfficeLink from './FindCCFacilityLink';
+import UrgentCommunicationsBlock from './UrgentCommunicationsBlock';
+import NewTabAnchor from '../../components/NewTabAnchor';
 import { getIsInPilotReferralStation } from '../utils/pilot';
 
 export const DateAndTimeContent = props => {
@@ -144,13 +146,37 @@ export const DateAndTimeContent = props => {
             Call this provider or your facility’s community care office to
             schedule an appointment.
           </p>
-          <FindCommunityCareOfficeLink />
+          <FindCommunityCareOfficeLink newTab />
         </va-alert>
       );
     }
 
     // If there are no slots available, show an alert
     if (noSlotsAvailable) {
+      if (isVAAppointment) {
+        return (
+          <va-alert
+            status="warning"
+            data-testid="no-slots-alert"
+            class="vads-u-margin-top--3"
+          >
+            <h2 slot="headline">
+              We couldn’t find an appointment for your selected date
+            </h2>
+            <p className="vads-u-margin-top--1 vads-u-margin-bottom--2">
+              To find an available date to schedule this appointment, you can
+              call your local VA health care facility.
+            </p>
+            <NewTabAnchor
+              href="/find-locations"
+              data-testid="find-va-facility-link"
+            >
+              Find your local VA health care facility
+            </NewTabAnchor>
+            <UrgentCommunicationsBlock />
+          </va-alert>
+        );
+      }
       return (
         <va-alert
           status="warning"
@@ -162,7 +188,7 @@ export const DateAndTimeContent = props => {
             Call this provider or your facility’s community care office to
             schedule an appointment.
           </p>
-          <FindCommunityCareOfficeLink />
+          <FindCommunityCareOfficeLink newTab />
         </va-alert>
       );
     }
@@ -204,9 +230,9 @@ export const DateAndTimeContent = props => {
           className="vads-u-margin-top--4"
           data-testid="different-time-section"
         >
-          <h5 className="vads-u-margin--0 vads-u-margin-bottom--1">
+          <strong className="vads-u-margin--0 vads-u-margin-bottom--1">
             Need a different time?
-          </h5>
+          </strong>
           <p className="vads-u-margin--0">
             Contact your facility, or find a new facility.
           </p>

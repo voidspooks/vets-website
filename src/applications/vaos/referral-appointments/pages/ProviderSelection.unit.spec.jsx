@@ -189,6 +189,64 @@ describe('VAOS Page: ProviderSelection', () => {
     expect(screen.getByTestId('loading-container')).to.exist;
   });
 
+  it('should show no providers alert when API returns empty providers', async () => {
+    const emptyResponse = createMockProvidersResponse({
+      page: 1,
+      perPage: 5,
+      totalEntries: 0,
+    });
+
+    server.resetHandlers();
+    server.use(
+      createGetHandler(providersUrl, () => jsonResponse(emptyResponse)),
+    );
+
+    const store = createTestStore(initialState);
+    const screen = renderWithStoreAndRouter(
+      <ProviderSelection currentReferral={referral} />,
+      { store },
+    );
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryByTestId('loading-container'),
+    );
+
+    const alert = screen.getByTestId('no-providers-alert');
+    expect(alert).to.exist;
+    expect(alert.textContent).to.include('Batavia VA Medical Center');
+    const telephone = alert.querySelector('va-telephone:not([tty])');
+    expect(telephone).to.exist;
+    expect(telephone.getAttribute('contact')).to.equal('(585) 297-1000');
+  });
+
+  it('should not render provider cards when no providers are available', async () => {
+    const emptyResponse = createMockProvidersResponse({
+      page: 1,
+      perPage: 5,
+      totalEntries: 0,
+    });
+
+    server.resetHandlers();
+    server.use(
+      createGetHandler(providersUrl, () => jsonResponse(emptyResponse)),
+    );
+
+    const store = createTestStore(initialState);
+    const screen = renderWithStoreAndRouter(
+      <ProviderSelection currentReferral={referral} />,
+      { store },
+    );
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryByTestId('loading-container'),
+    );
+
+    expect(screen.queryAllByTestId('provider-selection-card')).to.have.lengthOf(
+      0,
+    );
+    expect(screen.queryByTestId('different-provider-section')).to.be.null;
+  });
+
   it('should show error state when API fails', async () => {
     server.resetHandlers();
     server.use(
@@ -210,7 +268,7 @@ describe('VAOS Page: ProviderSelection', () => {
       screen.queryByTestId('loading-container'),
     );
 
-    expect(screen.getByTestId('error')).to.exist;
+    expect(screen.getByTestId('provider-selection-error-alert')).to.exist;
   });
 
   it('should call API with page and perPage params and render providers on success', async () => {

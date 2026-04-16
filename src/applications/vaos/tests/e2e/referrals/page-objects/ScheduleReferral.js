@@ -52,7 +52,15 @@ export class ScheduleReferralPageObject extends PageObject {
         'href',
         '/COMMUNITYCARE/providers/Care-Coordination-Facilities.asp',
       )
-      .and('have.attr', 'text', 'Find your community care office');
+      .and($el => {
+        const text =
+          $el.attr('text') ||
+          $el
+            .text()
+            .trim()
+            .replace(/\s+open in new tab$/i, '');
+        expect(text).to.equal('Find your community care office');
+      });
 
     return this;
   }

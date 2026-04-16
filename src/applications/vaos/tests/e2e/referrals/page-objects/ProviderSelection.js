@@ -58,7 +58,19 @@ export class ProviderSelectionPageObject extends PageObject {
    * Validates that an API error message is displayed
    */
   assertApiError() {
-    cy.findByTestId('error').should('exist');
+    cy.get('va-alert[status="error"]').should('exist');
+    cy.findByText(/There\u2019s a problem with our system/i).should('exist');
+    return this;
+  }
+
+  /**
+   * Validates that the no providers warning message is displayed
+   */
+  assertNoProviders() {
+    cy.get('va-alert[status="warning"]').should('exist');
+    cy.findByText(/We couldn\u2019t find any appointment times/i).should(
+      'exist',
+    );
     return this;
   }
 

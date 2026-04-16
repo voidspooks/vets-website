@@ -95,6 +95,35 @@ describe('VAOS Provider Selection', () => {
     });
   });
 
+  describe('No providers', () => {
+    it('should display a warning when no providers are available', () => {
+      const emptyResponse = MockReferralProvidersResponse.createSuccessResponse(
+        {
+          page: 1,
+          perPage: 5,
+          totalEntries: 0,
+        },
+      );
+
+      mockReferralProvidersApiPaginated({
+        referralId,
+        responses: { '1': emptyResponse },
+      });
+
+      cy.visit(
+        `/my-health/appointments/schedule-referral/provider-selection?id=${referralId}`,
+      );
+
+      cy.wait('@v2:get:referral:providers');
+
+      providerSelection.validate();
+      providerSelection.assertNoProviders();
+
+      cy.injectAxeThenAxeCheck();
+      saveScreenshot('vaos_ccDirectScheduling_providerSelection_noProviders');
+    });
+  });
+
   describe('API errors', () => {
     const errorCases = [
       { errorType: 'notFound', responseCode: 404 },

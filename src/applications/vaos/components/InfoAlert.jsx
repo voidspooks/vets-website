@@ -15,6 +15,7 @@ import classnames from 'classnames';
  * @param {string} headline Optional, alert headline
  * @param {string} level Optional, alert heading display level
  * @param {string} status Alert type
+ * @param {string} testId Optional, test id for the alert
  * @returns div usa-alert or va-alert web component
  */
 
@@ -26,11 +27,13 @@ export default function InfoAlert({
   level = 2,
   status,
   addRole = undefined,
+  testId = undefined,
 }) {
   const H = `h${level}`;
   if (backgroundOnly) {
     return (
       <div
+        data-testid={testId}
         className={classnames(
           `usa-alert usa-alert-${status} background-color-only vads-u-display--block vads-u-width--auto`,
           className,
@@ -47,6 +50,7 @@ export default function InfoAlert({
   }
   return (
     <va-alert
+      data-testid={testId}
       role={addRole || undefined}
       class={className}
       status={status}
@@ -71,4 +75,5 @@ InfoAlert.propTypes = {
   className: PropTypes.string,
   headline: PropTypes.string,
   level: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  testId: PropTypes.string,
 };

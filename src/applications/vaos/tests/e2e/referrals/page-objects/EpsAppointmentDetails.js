@@ -38,7 +38,7 @@ class AppointmentDetails {
       'exist',
     );
     cy.contains(
-      'Try searching this appointment on your appointment list or call your your facility.',
+      'Something went wrong on our end. Please try again later. If you need help, call your facility’s community care office.',
     ).should('exist');
     return this;
   }

@@ -13,9 +13,9 @@ const PendingReferralCard = ({ referral, index }) => {
         referral.uuid
       }&referrer=referrals-requests`
     : null;
-  const detailLink = referral.onlineSchedule
-    ? `schedule-referral?id=${referral.uuid}&referrer=referrals-requests`
-    : null;
+  const detailLink = `schedule-referral?id=${
+    referral.uuid
+  }&referrer=referrals-requests`;
 
   const parsedDate = parseISO(referral.expirationDate);
   const expiration = format(parsedDate, 'MMMM d, yyyy');

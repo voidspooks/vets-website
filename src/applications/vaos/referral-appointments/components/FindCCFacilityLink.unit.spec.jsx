@@ -26,4 +26,18 @@ describe('VAOS Component: FindCommunityCareOfficeLink', () => {
 
     expect(link.tagName.toLowerCase()).to.equal('va-link');
   });
+
+  it('should render as a NewTabAnchor when newTab prop is true', () => {
+    const screen = render(<FindCommunityCareOfficeLink newTab />);
+
+    const link = screen.getByTestId('referral-community-care-office');
+
+    expect(link.tagName.toLowerCase()).to.equal('a');
+    expect(link.getAttribute('href')).to.equal(
+      '/COMMUNITYCARE/providers/Care-Coordination-Facilities.asp',
+    );
+    expect(link.getAttribute('target')).to.equal('_blank');
+    expect(link.getAttribute('rel')).to.equal('noopener noreferrer');
+    expect(link.textContent).to.equal('Find your community care office');
+  });
 });

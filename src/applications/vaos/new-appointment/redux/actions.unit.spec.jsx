@@ -443,6 +443,13 @@ describe('VAOS newAppointment actions', () => {
       const fullFacilityId = '653BY';
       const parentSiteId = '653';
       const dispatch = sinon.spy();
+      // Pin "now" to midday UTC so the "1 hour from now" slot is
+      // unambiguously still today — and the "2 days from now" slot is
+      // unambiguously past tomorrow — in any local timezone. Without this,
+      // the production filter uses startOfDay() in the local TZ, so running
+      // near a day boundary (e.g. ~23:30 UTC in CI) leaks the "today" slot
+      // through and breaks the assertion.
+      sandbox.useFakeTimers(new Date('2025-01-15T12:00:00Z').getTime());
       const now = new Date();
       const mockSlots = [
         {
