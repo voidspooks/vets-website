@@ -91,7 +91,7 @@ const MedicationsListCard = ({ rx }) => {
     isMedsImprovements && (pendingMed || pendingRenewal);
   const latestTrackingStatus = rx?.trackingList?.[0];
   const isRecentlyShipped =
-    rx.dispStatus === DISPENSE_STATUS.ACTIVE_SHIPPED &&
+    rx.dispStatus === dispStatusObj.active &&
     rx.isTrackable &&
     Boolean(latestTrackingStatus);
   const trackingUrl =

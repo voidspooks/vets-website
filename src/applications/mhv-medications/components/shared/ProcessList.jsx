@@ -17,7 +17,11 @@ const ProcessList = ({ stepGuideProps }) => {
     introContent,
     prescription,
     isRefillRunningLate,
+    isInitialFillRx,
   } = stepGuideProps;
+
+  // Dynamic text for fill vs refill
+  const fillOrRefill = isInitialFillRx ? 'fill' : 'refill';
 
   const {
     prescriptionName,
@@ -116,7 +120,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="progress-step-one"
                   checkmark
-                  header="We received your refill request"
+                  header={`We received your ${fillOrRefill} request`}
                   status-text="Step 1: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -126,7 +130,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="progress-step-two"
                   checkmark
-                  header="We processed your refill"
+                  header={`We processed your ${fillOrRefill}`}
                   status-text="Step 2: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -136,7 +140,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="progress-step-three"
                   checkmark
-                  header="We shipped your refill"
+                  header={`We shipped your ${fillOrRefill}`}
                   status-text="Step 3: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -189,7 +193,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="submitted-step-one"
                   checkmark
-                  header="We received your refill request"
+                  header={`We received your ${fillOrRefill} request`}
                   status-text="Step 1: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -199,7 +203,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="submitted-step-two"
                   pending
-                  header="We’ll process your refill request"
+                  header={`We’ll process your ${fillOrRefill} request`}
                   status-text="Step 2: Not started"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -209,7 +213,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="submitted-step-three"
                   pending
-                  header="We’ll ship your refill"
+                  header={`We’ll ship your ${fillOrRefill}`}
                   status-text="Step 3: Not started"
                 >
                   <p
@@ -229,7 +233,7 @@ const ProcessList = ({ stepGuideProps }) => {
               <va-process-list>
                 <va-process-list-item
                   checkmark
-                  header="We received your refill request"
+                  header={`We received your ${fillOrRefill} request`}
                   status-text="Step 1: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -241,8 +245,8 @@ const ProcessList = ({ stepGuideProps }) => {
                   active
                   header={
                     isRefillRunningLate
-                      ? 'The refill process is taking longer than usual'
-                      : 'We’re processing your refill request'
+                      ? `The ${fillOrRefill} process is taking longer than usual`
+                      : `We’re processing your ${fillOrRefill} request`
                   }
                   status-text="Step 2: In process"
                 >
@@ -270,7 +274,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 </va-process-list-item>
                 <va-process-list-item
                   pending
-                  header="We’ll ship your refill"
+                  header={`We’ll ship your ${fillOrRefill}`}
                   status-text="Step 3: Not started"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -287,7 +291,7 @@ const ProcessList = ({ stepGuideProps }) => {
               <va-process-list>
                 <va-process-list-item
                   checkmark
-                  header="We received your refill request"
+                  header={`We received your ${fillOrRefill} request`}
                   status-text="Step 1: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -297,7 +301,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="active-step-two"
                   checkmark
-                  header="We processed your refill"
+                  header={`We processed your ${fillOrRefill}`}
                   status-text="Step 2: Completed"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">
@@ -307,7 +311,7 @@ const ProcessList = ({ stepGuideProps }) => {
                 <va-process-list-item
                   data-testid="active-step-three"
                   pending
-                  header="We'll ship your refill"
+                  header={`We’ll ship your ${fillOrRefill}`}
                   status-text="Step 3: Not started"
                 >
                   <p className="vads-u-color--gray-dark vads-u-margin-top--0p5">

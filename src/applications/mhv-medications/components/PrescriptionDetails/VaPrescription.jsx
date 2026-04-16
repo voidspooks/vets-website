@@ -17,6 +17,7 @@ import {
   getRefillHistory,
   getShowRefillHistory,
   hasCmopNdcNumber,
+  isInitialFill,
   isOracleHealthPrescription,
   isRefillTakingLongerThanExpected,
   validateIfAvailable,
@@ -126,13 +127,27 @@ const VaPrescription = prescription => {
     }
   };
 
+  // Determine if this is an initial fill (no rxRfRecords) - only used when MMI flag is enabled
+  const isInitialFillRx = isMedsImprovements && isInitialFill(prescription);
+  const fillOrRefillLabel = isInitialFillRx ? 'Fill' : 'Refill';
+
+  const getStepGuideTitle = () => {
+    if (showTrackingAlert) {
+      return isMedsImprovements
+        ? `Check the status of your next ${isInitialFillRx ? 'fill' : 'refill'}`
+        : 'Check the status of your next refill';
+    }
+    return isMedsImprovements
+      ? `${fillOrRefillLabel} request status`
+      : 'Refill request status';
+  };
+
   const stepGuideProps = {
     prescription,
-    title: showTrackingAlert
-      ? 'Check the status of your next refill'
-      : 'Refill request status',
+    title: getStepGuideTitle(),
     pharmacyPhone,
     isRefillRunningLate,
+    ...(isMedsImprovements && { isInitialFillRx }),
   };
 
   const displayTrackingAlert = () => {
@@ -164,8 +179,13 @@ const VaPrescription = prescription => {
     if (!isRefillRunningLate) {
       return '';
     }
-    return latestTrackingStatus
-      ? 'Check the status of your next refill'
+    if (latestTrackingStatus) {
+      return isMedsImprovements
+        ? `Check the status of your next ${isInitialFillRx ? 'fill' : 'refill'}`
+        : 'Check the status of your next refill';
+    }
+    return isMedsImprovements
+      ? `${fillOrRefillLabel} request status`
       : 'Refill request status';
   };
 
@@ -230,8 +250,9 @@ const VaPrescription = prescription => {
                     slot="headline"
                     className="vads-u-margin-top--0 vads-u-margin-bottom--1"
                   >
-                    Your refill request for this medication is taking longer
-                    than expected
+                    {isMedsImprovements
+                      ? `Your ${fillOrRefillLabel.toLowerCase()} request for this medication is taking longer than expected`
+                      : 'Your refill request for this medication is taking longer than expected'}
                   </h3>
                   <p>
                     Call your VA pharmacy{' '}
@@ -241,8 +262,11 @@ const VaPrescription = prescription => {
                         page={pageType.DETAILS}
                       />
                     )}{' '}
-                    to check on your refill, if you haven’t received it in the
-                    mail yet.
+                    to check on your{' '}
+                    {isMedsImprovements
+                      ? fillOrRefillLabel.toLowerCase()
+                      : 'refill'}
+                    , if you haven’t received it in the mail yet.
                   </p>
                 </VaAlert>
               )}

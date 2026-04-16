@@ -167,7 +167,7 @@ describe('Medication card component', () => {
 
     const shippedRx = {
       ...prescriptionsListItem,
-      dispStatus: 'Active: Shipped',
+      dispStatus: 'Active',
       isRefillable: false,
       isTrackable: true,
       trackingList: [
@@ -177,6 +177,7 @@ describe('Medication card component', () => {
           trackingNumber: '12345678901234',
         },
       ],
+      rxRfRecords: [{ cmopNdcNumber: null }],
     };
 
     describe('active refillable prescription', () => {
@@ -303,7 +304,7 @@ describe('Medication card component', () => {
     });
 
     describe('recently shipped', () => {
-      it('shows shipped alert with tracking link, hides legacy shipped-on and ExtraDetails', () => {
+      it('shows "Refill has shipped" for shipped refill with rxRfRecords', () => {
         const { getByTestId, queryByTestId, getByText, container } = setup(
           shippedRx,
           managementImprovementsState,
@@ -355,9 +356,13 @@ describe('Medication card component', () => {
         expect(queryByTestId('shipped-alert')).to.be.null;
       });
 
-      it('shows "Fill has shipped" for initial fill with no rxRfRecords', () => {
+      it('shows "Fill has shipped" for shipped initial fill with empty rxRfRecords', () => {
         const rx = { ...shippedRx, rxRfRecords: [] };
-        const { getByText } = setup(rx, managementImprovementsState);
+        const { getByTestId, getByText } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('shipped-alert')).to.exist;
         expect(getByText(/Fill has shipped/)).to.exist;
       });
     });
@@ -789,6 +794,24 @@ describe('Medication card component', () => {
       expect(queryByTestId('fill-in-progress-alert')).to.be.null;
       expect(getByTestId('rx-number')).to.exist;
       expect(getByTestId('rxStatus')).to.exist;
+    });
+
+    it('does not show shipped alert for Active + trackable prescription when flag disabled', () => {
+      const shippedRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Active',
+        isRefillable: false,
+        isTrackable: true,
+        trackingList: [
+          {
+            completeDateTime: new Date().toISOString(),
+            carrier: 'USPS',
+            trackingNumber: '12345678901234',
+          },
+        ],
+      };
+      const { queryByTestId } = setup(shippedRx);
+      expect(queryByTestId('shipped-alert')).to.be.null;
     });
 
     it('falls back to legacy Non-VA card layout', () => {

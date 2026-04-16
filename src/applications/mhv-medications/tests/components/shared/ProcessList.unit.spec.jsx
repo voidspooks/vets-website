@@ -177,6 +177,111 @@ describe('ProcessList Component', () => {
     expect(headerElement).to.exist;
   });
 
+  describe('when mhvMedicationsManagementImprovements flag is disabled', () => {
+    it('renders default "refill" text when isInitialFillRx is not passed', () => {
+      const options = {
+        prescription: {
+          prescriptionName: 'testRx',
+          refillDate: '2025-02-24T03:39:11Z',
+          refillSubmitDate: '2025-02-24T03:39:11Z',
+          dispStatus: 'Active: Submitted',
+          trackingList: [],
+          rxRfRecords: [],
+        },
+        showTrackingAlert: false,
+        pharmacyPhone: '123-456-7890',
+        isRefillRunningLate: false,
+      };
+
+      const screen = renderProcessList(stepGuideProps(options));
+      const headerElement = screen.getByText((_, element) => {
+        return (
+          element.getAttribute('header') === 'We received your refill request'
+        );
+      });
+      expect(headerElement).to.exist;
+    });
+  });
+
+  describe('when mhvMedicationsManagementImprovements flag is enabled', () => {
+    const stepGuidePropsWithInitialFill = options => {
+      const {
+        prescription,
+        showTrackingAlert,
+        pharmacyPhone,
+        isRefillRunningLate,
+        isInitialFillRx,
+      } = options;
+
+      const getTitle = () => {
+        if (showTrackingAlert) return 'Check the status of your next refill';
+        return isInitialFillRx
+          ? 'Fill request status'
+          : 'Refill request status';
+      };
+
+      return {
+        prescription,
+        title: getTitle(),
+        pharmacyPhone,
+        isRefillRunningLate,
+        isInitialFillRx,
+      };
+    };
+
+    it('renders "refill" text when isInitialFillRx is false', () => {
+      const options = {
+        prescription: {
+          prescriptionName: 'testRx',
+          refillDate: '2025-02-24T03:39:11Z',
+          refillSubmitDate: '2025-02-24T03:39:11Z',
+          dispStatus: 'Active: Submitted',
+          trackingList: [],
+          rxRfRecords: [{ cmopNdcNumber: null }],
+        },
+        showTrackingAlert: false,
+        pharmacyPhone: '123-456-7890',
+        isRefillRunningLate: false,
+        isInitialFillRx: false,
+      };
+
+      const screen = renderProcessList(stepGuidePropsWithInitialFill(options));
+      expect(screen.getByText('Refill request status')).to.exist;
+      const headerElement = screen.getByText((_, element) => {
+        return (
+          element.getAttribute('header') === 'We received your refill request'
+        );
+      });
+      expect(headerElement).to.exist;
+    });
+
+    it('renders "fill" text when isInitialFillRx is true', () => {
+      const options = {
+        prescription: {
+          prescriptionName: 'testRx',
+          refillDate: '2025-02-24T03:39:11Z',
+          refillSubmitDate: '2025-02-24T03:39:11Z',
+          dispStatus: 'Active: Submitted',
+          trackingList: [],
+          rxRfRecords: [],
+        },
+        showTrackingAlert: false,
+        pharmacyPhone: '123-456-7890',
+        isRefillRunningLate: false,
+        isInitialFillRx: true,
+      };
+
+      const screen = renderProcessList(stepGuidePropsWithInitialFill(options));
+      expect(screen.getByText('Fill request status')).to.exist;
+      const headerElement = screen.getByText((_, element) => {
+        return (
+          element.getAttribute('header') === 'We received your fill request'
+        );
+      });
+      expect(headerElement).to.exist;
+    });
+  });
+
   it('does not render when OH prescription is Active with a single completed dispense and no tracking', () => {
     const options = {
       prescription: {
