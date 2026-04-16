@@ -9,11 +9,21 @@ const form = {
     periodsOfService: [
       { dateRange: { from: '2010-10-10', to: '2012-12-12' } },
       { dateRange: { from: '2020-03-03', to: '2021-XX-XX' } },
+      { dateRange: { from: '2020-03-03', to: '' } },
+      { dateRange: { from: '2020-03-03', to: '2021' } },
     ],
     relevantPriorLoans: [
       {
         dateRange: { from: '1990-01-XX', to: '1992-XX-XX' },
         vaLoanNumber: '1-2-3456789012',
+      },
+      {
+        dateRange: { from: '1990-01-XX', to: '' },
+        vaLoanNumber: '1-2-3456789013',
+      },
+      {
+        dateRange: { from: '1990-01-XX', to: '2020' },
+        vaLoanNumber: '1-2-3456789014',
       },
     ],
   },
@@ -41,6 +51,10 @@ describe('customCOEsubmit', () => {
     expect(formData.periodsOfService[0].dateRange.to).to.equal(
       '2012-12-12T00:00:00.000Z',
     );
+    expect(formData.periodsOfService[2].dateRange.to).to.equal('');
+    expect(formData.periodsOfService[3].dateRange.to).to.equal(
+      '2021-01-01T00:00:00.000Z',
+    );
 
     // When day and month values are missing from a service "to" date, they should default to 01
     expect(formData.periodsOfService[1].dateRange.to).to.equal(
@@ -50,6 +64,10 @@ describe('customCOEsubmit', () => {
     // When day and month values are missing from a loan "to" date, they should default to 01
     expect(formData.relevantPriorLoans[0].dateRange.to).to.equal(
       '1992-01-01T00:00:00.000Z',
+    );
+    expect(formData.relevantPriorLoans[1].dateRange.to).to.equal('');
+    expect(formData.relevantPriorLoans[2].dateRange.to).to.equal(
+      '2020-01-01T00:00:00.000Z',
     );
 
     // vaLoanNumber with no value should be empty string
