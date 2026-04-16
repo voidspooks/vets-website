@@ -40,6 +40,7 @@ const SipsDevModal = props => {
   const [sipsData, setSipsData] = useState(data);
   const [availablePaths, setAvailablePaths] = useState(null);
   const [sipsUrl, setSipsUrl] = useState(null);
+  const [sipVersion, setSipVersion] = useState(version);
   const errorMessage = useRef('');
 
   // Only show SipsDevModal when url hash includes "#dev-(on|off)"
@@ -107,7 +108,7 @@ const SipsDevModal = props => {
       props.saveAndRedirectToReturnUrl(
         formId,
         sipsData,
-        version,
+        parseInt(sipVersion, 10),
         sipsUrl,
         submission,
       );
@@ -129,13 +130,13 @@ const SipsDevModal = props => {
             <va-textarea
               error={errorMessage.current}
               label="Form data"
-              name="sips_data"
+              name="sip_data"
               class="resize-y"
               value={textData}
               onInput={e => handlers.onChange(e.target.value)}
             />
             <VaSelect
-              name="sips_url"
+              name="sip_url"
               label="Return url"
               value={sipsUrl}
               onVaSelect={event => setSipsUrl(event.target.value)}
@@ -146,6 +147,19 @@ const SipsDevModal = props => {
                     {path.replace('?edit=true', '')}
                   </option>
                 ))}
+            </VaSelect>
+            <p />
+            <VaSelect
+              name="sip_version"
+              label="In progress data version"
+              value={sipVersion}
+              onVaSelect={event => setSipVersion(event.target.value)}
+            >
+              {Array.from({ length: sipVersion + 1 }, (_, index) => (
+                <option key={index} value={index}>
+                  {index}
+                </option>
+              ))}
             </VaSelect>
             <p />
             <va-link href={docsPage} text="How to use this menu" />
