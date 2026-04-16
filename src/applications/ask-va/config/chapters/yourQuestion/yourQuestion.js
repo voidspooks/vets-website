@@ -61,7 +61,6 @@ const yourQuestionPage = {
         required: true,
         charcount: true,
         useFormsPattern: 'single',
-        classNames: 'dd-privacy-mask',
       },
     },
     fileUpload: {

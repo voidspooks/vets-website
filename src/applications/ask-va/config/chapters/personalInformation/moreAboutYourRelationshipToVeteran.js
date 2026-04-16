@@ -15,6 +15,7 @@ const moreAboutYourRelationshipToVeteranPage = {
         required: 'Select your relationship to the Veteran',
       },
       required: () => true,
+      classNames: 'dd-privacy-allow',
     }),
     relationshipNotListed: {
       'ui:title': `Describe your relationship to the Veteran`,

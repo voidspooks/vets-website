@@ -685,7 +685,7 @@ export const statesRequiringPostalCode = [
 export const dataDog = {
   applicationId: '2caee140-ee4a-4de5-8fe2-034c2e293b9a',
   clientToken: 'pub87c341178a0d09e2c43fad2e923930d7',
-  defaultPrivacyLevel: 'allow',
+  defaultPrivacyLevel: 'mask-user-input',
   loggedIn: undefined,
   replaySampleRateNonProd: 100, // Non Production Sample %
   replaySampleRateProd: 20, // Production Sample %

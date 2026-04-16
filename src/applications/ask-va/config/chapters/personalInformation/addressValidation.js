@@ -9,6 +9,7 @@ const addressValidationPage = {
       'ui:widget': AddressValidationRadio,
       'ui:options': {
         hideOnReview: true,
+        classNames: 'dd-privacy-mask',
       },
     },
   },

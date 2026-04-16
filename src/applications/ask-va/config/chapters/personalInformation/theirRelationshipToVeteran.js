@@ -14,6 +14,7 @@ const theirRelationshipToVeteranPage = {
       errorMessages: {
         required: 'Select their relationship to the Veteran',
       },
+      classNames: 'dd-privacy-allow',
     }),
     theyHaveRelationshipNotListed: {
       'ui:title': CHAPTER_3.THEIR_RELATIONSHIP_TO_VET.QUESTION_1,

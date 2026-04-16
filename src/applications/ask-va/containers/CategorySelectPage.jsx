@@ -163,7 +163,7 @@ const CategorySelectPage = props => {
     <>
       <SignInMayBeRequiredCategoryPage />
       <h3>Category</h3>
-      <form className="rjsf">
+      <form className="rjsf" data-dd-privacy="allow">
         <VaSelect
           id="root_selectCategory"
           label="Select the category that best describes your question"

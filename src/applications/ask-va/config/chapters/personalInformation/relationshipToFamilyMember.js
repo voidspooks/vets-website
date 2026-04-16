@@ -15,6 +15,7 @@ const aboutYourRelationshipToFamilyMemberPage = {
         required: 'Select your relationship to the family member',
       },
       required: () => true,
+      classNames: 'dd-privacy-allow',
     }),
     relationshipNotListed: {
       'ui:title': `Describe your relationship to the family member`,

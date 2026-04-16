@@ -20,6 +20,7 @@ const relationshipToVeteranPage = {
       errorMessages: {
         required: 'Select your relationship to the Veteran.',
       },
+      classNames: 'dd-privacy-allow',
     }),
     'ui:options': {
       updateSchema: (formData, formSchema) => {

@@ -15,6 +15,7 @@ const yourRoleEducationPage = {
       errorMessages: {
         required: 'Select your role',
       },
+      classNames: 'dd-privacy-allow',
     }),
   },
   schema: {

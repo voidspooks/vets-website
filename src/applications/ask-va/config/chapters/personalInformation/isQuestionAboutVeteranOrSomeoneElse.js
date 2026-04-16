@@ -16,6 +16,7 @@ const isQuestionAboutVeteranOrSomeoneElsePage = {
       errorMessages: {
         required: 'Let us know who your question is about.',
       },
+      classNames: 'dd-privacy-allow',
     }),
   },
   schema: {

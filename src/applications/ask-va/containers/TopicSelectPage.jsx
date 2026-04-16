@@ -123,7 +123,7 @@ const TopicSelectPage = props => {
     <>
       {CatAndTopicSummary({ category: formData.selectCategory })}
       <h3 className="vads-u-margin-bottom--4">Topic</h3>
-      <form className="rjsf">
+      <form className="rjsf" data-dd-privacy="allow">
         <VaRadio
           onVaValueChange={handleChange}
           className="vads-u-margin-top--neg3"

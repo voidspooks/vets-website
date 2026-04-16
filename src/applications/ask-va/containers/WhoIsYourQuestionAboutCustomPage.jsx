@@ -68,6 +68,7 @@ const WhoIsYourQuestionAboutCustomPage = props => {
           required="true"
           onVaValueChange={handleChange}
           error={validationError}
+          data-dd-privacy="allow"
         >
           {radioOptions().map(option => (
             <va-radio-option

@@ -387,7 +387,7 @@ const ReviewPage = props => {
           </VaAlert>
         ) : null}
       </div>
-      <VaAccordion data-testid="review-accordion">
+      <VaAccordion data-testid="review-accordion" data-dd-privacy="hidden">
         {props.chapters
           .filter(chapter => chapter.name === 'categoryTopics')
           .map(chapter => {
