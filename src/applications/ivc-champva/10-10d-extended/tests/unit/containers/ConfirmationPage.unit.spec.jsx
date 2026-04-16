@@ -54,6 +54,15 @@ describe('10-10d ConfirmationPage', () => {
       ),
       printBtn: container.querySelector('va-button'),
       submissionDate: container.querySelector('.submission-date'),
+      enrollmentFaq: container.querySelector(
+        '[data-testid="1010d-confirmation-enrollment-faq"]',
+      ),
+      applyFaq: container.querySelector(
+        '[data-testid="1010d-confirmation-apply-faq"]',
+      ),
+      updateFaq: container.querySelector(
+        '[data-testid="1010d-confirmation-update-faq"]',
+      ),
     });
     return { selectors };
   };
@@ -70,45 +79,81 @@ describe('10-10d ConfirmationPage', () => {
     printSpy.resetHistory();
   });
 
-  it('should not render submission date container when there is no response data', () => {
-    const { selectors } = subject({ submission: { timestamp: false } });
-    expect(selectors().submissionDate).to.not.exist;
-  });
-
-  it('should render application date container when there is response data', () => {
-    const { selectors } = subject();
-    const expectedResult = 'January 1, 2010';
-    expect(selectors().submissionDate).to.contain.text(expectedResult);
-  });
-
-  it('should fire the correct event when the print button is clicked', () => {
-    const { selectors } = subject();
-    fireEvent.click(selectors().printBtn);
-    sinon.assert.calledOnce(printSpy);
-  });
-
-  it('should render the additional submitted form name for new submissions', () => {
-    const { selectors } = subject({ formData: buildFormData('new') });
-    expect(selectors().newFormType).to.have.length(2);
-  });
-
-  it('should not render the additional submitted form name for non-new submissions', () => {
-    ['existing', 'enrollment'].forEach(submissionType => {
-      const { selectors } = subject({
-        formData: buildFormData(submissionType),
-      });
-      expect(selectors().newFormType).to.have.length(0);
+  context('Summary conditions', () => {
+    it('should not render submission date container when there is no response data', () => {
+      const { selectors } = subject({ submission: { timestamp: false } });
+      expect(selectors().submissionDate).to.not.exist;
     });
-  });
 
-  Object.entries(TITLE_BY_SUBMISSION_TYPE).forEach(
-    ([submissionType, expectedTitle]) => {
-      it(`should render the ${submissionType} confirmation headline in screen and print views`, () => {
+    it('should render application date container when there is response data', () => {
+      const { selectors } = subject();
+      const expectedResult = 'January 1, 2010';
+      expect(selectors().submissionDate).to.contain.text(expectedResult);
+    });
+
+    it('should fire the correct event when the print button is clicked', () => {
+      const { selectors } = subject();
+      fireEvent.click(selectors().printBtn);
+      sinon.assert.calledOnce(printSpy);
+    });
+
+    it('should render the additional submitted form name for new submissions', () => {
+      const { selectors } = subject({ formData: buildFormData('new') });
+      expect(selectors().newFormType).to.have.length(2);
+    });
+
+    it('should not render the additional submitted form name for non-new submissions', () => {
+      ['existing', 'enrollment'].forEach(submissionType => {
         const { selectors } = subject({
           formData: buildFormData(submissionType),
         });
-        expectTextInAllNodes(selectors().alertHeadline, expectedTitle);
+        expect(selectors().newFormType).to.have.length(0);
       });
-    },
-  );
+    });
+  });
+
+  context('Alert headline conditions', () => {
+    Object.entries(TITLE_BY_SUBMISSION_TYPE).forEach(
+      ([submissionType, expectedTitle]) => {
+        it(`should render the ${submissionType} confirmation headline in screen and print views`, () => {
+          const { selectors } = subject({
+            formData: buildFormData(submissionType),
+          });
+          expectTextInAllNodes(selectors().alertHeadline, expectedTitle);
+        });
+      },
+    );
+  });
+
+  context('FAQ conditions', () => {
+    it('should show enrollment FAQ for enrollment submissions', () => {
+      const { selectors } = subject({ formData: buildFormData('enrollment') });
+      const { applyFaq, enrollmentFaq } = selectors();
+      expect(enrollmentFaq).to.exist;
+      expect(applyFaq).to.not.exist;
+    });
+
+    it('should show apply FAQ for new submissions', () => {
+      const { selectors } = subject({ formData: buildFormData('new') });
+      const { applyFaq, enrollmentFaq } = selectors();
+      expect(applyFaq).to.exist;
+      expect(enrollmentFaq).to.not.exist;
+    });
+
+    it('should show update FAQ for non-new submissions', () => {
+      ['existing', 'enrollment'].forEach(submissionType => {
+        const { selectors } = subject({
+          formData: buildFormData(submissionType),
+        });
+        const { updateFaq } = selectors();
+        expect(updateFaq).to.exist;
+      });
+    });
+
+    it('should not show update FAQ for new submissions', () => {
+      const { selectors } = subject({ formData: buildFormData('new') });
+      const { updateFaq } = selectors();
+      expect(updateFaq).to.not.exist;
+    });
+  });
 });

@@ -64,7 +64,7 @@ const ConfirmationPage = () => {
         <ConfirmationPrintView {...viewProps} />
       </section>
 
-      <ConfirmationFAQ />
+      <ConfirmationFAQ formData={formData} />
 
       <p className="screen-only">
         <va-link href="https://ask.va.gov" text="Go to Ask VA" />
