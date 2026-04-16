@@ -26,7 +26,7 @@ describe('Medications Details Page NonVARx Status DropDown', () => {
     const detailsPage = new MedicationsDetailsPage();
     const cardNumber = 5;
     site.loginWithManagementImprovements();
-    listPage.visitMedicationHistoryPageURL(rxList);
+    listPage.visitMedicationListPageURL(rxList);
     cy.injectAxe();
     cy.axeCheck('main');
     // Add intercept with station_number query param for prescription details API

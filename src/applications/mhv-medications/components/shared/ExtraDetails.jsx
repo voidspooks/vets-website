@@ -38,6 +38,7 @@ const ExtraDetails = ({
   page,
   isRefillBlocked = false,
   isRenewalBlocked = false,
+  showStatusMessage = true,
   ...rx
 }) => {
   const { dispStatus, refillRemaining } = rx;
@@ -155,6 +156,9 @@ const ExtraDetails = ({
       case dispStatusObjV2.active:
         // Both map to "Active" in V2
         if (isUnfilledOh) {
+          if (!showStatusMessage) {
+            return null;
+          }
           return (
             <UnfilledOhMessage
               prescription={rx}
@@ -376,6 +380,9 @@ const ExtraDetails = ({
             />
           );
         }
+        if (!showStatusMessage) {
+          return null;
+        }
         if (renewalLinkShownAbove && renewalAvailableForExpired) {
           return null;
         }
@@ -398,6 +405,9 @@ const ExtraDetails = ({
         );
 
       case dispStatusObj.discontinued:
+        if (!showStatusMessage) {
+          return null;
+        }
         return (
           <div>
             <p className="vads-u-margin-y--0" data-testid="discontinued">
@@ -409,6 +419,9 @@ const ExtraDetails = ({
         );
 
       case dispStatusObj.transferred:
+        if (!showStatusMessage) {
+          return null;
+        }
         if (isOracleHealthCutover) {
           return (
             <p className="vads-u-margin-y--0" data-testid="transferred">
@@ -480,6 +493,9 @@ const ExtraDetails = ({
 
       case dispStatusObj.active:
         if (isUnfilledOh) {
+          if (!showStatusMessage) {
+            return null;
+          }
           return (
             <UnfilledOhMessage
               prescription={rx}
@@ -497,6 +513,9 @@ const ExtraDetails = ({
                 prescriptionId={rx.prescriptionId}
               />
             );
+          }
+          if (!showStatusMessage) {
+            return null;
           }
           return (
             <div className="no-print">
@@ -575,6 +594,7 @@ ExtraDetails.propTypes = {
   refillRemaining: PropTypes.number,
   refillSubmitDate: PropTypes.string,
   renewalLinkShownAbove: PropTypes.bool,
+  showStatusMessage: PropTypes.bool,
 };
 
 export default ExtraDetails;

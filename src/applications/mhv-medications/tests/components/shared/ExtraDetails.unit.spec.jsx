@@ -76,6 +76,7 @@ describe('Medications List Card Extra Details', () => {
     isCernerPilot = false,
     isV2StatusMapping = false,
     page,
+    showStatusMessage = true,
   ) => {
     const featureToggleReducer = (state = {}) => state;
     const testReducers = {
@@ -108,7 +109,11 @@ describe('Medications List Card Extra Details', () => {
     delete rxWithoutPage.page;
 
     return renderWithStoreAndRouterV6(
-      <ExtraDetails {...rxWithoutPage} page={pageToPass} />,
+      <ExtraDetails
+        {...rxWithoutPage}
+        page={pageToPass}
+        showStatusMessage={showStatusMessage}
+      />,
       {
         initialState: state,
         reducers: testReducers,
@@ -1099,7 +1104,7 @@ describe('Medications List Card Extra Details', () => {
       expect(await screen.findByTestId('active-unfilled-oh')).to.exist;
       expect(screen.queryByTestId('refill-request-button')).to.not.exist;
     });
-    it('shows unfilled OH message on details page as well', async () => {
+    it('does not show unfilled OH message when showStatusMessage is false', async () => {
       const unfilledOH = {
         ...prescription,
         dispStatus: dispStatusObjV2.active,
@@ -1109,8 +1114,9 @@ describe('Medications List Card Extra Details', () => {
         rxRfRecords: [],
         isRefillable: false,
       };
-      const screen = setup(unfilledOH, {}, true, true, pageType.DETAILS);
-      expect(await screen.findByTestId('active-unfilled-oh')).to.exist;
+      const screen = setup(unfilledOH, {}, true, true, pageType.DETAILS, false);
+      // When showStatusMessage is false, unfilled OH message is not shown
+      expect(screen.queryByTestId('active-unfilled-oh')).to.not.exist;
       expect(screen.queryByTestId('refill-request-button')).to.not.exist;
     });
 
@@ -1188,6 +1194,111 @@ describe('Medications List Card Extra Details', () => {
       expect(message).to.exist;
       expect(message).to.contain.text('automated refill line');
       expect(message).to.contain.text('medication details page');
+    });
+  });
+
+  describe('showStatusMessage prop behavior', () => {
+    it('does not show expired message when showStatusMessage is false', () => {
+      const expiredRx = {
+        ...prescription,
+        dispStatus: dispStatusObj.expired,
+        isRenewable: false,
+      };
+      const screen = setup(
+        expiredRx,
+        {},
+        false,
+        false,
+        pageType.DETAILS,
+        false,
+      );
+      expect(screen.queryByTestId('expired')).to.not.exist;
+    });
+
+    it('does not show discontinued message when showStatusMessage is false', () => {
+      const discontinuedRx = {
+        ...prescription,
+        dispStatus: dispStatusObj.discontinued,
+      };
+      const screen = setup(
+        discontinuedRx,
+        {},
+        false,
+        false,
+        pageType.DETAILS,
+        false,
+      );
+      expect(screen.queryByTestId('discontinued')).to.not.exist;
+    });
+
+    it('does not show transferred message when showStatusMessage is false', () => {
+      const transferredRx = {
+        ...prescription,
+        dispStatus: dispStatusObj.transferred,
+      };
+      const screen = setup(
+        transferredRx,
+        {},
+        false,
+        false,
+        pageType.DETAILS,
+        false,
+      );
+      expect(screen.queryByTestId('transferred')).to.not.exist;
+    });
+
+    it('does not show active no refills message when showStatusMessage is false', () => {
+      const activeNoRefillsRx = {
+        ...prescription,
+        dispStatus: dispStatusObj.active,
+        refillRemaining: 0,
+        isRenewable: false,
+        dispensedDate: '2024-01-01',
+        rxRfRecords: [{ dispensedDate: '2024-01-01' }],
+      };
+      const screen = setup(
+        activeNoRefillsRx,
+        {},
+        false,
+        false,
+        pageType.DETAILS,
+        false,
+      );
+      expect(screen.queryByTestId('active-no-refill-left')).to.not.exist;
+    });
+
+    it('still shows refill in process message when showStatusMessage is false', async () => {
+      const refillInProcessRx = {
+        ...prescription,
+        dispStatus: dispStatusObj.refillinprocess,
+        refillDate: '2024-12-01',
+      };
+      const screen = setup(
+        refillInProcessRx,
+        {},
+        false,
+        false,
+        pageType.DETAILS,
+        false,
+      );
+      expect(await screen.findByTestId('refill-in-process')).to.exist;
+    });
+
+    it('still shows submitted message when showStatusMessage is false', async () => {
+      const submittedRx = {
+        ...prescription,
+        dispStatus: dispStatusObj.submitted,
+        refillSubmitDate: '2024-11-15',
+      };
+      const screen = setup(
+        submittedRx,
+        {},
+        false,
+        false,
+        pageType.DETAILS,
+        false,
+      );
+      expect(await screen.findByTestId('submitted-refill-request')).to.exist;
     });
   });
 });

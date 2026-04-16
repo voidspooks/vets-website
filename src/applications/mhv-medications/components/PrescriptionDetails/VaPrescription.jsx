@@ -306,6 +306,7 @@ const VaPrescription = prescription => {
                   {...prescription}
                   page={pageType.DETAILS}
                   renewalLinkShownAbove
+                  showStatusMessage={!isMedsImprovements}
                 />
               )}
               {!pendingMed &&
