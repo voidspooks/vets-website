@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate, useSearchParams, useNavigation } from 'react-router-dom';
-import { focusElement } from 'platform/utilities/ui';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { VaPagination } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { SEARCH_PARAMS } from '../utilities/constants';
 
 const Pagination = ({ meta, defaults }) => {
   const navigate = useNavigate();
-  const navigation = useNavigation();
   const [searchParams] = useSearchParams();
   const pageSize = Number(searchParams.get('perPage'));
   const pageSelect = page => {
@@ -21,22 +19,18 @@ const Pagination = ({ meta, defaults }) => {
     if (status) {
       navigate(
         `?status=${status}&sort=${sort}&page=${page}&perPage=${pageSize}&show=${selectedIndividual}`,
+        { state: { focusSummary: true } },
       );
     } else {
-      navigate(`?sort=${sort}&page=${page}&perPage=${pageSize}`);
+      navigate(`?sort=${sort}&page=${page}&perPage=${pageSize}`, {
+        state: { focusSummary: true },
+      });
     }
   };
 
   const page = meta.page.number;
   const pages = meta.page.totalPages;
-  useEffect(
-    () => {
-      if (navigation.state === 'idle') {
-        focusElement('.poa-request__meta');
-      }
-    },
-    [navigation.state],
-  );
+
   return (
     <>
       <VaPagination

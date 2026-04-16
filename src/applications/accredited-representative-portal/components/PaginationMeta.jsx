@@ -1,13 +1,18 @@
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { focusElement } from 'platform/utilities/ui';
-import { useSearchParams, useNavigation } from 'react-router-dom';
+import {
+  useSearchParams,
+  useLocation,
+  useNavigationType,
+} from 'react-router-dom';
 import { SEARCH_PARAMS } from '../utilities/constants';
 import { ProfileContext } from '../context/ProfileContext';
 
 const PaginationMeta = ({ meta, results, resultType, defaults }) => {
   const profile = useContext(ProfileContext);
-  const navigation = useNavigation();
+  const location = useLocation();
+  const navType = useNavigationType();
   const [searchParams] = useSearchParams();
   const pageSize = Number(searchParams.get('perPage')) || defaults.SIZE;
   const pageNumber = Number(searchParams.get('page')) || defaults.NUMBER;
@@ -40,12 +45,16 @@ const PaginationMeta = ({ meta, results, resultType, defaults }) => {
 
   useEffect(
     () => {
-      if (navigation.state === 'idle') {
-        focusElement('.poa-request__meta');
-      }
+      const manageFocus = () => {
+        if (location.state?.focusSummary && navType !== 'POP') {
+          focusElement('.poa-request__meta');
+        }
+      };
+      manageFocus();
     },
-    [navigation.state],
+    [meta, location.state, navType],
   );
+
   return (
     <p className="poa-request__meta" aria-live="polite" aria-atomic="true">
       {`Showing ${

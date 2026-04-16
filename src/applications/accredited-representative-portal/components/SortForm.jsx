@@ -35,9 +35,12 @@ const SortForm = ({ options, defaults }) => {
     if (statusLabel) {
       navigate(
         `?${statusLabel}sort=${sortOrder}&page=${number}&perPage=${size}&show=${selectedIndividual}`,
+        { state: { focusSummary: true } },
       );
     } else {
-      navigate(`?sort=${sortOrder}&page=${number}&perPage=${size}`);
+      navigate(`?sort=${sortOrder}&page=${number}&perPage=${size}`, {
+        state: { focusSummary: true },
+      });
     }
   };
 
@@ -47,6 +50,7 @@ const SortForm = ({ options, defaults }) => {
     const updateRep = isChecked === true ? 'you' : 'all';
     navigate(
       `?status=${status}&sort=${sort}&page=1&perPage=${size}&show=${updateRep}`,
+      { state: { focusSummary: true } },
     );
   };
   const isChecked = () => {
