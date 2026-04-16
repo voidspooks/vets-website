@@ -400,6 +400,7 @@ describe('10-10d-extended transform for submit', () => {
       expect(certifier.city).to.equal('Baltimore');
       expect(certifier.state).to.equal('MD');
       expect(certifier.postalCode).to.equal('12345');
+      expect(certifier.country).to.equal('USA');
     });
 
     it('should rehydrate sponsor address from original form data after shared-address selection strips inactive page data', () => {
@@ -574,6 +575,7 @@ describe('10-10d-extended transform for submit', () => {
         city,
         state,
         postalCode,
+        country,
         relationship,
       },
     ) => {
@@ -585,6 +587,7 @@ describe('10-10d-extended transform for submit', () => {
       expect(certification.city).to.equal(city);
       expect(certification.state).to.equal(state);
       expect(certification.postalCode).to.equal(postalCode);
+      expect(certification.country).to.equal(country);
       expect(certification).to.have.property('relationship', relationship);
     };
 
@@ -624,6 +627,7 @@ describe('10-10d-extended transform for submit', () => {
         city: 'Anytown',
         state: 'MD',
         postalCode: '21200',
+        country: 'USA',
         relationship: '',
       });
     });
@@ -674,6 +678,7 @@ describe('10-10d-extended transform for submit', () => {
         city: 'Sponsor City',
         state: 'MD',
         postalCode: '21201',
+        country: 'USA',
         relationship: '',
       });
 
@@ -685,6 +690,7 @@ describe('10-10d-extended transform for submit', () => {
         city: 'Certifier City',
         state: 'DC',
         postalCode: '20001',
+        country: 'USA',
         relationship: 'spouse',
       });
     });

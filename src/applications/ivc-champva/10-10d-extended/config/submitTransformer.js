@@ -216,6 +216,7 @@ const buildCertificationData = (data = {}) => {
     city: address.city || '',
     state: address.state || '',
     postalCode: address.postalCode || '',
+    country: address.country || '',
     relationship: getRelationship(
       getRoleValue(data, certifierRole, 'Relationship'),
     ),
