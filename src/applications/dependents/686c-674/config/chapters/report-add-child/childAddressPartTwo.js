@@ -9,6 +9,9 @@ export const childAddressPartTwo = {
     ...arrayBuilderItemSubsequentPageTitleUI(
       ({ formData }) =>
         `Person ${formData?.fullName?.first || 'this child'} lives with`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     livingWith: fullNameNoSuffixWithAsciiUI(),
     'ui:options': {

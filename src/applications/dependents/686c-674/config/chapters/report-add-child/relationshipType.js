@@ -21,6 +21,8 @@ export const relationshipType = {
         <strong>Note:</strong> You can’t add a grandchild as a dependent, even
         if you’re their legal guardian.
       </>,
+      false,
+      { dataDogHidden: true },
     ),
     relationshipType: radioUI({
       title: 'What’s your relationship to this child?',

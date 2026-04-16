@@ -10,6 +10,9 @@ export const additionalInformationPartOne = {
       ({ formData }) =>
         `Additional information about ${formData?.fullName?.first ||
           'this child'}`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
 
     doesChildLiveWithYou: yesNoUI({

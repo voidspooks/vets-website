@@ -30,6 +30,7 @@ export const placeOfBirth = {
       ({ formData }) => `${formData?.fullName?.first || 'Child'}’s birth place`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     birthLocation: {
       outsideUsa: {

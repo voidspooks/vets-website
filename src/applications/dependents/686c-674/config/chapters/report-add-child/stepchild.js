@@ -27,6 +27,7 @@ export const stepchild = {
         `${formData?.fullName?.first || 'Child'}’s biological parents`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     isBiologicalChildOfSpouse: yesNoUI({
       title: 'Is this child the biological child of your current spouse?',

@@ -11,6 +11,7 @@ export const childAddressPartOne = {
       ({ formData }) => `${formData?.fullName?.first || 'Child'}’s address`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     address: {
       ...addressUI({

@@ -11,6 +11,7 @@ export const disabilityPartOne = {
         `${formData?.fullName?.first || 'Child'}’s disability status`,
       null,
       false,
+      { dataDogHidden: true },
     ),
 
     doesChildHaveDisability: yesNoUI({

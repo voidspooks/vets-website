@@ -98,6 +98,9 @@ export const studentRelationshipPage = {
     ...arrayBuilderItemSubsequentPageTitleUI(
       ({ formData }) =>
         `Your relationship to ${formData?.fullName?.first || 'this student'}`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     relationshipToStudent: radioUI({
       title: 'What’s your relationship to this child?',

@@ -12,6 +12,7 @@ export const disabilityPartTwo = {
         `${formData?.fullName?.first || 'Child'}’s disability details`,
       null,
       false,
+      { dataDogHidden: true },
     ),
 
     doesChildHavePermanentDisability: yesNoUI({

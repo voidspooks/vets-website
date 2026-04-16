@@ -22,6 +22,9 @@ export const studentEducationBenefitsPage = {
     ...arrayBuilderItemSubsequentPageTitleUI(
       ({ formData }) =>
         `Education benefits for ${formData?.fullName?.first || 'this student'}`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     typeOfProgramOrBenefit: radioUI({
       title:
@@ -49,6 +52,9 @@ export const studentFederallyFundedPage = {
       ({ formData }) =>
         `Federally-funded schools or programs for ${formData?.fullName?.first ||
           'this student'}`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     tuitionIsPaidByGovAgency: {
       ...yesNoUI({
@@ -86,6 +92,7 @@ export const studentProgramInfoPage = {
           'this student'}’s education program or school`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       name: {
@@ -133,6 +140,7 @@ export const studentEducationBenefitsStartDatePage = {
           'this student'}’s education benefit payments`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     benefitPaymentDate: {
       ...currentOrPastDateUI({

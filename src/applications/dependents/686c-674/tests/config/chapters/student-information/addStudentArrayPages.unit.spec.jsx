@@ -46,7 +46,7 @@ const noSsnFormData = () => {
 // Array options
 
 describe('addStudentsOptions', () => {
-  describe('isItemIncomplete', () => {
+  describe('isStudentItemIncomplete', () => {
     const incompleteItem = {
       fullName: { first: '', last: '' },
       birthDate: '',
@@ -71,15 +71,211 @@ describe('addStudentsOptions', () => {
       benefitPaymentDate: '',
     };
 
-    it('should return true when required fields are missing', () => {
-      const item = { ...incompleteItem, fullName: { first: '', last: 'Doe' } };
-      expect(addStudentsOptions.isItemIncomplete(item)).to.be.true;
-    });
+    const completeItem = {
+      ...incompleteItem,
+      fullName: { first: 'John', last: 'Doe' },
+      birthDate: '2000-01-01',
+      ssn: '123-45-6789',
+      address: {
+        country: 'USA',
+        street: '123 Main St',
+        city: 'Springfield',
+        state: 'IL',
+        postalCode: '62701',
+      },
+      wasMarried: false,
+      tuitionIsPaidByGovAgency: false,
+      schoolInformation: {
+        name: 'Springfield High',
+        studentIsEnrolledFullTime: true,
+        isSchoolAccredited: true,
+        currentTermDates: {
+          officialSchoolStartDate: '2024-01-01',
+          expectedStudentStartDate: '2024-08-01',
+          expectedGraduationDate: '2024-05-01',
+        },
+        studentDidAttendSchoolLastTerm: true,
+        lastTermSchoolInformation: {
+          termBegin: '2023-09-01',
+          dateTermEnded: '2024-06-01',
+        },
+      },
+      benefitPaymentDate: '2024-01-01',
+    };
 
     it('should return false when all required fields are present', () => {
+      expect(isStudentItemIncomplete(completeItem)).to.be.false;
+    });
+
+    it('should return true when required fields are missing', () => {
       const item = {
         ...incompleteItem,
-        fullName: { first: 'John', last: 'Doe' },
+        fullName: { first: '', last: 'Doe' },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when required birthDate is missing', () => {
+      const item = { ...completeItem, birthDate: '' };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when required ssn + noSsn is missing', () => {
+      const item = { ...completeItem, ssn: '', noSsn: '' };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when required ssn, noSsn & noSsnReason is missing', () => {
+      const item = {
+        ...completeItem,
+        ssn: '',
+        noSsn: true,
+        noSsnReason: '',
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return false when noSsn is set & noSsnReason is included', () => {
+      const item = {
+        ...completeItem,
+        ssn: '',
+        noSsn: true,
+        noSsnReason: 'Reason',
+      };
+      expect(isStudentItemIncomplete(item)).to.be.false;
+    });
+
+    it('should return true when program is ch35, fry, or feca but benefit date is missing', () => {
+      const item = {
+        ...completeItem,
+        tuitionIsPaidByGovAgency: false,
+        typeOfProgramOrBenefit: 'ch35',
+        benefitPaymentDate: '',
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when tuitionIsPaidByGovAgency is true but benefit date is missing', () => {
+      const item = {
+        ...completeItem,
+        tuitionIsPaidByGovAgency: true,
+        typeOfProgramOrBenefit: '',
+        benefitPaymentDate: '',
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when studentDidAttendSchoolLastTerm and lastTermSchoolInformation.termBegin is missing', () => {
+      const item = {
+        ...completeItem,
+        studentDidAttendSchoolLastTerm: true,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          lastTermSchoolInformation: {
+            ...completeItem.schoolInformation.lastTermSchoolInformation,
+            termBegin: '',
+          },
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when studentDidAttendSchoolLastTerm and lastTermSchoolInformation.dateTermEnded is missing', () => {
+      const item = {
+        ...completeItem,
+        studentDidAttendSchoolLastTerm: true,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          lastTermSchoolInformation: {
+            ...completeItem.schoolInformation.lastTermSchoolInformation,
+            dateTermEnded: '',
+          },
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when currentTermDates.officialSchoolStartDate is missing', () => {
+      const item = {
+        ...completeItem,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          currentTermDates: {
+            ...completeItem.schoolInformation.currentTermDates,
+            officialSchoolStartDate: '',
+          },
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when currentTermDates.expectedStudentStartDate is missing', () => {
+      const item = {
+        ...completeItem,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          currentTermDates: {
+            ...completeItem.schoolInformation.currentTermDates,
+            expectedStudentStartDate: '',
+          },
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when currentTermDates.expectedGraduationDate is missing', () => {
+      const item = {
+        ...completeItem,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          currentTermDates: {
+            ...completeItem.schoolInformation.currentTermDates,
+            expectedGraduationDate: '',
+          },
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when claimsOrReceivesPension is defined but not a boolean', () => {
+      const item = {
+        ...completeItem,
+        claimsOrReceivesPension: 'test',
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when tuitionIsPaidByGovAgency is true and school name is missing ', () => {
+      const item = {
+        ...completeItem,
+        tuitionIsPaidByGovAgency: true,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          name: '',
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when wasMarried is true but not set correctly', () => {
+      const item = { ...completeItem, wasMarried: true };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when isSchoolAccredited is set to null', () => {
+      const item = {
+        ...completeItem,
+        schoolInformation: {
+          ...completeItem.schoolInformation,
+          isSchoolAccredited: null,
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
+    it('should return true when maximum items exceeded', () => {
+      const items = Array.from({ length: 8 }, (_, i) => ({
+        fullName: { first: `Student${i}`, last: 'Test' },
         birthDate: '2000-01-01',
         ssn: '123-45-6789',
         address: {
@@ -107,26 +303,14 @@ describe('addStudentsOptions', () => {
           },
         },
         benefitPaymentDate: '2024-01-01',
-      };
-      expect(addStudentsOptions.isItemIncomplete(item)).to.be.false;
-    });
+      }));
 
-    it('should return true when wasMarried is true but not set correctly', () => {
-      const item = { ...incompleteItem, wasMarried: true };
-      expect(addStudentsOptions.isItemIncomplete(item)).to.be.true;
-    });
-
-    it('should return true when tuitionIsPaidByGovAgency is true but not set correctly', () => {
-      const item = { ...incompleteItem, tuitionIsPaidByGovAgency: true };
-      expect(addStudentsOptions.isItemIncomplete(item)).to.be.true;
+      expect(isStudentItemIncomplete({ studentInformation: items })).to.be.true;
     });
 
     it('should return true for US address missing state', () => {
       const item = {
-        ...incompleteItem,
-        fullName: { first: 'John', last: 'Doe' },
-        birthDate: '2000-01-01',
-        ssn: '123-45-6789',
+        ...completeItem,
         address: {
           country: 'USA',
           street: '123 Main St',
@@ -138,12 +322,23 @@ describe('addStudentsOptions', () => {
       expect(isStudentItemIncomplete(item)).to.be.true;
     });
 
+    it('should return true for address missing postal code', () => {
+      const item = {
+        ...completeItem,
+        address: {
+          country: 'USA',
+          street: '123 Main St',
+          city: 'Springfield',
+          state: 'IL',
+          // postalCode intentionally omitted
+        },
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
+    });
+
     it('should not require state for international addresses', () => {
       const item = {
-        ...incompleteItem,
-        fullName: { first: 'John', last: 'Doe' },
-        birthDate: '2000-01-01',
-        ssn: '123-45-6789',
+        ...completeItem,
         address: {
           country: 'MEX',
           street: '123 Main St',
@@ -151,23 +346,17 @@ describe('addStudentsOptions', () => {
           postalCode: '06600',
           // no state - valid for international
         },
-        wasMarried: false,
-        tuitionIsPaidByGovAgency: false,
-        typeOfProgramOrBenefit: 'none',
-        schoolInformation: {
-          name: 'Test School',
-          studentIsEnrolledFullTime: true,
-          isSchoolAccredited: true,
-          currentTermDates: {
-            officialSchoolStartDate: '2024-01-01',
-            expectedStudentStartDate: '2024-08-01',
-            expectedGraduationDate: '2024-05-01',
-          },
-          studentDidAttendSchoolLastTerm: false,
-          lastTermSchoolInformation: { termBegin: '', dateTermEnded: '' },
-        },
       };
       expect(isStudentItemIncomplete(item)).to.be.false;
+    });
+
+    it('should return true for missing marriage date', () => {
+      const item = {
+        ...completeItem,
+        wasMarried: true,
+        marriageDate: '', // missing marriage date
+      };
+      expect(isStudentItemIncomplete(item)).to.be.true;
     });
 
     it('should return true when studentIsEnrolledFullTime is not answered', () => {
@@ -224,43 +413,8 @@ describe('addStudentsOptions', () => {
       };
       expect(isStudentItemIncomplete(item)).to.be.true;
     });
-
-    it('should return true when maximum items exceeded', () => {
-      const items = Array.from({ length: 8 }, (_, i) => ({
-        fullName: { first: `Student${i}`, last: 'Test' },
-        birthDate: '2000-01-01',
-        ssn: '123-45-6789',
-        address: {
-          country: 'USA',
-          street: '123 Main St',
-          city: 'Springfield',
-          state: 'IL',
-          postalCode: '62701',
-        },
-        wasMarried: false,
-        tuitionIsPaidByGovAgency: false,
-        schoolInformation: {
-          name: 'Springfield High',
-          studentIsEnrolledFullTime: true,
-          isSchoolAccredited: true,
-          currentTermDates: {
-            officialSchoolStartDate: '2024-01-01',
-            expectedStudentStartDate: '2024-08-01',
-            expectedGraduationDate: '2024-05-01',
-          },
-          studentDidAttendSchoolLastTerm: true,
-          lastTermSchoolInformation: {
-            termBegin: '2023-09-01',
-            dateTermEnded: '2024-06-01',
-          },
-        },
-        benefitPaymentDate: '2024-01-01',
-      }));
-
-      expect(addStudentsOptions.isItemIncomplete({ studentInformation: items }))
-        .to.be.true;
-    });
-
+  });
+  describe('validateSchoolName', () => {
     it('should return true when school name exceeds character limit', () => {
       const errors = { addError: sinon.spy() };
       const {

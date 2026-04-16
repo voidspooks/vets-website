@@ -22,6 +22,7 @@ export const claimsOrReceivesPensionPage = {
         `${formData?.fullName?.first || 'this student'}’s income`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     claimsOrReceivesPension: {
       ...yesNoUI(
@@ -50,6 +51,7 @@ export const studentEarningsPage = {
           'this student'}’s income for this school term`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     'ui:options': {
       updateSchema: (_formData, schema, _uiSchema, index, _path, fullData) => {
@@ -110,6 +112,7 @@ export const studentFutureEarningsPage = {
           'this student'}’s expected income for next year`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     studentExpectedEarningsNextYear: {
       'ui:description': StudentExpectedIncomeContent,
@@ -143,6 +146,9 @@ export const studentAssetsPage = {
     ...arrayBuilderItemSubsequentPageTitleUI(
       ({ formData }) =>
         `Value of ${formData?.fullName?.first || 'this student'}’s assets`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     studentNetworthInformation: {
       savings: {
@@ -200,6 +206,9 @@ export const remarksPage = {
       ({ formData }) =>
         `Additional information about ${formData?.fullName?.first ||
           'this student'}`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     remarks: textareaUI(
       'Is there any other information you’d like to add about this student?',

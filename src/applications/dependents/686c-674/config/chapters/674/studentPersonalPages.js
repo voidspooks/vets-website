@@ -19,6 +19,7 @@ export const studentIncomePage = {
         `${formData?.fullName?.first || 'this student'}’s income information`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     studentIncome: radioUI({
       title: 'Did this student have an income in the last 365 days?',
@@ -50,6 +51,7 @@ export const studentAddressPage = {
         `${formData?.fullName?.first || 'this student'}’s address`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     address: {
       ...addressUI({
@@ -102,6 +104,7 @@ export const studentMaritalStatusPage = {
         `${formData?.fullName?.first || 'this student'}’s marital status`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     wasMarried: {
       ...yesNoUI('Has this student ever been married?'),
@@ -125,6 +128,7 @@ export const studentMarriageDatePage = {
         `${formData?.fullName?.first || 'this student'}’s marriage date`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     marriageDate: currentOrPastDateUI({
       title: 'Date of marriage',

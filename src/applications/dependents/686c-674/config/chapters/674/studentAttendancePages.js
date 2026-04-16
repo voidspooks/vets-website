@@ -19,6 +19,7 @@ export const studentAttendancePage = {
           'this student'}’s school attendance history`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       studentIsEnrolledFullTime: yesNoUI({
@@ -51,6 +52,9 @@ export const studentStoppedAttendingDatePage = {
       ({ formData }) =>
         `Date ${formData?.fullName?.first ||
           'student'} stopped attending school`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       dateFullTimeEnded: {
@@ -92,6 +96,7 @@ export const schoolAccreditationPage = {
           'this student'}’s school accreditation status`,
       null, // description
       false, // lowercase
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       isSchoolAccredited: yesNoUI(
@@ -127,6 +132,7 @@ export const studentTermDatesPage = {
         `${formData?.fullName?.first || 'this student'}’s term dates`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       currentTermDates: {
@@ -190,6 +196,7 @@ export const previousTermQuestionPage = {
         `${formData?.fullName?.first || 'this student'}’s last term attendance`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       studentDidAttendSchoolLastTerm: yesNoUI({
@@ -222,6 +229,7 @@ export const previousTermDatesPage = {
         `${formData?.fullName?.first || 'this student'}’s previous term dates`,
       null,
       false,
+      { dataDogHidden: true },
     ),
     schoolInformation: {
       lastTermSchoolInformation: {

@@ -12,6 +12,9 @@ export const marriageEndDetails = {
     ...arrayBuilderItemSubsequentPageTitleUI(
       ({ formData }) =>
         `How and when ${formData?.fullName?.first || 'child'}’s marriage ended`,
+      null,
+      false,
+      { dataDogHidden: true },
     ),
     marriageEndDate: {
       ...currentOrPastDateUI({
