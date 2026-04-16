@@ -2,7 +2,6 @@ import React from 'react';
 import {
   checkboxUI,
   checkboxSchema,
-  fullNameNoSuffixSchema,
   titleUI,
   dateOfBirthUI,
   dateOfBirthSchema,
@@ -16,6 +15,7 @@ import {
   CancelButton,
   certificateNotice,
   fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
 } from '../../../helpers';
 import { getFullName, getFormatedDate } from '../../../../../shared/utils';
 import { NO_SSN_REASON_UI_MAPPINGS } from '../../../dataMappings';
@@ -27,7 +27,7 @@ export const schema = {
       type: 'object',
       properties: {
         'view:spouseNameTitle': { type: 'object', properties: {} },
-        fullName: fullNameNoSuffixSchema,
+        fullName: fullNameNoSuffixWithAsciiSchema,
         birthDate: dateOfBirthSchema,
         'view:spouseIdTitle': { type: 'object', properties: {} },
         noSsn: checkboxSchema,

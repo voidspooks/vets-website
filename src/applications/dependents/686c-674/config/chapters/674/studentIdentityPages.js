@@ -2,8 +2,7 @@ import React from 'react';
 import {
   arrayBuilderItemFirstPageTitleUI,
   arrayBuilderItemSubsequentPageTitleUI,
-  fullNameNoSuffixSchema,
-  currentOrPastDateUI,
+  dateOfBirthUI,
   checkboxUI,
   checkboxSchema,
   radioUI,
@@ -15,7 +14,10 @@ import {
 import { relationshipToStudentLabels } from './helpers';
 import { addStudentsOptions } from './addStudentsSetup';
 import { NO_SSN_REASON_UI_MAPPINGS } from '../../dataMappings';
-import { fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import {
+  fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
+} from '../../helpers';
 import { DATE_SCHEMA } from '../../constants';
 
 /** @returns {PageSchema} */
@@ -29,7 +31,7 @@ export const studentInformationPage = {
       'ui:description': <h4>Student’s name</h4>,
     },
     fullName: fullNameNoSuffixWithAsciiUI(title => `Student's ${title}`),
-    birthDate: currentOrPastDateUI({
+    birthDate: dateOfBirthUI({
       title: 'Student’s date of birth',
       labelHeaderLevel: '4',
       dataDogHidden: true,
@@ -82,7 +84,7 @@ export const studentInformationPage = {
     required: ['fullName', 'birthDate'],
     properties: {
       'view:studentNameTitle': { type: 'object', properties: {} },
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
       birthDate: DATE_SCHEMA,
       'view:studentIdTitle': { type: 'object', properties: {} },
       noSsn: checkboxSchema,

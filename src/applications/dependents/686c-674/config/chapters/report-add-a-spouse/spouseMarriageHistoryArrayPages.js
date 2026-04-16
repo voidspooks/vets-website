@@ -4,7 +4,6 @@ import {
   arrayBuilderYesNoSchema,
   arrayBuilderYesNoUI,
   arrayBuilderItemSubsequentPageTitleUI,
-  fullNameNoSuffixSchema,
   radioUI,
   radioSchema,
   currentOrPastDateUI,
@@ -18,6 +17,7 @@ import {
   customLocationSchema,
   asciiValidation,
   fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
 } from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
 import { DATE_SCHEMA } from '../../constants';
@@ -91,7 +91,7 @@ export const formerMarriagePersonalInfoPage = {
     type: 'object',
     required: ['fullName'],
     properties: {
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
     },
   },
 };

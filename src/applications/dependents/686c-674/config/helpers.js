@@ -3,6 +3,7 @@ import { withRouter } from 'react-router';
 import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
 import { VaModal } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import constants from 'vets-json-schema/dist/constants.json';
+import fullSchema from 'vets-json-schema/dist/686C-674-V2-schema.json';
 import { focusElement } from 'platform/utilities/ui';
 import { fullNameNoSuffixUI } from 'platform/forms-system/src/js/web-component-patterns';
 
@@ -270,10 +271,16 @@ export const asciiValidation = (errors, value) => {
  */
 export const fullNameNoSuffixWithAsciiUI = (formatTitle, uiOptions) => {
   const base = fullNameNoSuffixUI(formatTitle, uiOptions);
+  // Pattern error message
+  const pattern = 'Your name can only include letters, spaces, and hyphens.';
   return {
     ...base,
     first: {
       ...base.first,
+      'ui:errorMessages': {
+        ...base.first?.['ui:errorMessages'],
+        pattern,
+      },
       'ui:validations': [
         ...(base.first?.['ui:validations'] || []),
         asciiValidation,
@@ -281,6 +288,10 @@ export const fullNameNoSuffixWithAsciiUI = (formatTitle, uiOptions) => {
     },
     middle: {
       ...base.middle,
+      'ui:errorMessages': {
+        ...base.middle?.['ui:errorMessages'],
+        pattern,
+      },
       'ui:validations': [
         ...(base.middle?.['ui:validations'] || []),
         asciiValidation,
@@ -288,10 +299,41 @@ export const fullNameNoSuffixWithAsciiUI = (formatTitle, uiOptions) => {
     },
     last: {
       ...base.last,
+      'ui:errorMessages': {
+        ...base.last?.['ui:errorMessages'],
+        pattern,
+      },
       'ui:validations': [
         ...(base.last?.['ui:validations'] || []),
         asciiValidation,
       ],
     },
   };
+};
+
+// Waiting for https://github.com/department-of-veterans-affairs/vets-json-schema/pull/1153
+export const fullNameNoSuffixWithAsciiSchema = fullSchema.definitions
+  ?.dependentsManagementFullNameNoSuffix || {
+  type: 'object',
+  additionalProperties: false,
+  required: ['first', 'last'],
+  properties: {
+    first: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 30,
+      pattern: '^(?!\\s)(?!.*?\\s{2,})[^<>%$#@!^&*0-9]+$',
+    },
+    middle: {
+      type: 'string',
+      maxLength: 30,
+      pattern: '^(?!\\s)(?!.*?\\s{2,})[^<>%$#@!^&*0-9]+$',
+    },
+    last: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 30,
+      pattern: '^(?!\\s)(?!.*?\\s{2,})[^<>%$#@!^&*0-9]+$',
+    },
+  },
 };

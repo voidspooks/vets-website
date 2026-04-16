@@ -3,7 +3,6 @@ import {
   arrayBuilderYesNoSchema,
   arrayBuilderYesNoUI,
   arrayBuilderItemSubsequentPageTitleUI,
-  fullNameNoSuffixSchema,
   radioUI,
   radioSchema,
   currentOrPastDateUI,
@@ -19,6 +18,7 @@ import {
   generateHelpText,
   asciiValidation,
   fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
 } from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
 import { DATE_SCHEMA } from '../../constants';
@@ -106,7 +106,7 @@ export const vetFormerMarriagePersonalInfoPage = {
     type: 'object',
     required: ['fullName'],
     properties: {
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
     },
   },
 };

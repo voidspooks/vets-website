@@ -1,7 +1,6 @@
 import React from 'react';
 import {
-  fullNameNoSuffixSchema,
-  currentOrPastDateUI,
+  dateOfBirthUI,
   arrayBuilderItemFirstPageTitleUI,
   checkboxUI,
   checkboxSchema,
@@ -12,7 +11,10 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { arrayBuilderOptions } from './config';
 import { NO_SSN_REASON_UI_MAPPINGS } from '../../dataMappings';
-import { fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import {
+  fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
+} from '../../helpers';
 import { DATE_SCHEMA } from '../../constants';
 
 export const information = {
@@ -25,7 +27,7 @@ export const information = {
       'ui:description': <h4>Child’s name</h4>,
     },
     fullName: fullNameNoSuffixWithAsciiUI(title => `Child’s ${title}`),
-    birthDate: currentOrPastDateUI({
+    birthDate: dateOfBirthUI({
       title: 'Child’s date of birth',
       labelHeaderLevel: '4',
       dataDogHidden: true,
@@ -78,7 +80,7 @@ export const information = {
     required: ['fullName', 'birthDate'],
     properties: {
       'view:childNameTitle': { type: 'object', properties: {} },
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
       birthDate: DATE_SCHEMA,
       'view:childIdTitle': { type: 'object', properties: {} },
       noSsn: checkboxSchema,

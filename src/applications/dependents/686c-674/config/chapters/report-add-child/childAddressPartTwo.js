@@ -1,8 +1,8 @@
+import { arrayBuilderItemSubsequentPageTitleUI } from 'platform/forms-system/src/js/web-component-patterns';
 import {
-  arrayBuilderItemSubsequentPageTitleUI,
-  fullNameNoSuffixSchema,
-} from 'platform/forms-system/src/js/web-component-patterns';
-import { fullNameNoSuffixWithAsciiUI } from '../../helpers';
+  fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
+} from '../../helpers';
 
 export const childAddressPartTwo = {
   uiSchema: {
@@ -29,7 +29,7 @@ export const childAddressPartTwo = {
   schema: {
     type: 'object',
     properties: {
-      livingWith: fullNameNoSuffixSchema,
+      livingWith: fullNameNoSuffixWithAsciiSchema,
     },
   },
 };

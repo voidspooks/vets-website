@@ -14,7 +14,6 @@
       "isEncrypted": false
     }
   ],
-  "view:householdIncome": true,
   "view:completedChildStoppedAttendingSchool": false,
   "view:completedMarriedChild": false,
   "view:completedDependent": false,

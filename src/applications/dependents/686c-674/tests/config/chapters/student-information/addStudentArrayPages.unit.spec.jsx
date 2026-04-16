@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import createCommonStore from '@department-of-veterans-affairs/platform-startup/store';
 
 import { DefinitionTester } from 'platform/testing/unit/schemaform-utils';
-import { $$ } from 'platform/forms-system/src/js/utilities/ui';
+import { $, $$ } from 'platform/forms-system/src/js/utilities/ui';
 
 import formConfig from '../../../../config/form';
 import { addStudentsOptions } from '../../../../config/chapters/674/addStudentsArrayPages';
@@ -558,6 +558,99 @@ describe('674 Add students: Student info page ', () => {
 
     expect($$('va-text-input', container).length).to.equal(4);
     expect($$('va-memorable-date', container).length).to.equal(1);
+  });
+
+  it('should required field error', async () => {
+    const { container } = render(
+      <Provider store={defaultStore}>
+        <DefinitionTester
+          schema={schema}
+          definitions={formConfig.defaultDefinitions}
+          uiSchema={uiSchema}
+          data={formData()}
+          arrayPath={arrayPath}
+          pagePerItemIndex={0}
+        />
+      </Provider>,
+    );
+
+    await fireEvent.click($('button[type="submit"]', container));
+
+    const [
+      firstNameInput, // middleNameInput not used
+      ,
+      lastNameInput,
+      ssnInput,
+    ] = $$('va-text-input', container);
+
+    await waitFor(() => {
+      expect(firstNameInput.getAttribute('error')).to.equal(
+        'Enter a first or given name',
+      );
+      expect(lastNameInput.getAttribute('error')).to.equal(
+        'Enter a last or family name',
+      );
+      expect($('va-memorable-date', container).getAttribute('error')).to.equal(
+        'Provide a date of birth',
+      );
+      expect(ssnInput.getAttribute('error')).to.equal(
+        'Enter a valid 9-digit Social Security number (dashes allowed)',
+      );
+    });
+  });
+
+  it('should display a pattern error', async () => {
+    const data = {
+      ...formData,
+      studentInformation: [
+        {
+          fullName: {
+            first: 'John1',
+            middle: 'A1',
+            last: 'Doe1',
+          },
+          ssn: 'abc',
+          birthDate: '2222-01-01',
+        },
+      ],
+    };
+    const { container } = render(
+      <Provider store={defaultStore}>
+        <DefinitionTester
+          schema={schema}
+          definitions={formConfig.defaultDefinitions}
+          uiSchema={uiSchema}
+          data={data}
+          arrayPath={arrayPath}
+          pagePerItemIndex={0}
+        />
+      </Provider>,
+    );
+
+    await fireEvent.click($('button[type="submit"]', container));
+
+    const [firstNameInput, middleNameInput, lastNameInput, ssnInput] = $$(
+      'va-text-input',
+      container,
+    );
+
+    await waitFor(() => {
+      expect(firstNameInput.getAttribute('error')).to.equal(
+        'Your name can only include letters, spaces, and hyphens.',
+      );
+      expect(middleNameInput.getAttribute('error')).to.equal(
+        'Your name can only include letters, spaces, and hyphens.',
+      );
+      expect(lastNameInput.getAttribute('error')).to.equal(
+        'Your name can only include letters, spaces, and hyphens.',
+      );
+      expect(
+        $('va-memorable-date', container).getAttribute('error'),
+      ).to.contain('Please enter a year between ');
+      expect(ssnInput.getAttribute('error')).to.equal(
+        'You entered 0 digits. SSN must be 9 digits.',
+      );
+    });
   });
 });
 

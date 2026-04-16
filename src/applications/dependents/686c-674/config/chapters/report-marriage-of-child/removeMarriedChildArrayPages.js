@@ -8,13 +8,16 @@ import {
   arrayBuilderItemSubsequentPageTitleUI,
   radioUI,
   radioSchema,
-  fullNameNoSuffixSchema,
   ssnUI,
   ssnSchema,
   currentOrPastDateUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
-import { CancelButton, fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import {
+  CancelButton,
+  fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
+} from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
 import { DATE_SCHEMA } from '../../constants';
 
@@ -113,7 +116,7 @@ export const marriedChildInformationPage = {
     type: 'object',
     required: ['fullName', 'ssn', 'birthDate'],
     properties: {
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
       ssn: ssnSchema,
       birthDate: DATE_SCHEMA,
     },

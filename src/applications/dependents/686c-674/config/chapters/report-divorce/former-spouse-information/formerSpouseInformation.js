@@ -1,10 +1,13 @@
 import React from 'react';
 import {
   titleUI,
-  fullNameNoSuffixSchema,
   currentOrPastDateUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { CancelButton, fullNameNoSuffixWithAsciiUI } from '../../../helpers';
+import {
+  CancelButton,
+  fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
+} from '../../../helpers';
 import { DATE_SCHEMA } from '../../../constants';
 
 export const schema = {
@@ -13,7 +16,7 @@ export const schema = {
     reportDivorce: {
       type: 'object',
       properties: {
-        fullName: fullNameNoSuffixSchema,
+        fullName: fullNameNoSuffixWithAsciiSchema,
         birthDate: DATE_SCHEMA,
         'view:cancelDivorce': {
           type: 'object',

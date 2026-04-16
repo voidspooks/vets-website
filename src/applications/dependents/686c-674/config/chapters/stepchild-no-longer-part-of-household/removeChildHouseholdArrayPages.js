@@ -12,13 +12,16 @@ import {
   addressSchema,
   radioUI,
   radioSchema,
-  fullNameNoSuffixSchema,
   ssnUI,
   ssnSchema,
   currentOrPastDateUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
-import { CancelButton, fullNameNoSuffixWithAsciiUI } from '../../helpers';
+import {
+  CancelButton,
+  fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
+} from '../../helpers';
 import { DATE_SCHEMA } from '../../constants';
 import {
   isFieldMissing,
@@ -212,7 +215,7 @@ export const householdChildInfoPage = {
     type: 'object',
     required: ['fullName', 'ssn', 'birthDate'],
     properties: {
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
       ssn: ssnSchema,
       birthDate: DATE_SCHEMA,
     },
@@ -356,7 +359,7 @@ export const parentOrGuardianPage = {
   schema: {
     type: 'object',
     properties: {
-      whoDoesTheStepchildLiveWith: fullNameNoSuffixSchema,
+      whoDoesTheStepchildLiveWith: fullNameNoSuffixWithAsciiSchema,
     },
     required: ['whoDoesTheStepchildLiveWith'],
   },

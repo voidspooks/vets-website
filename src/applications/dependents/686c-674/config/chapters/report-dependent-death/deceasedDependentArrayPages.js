@@ -6,7 +6,6 @@ import {
   arrayBuilderYesNoSchema,
   arrayBuilderYesNoUI,
   arrayBuilderItemSubsequentPageTitleUI,
-  fullNameNoSuffixSchema,
   radioUI,
   radioSchema,
   checkboxGroupUI,
@@ -33,6 +32,7 @@ import {
   CancelButton,
   asciiValidation,
   fullNameNoSuffixWithAsciiUI,
+  fullNameNoSuffixWithAsciiSchema,
 } from '../../helpers';
 import { getFullName } from '../../../../shared/utils';
 
@@ -153,7 +153,7 @@ export const deceasedDependentPersonalInfoPage = {
     type: 'object',
     required: ['fullName', 'ssn', 'birthDate'],
     properties: {
-      fullName: fullNameNoSuffixSchema,
+      fullName: fullNameNoSuffixWithAsciiSchema,
       ssn: ssnSchema,
       birthDate: DATE_SCHEMA,
     },
