@@ -54,14 +54,15 @@ export const IntroductionPage = ({ route }) => {
         exp-date={OMB_EXP_DATE}
       />
 
-      <h2>Additional form you may need to complete</h2>
+      <h2>If you have non-VA health insurance</h2>
       <h3>
-        CHAMPVA Other Health Insurance (OHI) Certification (VA form 10-7959c)
+        CHAMPVA Other Health Insurance (OHI) Certification (VA Form 10-7959c)
       </h3>
       <p>
-        If you have other non-VA health insurance, you’ll also need to fill out
-        VA Form 10-7959c. You’ll provide this information at the end of your
-        CHAMPVA application.
+        You’ll need to submit another form to coordinate benefits with your
+        Medicare or other health insurance. This is the CHAMPVA Other Health
+        Insurance Certification (VA Form 10-7959c). We’ll guide you to this form
+        as you complete your CHAMPVA application.
       </p>
 
       <va-omb-info

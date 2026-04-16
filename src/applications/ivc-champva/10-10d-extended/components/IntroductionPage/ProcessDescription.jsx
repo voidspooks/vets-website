@@ -7,10 +7,17 @@ const ProcessDescription = ({ resBurden }) => (
     <va-process-list>
       <va-process-list-item header="Check your eligibility">
         <p>Make sure you meet our eligibility requirements before you apply.</p>
-        <va-link
-          text="Find out if you’re eligible for CHAMPVA benefits"
-          href="/family-and-caregiver-benefits/health-and-disability/champva/"
-        />
+        <p>
+          <va-link
+            text="Find out if you’re eligible for CHAMPVA benefits"
+            href="/family-and-caregiver-benefits/health-and-disability/champva/"
+          />
+        </p>
+        <p>
+          <strong>Note:</strong> If you’re eligible for TRICARE (the Defense
+          Department’s health care program for service members and their
+          families), you can’t get CHAMPVA benefits.
+        </p>
       </va-process-list-item>
       <va-process-list-item header="Gather your information">
         <p>You’ll need to provide personal information for these people:</p>
@@ -26,13 +33,6 @@ const ProcessDescription = ({ resBurden }) => (
           </li>
         </ul>
         <p>
-          <strong>Note:</strong> In some cases, you may need to submit an
-          additional form called the Other Health Insurance Certification (VA
-          Form 10-7959c) to coordinate benefits with your Medicare or other
-          health insurance. We’ll help you complete this form at the same time
-          as your Application for CHAMPVA benefits.
-        </p>
-        <p>
           You’ll also need to submit these supporting documents if appropriate:
         </p>
         <ul>
@@ -43,10 +43,19 @@ const ProcessDescription = ({ resBurden }) => (
           <li>Proof of adoption</li>
           <li>Birth certificate of dependent(s)</li>
         </ul>
-        <va-link
-          text="Find out which documents you’ll need to apply for CHAMPVA"
-          href="/family-and-caregiver-benefits/health-and-disability/champva/#supporting-documents-for-your-"
-        />
+        <p>
+          <va-link
+            text="Find out which documents you’ll need to apply for CHAMPVA"
+            href="/family-and-caregiver-benefits/health-and-disability/champva/#supporting-documents-for-your-"
+          />
+        </p>
+        <p>
+          <strong>Note:</strong> In some cases, you may need to submit an
+          additional form called the Other Health Insurance Certification (VA
+          Form 10-7959c) to coordinate benefits with your Medicare or other
+          health insurance. We’ll help you complete this form at the same time
+          as your Application for CHAMPVA benefits.
+        </p>
       </va-process-list-item>
       <va-process-list-item header="Start your application">
         <p>
