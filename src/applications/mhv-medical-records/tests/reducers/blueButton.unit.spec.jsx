@@ -434,6 +434,47 @@ describe('convertDemographics', () => {
     expect(result.ethnicity).to.equal('None recorded');
   });
 
+  it('should map permCounty to permanentAddress.county', () => {
+    const info = {
+      id: '101',
+      facilityInfo: { name: 'VA Clinic' },
+      firstName: 'Bob',
+      lastName: 'Jones',
+      dateOfBirth: '1975-03-20',
+      age: 51,
+      gender: 'Male',
+      permStreet1: '10 River Rd',
+      permCity: 'Springfield',
+      permState: 'IL',
+      permZipcode: '62701',
+      permCounty: 'Sangamon',
+      permCountry: 'USA',
+    };
+
+    const result = convertDemographics(info);
+    expect(result.permanentAddress.county).to.equal('Sangamon');
+  });
+
+  it('should default permanentAddress.county to NONE_RECORDED when permCounty is missing', () => {
+    const info = {
+      id: '102',
+      facilityInfo: { name: 'VA Clinic' },
+      firstName: 'Alice',
+      lastName: 'Smith',
+      dateOfBirth: '1990-01-01',
+      age: 36,
+      gender: 'Female',
+      permStreet1: '5 Oak Ave',
+      permCity: 'Anytown',
+      permState: 'NY',
+      permZipcode: '12345',
+      permCountry: 'USA',
+    };
+
+    const result = convertDemographics(info);
+    expect(result.permanentAddress.county).to.equal(NONE_RECORDED);
+  });
+
   it('should handle invalid date strings gracefully without throwing', () => {
     const info = {
       id: '123',

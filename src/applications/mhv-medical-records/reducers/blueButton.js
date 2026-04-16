@@ -118,7 +118,7 @@ const initialState = {
 
 /**
  * Convert a non-VA medication resource from the backend into the appropriate model.
- * @param {Object} medication an MHV medication resource
+ * @param {Object} med an MHV medication resource
  * @returns a medication object that this application can use, or null if the param is null/undefined
  */
 export const convertNonVaMedication = med => {
@@ -140,7 +140,7 @@ export const convertNonVaMedication = med => {
 
 /**
  * Convert a medication resource from the backend into the appropriate model.
- * @param {Object} medication an MHV medication resource
+ * @param {Object} med an MHV medication resource
  * @returns a medication object that this application can use, or null if the param is null/undefined
  */
 export const convertMedication = med => {
@@ -265,7 +265,7 @@ export const convertDemographics = info => {
       city: info.permCity || NONE_RECORDED,
       state: info.permState || NONE_RECORDED,
       zipcode: info.permZipcode || NONE_RECORDED,
-      county: info.perCounty || NONE_RECORDED,
+      county: info.permCounty || NONE_RECORDED,
       country: info.permCountry || NONE_RECORDED,
     },
     contactInfo: {
