@@ -172,15 +172,20 @@ const resolveLandingPageLinks = (
       ]
   ).filter(isLinkData);
 
+  const mmiEnabled =
+    featureToggles[FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements];
+
   const medicationsLinks = [
     HEALTH_TOOL_LINKS.MEDICATIONS[0],
+    mmiEnabled && {
+      href: '/my-health/medications/refill-status',
+      text: 'Check prescription refill status',
+    },
     {
-      href: featureToggles[
-        FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements
-      ]
+      href: mmiEnabled
         ? '/my-health/medications/history'
         : '/my-health/medications',
-      text: 'Review medications',
+      text: mmiEnabled ? 'Review medications list' : 'Review medications',
     },
   ].filter(isLinkData);
 

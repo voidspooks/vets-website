@@ -193,6 +193,56 @@ describe(manifest.appName, () => {
         });
       });
 
+      describe('medicationsLinks', () => {
+        it('shows 2 links with default text when mhvMedicationsManagementImprovements is disabled', () => {
+          const featureToggles = {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
+          };
+          const result = resolveLandingPageLinks(
+            false,
+            featureToggles,
+            null,
+            false,
+          );
+          const medicationsCard = result.cards.find(
+            card => card.title === 'Medications',
+          );
+          const { links } = medicationsCard;
+
+          expect(links).to.have.lengthOf(2);
+          expect(links[0].text).to.equal('Refill VA prescriptions');
+          expect(links[0].href).to.equal('/my-health/medications/refill');
+          expect(links[1].text).to.equal('Review medications');
+          expect(links[1].href).to.equal('/my-health/medications');
+        });
+
+        it('shows 3 links with updated text when mhvMedicationsManagementImprovements is enabled', () => {
+          const featureToggles = {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          };
+          const result = resolveLandingPageLinks(
+            false,
+            featureToggles,
+            null,
+            false,
+          );
+          const medicationsCard = result.cards.find(
+            card => card.title === 'Medications',
+          );
+          const { links } = medicationsCard;
+
+          expect(links).to.have.lengthOf(3);
+          expect(links[0].text).to.equal('Refill VA prescriptions');
+          expect(links[0].href).to.equal('/my-health/medications/refill');
+          expect(links[1].text).to.equal('Check prescription refill status');
+          expect(links[1].href).to.equal(
+            '/my-health/medications/refill-status',
+          );
+          expect(links[2].text).to.equal('Review medications list');
+          expect(links[2].href).to.equal('/my-health/medications/history');
+        });
+      });
+
       describe('paymentsLinks', () => {
         it('includes new appointments link when travelPaySubmitMileageExpense is enabled', () => {
           const featureToggles = {
