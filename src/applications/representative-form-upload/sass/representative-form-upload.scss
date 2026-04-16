@@ -168,7 +168,7 @@
     border-bottom: none;
   }
   va-accordion > va-accordion-item:last-child {
-    .form-review-panel-page > div {
+    .form-review-panel-page > div:not([name="bddUploadPageScrollElement"]) {
       border-bottom: 1px solid var(--vads-color-base-light);
       &:only-child {
         border-bottom: none;
