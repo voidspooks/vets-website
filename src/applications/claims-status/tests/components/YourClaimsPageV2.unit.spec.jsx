@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
 import { YourClaimsPageV2 } from '../../containers/YourClaimsPageV2';
+import { FILTER_VALUES } from '../../constants';
 
 import { claimsAvailability } from '../../utils/appeals-v2-helpers';
 import { renderWithRouter } from '../utils';
@@ -401,6 +402,68 @@ describe('<YourClaimsPageV2>', () => {
       expect(wrapper.find('AppealListItem').length).to.equal(1);
       expect(wrapper.find('StemClaimListItem').length).to.equal(1);
       wrapper.unmount();
+    });
+
+    describe('handleFilterChange', () => {
+      const makeProps = locationOverride => ({
+        ...filterProps,
+        navigate: sinon.spy(),
+        location: { pathname: '/claims', search: '', ...locationOverride },
+      });
+
+      it('does not push a history entry when no ?page query exists', () => {
+        // Users who haven't paginated should not trigger any route change —
+        // every push fires a Datadog view and pollutes the Back button.
+        const props = makeProps({ search: '' });
+        const wrapper = shallow(<YourClaimsPageV2 {...props} />);
+        wrapper.instance().handleFilterChange(FILTER_VALUES.CLOSED);
+        expect(props.navigate.called).to.be.false;
+        wrapper.unmount();
+      });
+
+      it('replaces history instead of pushing when stripping a stale ?page= query', () => {
+        // When a paginated user changes filter we must strip ?page= so a
+        // refresh doesn't land on a mismatched page, but replace (not push)
+        // keeps the Back button clean.
+        const props = makeProps({ search: '?page=3' });
+        const wrapper = shallow(<YourClaimsPageV2 {...props} />);
+        wrapper.instance().handleFilterChange(FILTER_VALUES.CLOSED);
+        expect(props.navigate.calledOnce).to.be.true;
+        expect(props.navigate.firstCall.args).to.deep.equal([
+          '/claims',
+          { replace: true },
+        ]);
+        wrapper.unmount();
+      });
+
+      it('persists the new filter to sessionStorage', () => {
+        const props = makeProps({ search: '' });
+        const wrapper = shallow(<YourClaimsPageV2 {...props} />);
+        wrapper.instance().handleFilterChange(FILTER_VALUES.CLOSED);
+        expect(window.sessionStorage.getItem('claimsFilter')).to.equal(
+          FILTER_VALUES.CLOSED,
+        );
+        wrapper.unmount();
+      });
+
+      it('requests a page reset to 1 alongside the new filter', () => {
+        // Asserting on setState rather than wrapper.state('page') because
+        // getDerivedStateFromProps re-reads page from location.search on
+        // every render — in the real app the navigate() call above strips
+        // ?page= so that derivation returns 1, but the test spy doesn't
+        // mutate the location prop, so we assert the intent directly.
+        const props = makeProps({ search: '?page=3' });
+        const wrapper = shallow(<YourClaimsPageV2 {...props} />);
+        const setStateSpy = sinon.spy(wrapper.instance(), 'setState');
+        wrapper.instance().handleFilterChange(FILTER_VALUES.CLOSED);
+        expect(setStateSpy.calledOnce).to.be.true;
+        expect(setStateSpy.firstCall.args[0]).to.deep.equal({
+          claimsFilter: FILTER_VALUES.CLOSED,
+          page: 1,
+        });
+        setStateSpy.restore();
+        wrapper.unmount();
+      });
     });
   });
 

@@ -111,8 +111,15 @@ class YourClaimsPageV2 extends React.Component {
 
   handleFilterChange(filter) {
     sessionStorage.setItem('claimsFilter', filter);
-    // Navigate to page 1 when filter changes (removes ?page=X from URL)
-    this.props.navigate(this.props.location.pathname);
+    // Strip ?page= via history.replace — avoids adding Back-button entries and
+    // inflating GA/Datadog pageviews for this route. Drops the whole query string;
+    // will clobber other params if any get added later.
+    const hasPageParam = new URLSearchParams(this.props.location.search).has(
+      'page',
+    );
+    if (hasPageParam) {
+      this.props.navigate(this.props.location.pathname, { replace: true });
+    }
     this.setState({ claimsFilter: filter, page: 1 });
   }
 
