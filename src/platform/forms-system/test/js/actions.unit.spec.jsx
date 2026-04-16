@@ -132,6 +132,7 @@ describe('Schemaform actions:', () => {
           value: 'submitPending',
           extra: null,
           errorMessage: null,
+          errorReceived: null,
         });
         expect(dispatch.secondCall.args[0]).to.eql({
           type: SET_SUBMITTED,
@@ -166,20 +167,67 @@ describe('Schemaform actions:', () => {
           value: 'submitPending',
           extra: null,
           errorMessage: null,
+          errorReceived: null,
         });
-        expect(dispatch.secondCall.args[0]).to.eql({
-          type: SET_SUBMISSION,
-          field: 'status',
-          value: 'serverError',
-          extra: null,
-          errorMessage: 'vets_server_error: Bad Request',
-        });
+
+        const result = dispatch.secondCall.args[0];
+        expect(result.type).to.eq(SET_SUBMISSION);
+        expect(result.field).to.eq('status');
+        expect(result.value).to.eq('serverError');
+        expect(result.extra).to.be.null;
+        expect(result.errorMessage).to.eq('vets_server_error: Bad Request');
+        expect(result.errorReceived).to.be.an('error');
+        expect(result.status).to.be.undefined;
       });
 
       requests[0].respond(400, {}, JSON.stringify(response));
 
       return promise;
     });
+
+    it('should set submission error when the error is an array', () => {
+      const formConfig = {
+        chapters: {},
+      };
+      const form = {
+        pages: {
+          testing: {},
+        },
+        data: {
+          test: 1,
+        },
+      };
+      const thunk = submitForm(formConfig, form);
+      const dispatch = sinon.spy();
+      const response = { data: {} };
+
+      const promise = thunk(dispatch).then(() => {
+        expect(dispatch.firstCall.args[0]).to.eql({
+          type: SET_SUBMISSION,
+          field: 'status',
+          value: 'submitPending',
+          extra: null,
+          errorMessage: null,
+          errorReceived: null,
+        });
+
+        const result = dispatch.secondCall.args[0];
+        expect(result.type).to.eq(SET_SUBMISSION);
+        expect(result.field).to.eq('status');
+        expect(result.value).to.eq('serverError');
+        expect(result.extra).to.be.null;
+        expect(result.errorMessage).to.eq(
+          'vets_server_error: Unprocessable Entity',
+        );
+        expect(result.errorReceived).to.be.an('error');
+        expect(result.status).to.be.undefined;
+      });
+
+      requests[0].respond(422, {}, JSON.stringify(response));
+
+      return promise;
+    });
+
     it('should send data to Sentry on submission error', () => {
       const formConfig = {
         chapters: {},
@@ -237,14 +285,17 @@ describe('Schemaform actions:', () => {
           value: 'submitPending',
           extra: null,
           errorMessage: null,
+          errorReceived: null,
         });
-        expect(dispatch.secondCall.args[0]).to.eql({
-          type: SET_SUBMISSION,
-          field: 'status',
-          value: 'throttledError',
-          extra: 2000,
-          errorMessage: 'vets_throttled_error: undefined',
-        });
+
+        const result = dispatch.secondCall.args[0];
+        expect(result.type).to.eq(SET_SUBMISSION);
+        expect(result.field).to.eq('status');
+        expect(result.value).to.eq('throttledError');
+        expect(result.extra).to.eq(2000);
+        expect(result.errorMessage).to.eq('vets_throttled_error: undefined');
+        expect(result.errorReceived).to.be.an('error');
+        expect(result.status).to.be.undefined;
       });
 
       requests[0].respond(
@@ -281,6 +332,7 @@ describe('Schemaform actions:', () => {
           value: 'submitPending',
           extra: null,
           errorMessage: null,
+          errorReceived: null,
         });
         expect(formConfig.submit.called).to.be.true;
         expect(requests).to.be.empty;
@@ -1226,13 +1278,15 @@ describe('Schemaform actions:', () => {
       const promise = thunk(dispatch).then(() => {
         expect(refreshStub.called).to.be.false;
         expect(requests.length).to.equal(1);
-        expect(dispatch.secondCall.args[0]).to.eql({
-          type: SET_SUBMISSION,
-          field: 'status',
-          value: 'serverError',
-          extra: null,
-          errorMessage: 'vets_server_error: Forbidden',
-        });
+
+        const result = dispatch.secondCall.args[0];
+        expect(result.type).to.eq(SET_SUBMISSION);
+        expect(result.field).to.eq('status');
+        expect(result.value).to.eq('serverError');
+        expect(result.extra).to.be.null;
+        expect(result.errorMessage).to.eq('vets_server_error: Forbidden');
+        expect(result.errorReceived).to.be.an('error');
+        expect(result.status).to.be.undefined;
       });
 
       requests[0].respond(

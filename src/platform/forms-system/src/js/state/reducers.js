@@ -62,7 +62,7 @@ export default {
   }),
   [SET_SUBMISSION]: (state, action) => {
     const newState = set(['submission', action.field], action.value, state);
-    const { extra, errorMessage } = action;
+    const { extra, errorReceived, errorMessage } = action;
     const submission = {
       ...newState.submission,
       timestamp: new Date().getTime(),
@@ -73,6 +73,9 @@ export default {
     }
     if (extra) {
       submission.extra = extra;
+    }
+    if (errorReceived) {
+      submission.errorReceived = errorReceived;
     }
     newState.submission = submission;
     return newState;

@@ -78,6 +78,7 @@ const formConfigKeys = [
   'ariaDescribedBySubmit',
   'backLinkText',
   'chapters',
+  'clientError',
   'confirmation',
   'CustomReviewTopContent',
   'customValidationErrors',
@@ -123,6 +124,7 @@ const formConfigKeys = [
   'submitErrorText',
   'submitUrl',
   'subTitle',
+  'throttledError',
   'title',
   'trackingPrefix',
   'transformForSubmit',
@@ -130,6 +132,7 @@ const formConfigKeys = [
   'useCustomScrollAndFocus',
   'useTopBackLink',
   'v3SegmentedProgressBar',
+  'validationError',
   'verifyRequiredPrefill',
   'version',
   'wizardStorageKey',
@@ -323,6 +326,9 @@ const validateForm = async (formSlug, formConfigParam) => {
     submissionErrorLink: 'function',
     CustomTopContent: 'component',
     useTopBackLink: 'boolean',
+    clientError: 'function',
+    throttledError: 'function',
+    validationError: 'function',
   };
 
   const optionalValidations = Object.entries(optionalProps)

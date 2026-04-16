@@ -57,15 +57,23 @@ export function setEditMode(page, edit, index = null) {
   };
 }
 
-// extra is used to pass other information (from a submission error or anything else)
-// into the submission state object
-export function setSubmission(field, value, errorMessage = null, extra = null) {
+// extra is used to pass other information (from a submission error or anything
+// else) into the submission state object; errorReceived is the original error
+// returned from the backend response
+export function setSubmission(
+  field,
+  value,
+  errorMessage = null,
+  extra = null,
+  errorReceived = null,
+) {
   return {
     type: SET_SUBMISSION,
     field,
     value,
     errorMessage, // include errorMessage in form.submission
     extra,
+    errorReceived,
   };
 }
 
@@ -253,12 +261,34 @@ export function submitForm(formConfig, form) {
     return promise
       .then(resp => dispatch(setSubmitted(resp)))
       .catch(errorReceived => {
-        // overly cautious
-        const error =
-          errorReceived instanceof Error
-            ? errorReceived
-            : new Error(errorReceived);
-        const errorMessage = String(error.message);
+        let error;
+        // Usual vets-api response
+        if (errorReceived instanceof Error) {
+          error = errorReceived;
+        } else if (Array.isArray(errorReceived?.errors)) {
+          /* Raw schema validation issue response, for example:
+            {
+              errors: [
+                {
+                  title: '/date string at `/date` does not match pattern: ^(\\d{4})-(0[1-9]|1[0-2]|XX)-(0[1-9]|[1-2][0-9]|3[0-1]|XX)$',
+                  detail: '/date - string at `/date` does not match pattern: ^(\\d{4})-(0[1-9]|1[0-2]|XX)-(0[1-9]|[1-2][0-9]|3[0-1]|XX)$',
+                  code: '100',
+                  source: { pointer: 'data/attributes//date' },
+                  status: '422',
+                },
+              ],
+            }
+          */
+          const [firstError] = errorReceived.errors;
+          error = firstError;
+        } else {
+          error = new Error(errorReceived);
+        }
+
+        const errorMessage = String(
+          error.message || error.title || error.detail,
+        );
+
         let errorType = 'clientError';
         if (errorMessage.startsWith('vets_throttled_error')) {
           errorType = 'throttledError';
@@ -266,7 +296,15 @@ export function submitForm(formConfig, form) {
           errorType = 'serverError';
         }
         captureError(error, errorType);
-        dispatch(setSubmission('status', errorType, errorMessage, error.extra));
+        dispatch(
+          setSubmission(
+            'status',
+            errorType,
+            errorMessage,
+            error.extra,
+            errorReceived,
+          ),
+        );
       });
   };
 }

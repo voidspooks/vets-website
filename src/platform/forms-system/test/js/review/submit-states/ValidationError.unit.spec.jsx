@@ -505,5 +505,47 @@ describe('Schemaform review: <ValidationError />', () => {
       expect(tree.getByText(/missing some information/)).to.exist;
       tree.unmount();
     });
+
+    it('should render custom error message from form config', () => {
+      const onBack = sinon.spy();
+      const onSubmit = sinon.spy();
+
+      const form = createForm();
+      const formConfig = {
+        ...getFormConfig(useWebComponents),
+        validationError: () => (
+          <va-alert status="error">
+            <h3 slot="headline">Custom error message</h3>
+            <p>Some other details about the validation error</p>
+          </va-alert>
+        ),
+      };
+
+      const formReducer = createformReducer({
+        formConfig: form,
+      });
+
+      const store = createStore();
+      store.injectReducer('form', formReducer);
+
+      const tree = render(
+        <Provider store={store}>
+          <ValidationError
+            appType="test"
+            buttonText="test"
+            formConfig={formConfig}
+            onBack={onBack}
+            onSubmit={onSubmit}
+            testId="12345"
+          />
+        </Provider>,
+      );
+
+      expect(tree.getByText('Custom error message')).to.not.be.null;
+      expect(tree.getByText('Some other details about the validation error')).to
+        .not.be.null;
+
+      tree.unmount();
+    });
   });
 });

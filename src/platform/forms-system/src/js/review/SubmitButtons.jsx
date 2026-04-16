@@ -21,73 +21,41 @@ export default function SubmitButtons(props) {
   const buttonText =
     formConfig.customText?.submitButtonText || `Submit ${appType}`;
 
+  const renderProps = {
+    appType,
+    onBack,
+    onSubmit,
+    formConfig,
+    buttonText,
+    formErrors,
+    submission,
+  };
+
   if (submission.status === false) {
-    return (
-      <Default
-        buttonText={buttonText}
-        onBack={onBack}
-        onSubmit={onSubmit}
-        formConfig={formConfig}
-      />
-    );
+    return <Default {...renderProps} />;
   }
 
   if (submission.status === 'submitPending') {
-    return (
-      <Pending onBack={onBack} onSubmit={onSubmit} formConfig={formConfig} />
-    );
+    return <Pending {...renderProps} />;
   }
 
   if (submission.status === 'applicationSubmitted') {
-    return (
-      <Submitted onBack={onBack} onSubmit={onSubmit} formConfig={formConfig} />
-    );
+    return <Submitted {...renderProps} />;
   }
 
   if (submission.status === 'clientError') {
-    return (
-      <ClientError
-        buttonText={buttonText}
-        formConfig={formConfig}
-        onBack={onBack}
-        onSubmit={onSubmit}
-      />
-    );
+    return <ClientError {...renderProps} />;
   }
 
   if (submission.status === 'throttledError') {
-    return (
-      <ThrottledError
-        buttonText={buttonText}
-        formConfig={formConfig}
-        when={submission.extra}
-        onBack={onBack}
-        onSubmit={onSubmit}
-      />
-    );
+    return <ThrottledError {...renderProps} when={submission.extra} />;
   }
 
   if (submission.status === 'validationError') {
-    return (
-      <ValidationError
-        appType={appType}
-        buttonText={buttonText}
-        formConfig={formConfig}
-        formErrors={formErrors}
-        onBack={onBack}
-        onSubmit={onSubmit}
-      />
-    );
+    return <ValidationError {...renderProps} />;
   }
 
-  return (
-    <GenericError
-      appType={appType}
-      formConfig={formConfig}
-      onBack={onBack}
-      onSubmit={onSubmit}
-    />
-  );
+  return <GenericError {...renderProps} />;
 }
 
 SubmitButtons.propTypes = {

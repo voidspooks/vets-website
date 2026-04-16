@@ -1,46 +1,64 @@
 import React, { useEffect } from 'react';
-import { focusElement } from 'platform/utilities/ui/focus';
 import PropTypes from 'prop-types';
 
-import { Element, getScrollOptions, scrollTo } from 'platform/utilities/scroll';
+import { scrollTo } from 'platform/utilities/scroll';
 import { Column, Row } from 'platform/forms/components/common/grid';
 import ErrorMessage from 'platform/forms/components/common/alerts/ErrorMessage';
 import PreSubmitSection from 'platform/forms/components/review/PreSubmitSection';
+import { waitForRenderThenFocus } from 'platform/utilities/ui/focus';
 import ProgressButton from '../../components/ProgressButton';
 import Back from './Back';
 
 export default function ClientError(props) {
   const { buttonText, formConfig, onBack, onSubmit, testId } = props;
-  const scrollToError = () => {
-    scrollTo('errorScrollElement', getScrollOptions());
-  };
+
+  const {
+    ariaDescribedBySubmit,
+    clientError: CustomClientError,
+    formOptions,
+    useTopBackLink,
+  } = formConfig || {};
+
+  useEffect(
+    () => {
+      // ErrorMessage & ErrorLinks components do their own focus management
+      if (CustomClientError) {
+        // Initial focus is on the progress stepper
+        setTimeout(() => {
+          waitForRenderThenFocus('#submission-error-wrapper');
+          scrollTo('#submission-error-wrapper');
+        });
+      }
+    },
+    [CustomClientError],
+  );
+
   let ariaDescribedBy = null;
   // If no ariaDescribedBy is passed down from form.js,
   // a null value will properly not render the aria label.
-  if (formConfig?.ariaDescribedBySubmit !== null) {
-    ariaDescribedBy = formConfig?.ariaDescribedBySubmit;
+  if (ariaDescribedBySubmit !== null) {
+    ariaDescribedBy = ariaDescribedBySubmit;
   } else {
     ariaDescribedBy = null;
   }
-  const hideBackButton = formConfig?.useTopBackLink || false;
-  const useWebComponents =
-    formConfig?.formOptions?.useWebComponentForNavigation;
-
-  useEffect(() => {
-    focusElement('.schemaform-failure-alert');
-    scrollToError();
-  }, []);
+  const hideBackButton = useTopBackLink || false;
+  const useWebComponents = formOptions?.useWebComponentForNavigation;
 
   return (
     <>
       <Row>
         <Column role="alert" testId={testId}>
-          <Element name="errorScrollElement" />
-          <ErrorMessage
-            active
-            title="We’re sorry, there was an error connecting to VA.gov."
-            message="Please check your Internet connection and try again."
-          />
+          {CustomClientError ? (
+            <div id="submission-error-wrapper">
+              <CustomClientError {...props} />
+            </div>
+          ) : (
+            <ErrorMessage
+              active
+              title="We’re sorry, there was an error connecting to VA.gov."
+              message="Please check your Internet connection and try again."
+            />
+          )}
         </Column>
       </Row>
       <PreSubmitSection formConfig={formConfig} />
@@ -86,7 +104,44 @@ export default function ClientError(props) {
 
 ClientError.propTypes = {
   buttonText: PropTypes.string,
-  formConfig: PropTypes.object,
+  formConfig: PropTypes.shape({
+    validationError: PropTypes.func,
+    showReviewErrors: PropTypes.bool,
+    ariaDescribedBySubmit: PropTypes.string,
+    useTopBackLink: PropTypes.bool,
+    formOptions: PropTypes.shape({
+      useWebComponentForNavigation: PropTypes.bool,
+    }),
+  }),
+  submission: PropTypes.shape({
+    errorMessage: PropTypes.string,
+    errorReceived: PropTypes.oneOfType([
+      PropTypes.instanceOf(Error),
+      PropTypes.shape({
+        message: PropTypes.string,
+      }),
+      PropTypes.shape({
+        errors: PropTypes.arrayOf(
+          PropTypes.shape({
+            code: PropTypes.string,
+            detail: PropTypes.string,
+            source: PropTypes.shape({
+              pointer: PropTypes.string,
+            }),
+            status: PropTypes.string,
+            title: PropTypes.string,
+          }),
+        ),
+      }),
+    ]),
+    hasAttemptedSubmit: PropTypes.bool,
+    id: PropTypes.any,
+    status: PropTypes.string,
+    timestamp: PropTypes.number,
+    onBack: PropTypes.func,
+    onSubmit: PropTypes.func,
+  }),
+  testId: PropTypes.string,
   onBack: PropTypes.func,
   onSubmit: PropTypes.func,
 };
