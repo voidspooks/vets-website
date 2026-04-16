@@ -16,6 +16,7 @@ import { sponsorPages } from '../chapters/sponsor';
 import { applicantPages } from '../chapters/applicant';
 import { healthInsurancePages } from '../chapters/healthInsurance';
 import { applicationStatusPages } from '../chapters/applicationStatus';
+import { roleIsOther } from '../utils/helpers';
 
 /** @type {FormConfig}  */
 const formConfig = {
@@ -48,6 +49,7 @@ const formConfig = {
   formOptions: {
     useWebComponentForNavigation: true,
     filterInactiveNestedPageData: true,
+    enableChapterDepends: true,
   },
   ...minimalHeaderFormConfigOptions({
     breadcrumbList: [
@@ -120,6 +122,7 @@ const formConfig = {
     certifierInformation: {
       title: 'Your information',
       pages: certifierPages,
+      depends: roleIsOther,
     },
   },
 };

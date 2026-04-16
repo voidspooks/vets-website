@@ -1,7 +1,4 @@
-import {
-  certifierHasNoSharedAddressSelection,
-  roleIsOther,
-} from '../../utils/helpers';
+import { certifierHasNoSharedAddressSelection } from '../../utils/helpers';
 import addressSelection from './addressSelection';
 import contactInformation from './contactInformation';
 import mailingAddress from './mailingAddress';
@@ -12,13 +9,11 @@ export const certifierPages = {
   certifierName: {
     path: 'your-name',
     title: 'Your name',
-    depends: roleIsOther,
     ...name,
   },
   certifierAddress: {
     path: 'your-address',
     title: 'Your address',
-    depends: roleIsOther,
     ...addressSelection,
   },
   certifierMailingAddress: {
@@ -30,13 +25,11 @@ export const certifierPages = {
   certifierContactInfo: {
     path: 'your-contact-information',
     title: 'Your contact information',
-    depends: roleIsOther,
     ...contactInformation,
   },
   certifierRelationship: {
     path: 'your-relationship-to-applicant',
     title: 'Your relationship to the applicant(s)',
-    depends: roleIsOther,
     ...relationship,
   },
 };

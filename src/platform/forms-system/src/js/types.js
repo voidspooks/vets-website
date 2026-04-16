@@ -165,6 +165,7 @@
 /**
  * @typedef {Object} FormConfigChapter
  * @property {FormConfigPages} [pages]
+ * @property {Function|Array|Object} [depends] Chapter-level conditional visibility (hard override). If the depends condition evaluates to false, all pages in the chapter are inactive regardless of page-level depends. Supports function `(formData) => boolean`, array of conditions, or object to match against form data. Requires `formOptions.enableChapterDepends: true`.
  * @property {string | ({ formData, formConfig }) => string} [title]
  * @property {string | ({ formData, formConfig }) => string} [reviewTitle]
  * @property {boolean} [hideFormNavProgress]
@@ -616,6 +617,7 @@
 
 /**
  * @typedef {Object} FormOptions
+ * @property {boolean} [enableChapterDepends] - Enable chapter-level depends functionality. When true, chapter depends will be evaluated before page-level depends.
  * @property {boolean} [filterInactiveNestedPageData] - utilize filter method for removing inactive page data that filters ArrayBuilder page data
  * @property {boolean} [useWebComponentForNavigation] - utilize VADS button web components for page nav
  * @property {boolean} [focusOnAlertRole] - apply focus to va-alert on submission error

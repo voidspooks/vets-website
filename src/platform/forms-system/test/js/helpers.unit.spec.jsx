@@ -21,6 +21,7 @@ import {
   deleteNestedProperty,
   filterInactiveNestedPageData,
   createFormPageList,
+  isActivePage,
 } from '../../src/js/helpers';
 
 describe('Schemaform helpers:', () => {
@@ -1982,5 +1983,153 @@ describe('convertUrlPathToPageConfigPath', () => {
     expect(convertUrlPathToPageConfigPath(urlPath, rootUrl)).to.equal(
       expectedPagePath,
     );
+  });
+});
+
+describe('Chapter-level depends', () => {
+  const createPage = (overrides = {}) => ({
+    depends: undefined,
+    chapterDepends: undefined,
+    ...overrides,
+  });
+  const createFormConfig = (chapters, enableChapterDepends = true) => ({
+    formOptions: { enableChapterDepends },
+    chapters,
+  });
+  const createChapter = (depends, fieldName, pageDepends = undefined) => ({
+    depends,
+    pages: {
+      page1: {
+        depends: pageDepends,
+        schema: {
+          type: 'object',
+          properties: { [fieldName]: { type: 'string' } },
+        },
+      },
+    },
+  });
+
+  describe('isActivePage with chapter depends', () => {
+    const testCases = [
+      {
+        desc:
+          'should return false when chapter depends is false, regardless of page depends',
+        page: createPage({ depends: () => true, chapterDepends: () => false }),
+        expected: false,
+      },
+      {
+        desc: 'should evaluate page depends when chapter depends is true',
+        page: createPage({ depends: () => false, chapterDepends: () => true }),
+        expected: false,
+      },
+      {
+        desc:
+          'should return true when chapter depends is true and page has no depends',
+        page: createPage({ chapterDepends: () => true }),
+        expected: true,
+      },
+      {
+        desc: 'should ignore chapter depends when it is undefined',
+        page: createPage({ depends: () => true }),
+        expected: true,
+      },
+    ];
+
+    testCases.forEach(({ desc, page, expected }) => {
+      it(desc, () => {
+        expect(isActivePage(page, {})).to.equal(expected);
+      });
+    });
+
+    it('should support array pattern for chapter depends', () => {
+      const page = createPage({ chapterDepends: [{ field: 'test' }] });
+      expect(isActivePage(page, { field: 'test' })).to.be.true;
+      expect(isActivePage(page, { field: 'other' })).to.be.false;
+    });
+
+    it('should support object pattern for chapter depends', () => {
+      const page = createPage({ chapterDepends: { field: 'test' } });
+      expect(isActivePage(page, { field: 'test' })).to.be.true;
+      expect(isActivePage(page, { field: 'other' })).to.be.false;
+    });
+  });
+
+  describe('createFormPageList with enableChapterDepends', () => {
+    const baseChapter = {
+      depends: () => true,
+      pages: { page1: { path: 'page1' } },
+    };
+
+    [
+      { enabled: true, expected: 'function' },
+      { enabled: false, expected: 'undefined' },
+    ].forEach(({ enabled, expected }) => {
+      it(`should ${
+        enabled ? '' : 'not '
+      }add chapterDepends when enableChapterDepends is ${enabled}`, () => {
+        const formConfig = createFormConfig({ chapter1: baseChapter }, enabled);
+        const pageList = createFormPageList(formConfig);
+
+        if (expected === 'function') {
+          expect(pageList[0].chapterDepends).to.be.a('function');
+        } else {
+          expect(pageList[0].chapterDepends).to.be.undefined;
+        }
+      });
+    });
+
+    it('should not add chapterDepends when chapter has no depends', () => {
+      const formConfig = createFormConfig({
+        chapter1: { pages: { page1: { path: 'page1' } } },
+      });
+      const pageList = createFormPageList(formConfig);
+      expect(pageList[0].chapterDepends).to.be.undefined;
+    });
+  });
+
+  describe('transformForSubmit with chapter depends', () => {
+    it('should remove data from pages in inactive chapters', () => {
+      const formConfig = createFormConfig({
+        activeChapter: createChapter(() => true, 'activeField'),
+        inactiveChapter: createChapter(() => false, 'inactiveField'),
+      });
+      const formData = {
+        data: {
+          activeField: 'keep this',
+          inactiveField: 'remove this',
+        },
+      };
+      const output = JSON.parse(transformForSubmit(formConfig, formData));
+      expect(output.activeField).to.equal('keep this');
+      expect(output.inactiveField).to.be.undefined;
+    });
+
+    it('should respect page depends when chapter is active', () => {
+      const formConfig = createFormConfig({
+        chapter1: {
+          depends: () => true,
+          pages: {
+            page1: createChapter(undefined, 'field1').pages.page1,
+            page2: {
+              depends: () => true,
+              schema: {
+                type: 'object',
+                properties: { field2: { type: 'string' } },
+              },
+            },
+          },
+        },
+      });
+      formConfig.chapters.chapter1.pages.page1.depends = () => false;
+      const formData = {
+        data: {
+          field1: 'should be removed',
+          field2: 'should be kept',
+        },
+      };
+      const output = JSON.parse(transformForSubmit(formConfig, formData));
+      expect(output.field1).to.be.undefined;
+      expect(output.field2).to.equal('should be kept');
+    });
   });
 });

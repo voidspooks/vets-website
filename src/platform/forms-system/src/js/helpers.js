@@ -48,22 +48,42 @@ export const getCurrentChapterDisplay = (formConfig, currentChapterIndex) => {
   return currentChapterIndex - upstreamProgressHiddenChaptersLength;
 };
 
-// An active page is one that will be shown to the user.
-// Pages become inactive if they are conditionally shown based
-// on answers to previous questions.
+// Evaluate a depends condition uniformly across chapter and page levels.
+// Supports function, array of conditions, or object matching patterns.
+const evaluateDepends = (depends, data, index) => {
+  if (typeof depends === 'function') return depends(data, index);
+
+  if (Array.isArray(depends)) {
+    return depends.some(condition => matches(condition)(data));
+  }
+
+  return matches(depends)(data);
+};
+
+/**
+ * An active page is one that will be shown to the user.
+ * Pages become inactive if they are conditionally shown based on answers to previous questions.
+ *
+ * Chapter-level depends takes precedence: if a chapter is inactive, all its pages are inactive
+ * regardless of individual page depends conditions.
+ *
+ * @param {FormConfigPage} page - The page configuration object
+ * @param {Object} data - Current form data
+ * @returns {boolean} - True if the page should be shown to the user
+ */
 export function isActivePage(page, data) {
-  // Ensure that page actually exists before trying to access its properties.
   if (!page) return false;
 
-  if (typeof page.depends === 'function') {
-    return page.depends(data, page.index);
+  if (
+    page.chapterDepends !== undefined &&
+    !evaluateDepends(page.chapterDepends, data, page.index)
+  ) {
+    return false;
   }
 
-  if (Array.isArray(page.depends)) {
-    return page.depends.some(condition => matches(condition)(data));
-  }
+  if (page.depends === undefined) return true;
 
-  return page.depends === undefined || matches(page.depends)(data);
+  return evaluateDepends(page.depends, data, page.index);
 }
 
 export function getActivePages(pages, data) {
@@ -223,6 +243,7 @@ export function getInactivePages(pages, data) {
 
 export function createFormPageList(formConfig) {
   if (!formConfig?.chapters) return [];
+  const enableChapterDepends = formConfig?.formOptions?.enableChapterDepends;
 
   return Object.keys(formConfig.chapters).reduce((pageList, chapterKey) => {
     const chapter = formConfig.chapters[chapterKey];
@@ -231,12 +252,15 @@ export function createFormPageList(formConfig) {
 
     const chapterTitle = chapter?.title ?? formConfig.title;
     const hideOnReviewPage = chapter?.hideOnReviewPage || false;
+    const chapterDepends = enableChapterDepends ? chapter.depends : undefined;
+
     const pages = Object.keys(chapter.pages).map(pageKey => ({
       ...chapter.pages[pageKey],
       chapterTitle,
       chapterKey,
       hideOnReviewPage,
       pageKey,
+      ...(chapterDepends && { chapterDepends }),
     }));
     return pageList.concat(pages);
   }, []);
