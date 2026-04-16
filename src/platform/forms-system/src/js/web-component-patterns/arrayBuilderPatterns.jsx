@@ -150,6 +150,12 @@ export const withEditTitle = (title, lowerCase = true) => {
  * @param {boolean} [options.hasMultipleItemPages=true]
  * @param {string | JSX.Element | ({ formData, formContext }) => string | JSX.Element} [options.description]
  * @param {boolean} [options.showEditExplanationText=true]
+ * @param {boolean} [options.dataDogHidden=false] - Whether to add the
+ * `dd-privacy-mask` class to the title for DataDog scrubbing purposes
+ * @param {string} [options.dataDogAltTitle] - Alternative title to use for
+ *  DataDog scrubbing when `dataDogHidden` is true. If not provided, the title
+ *  will be used; if title is a function, an empty object instead of the form
+ *  data is used as the argument
  * @returns {UISchemaOptions}
  */
 export const arrayBuilderItemFirstPageTitleUI = ({
@@ -159,9 +165,15 @@ export const arrayBuilderItemFirstPageTitleUI = ({
   lowerCase = true,
   hasMultipleItemPages = true,
   showEditExplanationText = true,
+  dataDogHidden = false,
+  dataDogAltTitle,
 }) => {
   return titleUI(
-    withEditTitle(title, lowerCase),
+    {
+      title: withEditTitle(title, lowerCase),
+      dataDogHidden,
+      dataDogAltTitle,
+    },
     withAlertOrDescription({
       description,
       nounSingular,
@@ -193,6 +205,13 @@ export const arrayBuilderItemFirstPageTitleUI = ({
  * @param {string | JSX.Element | ({ formData, formContext }) => string | JSX.Element} [title] 'ui:title'
  * @param {string | JSX.Element | ({ formData, formContext }) => string | JSX.Element} [description] 'ui:description'
  * @param {boolean} [lowerCase=true] - Whether to lower case the first character of the title when 'edit' is present
+ * @param {Object} [options]
+ * @param {boolean} [options.dataDogHidden=false] - Whether to add the
+ * `dd-privacy-mask` class to the title for DataDog scrubbing purposes
+ * @param {string} [options.dataDogAltTitle] - Alternative title to use for DataDog
+ *  scrubbing when `dataDogHidden` is true. If not provided, the title will be
+ *  used; if title is a function, an empty object instead of the form data is
+ *  used as the argument
  *
  * @returns {UISchemaOptions}
  */
@@ -200,8 +219,15 @@ export const arrayBuilderItemSubsequentPageTitleUI = (
   title,
   description,
   lowerCase = true,
+  options = {},
 ) => {
-  return titleUI(withEditTitle(title, lowerCase), description);
+  return titleUI(
+    {
+      title: withEditTitle(title, lowerCase),
+      ...options,
+    },
+    description,
+  );
 };
 
 /**

@@ -29,6 +29,7 @@ export const useHeadingLevels = ({
   userHeaderLevel = null,
   userHeaderStyleLevel = null,
   isReviewPage = false,
+  dataDogHidden = false,
 }) => {
   const isMinimalHeader = useMemo(() => isMinimalHeaderPath(), []);
   let defaultStyleLevel;
@@ -61,21 +62,30 @@ export const useHeadingLevels = ({
       [`vads-u-font-size--h${headingStyleLevel + 1}`]: true,
     }),
     'vads-u-font-size--h5': isReviewPage,
+    'dd-privacy-mask': dataDogHidden,
   });
 
   return { headingLevel, headingClasses };
 };
 
+/**
+ * Render a title header component
+ * @param {TitleObject} props - Title to render
+ * @returns {JSX.Element} The rendered title component
+ */
 export const Title = ({
   title,
   description,
   headerLevel: userHeaderLevel,
   headerStyleLevel: userHeaderStyleLevel,
   classNames: userClassNames,
+  dataDogHidden = false,
+  dataDogAltTitle,
 }) => {
   const { headingLevel, headingClasses } = useHeadingLevels({
     userHeaderLevel,
     userHeaderStyleLevel,
+    dataDogHidden,
   });
 
   const CustomHeader = `h${headingLevel}`;
@@ -86,7 +96,11 @@ export const Title = ({
 
   return (
     <>
-      <CustomHeader className={className} {...focusHeaderProps}>
+      <CustomHeader
+        className={className}
+        {...focusHeaderProps}
+        data-dd-action-name={dataDogHidden ? dataDogAltTitle : undefined}
+      >
         {title}
       </CustomHeader>
       {description && (
@@ -117,6 +131,8 @@ function isTitleObject(obj) {
  *   headerLevel?: number,
  *   headerStyleLevel?: number,
  *   classNames?: string,
+ *   dataDogHidden?: boolean,
+ *   dataDogAltTitle?: string,
  * }} TitleObject
  */
 
@@ -151,10 +167,12 @@ function isTitleObject(obj) {
 export const titleUI = (titleOption, descriptionOption) => {
   const {
     title,
-    description,
+    description = descriptionOption,
     headerLevel,
     headerStyleLevel,
     classNames: userClassNames,
+    dataDogHidden,
+    dataDogAltTitle,
   } = isTitleObject(titleOption)
     ? titleOption
     : {
@@ -175,6 +193,11 @@ export const titleUI = (titleOption, descriptionOption) => {
               headerLevel={headerLevel}
               headerStyleLevel={headerStyleLevel}
               classNames={userClassNames}
+              dataDogHidden={dataDogHidden}
+              dataDogAltTitle={
+                dataDogHidden &&
+                (dataDogAltTitle || (isTitleFn ? title({}) : ''))
+              }
             />
           </legend>
         )
@@ -185,6 +208,8 @@ export const titleUI = (titleOption, descriptionOption) => {
           headerLevel={headerLevel}
           headerStyleLevel={headerStyleLevel}
           classNames={userClassNames}
+          dataDogHidden={dataDogHidden}
+          dataDogAltTitle={dataDogAltTitle}
         />
       ),
   };
