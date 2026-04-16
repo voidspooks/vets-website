@@ -13,11 +13,7 @@ import {
   selectFilterOption,
 } from '../../selectors/selectPreferences';
 import { getFilterUrl } from '../../components/MedicationList/MedicationListFilter';
-import {
-  selectCernerPilotFlag,
-  selectV2StatusMappingFlag,
-  selectMedicationsManagementImprovementsFlag,
-} from '../../util/selectors';
+import { selectMedicationsManagementImprovementsFlag } from '../../util/selectors';
 
 /**
  * Resolves the API_ENDPOINT for a sort option key, using only the option
@@ -43,8 +39,6 @@ export const useFetchMedicationList = (perPage = 10) => {
 
   const selectedSortOption = useSelector(selectSortOption);
   const selectedFilterOption = useSelector(selectFilterOption);
-  const isCernerPilot = useSelector(selectCernerPilotFlag);
-  const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
   const isManagementImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
   );
@@ -66,11 +60,7 @@ export const useFetchMedicationList = (perPage = 10) => {
         selectedSortOption,
         isManagementImprovements,
       ),
-      filterOption: getFilterUrl(
-        effectiveFilter,
-        isCernerPilot,
-        isV2StatusMapping,
-      ),
+      filterOption: getFilterUrl(effectiveFilter),
     }),
     [
       page,
@@ -78,8 +68,6 @@ export const useFetchMedicationList = (perPage = 10) => {
       selectedSortOption,
       isManagementImprovements,
       effectiveFilter,
-      isCernerPilot,
-      isV2StatusMapping,
     ],
   );
 

@@ -5,7 +5,7 @@ import { focusElement } from '@department-of-veterans-affairs/platform-utilities
 import useAcceleratedData from '~/platform/mhv/hooks/useAcceleratedData';
 
 import NeedHelp from '../components/shared/NeedHelp';
-import PrintDownloadCard from '../components/shared/PrintDownloadCard';
+import PrintDownload from '../components/shared/PrintDownload';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
 import MedicationsList from '../components/MedicationsList/MedicationsList';
 import MedicationsListSort from '../components/MedicationsList/MedicationsListSort';
@@ -25,10 +25,14 @@ import { setSortOption, setFilterOption } from '../redux/preferencesSlice';
 import EmptyPrescriptionContent from '../components/MedicationsList/EmptyPrescriptionContent';
 import NoFilterMatches from '../components/MedicationsList/NoFilterMatches';
 import MedicationListFilter from '../components/MedicationList/MedicationListFilter';
+import RefillNotification from '../components/RefillPrescriptions/RefillNotification';
 import InnerNavigation from '../components/shared/InnerNavigation';
 
 import { useGetAllergiesQuery } from '../api/allergiesApi';
-import { getPrescriptionsExportList } from '../api/prescriptionsApi';
+import {
+  getPrescriptionsExportList,
+  useBulkRefillPrescriptionsMutation,
+} from '../api/prescriptionsApi';
 
 import { useFocusManagement } from '../hooks/MedicationsList/useFocusManagement';
 import useRxListExport from '../hooks/useRxListExport';
@@ -42,6 +46,24 @@ import {
   selectMedicationsManagementImprovementsFlag,
 } from '../util/selectors';
 import MedicationResources from '../components/shared/MedicationResources';
+import { REFILL_STATUS } from '../util/constants/refill';
+
+/**
+ * Returns the dynamic h2 heading based on the currently selected filter.
+ */
+const getFilterHeading = filterOption => {
+  switch (filterOption) {
+    case 'ACTIVE':
+      return 'Your active medications';
+    case 'RENEWAL':
+      return 'Your renewable medications';
+    case 'INACTIVE':
+      return 'Your inactive medications';
+    case 'ALL_MEDICATIONS':
+    default:
+      return 'Your medications';
+  }
+};
 
 const MedicationList = () => {
   const navigate = useNavigate();
@@ -66,6 +88,44 @@ const MedicationList = () => {
   } = useAcceleratedData();
   const isManagementImprovements = useSelector(
     selectMedicationsManagementImprovementsFlag,
+  );
+
+  // Access shared refill mutation result via fixedCacheKey
+  const [, refillResult] = useBulkRefillPrescriptionsMutation({
+    fixedCacheKey: 'bulk-refill-request',
+  });
+
+  const refillRequestStatus = useMemo(
+    () => {
+      if (refillResult?.isLoading) return REFILL_STATUS.IN_PROGRESS;
+      if (refillResult?.isSuccess && refillResult?.data)
+        return REFILL_STATUS.FINISHED;
+      if (refillResult?.error) return REFILL_STATUS.ERROR;
+      return REFILL_STATUS.NOT_STARTED;
+    },
+    [refillResult],
+  );
+
+  const successfulMeds = useMemo(
+    () => {
+      if (!refillResult?.data?.successfulIds) return [];
+      return refillResult.data.successfulIds.map(id => ({
+        prescriptionId: id?.id ?? id,
+        prescriptionName: id?.prescriptionName ?? 'Medication',
+      }));
+    },
+    [refillResult?.data?.successfulIds],
+  );
+
+  const failedMeds = useMemo(
+    () => {
+      if (!refillResult?.data?.failedIds) return [];
+      return refillResult.data.failedIds.map(id => ({
+        prescriptionId: id?.id ?? id,
+        prescriptionName: id?.prescriptionName ?? 'Medication',
+      }));
+    },
+    [refillResult?.data?.failedIds],
   );
 
   // Default to Active filter when management improvements is enabled
@@ -101,15 +161,14 @@ const MedicationList = () => {
   );
 
   const {
+    prescriptions,
     prescriptionsData,
     prescriptionsApiError,
     isLoading,
   } = useFetchMedicationList();
 
   const { pagination, meta = {} } = prescriptionsData || {};
-  const filteredList = useMemo(() => prescriptionsData?.prescriptions || [], [
-    prescriptionsData?.prescriptions,
-  ]);
+  const filteredList = prescriptions;
   const { filterCount } = meta;
 
   const noFilterMatches =
@@ -218,6 +277,10 @@ const MedicationList = () => {
     filterCount &&
     Object.values(filterCount).every(value => value === 0);
 
+  const showRefillNotification =
+    refillRequestStatus === REFILL_STATUS.FINISHED ||
+    refillRequestStatus === REFILL_STATUS.ERROR;
+
   const renderContent = () => {
     if (isLoading && !hasMedications) {
       return (
@@ -234,40 +297,51 @@ const MedicationList = () => {
       return <EmptyPrescriptionContent />;
     }
     return (
-      <>
-        <MedicationListFilter
-          updateFilter={updateFilter}
-          isLoading={isLoading}
-        />
-        <MedicationsListSort
-          sortRxList={updateSort}
-          shouldShowSelect={!isLoading}
-        />
-        {isLoading && (
-          <va-loading-indicator message={loadingMessage} set-focus />
-        )}
-        {!isLoading &&
-          hasMedications &&
-          pagination && (
-            <MedicationsList
-              pagination={pagination}
-              rxList={filteredList}
-              selectedSortOption={selectedSortOption}
-              updateLoadingStatus={setLoadingMessage}
-            />
+      <div className="medication-list-layout">
+        <div className="medication-list-filter-column">
+          <MedicationListFilter
+            updateFilter={updateFilter}
+            isLoading={isLoading}
+            filterCount={filterCount}
+          />
+        </div>
+        <div className="medication-list-results-column">
+          <h2
+            className="vads-u-margin-top--0"
+            data-testid="medications-list-heading"
+          >
+            {getFilterHeading(selectedFilterOption)}
+          </h2>
+          <MedicationsListSort
+            sortRxList={updateSort}
+            shouldShowSelect={!isLoading}
+          />
+          {isLoading && (
+            <va-loading-indicator message={loadingMessage} set-focus />
           )}
-        {!isLoading &&
-          hasMedications && (
-            <PrintDownloadCard
-              onDownload={handleExportListDownload}
-              isSuccess={isExportSuccess}
-              isLoading={isExportLoading}
-              isFiltered={filterApplied}
-              list
-            />
-          )}
-        {!isLoading && noFilterMatches && <NoFilterMatches />}
-      </>
+          {!isLoading &&
+            hasMedications &&
+            pagination && (
+              <MedicationsList
+                pagination={pagination}
+                rxList={filteredList}
+                selectedSortOption={selectedSortOption}
+                updateLoadingStatus={setLoadingMessage}
+              />
+            )}
+          {!isLoading &&
+            hasMedications && (
+              <PrintDownload
+                onDownload={handleExportListDownload}
+                isSuccess={isExportSuccess}
+                isLoading={isExportLoading}
+                isFiltered={filterApplied}
+                list
+              />
+            )}
+          {!isLoading && noFilterMatches && <NoFilterMatches />}
+        </div>
+      </div>
     );
   };
 
@@ -277,9 +351,16 @@ const MedicationList = () => {
 
   return (
     <div>
-      <h1 data-testid="medication-list-heading">Medication history</h1>
+      <h1 data-testid="medication-list-heading">Medications list</h1>
       {prescriptionsApiError && (
         <ApiErrorNotification errorType="access" content="medications" />
+      )}
+      {showRefillNotification && (
+        <RefillNotification
+          refillStatus={refillRequestStatus}
+          successfulMeds={successfulMeds}
+          failedMeds={failedMeds}
+        />
       )}
       <InnerNavigation />
       {renderContent()}

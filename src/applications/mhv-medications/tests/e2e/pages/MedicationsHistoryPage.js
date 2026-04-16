@@ -55,7 +55,7 @@ class MedicationsHistoryPage {
   verifyHeading = () => {
     cy.findByTestId('medication-list-heading').should(
       'have.text',
-      'Medication history',
+      'Medications list',
     );
   };
 
@@ -100,9 +100,7 @@ class MedicationsHistoryPage {
   };
 
   verifyEmptyListMessage = () => {
-    cy.contains(
-      'You don’t have any VA prescriptions or medication records',
-    ).should('be.visible');
+    cy.contains('You don’t have any medication records').should('be.visible');
   };
 
   verifyNeedHelpSection = () => {

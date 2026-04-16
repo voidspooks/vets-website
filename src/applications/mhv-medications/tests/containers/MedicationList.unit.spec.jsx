@@ -132,6 +132,14 @@ describe('MedicationList container', () => {
       useFetchMedicationListModule,
       'useFetchMedicationList',
     );
+
+    // Default stub for bulk refill mutation (no refill in progress)
+    sandbox
+      .stub(prescriptionsApiModule, 'useBulkRefillPrescriptionsMutation')
+      .returns([
+        sinon.stub().resolves({ data: { successfulIds: [], failedIds: [] } }),
+        { isLoading: false, error: null },
+      ]);
   });
 
   afterEach(() => {
@@ -164,7 +172,7 @@ describe('MedicationList container', () => {
     const screen = setup();
     await waitFor(() => {
       const heading = screen.getByRole('heading', {
-        name: 'Medication history',
+        name: 'Medications list',
         level: 1,
       });
       expect(heading).to.exist;
@@ -332,27 +340,25 @@ describe('MedicationList container', () => {
       expect(screen.getByTestId('medication-list-filter')).to.exist;
     });
 
-    it('does not render PrintDownloadCard when no medications are loaded', () => {
+    it('does not render PrintDownload when no medications are loaded', () => {
       stubFetchHook({
         prescriptions: [],
         prescriptionsData: { prescriptions: [], pagination: null, meta: {} },
       });
       const screen = setup();
-      expect(screen.queryByText(/Print or download your medications list/i)).to
-        .be.null;
+      expect(screen.queryByTestId('print-records-button')).to.be.null;
     });
 
-    it('renders PrintDownloadCard when medications exist', () => {
+    it('renders PrintDownload when medications exist', () => {
       stubFetchHook({
         prescriptions: mockPrescriptions,
         pagination: mockPagination,
       });
       const screen = setup();
-      expect(screen.getByText(/Print or download your medications list/i)).to
-        .exist;
+      expect(screen.getByTestId('print-records-button')).to.exist;
     });
 
-    it('hides PrintDownloadCard while loading with existing medications', () => {
+    it('hides PrintDownload while loading with existing medications', () => {
       stubFetchHook({
         prescriptions: mockPrescriptions,
         prescriptionsData: {
@@ -364,8 +370,7 @@ describe('MedicationList container', () => {
         pagination: mockPagination,
       });
       const screen = setup();
-      expect(screen.queryByText(/Print or download your medications list/i)).to
-        .be.null;
+      expect(screen.queryByTestId('print-records-button')).to.be.null;
     });
   });
 
@@ -396,13 +401,13 @@ describe('MedicationList container', () => {
         .exist;
     });
 
-    it('renders the Update list button', () => {
+    it('renders the Apply button', () => {
       stubFetchHook({
         prescriptions: mockPrescriptions,
         pagination: mockPagination,
       });
       const screen = setup();
-      expect(screen.getByTestId('update-list-button')).to.exist;
+      expect(screen.getByTestId('filter-apply-button')).to.exist;
     });
 
     it('dispatches filter change when a filter is selected and submitted', async () => {
@@ -416,8 +421,8 @@ describe('MedicationList container', () => {
       const radioGroup = screen.getByTestId('medication-list-filter');
       radioGroup.__events.vaValueChange({ detail: { value: 'ACTIVE' } });
 
-      // Click the Update list button
-      const updateButton = screen.getByTestId('update-list-button');
+      // Click the Apply button
+      const updateButton = screen.getByTestId('filter-apply-button');
       fireEvent.click(updateButton);
 
       await waitFor(() => {
@@ -426,15 +431,136 @@ describe('MedicationList container', () => {
       });
     });
 
-    it('passes isLoading prop to the filter Update list button', () => {
+    it('passes isLoading prop to the filter Apply button', () => {
       stubFetchHook({
         prescriptions: mockPrescriptions,
         pagination: mockPagination,
         isLoading: true,
       });
       const screen = setup();
-      const updateButton = screen.getByTestId('update-list-button');
+      const updateButton = screen.getByTestId('filter-apply-button');
       expect(updateButton.getAttribute('loading')).to.equal('true');
+    });
+  });
+
+  describe('refill notification', () => {
+    it('shows success notification when refill succeeds with successful meds', async () => {
+      sandbox.restore();
+      sandbox = sinon.createSandbox();
+      stubAllergiesApi({ sandbox });
+      useFetchMedicationListStub = sandbox.stub(
+        useFetchMedicationListModule,
+        'useFetchMedicationList',
+      );
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        pagination: mockPagination,
+        meta: { filterCount: { allMedications: 3 } },
+      });
+      sandbox
+        .stub(prescriptionsApiModule, 'useBulkRefillPrescriptionsMutation')
+        .returns([
+          sinon.stub(),
+          {
+            isLoading: false,
+            isSuccess: true,
+            data: {
+              successfulIds: [
+                { id: 1, prescriptionName: 'ACETAMINOPHEN 325MG TAB' },
+              ],
+              failedIds: [],
+            },
+            error: null,
+          },
+        ]);
+      const screen = setup();
+      await waitFor(() => {
+        expect(screen.getByTestId('success-refill')).to.exist;
+      });
+    });
+
+    it('shows error notification when all refills fail', async () => {
+      sandbox.restore();
+      sandbox = sinon.createSandbox();
+      stubAllergiesApi({ sandbox });
+      useFetchMedicationListStub = sandbox.stub(
+        useFetchMedicationListModule,
+        'useFetchMedicationList',
+      );
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        pagination: mockPagination,
+        meta: { filterCount: { allMedications: 3 } },
+      });
+      sandbox
+        .stub(prescriptionsApiModule, 'useBulkRefillPrescriptionsMutation')
+        .returns([
+          sinon.stub(),
+          {
+            isLoading: false,
+            isSuccess: true,
+            data: {
+              successfulIds: [],
+              failedIds: [
+                { id: 1, prescriptionName: 'ACETAMINOPHEN 325MG TAB' },
+              ],
+            },
+            error: null,
+          },
+        ]);
+      const screen = setup();
+      await waitFor(() => {
+        expect(screen.getByTestId('error-refill')).to.exist;
+      });
+    });
+
+    it('shows partial notification when some refills succeed and some fail', async () => {
+      sandbox.restore();
+      sandbox = sinon.createSandbox();
+      stubAllergiesApi({ sandbox });
+      useFetchMedicationListStub = sandbox.stub(
+        useFetchMedicationListModule,
+        'useFetchMedicationList',
+      );
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        pagination: mockPagination,
+        meta: { filterCount: { allMedications: 3 } },
+      });
+      sandbox
+        .stub(prescriptionsApiModule, 'useBulkRefillPrescriptionsMutation')
+        .returns([
+          sinon.stub(),
+          {
+            isLoading: false,
+            isSuccess: true,
+            data: {
+              successfulIds: [
+                { id: 1, prescriptionName: 'ACETAMINOPHEN 325MG TAB' },
+              ],
+              failedIds: [{ id: 2, prescriptionName: 'LISINOPRIL 10MG TAB' }],
+            },
+            error: null,
+          },
+        ]);
+      const screen = setup();
+      await waitFor(() => {
+        expect(screen.getByTestId('partial-refill')).to.exist;
+      });
+    });
+
+    it('does not show notification when no refill has been initiated', async () => {
+      stubFetchHook({
+        prescriptions: mockPrescriptions,
+        pagination: mockPagination,
+        meta: { filterCount: { allMedications: 3 } },
+      });
+      const screen = setup();
+      await waitFor(() => {
+        expect(screen.queryByTestId('success-refill')).to.not.exist;
+        expect(screen.queryByTestId('error-refill')).to.not.exist;
+        expect(screen.queryByTestId('partial-refill')).to.not.exist;
+      });
     });
   });
 });

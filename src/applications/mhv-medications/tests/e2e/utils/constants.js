@@ -133,7 +133,7 @@ export const Paths = {
   },
 };
 export const Alerts = {
-  EMPTY_MED_LIST: 'You don’t have any VA prescriptions or medication records',
+  EMPTY_MED_LIST: 'You don’t have any medication records',
   NO_FILTER_RESULTS: 'We didn’t find any matches for this filter',
   NO_ACCESS_TO_MEDICATIONS_ERROR: 'We can’t access your medications right now',
   REFILL_SUBMIT_SUCCESS: 'Refills requested',

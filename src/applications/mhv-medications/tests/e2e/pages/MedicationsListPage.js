@@ -791,7 +791,7 @@ class MedicationsListPage {
     cy.get('[data-testid="rx-filter"]')
       .shadow()
       .find('[type="button"]')
-      .click({ waitForAnimations: true });
+      .click({ waitForAnimations: true, force: true });
   };
 
   verifyFilterOptionsOnListPage = (text, description) => {

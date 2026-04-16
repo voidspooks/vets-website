@@ -479,11 +479,18 @@ function generateMockPrescriptions(
       return bDate.localeCompare(aDate);
     });
   } else if (sortKey === 'alphabetical-rx-name') {
-    // Alphabetical by medication name
+    // Alphabetical by medication name, A-Z
     filteredPrescriptions = filteredPrescriptions.slice().sort((a, b) => {
       const aName = (a?.attributes?.prescriptionName ?? '').toString();
       const bName = (b?.attributes?.prescriptionName ?? '').toString();
       return aName.localeCompare(bName);
+    });
+  } else if (sortKey === '-alphabetical-rx-name') {
+    // Alphabetical by medication name, Z-A
+    filteredPrescriptions = filteredPrescriptions.slice().sort((a, b) => {
+      const aName = (a?.attributes?.prescriptionName ?? '').toString();
+      const bName = (b?.attributes?.prescriptionName ?? '').toString();
+      return bName.localeCompare(aName);
     });
   }
 
@@ -518,7 +525,7 @@ function generateMockPrescriptions(
   // Build filter_count for the response -- V2 API uses these keys
   const filterCount = isV2
     ? {
-        allMedications: totalEntries,
+        allMedications: generatedPrescriptions.length,
         active: generatedPrescriptions.filter(
           d => d?.attributes?.dispStatus === 'Active',
         ).length,
@@ -549,7 +556,7 @@ function generateMockPrescriptions(
         ).length,
       }
     : {
-        allMedications: totalEntries,
+        allMedications: generatedPrescriptions.length,
         active: generatedPrescriptions.filter(d =>
           [
             'Active',
@@ -566,10 +573,7 @@ function generateMockPrescriptions(
           ),
         ).length,
         renewal: generatedPrescriptions.filter(
-          d =>
-            (d?.attributes?.dispStatus === 'Active' &&
-              d?.attributes?.refillRemaining === 0) ||
-            d?.attributes?.dispStatus === 'Expired',
+          d => d?.attributes?.isRenewable === true,
         ).length,
         nonActive: generatedPrescriptions.filter(d =>
           ['Discontinued', 'Expired', 'Transferred', 'Unknown'].includes(

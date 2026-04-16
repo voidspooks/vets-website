@@ -12,6 +12,12 @@ describe('MedicationListFilter component', () => {
   let updateFilterSpy;
 
   const defaultInitialState = {
+    rx: {
+      preferences: {
+        filterOption: 'ACTIVE',
+        sortOption: 'alphabeticallyByStatus',
+      },
+    },
     featureToggles: {
       loading: false,
       // eslint-disable-next-line camelcase
@@ -21,9 +27,17 @@ describe('MedicationListFilter component', () => {
     },
   };
 
+  const mockFilterCount = {
+    active: 10,
+    renewal: 1,
+    inactive: 24,
+    allMedications: 38,
+  };
+
   const setup = ({
     isLoading = false,
     initialState = defaultInitialState,
+    filterCount = null,
   } = {}) => {
     updateFilterSpy = sinon.spy();
 
@@ -31,6 +45,7 @@ describe('MedicationListFilter component', () => {
       <MedicationListFilter
         updateFilter={updateFilterSpy}
         isLoading={isLoading}
+        filterCount={filterCount}
       />,
       {
         initialState,
@@ -46,6 +61,17 @@ describe('MedicationListFilter component', () => {
   it('renders without errors', () => {
     const screen = setup();
     expect(screen).to.exist;
+  });
+
+  it('renders the Filter heading', () => {
+    const screen = setup();
+    expect(screen.getByText('Filter')).to.exist;
+  });
+
+  it('renders the filter accordion toggle', () => {
+    const screen = setup();
+    const toggle = screen.getByTestId('filter-accordion-toggle');
+    expect(toggle).to.exist;
   });
 
   it('renders the filter radio group with correct label', () => {
@@ -65,67 +91,100 @@ describe('MedicationListFilter component', () => {
     });
   });
 
-  it('renders the correct label text for each filter option', () => {
-    const screen = setup();
-    FILTER_OPTIONS.forEach(({ key, label }) => {
-      const radioOption = screen.getByTestId(
-        `medication-list-filter-option-${key}`,
-      );
-      expect(radioOption.getAttribute('label')).to.equal(label);
-    });
-  });
-
-  it('has ALL_MEDICATIONS checked by default', () => {
-    const screen = setup();
-    const allMedsOption = screen.getByTestId(
+  it('renders filter option labels with counts when filterCount is provided', () => {
+    const screen = setup({ filterCount: mockFilterCount });
+    const activeOption = screen.getByTestId(
+      'medication-list-filter-option-ACTIVE',
+    );
+    expect(activeOption.getAttribute('label')).to.equal(
+      'Active medications (10)',
+    );
+    const allOption = screen.getByTestId(
       'medication-list-filter-option-ALL_MEDICATIONS',
     );
-    expect(allMedsOption.getAttribute('checked')).to.equal('true');
+    expect(allOption.getAttribute('label')).to.equal('All medications (38)');
   });
 
-  it('renders the Update list button', () => {
+  it('renders filter option labels without counts when filterCount is null', () => {
     const screen = setup();
-    const button = screen.getByTestId('update-list-button');
-    expect(button).to.exist;
-    expect(button.getAttribute('text')).to.equal('Update list');
+    const activeOption = screen.getByTestId(
+      'medication-list-filter-option-ACTIVE',
+    );
+    expect(activeOption.getAttribute('label')).to.equal('Active medications');
   });
 
-  it('shows loading state on the Update list button when isLoading is true', () => {
+  it('has ACTIVE checked by default', () => {
+    const screen = setup();
+    const activeOption = screen.getByTestId(
+      'medication-list-filter-option-ACTIVE',
+    );
+    expect(activeOption.getAttribute('checked')).to.equal('true');
+  });
+
+  it('renders the Apply button', () => {
+    const screen = setup();
+    const button = screen.getByTestId('filter-apply-button');
+    expect(button).to.exist;
+    expect(button.getAttribute('text')).to.equal('Apply');
+  });
+
+  it('renders the Reset button', () => {
+    const screen = setup();
+    const button = screen.getByTestId('filter-reset-button');
+    expect(button).to.exist;
+    expect(button.getAttribute('text')).to.equal('Reset');
+  });
+
+  it('shows loading state on the Apply button when isLoading is true', () => {
     const screen = setup({ isLoading: true });
-    const button = screen.getByTestId('update-list-button');
+    const button = screen.getByTestId('filter-apply-button');
     expect(button.getAttribute('loading')).to.equal('true');
   });
 
-  it('does not show loading state on the Update list button when isLoading is false', () => {
+  it('does not show loading state on the Apply button when isLoading is false', () => {
     const screen = setup({ isLoading: false });
-    const button = screen.getByTestId('update-list-button');
+    const button = screen.getByTestId('filter-apply-button');
     expect(button.getAttribute('loading')).to.not.equal('true');
   });
 
-  it('calls updateFilter when Update list button is clicked', () => {
+  it('calls updateFilter when Apply button is clicked', () => {
     const screen = setup();
-    const button = screen.getByTestId('update-list-button');
+    const button = screen.getByTestId('filter-apply-button');
     fireEvent.click(button);
     expect(updateFilterSpy.calledOnce).to.be.true;
   });
 
   it('passes the selected filter option to updateFilter on submit', () => {
     const screen = setup();
-    const button = screen.getByTestId('update-list-button');
+    const button = screen.getByTestId('filter-apply-button');
     fireEvent.click(button);
-    expect(updateFilterSpy.calledWith('ALL_MEDICATIONS')).to.be.true;
+    expect(updateFilterSpy.calledWith('ACTIVE')).to.be.true;
+  });
+
+  it('resets filter to ACTIVE when Reset button is clicked', () => {
+    const screen = setup();
+    // Select a different filter
+    const radioGroup = screen.getByTestId('medication-list-filter');
+    radioGroup.__events.vaValueChange({
+      detail: { value: 'ALL_MEDICATIONS' },
+    });
+
+    // Click Reset
+    const resetButton = screen.getByTestId('filter-reset-button');
+    fireEvent.click(resetButton);
+    expect(updateFilterSpy.calledWith('ACTIVE')).to.be.true;
   });
 
   it('updates internal state when a radio option changes', () => {
     const screen = setup();
     // Simulate the web component's vaValueChange event on the parent radio group
     const radioGroup = screen.getByTestId('medication-list-filter');
-    radioGroup.__events.vaValueChange({ detail: { value: 'ACTIVE' } });
+    radioGroup.__events.vaValueChange({ detail: { value: 'INACTIVE' } });
 
-    // Click Update list to verify the new value is passed
-    const button = screen.getByTestId('update-list-button');
+    // Click Apply to verify the new value is passed
+    const button = screen.getByTestId('filter-apply-button');
     fireEvent.click(button);
-    expect(updateFilterSpy.calledWith('ACTIVE')).to.be.true;
+    expect(updateFilterSpy.calledWith('INACTIVE')).to.be.true;
   });
 
   it('renders exactly 4 filter options', () => {
@@ -138,5 +197,22 @@ describe('MedicationListFilter component', () => {
       .exist;
     expect(screen.getByTestId('medication-list-filter-option-ALL_MEDICATIONS'))
       .to.exist;
+  });
+
+  it('toggles the accordion content when toggle button is clicked', () => {
+    const screen = setup();
+    // Content should be visible initially
+    expect(screen.getByTestId('filter-medications-content')).to.exist;
+
+    // Click toggle to collapse
+    const toggle = screen.getByTestId('filter-accordion-toggle');
+    fireEvent.click(toggle);
+
+    // Content should be hidden
+    expect(screen.queryByTestId('filter-medications-content')).to.be.null;
+
+    // Click toggle again to expand
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('filter-medications-content')).to.exist;
   });
 });

@@ -37,7 +37,7 @@ const MedicationsListSort = props => {
           <VaSelect
             id="sort-order-dropdown"
             data-testid="sort-dropdown"
-            label="Show medications in this order"
+            label="Sort by"
             name="sort-order"
             data-dd-action-name={
               dataDogActionNames.medicationsListPage

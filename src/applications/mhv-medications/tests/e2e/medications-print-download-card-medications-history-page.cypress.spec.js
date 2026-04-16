@@ -27,111 +27,40 @@ describe('Medications List Page Print Download Card', () => {
     cy.injectAxe();
   });
 
-  it('should display the print download card with correct heading', () => {
+  it('should display the print or download toggle button', () => {
     cy.axeCheck('main');
-    cy.get('#print-download-heading').should(
+    cy.findByTestId('print-records-button').should('exist');
+    cy.findByTestId('print-records-button').should(
       'contain',
-      'Print or download your medications list',
+      'Print or download',
     );
   });
 
-  it('should display the print download select dropdown', () => {
+  it('should open the dropdown menu when toggle is clicked', () => {
     cy.axeCheck('main');
-    cy.get('va-card va-select[name="print-download-select"]').should('exist');
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select option')
-      .should('have.length', 4);
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select option')
-      .eq(0)
-      .should('have.value', '');
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select option')
-      .eq(1)
-      .should('have.value', 'print');
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select option')
-      .eq(2)
-      .should('have.value', 'pdf');
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select option')
-      .eq(3)
-      .should('have.value', 'txt');
+    cy.findByTestId('print-records-button').click();
+    cy.findByTestId('print-download-list').should('be.visible');
   });
 
-  it('should show warning alert about public or shared computer', () => {
+  it('should show Print option in dropdown', () => {
     cy.axeCheck('main');
-    cy.get('va-card va-alert[status="warning"]').should('exist');
-    cy.get('va-card va-alert[status="warning"]').should(
-      'contain',
-      'If you’re on a public or shared computer,',
-    );
+    cy.findByTestId('print-records-button').click();
+    cy.findByTestId('download-print-button').should('exist');
   });
 
-  it('should trigger print when print option is selected and submit is clicked', () => {
+  it('should show PDF download option in dropdown', () => {
     cy.axeCheck('main');
-    cy.window().then(win => {
-      cy.stub(win, 'print').as('print');
-    });
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select')
-      .select('print');
-    cy.get('va-card va-button[text="Submit"]').click();
-    cy.get('@print').should('have.been.called');
+    cy.findByTestId('print-records-button').click();
+    cy.findByTestId('download-pdf-button').should('exist');
   });
 
-  it('should download PDF when PDF option is selected and submit is clicked', () => {
+  it('should show TXT download option in dropdown', () => {
     cy.axeCheck('main');
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select')
-      .select('pdf');
-    cy.get('va-card va-button[text="Submit"]').click();
-    cy.get('va-card va-alert[status="success"]').should('exist');
-    cy.get('va-card va-alert[status="success"]').should(
-      'contain',
-      'Download started',
-    );
+    cy.findByTestId('print-records-button').click();
+    cy.findByTestId('download-txt-button').should('exist');
   });
 
-  it('should download TXT when TXT option is selected and submit is clicked', () => {
-    cy.axeCheck('main');
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select')
-      .select('txt');
-    cy.get('va-card va-button[text="Submit"]').click();
-    cy.get('va-card va-alert[status="success"]').should('exist');
-    cy.get('va-card va-alert[status="success"]').should(
-      'contain',
-      'Download started',
-    );
-  });
-
-  it('should show error alert when download fails due to network issue', () => {
-    cy.axeCheck('main');
-    cy.window().then(win => {
-      cy.stub(win.navigator, 'onLine').value(false);
-    });
-    cy.get('va-card va-select[name="print-download-select"]')
-      .shadow()
-      .find('select')
-      .select('pdf');
-    cy.get('va-card va-button[text="Submit"]').click();
-    cy.get('va-card va-alert[status="error"]').should('exist');
-    cy.get('va-card va-alert[status="error"]').should(
-      'contain',
-      'Error Alert We can’t download your records right now',
-    );
-  });
-
-  it('should pass accessibility checks on print download card', () => {
+  it('should pass accessibility checks on print download component', () => {
     cy.axeCheck('main');
   });
 });

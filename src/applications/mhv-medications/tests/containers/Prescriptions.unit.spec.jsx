@@ -174,11 +174,7 @@ describe('Medications Prescriptions container', () => {
       },
     });
     const screen = setup();
-    expect(
-      screen.getByText(
-        'You don’t have any VA prescriptions or medication records',
-      ),
-    ).to.exist;
+    expect(screen.getByText('You don’t have any medication records')).to.exist;
   });
 
   it('should display a clickable download button', async () => {

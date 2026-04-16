@@ -23,7 +23,11 @@ export const rxListSortingOptionsV2 = {
   },
   alphabeticalByName: {
     API_ENDPOINT: 'sort=alphabetical-rx-name',
-    LABEL: 'Alphabetical by medication name',
+    LABEL: 'Alphabetical by medication name, A-Z',
+  },
+  alphabeticalByNameDescending: {
+    API_ENDPOINT: 'sort=-alphabetical-rx-name',
+    LABEL: 'Alphabetical by medication name, Z-A',
   },
 };
 

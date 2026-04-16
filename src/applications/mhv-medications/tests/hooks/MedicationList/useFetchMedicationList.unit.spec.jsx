@@ -343,7 +343,7 @@ describe('useFetchMedicationList', () => {
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
         expect(queryParams.filterOption).to.equal(
-          getFilterUrl(ACTIVE_FILTER_KEY, false, false),
+          getFilterUrl(ACTIVE_FILTER_KEY),
         );
       });
     });
@@ -389,7 +389,7 @@ describe('useFetchMedicationList', () => {
   });
 
   describe('feature flag handling', () => {
-    it('uses V1 filter URLs when no feature flags are enabled', async () => {
+    it('always uses V1 filter URLs regardless of feature flags', async () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse());
@@ -404,12 +404,12 @@ describe('useFetchMedicationList', () => {
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
         expect(queryParams.filterOption).to.equal(
-          getFilterUrl(ACTIVE_FILTER_KEY, false, false),
+          getFilterUrl(ACTIVE_FILTER_KEY),
         );
       });
     });
 
-    it('uses V1 filter URLs even when both Cerner pilot and V2 status mapping flags are true', async () => {
+    it('always uses V1 filter URLs when both Cerner pilot and V2 status mapping flags are true', async () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse());
@@ -428,12 +428,12 @@ describe('useFetchMedicationList', () => {
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
         expect(queryParams.filterOption).to.equal(
-          getFilterUrl(ACTIVE_FILTER_KEY, false, false),
+          getFilterUrl(ACTIVE_FILTER_KEY),
         );
       });
     });
 
-    it('uses V1 filter URLs for RENEWAL even when only Cerner pilot flag is true', async () => {
+    it('always uses V1 filter URLs for RENEWAL when only Cerner pilot flag is true', async () => {
       useGetPrescriptionsListQueryStub = sandbox
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse());
@@ -450,9 +450,8 @@ describe('useFetchMedicationList', () => {
 
       await waitFor(() => {
         const queryParams = useGetPrescriptionsListQueryStub.firstCall.args[0];
-        expect(queryParams.filterOption).to.equal(
-          getFilterUrl('RENEWAL', false, false),
-        );
+        // RENEWAL should always use V1 URL regardless of flags
+        expect(queryParams.filterOption).to.equal(getFilterUrl('RENEWAL'));
       });
     });
 

@@ -28,8 +28,10 @@ const App = ({ children }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { measuredRef, isHidden } = useBackToTop(location);
-  const contentClasses =
-    'main-content usa-width-two-thirds medium-screen:vads-u-margin-left--neg2 vads-u-max-width--100';
+  const isFullWidthPage = location.pathname.includes('/list');
+  const contentClasses = isFullWidthPage
+    ? 'main-content vads-u-max-width--100'
+    : 'main-content usa-width-two-thirds medium-screen:vads-u-margin-left--neg2 vads-u-max-width--100';
 
   const user = useSelector(selectUser);
   const isBypassDowntime = useSelector(selectBypassDowntime);

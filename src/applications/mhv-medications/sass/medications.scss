@@ -16,6 +16,98 @@
   }
 }
 
+// Side-by-side layout for filter + results on the Medication History page
+.medication-list-layout {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: $medium-screen) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.medication-list-filter-column {
+  flex: 0 0 300px;
+  min-width: 0;
+
+  @media (max-width: $medium-screen) {
+    flex: 1 1 auto;
+  }
+}
+
+.medication-list-results-column {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  // Allow cards and info to fill the results column width
+  .rx-card-container,
+  .rx-card-container.pending-med-or-renewal,
+  .rx-page-total-info,
+  .pagination {
+    max-width: 100%;
+  }
+}
+
+// Filter panel styling
+.medication-list-filter-panel {
+  .filter-panel-heading {
+    font-size: 1.35rem;
+
+    @media (max-width: $medium-screen) {
+      // Hide "Filter" heading on mobile
+      display: none;
+    }
+  }
+}
+
+.filter-accordion-container {
+  border: 1px solid var(--vads-color-base-light);
+  color: var(--vads-color-black);
+}
+
+.filter-accordion-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--vads-color-base-lightest);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--vads-color-black);
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: 0;
+
+  &:hover {
+    background: var(--vads-color-base-lighter);
+    color: var(--vads-color-black);
+  }
+}
+
+.filter-accordion-content {
+  padding: 0 1rem 1rem;
+  border-top: 1px solid var(--vads-color-base-light);
+  padding-top: 1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// Mobile sort label stacking
+@media (max-width: $medium-screen) {
+  .medications-list-sort {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
+
 .link-button,
 .link-button:hover,
 .link-button:active {

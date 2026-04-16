@@ -21,11 +21,11 @@ describe('EmptyPrescriptionContent component', () => {
 
     expect(screen.getByTestId('empty-medList-alert')).to.exist;
     expect(screen.getByTestId('empty-medList-alert').textContent).to.equal(
-      'You don’t have any VA prescriptions or medication records',
+      'You don’t have any medication records',
     );
 
     const instructionText = screen.getByText(
-      /If you need a prescription or you want to tell us about a medication/i,
+      /If you need a refill or want to tell us about a medication/i,
     );
     expect(instructionText).to.exist;
   });
