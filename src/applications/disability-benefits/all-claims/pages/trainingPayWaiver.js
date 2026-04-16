@@ -1,9 +1,10 @@
 import { yesNoUI } from 'platform/forms-system/src/js/web-component-patterns';
 import { waiveTrainingPayDescription } from '../content/trainingPayWaiver';
 import ConfirmationTrainingPayWaiver from '../components/confirmationFields/ConfirmationTrainingPayWaiver';
+import { formTitle } from '../utils';
 
 export const uiSchema = {
-  'ui:title': 'Training pay waiver',
+  'ui:title': formTitle('Training pay waiver'),
   waiveTrainingPay: yesNoUI({
     title: ' ',
     description: waiveTrainingPayDescription,

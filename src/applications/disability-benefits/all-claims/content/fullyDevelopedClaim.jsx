@@ -3,7 +3,7 @@ import { CONTACTS } from '@department-of-veterans-affairs/component-library/cont
 
 export const FDCDescription = (
   <div>
-    <h3 className="vads-u-font-size--h5">Fully developed claim program</h3>
+    <h3 className="vads-u-font-size--h5">Fully Developed Claim program</h3>
     <p>
       You can apply using the Fully Developed Claim (FDC) program if you’ve
       uploaded all the supporting documents or additional forms needed to

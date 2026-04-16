@@ -867,14 +867,14 @@ const formConfig = {
       title: 'Additional information',
       pages: {
         paymentInformation: {
-          title: 'Payment information',
+          title: 'Your payment information',
           path: 'payment-information',
           uiSchema: paymentInformation.uiSchema,
           schema: paymentInformation.schema,
           onContinue: captureEvents.paymentInformation,
         },
         vaEmployee: {
-          title: 'VA employee',
+          title: 'VA employment status',
           path: 'va-employee',
           uiSchema: vaEmployee.uiSchema,
           schema: vaEmployee.schema,
@@ -896,7 +896,7 @@ const formConfig = {
           schema: trainingPayWaiver.schema,
         },
         fullyDevelopedClaim: {
-          title: 'Fully developed claim program',
+          title: 'Fully Developed Claim program',
           path: 'fully-developed-claim',
           uiSchema: fullyDevelopedClaim.uiSchema,
           schema: fullyDevelopedClaim.schema,

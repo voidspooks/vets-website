@@ -28,8 +28,8 @@ export const uiSchema = {
     'ui:field': ReviewCardField,
     'ui:options': {
       viewComponent: PaymentView,
-      reviewTitle: 'Payment information',
-      editTitle: 'Add new bank account',
+      reviewTitle: 'Your payment information',
+      editTitle: 'Add a new bank account',
       // Force ObjectField to wrap the account info in a `div` instead of a `dl`
       // otherwise this breaks the axe check on the review page
       customTitle: ' ',

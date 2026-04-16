@@ -28,7 +28,7 @@ describe('Fully Developed Claim', () => {
     );
 
     // title
-    getByText('Fully developed claim program');
+    getByText('Fully Developed Claim program');
 
     // paragraph/description content
     getByText('You can apply using the Fully Developed Claim', {

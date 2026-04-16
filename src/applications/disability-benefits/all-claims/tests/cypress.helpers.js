@@ -626,7 +626,7 @@ Cypress.Commands.add('verifyAdditionalInformation', data => {
 
   if (data.isVaEmployee !== undefined) {
     cy.get('h4')
-      .contains(/va employee/i)
+      .contains(/va employment status/i)
       .should('exist');
     cy.contains(/are you currently a va employee/i).should('exist');
     if (data.isVaEmployee === true) {
