@@ -8,7 +8,7 @@ export default function ProcessList({ pdfUrl, trackingPrefix }) {
       <va-process-list-item header="Download and save your form">
         <div
           itemProp="itemListElement"
-          className="confirmation-save-pdf-download-section screen-only"
+          className="confirmation-save-pdf-download-section"
         >
           <p>
             Make sure that your completed form is saved as a PDF on your device.{' '}
