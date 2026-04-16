@@ -6,6 +6,7 @@ import { getContent } from 'platform/forms-system/src/js/utilities/data/profile'
 
 import { IntroductionPageSelector } from '../containers/selectors/IntroductionPageSelector';
 import { ConfirmationPageSelector } from '../containers/selectors/ConfirmationPageSelector';
+import { PreSubmitInfoSelector } from '../containers/selectors/PreSubmitInfoSelector';
 import { GetFormHelp } from '../components/GetFormHelp';
 import manifest from '../manifest.json';
 import { customCOEsubmit } from './helpers';
@@ -64,7 +65,7 @@ const formConfig = {
   version: 0,
   prefillEnabled: true,
   footerContent: FormFooter,
-  preSubmitInfo,
+  preSubmitInfo: { ...preSubmitInfo, CustomComponent: PreSubmitInfoSelector },
   getHelp: GetFormHelp,
   savedFormMessages: {
     notFound: 'Start over to request benefits.',
