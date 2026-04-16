@@ -541,9 +541,14 @@ describe('VAOS Services: Appointment ', () => {
       return {
         id: apiData.id,
         status: statusOverride || apiData.status,
+        modality: apiData.modality,
+        location: {
+          stationId: apiData.locationId,
+        },
         vaos: {
           apiData,
           isCommunityCare: apiData.kind === 'cc',
+          isCerner: apiData.isCerner || false,
         },
       };
     }
@@ -722,8 +727,8 @@ describe('VAOS Services: Appointment ', () => {
 
       expect(body.status).to.equal('cancelled');
       expect(body.type).to.equal('booked');
+      expect(body.systemType).to.equal('vista');
       expect(body).to.not.have.property('kind');
-      expect(body).to.not.have.property('systemType');
       expect(body).to.not.have.property('serviceType');
       expect(body).to.not.have.property('facilityId');
     });

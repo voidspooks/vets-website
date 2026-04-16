@@ -451,32 +451,28 @@ const eventPrefix = `${GA_PREFIX}-cancel-appointment-submission`;
 /**
  * Derives the system type from appointment data.
  *
- * @param {Object} apiData The raw API appointment data
+ * @param {Object} appointment The transformed appointment object
  * @returns {string|null} The system type: 'cerner', 'vista', 'hsrm', 'eps', or null
  */
-function getSystemType(apiData) {
-  const { type, isCerner, modality } = apiData || {};
+function getSystemType(appointment) {
+  const { isCommunityCare, isCerner } = appointment?.vaos || {};
 
-  if (modality === 'communityCareEps' || modality === 'communityCareUnified') {
+  if (
+    appointment?.modality === 'communityCareEps' ||
+    appointment?.modality === 'communityCareUnified'
+  ) {
     return APPOINTMENT_SYSTEM.eps;
   }
 
-  if (
-    type === 'COMMUNITY_CARE_APPOINTMENT' ||
-    type === 'COMMUNITY_CARE_REQUEST'
-  ) {
+  if (isCommunityCare) {
     return APPOINTMENT_SYSTEM.hsrm;
   }
 
-  if (isCerner === true) {
+  if (isCerner) {
     return APPOINTMENT_SYSTEM.cerner;
   }
 
-  if (type === 'VA' || type === 'REQUEST') {
-    return APPOINTMENT_SYSTEM.vista;
-  }
-
-  return null;
+  return APPOINTMENT_SYSTEM.vista;
 }
 
 /**
@@ -503,15 +499,17 @@ export async function cancelAppointment({ appointment }) {
 
   try {
     const { apiData } = appointment.vaos || {};
-    const systemType = getSystemType(apiData);
+    const systemType = getSystemType(appointment);
     const appointmentType =
       appointment.status === APPOINTMENT_STATUS.proposed ? 'request' : 'booked';
+    const facilityId =
+      apiData?.locationId || appointment.location?.stationId || null;
     const cancelBody = {
       status: APPOINTMENT_STATUS.cancelled,
       ...(apiData?.kind && { kind: apiData.kind }),
       ...(systemType && { systemType }),
       ...(apiData?.serviceType && { serviceType: apiData.serviceType }),
-      ...(apiData?.locationId && { facilityId: apiData.locationId }),
+      ...(facilityId && { facilityId }),
       type: appointmentType,
     };
     const updatedAppointment = await putAppointment(appointment.id, cancelBody);
