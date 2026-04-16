@@ -38,12 +38,20 @@ jobs:
   cancel-run-if-holiday:
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: read
     needs: holiday-checker
     if: ${{ github.event.inputs.bypass_freeze != 'true' && needs.holiday-checker.outputs.is_holiday == 'true' }}
     steps:
       - name: Cancel workflow due to holiday freeze
-        uses: andymckay/cancel-action@a955d435292c0d409d104b57d8e78435a93a6ef1 # 0.5
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            await github.rest.actions.cancelWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
 
   main-deployment:
     needs: holiday-checker
@@ -229,6 +237,7 @@ jobs:
     name: Set Env Variables
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: read
     needs: holiday-decision-gate
     outputs:
@@ -239,7 +248,14 @@ jobs:
     steps:
       - name: Cancel workflow due to DSVA schedule
         if: ${{ env.DSVA_SCHEDULE_ENABLED != 'true' }}
-        uses: andymckay/cancel-action@a955d435292c0d409d104b57d8e78435a93a6ef1 # 0.5
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            await github.rest.actions.cancelWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
 
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -336,9 +352,7 @@ jobs:
           echo 'Waiting to release: https://github.com/${{ github.repository }}/compare/${{ needs.set-env.outputs.LATEST_TAG_VERSION }}...${{ needs.set-env.outputs.COMMIT_SHA }}'
 
       - name: Sleep for ${{ needs.set-env.outputs.RELEASE_WAIT }} minutes
-        uses: whatnick/wait-action@71008d68ab3939de1475f4938583e4480b5d09a6 # master
-        with:
-          time: ${{ needs.set-env.outputs.RELEASE_WAIT }}m
+        run: sleep "${{ needs.set-env.outputs.RELEASE_WAIT }}m"
 
       - name: Create GitHub Release
         env:
