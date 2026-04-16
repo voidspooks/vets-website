@@ -109,7 +109,11 @@ function introDescription() {
             </span>
           </li>
         </ul>
-        <p>We’ll ask you to upload these documents at the end of this form.</p>
+        <p>
+          You can submit VA Form 21-0779 and VA Form 21-2680 online. All
+          documents and worksheets can be uploaded at the end of this
+          application or sent to us by mail.
+        </p>
       </va-additional-info>
     </div>
   );
