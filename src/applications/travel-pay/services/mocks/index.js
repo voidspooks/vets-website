@@ -50,6 +50,7 @@ const featureTogglesResponse = {
       TOGGLE_NAMES.travelPayEnableHeicConversion,
       TOGGLE_NAMES.travelPayEnableCommunityCare,
       TOGGLE_NAMES.travelPayApptAddV4Upgrade,
+      TOGGLE_NAMES.travelPayEnableUserCreatedAppointments,
     ]
       .map(name => ({ name, value: true }))
       .concat([
