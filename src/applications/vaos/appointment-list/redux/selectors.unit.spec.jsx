@@ -222,10 +222,10 @@ describe('appointment-list / redux / selectors', () => {
       const state = createState(
         [
           {
-            services: [
+            vaServices: [
               {
-                id: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                direct: { enabled: true },
+                clinicalServiceId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
+                bookedAppointments: true,
               },
             ],
           },
@@ -258,9 +258,9 @@ describe('appointment-list / redux / selectors', () => {
       const state = createState(
         [
           {
-            services: [
+            vaServices: [
               {
-                id: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
+                clinicalServiceId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
                 bookedAppointments: true,
               },
             ],

@@ -47,10 +47,10 @@ describe('VAOS newAppointmentFlow', () => {
           response: [
             new MockSchedulingConfigurationResponse({
               facilityId: '983',
-              services: [
+              vaServices: [
                 new MockServiceConfiguration({
                   typeOfCareId: 'primaryCare',
-                  requestEnabled: true,
+                  apptRequests: true,
                 }),
               ],
             }),
@@ -175,10 +175,10 @@ describe('VAOS newAppointmentFlow', () => {
           response: [
             new MockSchedulingConfigurationResponse({
               facilityId: '983',
-              services: [
+              vaServices: [
                 new MockServiceConfiguration({
                   typeOfCareId: '411',
-                  requestEnabled: true,
+                  apptRequests: true,
                   communityCare: false,
                 }),
               ],
@@ -232,10 +232,10 @@ describe('VAOS newAppointmentFlow', () => {
           response: [
             new MockSchedulingConfigurationResponse({
               facilityId: '983',
-              services: [
+              vaServices: [
                 new MockServiceConfiguration({
                   typeOfCareId: '411',
-                  requestEnabled: true,
+                  apptRequests: true,
                   communityCare: true,
                 }),
               ],
@@ -306,10 +306,10 @@ describe('VAOS newAppointmentFlow', () => {
             response: [
               new MockSchedulingConfigurationResponse({
                 facilityId: '983',
-                services: [
+                vaServices: [
                   new MockServiceConfiguration({
                     typeOfCareId: 'primaryCare',
-                    requestEnabled: true,
+                    apptRequests: true,
                   }),
                 ],
               }),
@@ -916,10 +916,10 @@ describe('VAOS newAppointmentFlow', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: '4088',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),

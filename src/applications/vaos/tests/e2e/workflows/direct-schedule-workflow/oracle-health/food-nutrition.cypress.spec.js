@@ -87,7 +87,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
               ],
             });
             mockSchedulingConfigurationApi({
-              facilityIds: ['983'],
+              facilityIds: ['983', '984'],
               typeOfCareId,
               isDirect: true,
               isRequest: false,
@@ -161,7 +161,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
               ],
             });
             mockSchedulingConfigurationApi({
-              facilityIds: ['983'],
+              facilityIds: ['983', '984'],
               typeOfCareId,
               isDirect: true,
               isRequest: false,
@@ -245,7 +245,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
               ],
             });
             mockSchedulingConfigurationApi({
-              facilityIds: ['983'],
+              facilityIds: ['983', '984'],
               typeOfCareId,
               isDirect: true,
               isRequest: false,
@@ -323,7 +323,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
               ],
             });
             mockSchedulingConfigurationApi({
-              facilityIds: ['983'],
+              facilityIds: ['983', '984'],
               typeOfCareId,
               isDirect: true,
               isRequest: false,
@@ -393,7 +393,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
             });
             mockFacilitiesApi({
               response: MockFacilityResponse.createResponses({
-                facilityIds: ['983', '984'],
+                facilityIds: ['983'],
               }),
             });
             mockEligibilityDirectApi({
@@ -425,7 +425,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
               .selectTypeOfFacility(/VA medical center or clinic/i)
               .clickNextButton();
             VAFacilityPageObject.assertUrl()
-              .selectLocation(/Facility 983/i)
+              .assertSingleLocation({ locationName: 'Facility 983' })
               .clickNextButton();
             ProviderPageObject.assertUrl()
               .assertHeading({
@@ -464,7 +464,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
             });
             mockFacilitiesApi({
               response: MockFacilityResponse.createResponses({
-                facilityIds: ['983', '984'],
+                facilityIds: ['983'],
               }),
             });
             mockEligibilityDirectApi({
@@ -495,9 +495,7 @@ describe('OH direct schedule flow - Food and Nutrition', () => {
             TypeOfFacilityPageObject.assertUrl()
               .selectTypeOfFacility(/VA medical center or clinic/i)
               .clickNextButton();
-            VAFacilityPageObject.assertUrl()
-              .selectLocation(/Facility 983/i)
-              .clickNextButton();
+            VAFacilityPageObject.assertUrl().clickNextButton();
             ProviderPageObject.assertUrl()
               .assertHeading({
                 level: 1,

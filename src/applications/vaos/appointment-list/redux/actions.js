@@ -4,7 +4,6 @@ import { selectPatientFacilities } from '@department-of-veterans-affairs/platfor
 import {
   selectFeatureCCDirectScheduling,
   selectSystemIds,
-  selectFeatureUseVpg,
   selectFeatureAddOhAvs,
 } from '../../redux/selectors';
 import {
@@ -516,11 +515,9 @@ export function fetchFacilitySettings() {
     try {
       const initialState = getState();
       const siteIds = selectSystemIds(initialState) || [];
-      const featureUseVpg = selectFeatureUseVpg(initialState);
 
       const settings = await getLocationSettings({
         siteIds,
-        useVpg: featureUseVpg,
       });
 
       dispatch({

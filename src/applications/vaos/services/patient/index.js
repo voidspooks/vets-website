@@ -200,22 +200,6 @@ export async function fetchPatientRelationships(
   }
 }
 
-function locationSupportsDirectScheduling(location, typeOfCare) {
-  return (
-    // this check is included due to old two step facilities page
-    location.legacyVAR.directSchedulingSupported ||
-    location.legacyVAR.settings?.[typeOfCare.id]?.direct?.enabled
-  );
-}
-
-function locationSupportsRequests(location, typeOfCare) {
-  return (
-    // this check is included due to old two step facilities page
-    location.legacyVAR.requestSupported ||
-    location.legacyVAR.settings?.[typeOfCare.id]?.request?.enabled
-  );
-}
-
 /**
  * Has maching clinics that support direct scheduling and match past appointments if required
  * @param {HealthCareService[]} clinics
@@ -326,7 +310,6 @@ function logEligibilityExplanation(
  * @param {boolean} params.directSchedulingEnabled If direct scheduling is currently enabled
  * @param {boolean} [params.featurePastVisitMHFilter=false] whether to use past visits as a filter for scheduling MH appointments
  * @param {boolean} [params.isCerner=false] whether the current site is a Cerner site
- * @param {boolean} [params.removeFacilityConfigCheck=false] whether to skip the facility configurations endpoint check and use eligibility from the patient eligibility API SOT only
  * @returns {FlowEligibilityReturnData} Eligibility results, plus clinics and past appointments
  *   so that they can be cache and reused later
  */
@@ -336,41 +319,25 @@ export async function fetchFlowEligibilityAndClinics({
   directSchedulingEnabled,
   featurePastVisitMHFilter = false,
   isCerner = false,
-  removeFacilityConfigCheck = false,
 }) {
-  // Helper to avoid confusion
-  const keepFacilityConfigCheck = !removeFacilityConfigCheck;
-  // When the removeFacilityConfigCheck flipper is removed, all directSchedulingAvailable should be changed to directSchedulingEnabled
-  const directSchedulingAvailable =
-    (locationSupportsDirectScheduling(location, typeOfCare) ||
-      removeFacilityConfigCheck) &&
-    directSchedulingEnabled;
-
   const typeOfCareRequiresCheck = typeOfCareRequiresPastHistory(
     typeOfCare.id,
     featurePastVisitMHFilter,
   );
 
-  // When removeFacilityConfigCheck is removed, directTypeOfCareSettings should be removed and not used
-  // location contains legacyVAR that contains patientHistoryRequired
-  const directTypeOfCareSettings =
-    location.legacyVAR.settings?.[typeOfCare.id]?.direct;
-
   // First, fetch patient eligibility to determine if we should make additional API calls
   const patientEligibility = await fetchPatientEligibility({
     typeOfCare,
     location,
-    type: !directSchedulingAvailable ? 'request' : null,
+    type: !directSchedulingEnabled ? 'request' : null,
   });
 
   // Only fetch clinics and past appointments if:
   // 1. Direct scheduling is available based on configuration
   // 2. Not a Cerner site
-  // 3. The API says the patient is eligible for direct scheduling (when removeFacilityConfigCheck is true)
+  // 3. The API says the patient is eligible for direct scheduling
   const shouldFetchClinics =
-    directSchedulingAvailable &&
-    !isCerner &&
-    (!removeFacilityConfigCheck || patientEligibility.direct?.eligible);
+    directSchedulingEnabled && !isCerner && patientEligibility.direct?.eligible;
 
   const additionalApiCalls = {};
 
@@ -402,24 +369,16 @@ export async function fetchFlowEligibilityAndClinics({
     requestReasons: [],
   };
 
-  // When removeFacilityConfigCheck is removed, remove first condition in first if and remove
-  // removeFacilityConfigCheck from 2nd condition in first if condition
   // This is going through all of our request related checks and setting
   // to false if we fail any of them. Order is important here, because the UI
   // will only be able to show one reason, the first one
-  if (
-    (keepFacilityConfigCheck &&
-      !locationSupportsRequests(location, typeOfCare)) ||
-    (removeFacilityConfigCheck && results.patientEligibility.request?.disabled)
-  ) {
+  if (results.patientEligibility.request?.disabled) {
     eligibility.request = false;
     eligibility.requestReasons.push(ELIGIBILITY_REASONS.notSupported);
   } else if (results.patientEligibility.request instanceof Error) {
     eligibility.request = false;
     eligibility.requestReasons.push(ELIGIBILITY_REASONS.error);
   } else {
-    // When removeFacilityConfigCheck is true, use the API eligible field as the source of truth
-    // but still check for specific reasons to provide better error messages
     if (!results.patientEligibility.request.hasRequiredAppointmentHistory) {
       eligibility.request = false;
       eligibility.requestReasons.push(ELIGIBILITY_REASONS.noRecentVisit);
@@ -449,14 +408,8 @@ export async function fetchFlowEligibilityAndClinics({
     );
   }
 
-  // When removeFacilityConfigCheck removed, first if condition should just be:
-  // if (results.patientEligibility.direct?.disabled)
   // Location does not support direct scheduling
-  if (
-    (keepFacilityConfigCheck &&
-      !locationSupportsDirectScheduling(location, typeOfCare)) ||
-    (removeFacilityConfigCheck && results.patientEligibility.direct?.disabled)
-  ) {
+  if (results.patientEligibility.direct?.disabled) {
     eligibility.direct = false;
     eligibility.directReasons.push(ELIGIBILITY_REASONS.notSupported);
   } else if (
@@ -486,24 +439,17 @@ export async function fetchFlowEligibilityAndClinics({
         location?.id,
       );
     }
-    // When removeFacilityConfigCheck is removed, replace the requiresMatchingClinics with
-    // typeOfCareRequiresCheck since that will be the only relevant condition.
-    const requiresMatchingClinics =
-      (removeFacilityConfigCheck && typeOfCareRequiresCheck) ||
-      (keepFacilityConfigCheck &&
-        directTypeOfCareSettings.patientHistoryRequired);
     // Guard: pastAppointments are not fetched for Cerner sites (shouldFetchClinics
     // excludes isCerner), so skip filtering to avoid calling .filter() on undefined
-    const filteredPastAppointments =
-      typeOfCareRequiresCheck && !isCerner
-        ? filterPastAppointmentsByTypeOfCare(
-            results.pastAppointments,
-            typeOfCare.id,
-          )
-        : results.pastAppointments;
+    const filteredPastAppointments = typeOfCareRequiresCheck
+      ? filterPastAppointmentsByTypeOfCare(
+          results.pastAppointments,
+          typeOfCare.id,
+        )
+      : results.pastAppointments;
     if (
       !isCerner &&
-      requiresMatchingClinics &&
+      typeOfCareRequiresCheck &&
       !hasMatchingClinics(
         results.clinics,
         filteredPastAppointments,

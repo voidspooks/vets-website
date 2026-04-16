@@ -85,4 +85,8 @@ export default class MockClinicResponse {
 
     return array;
   }
+
+  getClinicName() {
+    return this.attributes.serviceName;
+  }
 }

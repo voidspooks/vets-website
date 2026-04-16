@@ -462,7 +462,12 @@ const responses = {
   'GET /vaos/v2/scheduling/configurations': (req, res) => {
     if (req.query.cc_enabled === 'true') {
       // Return VPG scheduling configurations
-      return res.json(schedulingConfigurationsVPG);
+      const data = schedulingConfigurationsVPG.data.filter(
+        config => config.attributes.communityCare === true,
+      );
+      return res.json({
+        data,
+      });
       // return res.json(schedulingConfigurationsCC);
     }
 
@@ -570,8 +575,8 @@ const responses = {
     // Request, not Facility 983, not Facility 692 (OH)
     if (
       !isDirect &&
-      (!req.query.facility_id.startsWith('983') &&
-        !req.query.facility_id.startsWith('692'))
+      !req.query.facility_id.startsWith('983') &&
+      !req.query.facility_id.startsWith('692')
     ) {
       ineligibilityReasons.push({
         coding: [

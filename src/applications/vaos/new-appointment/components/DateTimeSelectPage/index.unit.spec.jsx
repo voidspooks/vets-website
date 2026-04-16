@@ -76,16 +76,16 @@ function setDateTimeSelectMockFetchesBase({
   mockEligibilityFetches({
     facilityId: '983',
     typeOfCareId,
-    limit: true,
-    requestPastVisits: true,
+    hasFacilityRequestLimitExceeded: true,
+    hasRequestPatientHistoryInsufficientError: true,
     clinics: clinicIds.length === 2 ? clinics : [clinics[0]],
     pastClinics: true,
   });
   mockEligibilityFetches({
     facilityId: '983',
     typeOfCareId,
-    limit: true,
-    directPastVisits: true,
+    hasFacilityRequestLimitExceeded: true,
+    hasDirectPatientHistoryInsufficientError: true,
     clinics: clinicIds.length === 2 ? clinics : [clinics[0]],
     pastClinics: true,
   });
@@ -761,38 +761,6 @@ describe('VAOS Page: DateTimeSelectPage', () => {
     ).to.be.ok;
   });
 
-  it('should show info standard of care alert when there is a wait for a mental health appointments', async () => {
-    const preferredDate = new Date();
-    const slot308Date = addDays(new Date(), 6);
-
-    setDateTimeSelectMockFetches({
-      typeOfCareId: 'outpatientMentalHealth',
-      slotDatesByClinicId: {
-        308: [slot308Date],
-      },
-    });
-
-    const store = createTestStore(initialState);
-
-    await setTypeOfCare(store, /mental health/i);
-    await setVAFacility(store, '983', 'outpatientMentalHealth');
-    await setClinic(store, /Yes/i);
-    await setPreferredDate(store, preferredDate);
-
-    const screen = renderWithStoreAndRouter(
-      <Route component={DateTimeSelectPage} />,
-      {
-        store,
-      },
-    );
-
-    expect(
-      await screen.findByText(/The earliest we can schedule your appointment/i),
-    ).to.exist;
-    // This shouldn't show up if not eligible for requests
-    expect(screen.queryByText(/request an earlier appointment/i)).not.to.exist;
-  });
-
   it('should show info standard of care alert when there is a wait for non mental health appointments', async () => {
     const preferredDate = new Date();
     const slot308Date = addDays(new Date(), 6);
@@ -896,34 +864,6 @@ describe('VAOS Page: DateTimeSelectPage', () => {
         (content, el) => el.textContent === 'Next' && el.type === 'button',
       ),
     ).to.not.have.attribute('disabled');
-  });
-
-  it('should show required text next to page heading', async () => {
-    const preferredDate = new Date();
-    const slot308Date = addDays(new Date(), 6);
-
-    setDateTimeSelectMockFetches({
-      typeOfCareId: 'outpatientMentalHealth',
-      slotDatesByClinicId: {
-        308: [slot308Date],
-      },
-    });
-
-    const store = createTestStore(initialState);
-
-    await setTypeOfCare(store, /mental health/i);
-    await setVAFacility(store, '983', 'outpatientMentalHealth');
-    await setClinic(store, /Yes/i);
-    await setPreferredDate(store, preferredDate);
-
-    const screen = renderWithStoreAndRouter(
-      <Route component={DateTimeSelectPage} />,
-      {
-        store,
-      },
-    );
-
-    expect(await screen.findByText(/Required/i)).to.exist;
   });
 });
 

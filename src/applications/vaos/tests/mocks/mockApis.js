@@ -225,7 +225,6 @@ export function mockCCProviderApi({
  *
  * @export
  * @param {Object} arguments - Function arguments.
- * @param {Array<string>} arguments.clinicId - Clinic ids
  * @param {String} arguments.locationId - Location id.
  * @param {String} arguments.typeOfCareId - Type of care id.
  * @param {Object} arguments.response - The response to return from the mock api call.
@@ -234,20 +233,14 @@ export function mockCCProviderApi({
  * @return {string} Return mock API URL. This is useful for debugging.
  */
 export function mockClinicsApi({
-  clinicId,
   locationId,
   typeOfCareId,
   response: data,
   responseCode = 200,
 }) {
-  let baseUrl = `${
+  const baseUrl = `${
     environment.API_URL
-  }/vaos/v2/locations/${locationId}/clinics?clinic_ids%5B%5D=${clinicId}`;
-
-  if (typeOfCareId)
-    baseUrl = `${
-      environment.API_URL
-    }/vaos/v2/locations/${locationId}/clinics?clinical_service=${typeOfCareId}`;
+  }/vaos/v2/locations/${locationId}/clinics?clinical_service=${typeOfCareId}`;
 
   if (responseCode === 200) {
     setFetchJSONResponse(global.fetch.withArgs(baseUrl), {
@@ -262,7 +255,8 @@ export function mockClinicsApi({
 
 export function mockEligibilityDirectApi({
   facilityId,
-  patientHistoryInsufficientError = false,
+  hasDirectDisabledError = false,
+  hasPatientHistoryInsufficientError = false,
   typeOfCareId,
   response: _data,
   responseCode = 200,
@@ -273,7 +267,17 @@ export function mockEligibilityDirectApi({
   const directReasons = [];
 
   if (responseCode === 200) {
-    if (patientHistoryInsufficientError && typeOfCareId !== 'primaryCare') {
+    if (hasDirectDisabledError) {
+      directReasons.push({
+        coding: [
+          {
+            code: 'facility-cs-direct-disabled',
+          },
+        ],
+      });
+    }
+
+    if (hasPatientHistoryInsufficientError && typeOfCareId !== 'primaryCare') {
       directReasons.push({
         coding: [
           {
@@ -286,6 +290,7 @@ export function mockEligibilityDirectApi({
     setFetchJSONResponse(global.fetch.withArgs(baseUrl), {
       data: {
         attributes: {
+          clinicalServiceId: typeOfCareId,
           eligible: directReasons.length === 0,
           ineligibilityReasons:
             directReasons.length === 0 ? undefined : directReasons,
@@ -295,12 +300,14 @@ export function mockEligibilityDirectApi({
   } else {
     setFetchJSONFailure(global.fetch.withArgs(baseUrl), { errors: [] });
   }
+  return baseUrl;
 }
 
 export function mockEligibilityRequestApi({
   facilityId,
-  facilityRequestLimitExceeded = false,
-  patientHistoryInsufficientError = false,
+  hasFacilityRequestLimitExceededError = false,
+  hasRequestDisabledError = false,
+  hasPatientHistoryInsufficientError = false,
   typeOfCareId,
   response: _data,
   responseCode = 200,
@@ -311,7 +318,17 @@ export function mockEligibilityRequestApi({
   const requestReasons = [];
 
   if (responseCode === 200) {
-    if (patientHistoryInsufficientError && typeOfCareId !== 'primaryCare') {
+    if (hasRequestDisabledError) {
+      requestReasons.push({
+        coding: [
+          {
+            code: 'facility-cs-request-disabled',
+          },
+        ],
+      });
+    }
+
+    if (hasPatientHistoryInsufficientError && typeOfCareId !== 'primaryCare') {
       requestReasons.push({
         coding: [
           {
@@ -321,7 +338,7 @@ export function mockEligibilityRequestApi({
       });
     }
 
-    if (facilityRequestLimitExceeded) {
+    if (hasFacilityRequestLimitExceededError) {
       requestReasons.push({
         coding: [
           {
@@ -571,126 +588,44 @@ export function mockAppointmentSlotApi({
  * @param {string} arguments.siteId The VistA site id the facility is associated with
  * @param {string} arguments.facilityId The VA facility id to check for eligibility at
  * @param {string} arguments.typeOfCareId The type of care id to check for eligibility for
- * @param {boolean} [arguments.limit=false] Whether the mock should set the user as passing the request limit check
- * @param {boolean} [arguments.requestPastVisits=false] Whether the mock should set the user as passing the past visits check
- *    for requests
- * @param {boolean} [arguments.directPastVisits=false] Whether the mock should set the user as passing the past visits check
- *    for direct scheduling
- * @param {Array<VAOSClinic>} [arguments.clinics=[]] The clinics returned during the eligibility checks
- * @param {boolean} [arguments.pastClinics=false] Whether or not the mock should also mock an appointments fetch with an
- *    past appointment with a clinic matching one passed in the clinics param, so that the user passes the past clinics check
- * }
+ * @param {boolean} [arguments.hasFacilityRequestLimitExceededError=false] Flag to toggle appointment limit error.
+ * @param {boolean} [arguments.hasRequestPatientHistoryInsufficientError=false] Flag to toggle past visits error
+ * @param {boolean} [arguments.hasDirectPatientHistoryInsufficientError=false] Flag to toggle past visits error
+ * @param {Array<VAOSClinic>} [arguments.clinics=[]] Clinic used to mock an appointments fetch with an past appointment with
+ * a clinic matching one passed in the clinics param, so that the user passes the past clinics chech
+ * @param {boolean} arguments.hasDirectDisabledError Flag to toggle direct scheduling appointment error
+ * @param {boolean} arguments.hasRequestDisabledError Flag to toggle requesting an appointment error
  */
 export function mockEligibilityFetches({
   facilityId,
   typeOfCareId,
-  limit = false,
-  requestPastVisits = false,
-  requestsDisabled = false,
-  directPastVisits = false,
-  directDisabled = false,
-  matchingClinics = null,
+  hasFacilityRequestLimitExceededError = false,
+  hasRequestPatientHistoryInsufficientError = false,
+  hasRequestDisabledError = false,
+  hasDirectPatientHistoryInsufficientError = false,
+  hasDirectDisabledError = false,
   clinics = [],
-  pastClinics = false,
 }) {
-  const directReasons = [];
-  const requestReasons = [];
+  mockEligibilityDirectApi({
+    facilityId,
+    hasDirectDisabledError,
+    hasPatientHistoryInsufficientError: hasDirectPatientHistoryInsufficientError,
+    typeOfCareId,
+  });
+  mockEligibilityRequestApi({
+    facilityId,
+    hasFacilityRequestLimitExceededError,
+    hasRequestDisabledError,
+    hasPatientHistoryInsufficientError: hasRequestPatientHistoryInsufficientError,
+    typeOfCareId,
+  });
+  mockClinicsApi({
+    locationId: facilityId,
+    typeOfCareId,
+    response: clinics,
+  });
 
-  if (directDisabled) {
-    directReasons.push({
-      coding: [
-        {
-          code: 'facility-cs-direct-disabled',
-        },
-      ],
-    });
-  }
-
-  if (requestsDisabled) {
-    requestReasons.push({
-      coding: [
-        {
-          code: 'facility-cs-request-disabled',
-        },
-      ],
-    });
-  }
-
-  if (!directPastVisits && typeOfCareId !== 'primaryCare') {
-    directReasons.push({
-      coding: [
-        {
-          code: 'patient-history-insufficient',
-        },
-      ],
-    });
-  }
-
-  if (!requestPastVisits && typeOfCareId !== 'primaryCare') {
-    requestReasons.push({
-      coding: [
-        {
-          code: 'patient-history-insufficient',
-        },
-      ],
-    });
-  }
-
-  if (!limit) {
-    requestReasons.push({
-      coding: [
-        {
-          code: 'facility-request-limit-exceeded',
-        },
-      ],
-    });
-  }
-
-  setFetchJSONResponse(
-    global.fetch.withArgs(
-      `${
-        environment.API_URL
-      }/vaos/v2/eligibility?facility_id=${facilityId}&clinical_service_id=${typeOfCareId}&type=direct`,
-    ),
-    {
-      data: {
-        attributes: {
-          eligible: directReasons.length === 0,
-          ineligibilityReasons:
-            directReasons.length === 0 ? undefined : directReasons,
-        },
-      },
-    },
-  );
-  setFetchJSONResponse(
-    global.fetch.withArgs(
-      `${
-        environment.API_URL
-      }/vaos/v2/eligibility?facility_id=${facilityId}&clinical_service_id=${typeOfCareId}&type=request`,
-    ),
-    {
-      data: {
-        attributes: {
-          eligible: requestReasons.length === 0,
-          ineligibilityReasons:
-            requestReasons.length === 0 ? undefined : requestReasons,
-        },
-      },
-    },
-  );
-
-  setFetchJSONResponse(
-    global.fetch.withArgs(
-      `${
-        environment.API_URL
-      }/vaos/v2/locations/${facilityId}/clinics?clinical_service=${typeOfCareId}`,
-    ),
-    {
-      data: clinics,
-    },
-  );
-
-  const pastAppointments = (matchingClinics || clinics).map(clinic => {
+  const pastAppointments = clinics.map(clinic => {
     return new MockAppointmentResponse({
       localStartTime: subDays(new Date(), 1),
     })
@@ -704,7 +639,7 @@ export function mockEligibilityFetches({
       start: range.start,
       end: range.end,
       useRFC3339: false,
-      response: pastClinics ? pastAppointments : [],
+      response: pastAppointments,
       statuses: ['booked', 'arrived', 'fulfilled', 'cancelled', 'checked-in'],
     });
   });

@@ -76,10 +76,10 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -158,10 +158,10 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -261,10 +261,10 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         id =>
           new MockSchedulingConfigurationResponse({
             facilityId: id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -352,10 +352,10 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -468,19 +468,19 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -560,19 +560,19 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: false,
+                bookedAppointments: false,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: false,
+                bookedAppointments: false,
               }),
             ],
           }),
@@ -648,19 +648,19 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: false,
+                apptRequests: false,
               }),
             ],
           }),
@@ -701,19 +701,19 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: false,
+                bookedAppointments: false,
               }),
             ],
           }),
@@ -755,19 +755,19 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: false,
+                bookedAppointments: false,
               }),
             ],
           }),
@@ -797,19 +797,19 @@ describe('VAOS vaccine flow: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),

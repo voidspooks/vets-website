@@ -121,8 +121,5 @@ export const selectFeaturePCMHI = state =>
 export const selectFeatureAddOhAvs = state =>
   toggleValues(state).vaOnlineSchedulingAddOhAvs;
 
-export const selectFeatureRemoveFacilityConfigCheck = state =>
-  toggleValues(state).vaOnlineSchedulingRemoveFacilityConfigCheck;
-
 export const selectFeatureUseVpg = state =>
   toggleValues(state).vaOnlineSchedulingUseVpg;

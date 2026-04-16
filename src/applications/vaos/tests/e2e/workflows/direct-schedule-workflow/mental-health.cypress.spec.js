@@ -404,6 +404,77 @@ describe('VAOS direct schedule flow - Mental health', () => {
           cy.axeCheckBestPractice();
         });
       });
+
+      describe('And same day appointment', () => {
+        const setup = () => {
+          mockExistingAppointments(true);
+          mocksBase(typeOfCareId, false, false, true);
+        };
+        beforeEach(setup);
+
+        it('should show info standard of care alert when there is a wait for a mental health appointments', () => {
+          // Arrange
+          const mockUser = new MockUser({
+            addressLine1: '123 Main St.',
+          });
+
+          mockClinicsApi({
+            locationId: '983',
+            response: MockClinicResponse.createResponses({
+              count: 2,
+            }),
+          });
+          mockSlotsApi({
+            locationId: '983',
+            clinicId: '1',
+            response: MockSlotResponse.createResponses({
+              startTimes: [addMonths(new Date(), 1)],
+            }),
+          });
+
+          // Act
+          cy.login(mockUser);
+
+          AppointmentListPageObject.visit().scheduleAppointment();
+
+          UrgentCareInformationPageObject.assertUrl().scheduleAppointment();
+
+          TypeOfCarePageObject.assertUrl()
+            .assertAddressAlert({ exist: false })
+            .selectTypeOfCare(typeOfCareRegex)
+            .clickNextButton();
+
+          TypeOfMentalHealthPageObject.assertUrl()
+            .selectTypeOfMentalHealth(/Substance use problem services/i)
+            .clickNextButton();
+
+          VAFacilityPageObject.assertUrl()
+            .assertSingleLocation({
+              locationName: /Cheyenne VA Medical Center/i,
+            })
+            .clickNextButton();
+
+          ClinicChoicePageObject.assertUrl()
+            .selectClinic({ selection: /Clinic 1/i })
+            .clickNextButton();
+
+          PreferredDatePageObject.assertUrl()
+            .typeDate({ date: new Date() })
+            .clickNextButton();
+
+          DateTimeSelectPageObject.assertUrl()
+            .assertText({ text: /Required/i })
+            .assertWarningAlert({
+              text: /We couldn.t find an appointment for your selected date/,
+            })
+            .assertText({
+              text: /The earliest we can schedule your appointment/,
+            });
+
+          // Assert
+          cy.axeCheckBestPractice();
+        });
+      });
     });
 
     describe('And patient chooses mental health care in a primary care setting services', () => {

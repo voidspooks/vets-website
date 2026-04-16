@@ -74,7 +74,6 @@ export function setSupportedSchedulingMethods({ location, settings } = {}) {
   const { id } = location;
 
   const facilitySettings = settings.find(f => f.id === id);
-
   const { identifier } = location;
   const vhaIdentifier = location.identifier.find(i => i.system === VHA_FHIR_ID);
 
@@ -84,14 +83,16 @@ export function setSupportedSchedulingMethods({ location, settings } = {}) {
       value: id,
     });
   }
-
   return {
     ...location,
     id,
     identifier,
     legacyVAR: {
       ...location.legacyVAR,
-      settings: arrayToObject(facilitySettings?.services),
+      settings: arrayToObject(
+        facilitySettings?.vaServices,
+        'clinicalServiceId',
+      ),
     },
   };
 }
@@ -166,7 +167,7 @@ export function transformFacilitiesV2(facilities) {
   return facilities.map(transformFacilityV2);
 }
 
-function getTypeOfCareIdFromV2(id) {
+export function getTypeOfCareIdFromV2(id) {
   const allTypesOfCare = [
     ...TYPES_OF_EYE_CARE,
     ...TYPES_OF_SLEEP_CARE,
@@ -176,19 +177,4 @@ function getTypeOfCareIdFromV2(id) {
   ];
 
   return allTypesOfCare.find(care => care.idV2 === id)?.id;
-}
-
-export function transformSettingsV2(settings, useVpg = false) {
-  return settings.map(setting => ({
-    ...setting,
-    services: useVpg
-      ? setting.vaServices.map(service => ({
-          ...service,
-          id: getTypeOfCareIdFromV2(service.clinicalServiceId),
-        }))
-      : setting.services.map(service => ({
-          ...service,
-          id: getTypeOfCareIdFromV2(service.id),
-        })),
-  }));
 }

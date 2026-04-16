@@ -81,10 +81,10 @@ describe('VAOS Page: CommunityCareProviderSelectionPage', () => {
       response: [
         new MockSchedulingConfigurationResponse({
           facilityId: '983',
-          services: [
+          vaServices: [
             new MockServiceConfiguration({
               typeOfCareId: 'primaryCare',
-              requestEnabled: true,
+              apptRequests: true,
             }),
           ],
         }),

@@ -13,14 +13,8 @@ import {
   getLocationsByTypeOfCareAndSiteIds,
 } from '.';
 import MockFacilityResponse from '../../tests/fixtures/MockFacilityResponse';
-import MockSchedulingConfigurationResponse, {
-  MockServiceConfiguration,
-} from '../../tests/fixtures/MockSchedulingConfigurationResponse';
-import {
-  mockFacilitiesApi,
-  mockSchedulingConfigurationsApi,
-} from '../../tests/mocks/mockApis';
-import { VHA_FHIR_ID, TYPE_OF_CARE_IDS } from '../../utils/constants';
+import { mockFacilitiesApi } from '../../tests/mocks/mockApis';
+import { TYPE_OF_CARE_IDS, VHA_FHIR_ID } from '../../utils/constants';
 import ccProviders from '../mocks/v2/cc_providers.json';
 import facilityDetails from '../mocks/v2/facilities.json';
 
@@ -103,35 +97,13 @@ describe('VAOS Services: Location ', () => {
   describe('getLocationsByTypeOfCareAndSiteIds', () => {
     let data;
 
-    it('should make 3 successful requests', async () => {
+    it('should make 1 successful requests', async () => {
       mockFetch();
       mockFacilitiesApi({
         children: true,
         response: [
           new MockFacilityResponse(),
           new MockFacilityResponse({ id: '984' }),
-        ],
-      });
-      mockSchedulingConfigurationsApi({
-        response: [
-          new MockSchedulingConfigurationResponse({
-            facilityId: '983',
-            services: [
-              new MockServiceConfiguration({
-                typeOfCareId: 'primaryCare',
-                requestEnabled: true,
-                directEnabled: true,
-              }),
-            ],
-          }),
-          new MockSchedulingConfigurationResponse({
-            facilityId: '984',
-            services: [
-              new MockServiceConfiguration({
-                typeOfCareId: 'primaryCare',
-              }),
-            ],
-          }),
         ],
       });
 
@@ -143,19 +115,8 @@ describe('VAOS Services: Location ', () => {
       expect(global.fetch.firstCall.args[0]).to.contain(
         '/vaos/v2/facilities?children=true&ids[]=983&ids[]=984',
       );
-      expect(global.fetch.secondCall.args[0]).to.contain(
-        '/v2/scheduling/configurations?facility_ids[]=983&facility_ids[]=984',
-      );
       expect(data[0].resourceType).to.equal('Location');
       expect(data[0].name).to.equal('Cheyenne VA Medical Center');
-      expect(
-        data[0].legacyVAR.settings[TYPE_OF_CARE_IDS.PRIMARY_CARE]?.request
-          .enabled,
-      ).to.be.true;
-      expect(
-        data[0].legacyVAR.settings[TYPE_OF_CARE_IDS.PRIMARY_CARE]?.direct
-          .enabled,
-      ).to.be.true;
     });
 
     it('should return OperationOutcome error', async () => {

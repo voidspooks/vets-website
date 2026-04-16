@@ -5,7 +5,6 @@ import { createSelector } from 'reselect';
 import {
   selectFeatureRequests,
   selectFeatureTravelPayEnableCommunityCare,
-  selectFeatureUseVpg,
 } from '../../redux/selectors';
 import {
   getAppointmentTimezone,
@@ -22,6 +21,7 @@ import {
   sortByDateAscending,
   sortByDateDescending,
 } from '../../services/appointment';
+import { getTypeOfCareById } from '../../utils/appointment';
 import {
   APPOINTMENT_STATUS,
   APPOINTMENT_TYPES,
@@ -169,16 +169,13 @@ export function selectFacilitySettingsStatus(state) {
 }
 
 export function selectCanUseVaccineFlow(state) {
-  const featureUseVpg = selectFeatureUseVpg(state);
   return state.appointments.facilitySettings?.some(
     facility =>
-      featureUseVpg
-        ? facility.services.find(
-            service => service.id === TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-          )?.bookedAppointments
-        : facility.services.find(
-            service => service.id === TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-          )?.direct.enabled,
+      facility.vaServices?.find(
+        service =>
+          service.clinicalServiceId ===
+          getTypeOfCareById(TYPE_OF_CARE_IDS.COVID_VACCINE_ID).idV2,
+      )?.bookedAppointments,
   );
 }
 

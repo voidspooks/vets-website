@@ -8,10 +8,7 @@ import { FETCH_STATUS, TYPE_OF_CARE_IDS } from '../../utils/constants';
 
 describe('covid-19-vaccine reducer', () => {
   describe('FORM_PAGE_FACILITY_OPEN_SUCCEEDED', () => {
-    const createFacility = (
-      id,
-      { directEnabled = false, bookedAppointments = false } = {},
-    ) => ({
+    const createFacility = (id, { bookedAppointments = false } = {}) => ({
       id,
       name: `Facility ${id}`,
       position: {
@@ -21,7 +18,6 @@ describe('covid-19-vaccine reducer', () => {
       legacyVAR: {
         settings: {
           [TYPE_OF_CARE_IDS.COVID_VACCINE_ID]: {
-            direct: { enabled: directEnabled },
             bookedAppointments,
           },
         },
@@ -37,43 +33,12 @@ describe('covid-19-vaccine reducer', () => {
       },
     };
 
-    it('should filter facilities by direct.enabled when useVpg is false', () => {
-      const facilities = [
-        createFacility('983', {
-          directEnabled: true,
-          bookedAppointments: false,
-        }),
-        createFacility('984', {
-          directEnabled: false,
-          bookedAppointments: true,
-        }),
-      ];
-
-      const action = {
-        type: FORM_PAGE_FACILITY_OPEN_SUCCEEDED,
-        facilities,
-        address: null,
-        useVpg: false,
-      };
-
-      const state = reducer(initialState, action);
-
-      // When useVpg is false, facility 983 with direct.enabled=true should be the only supported facility
-      // Since there's only one supported facility, it should be auto-selected
-      expect(state.newBooking.data.vaFacility).to.equal('983');
-      expect(state.newBooking.facilitiesStatus).to.equal(
-        FETCH_STATUS.succeeded,
-      );
-    });
-
     it('should filter facilities by bookedAppointments when useVpg is true', () => {
       const facilities = [
         createFacility('983', {
-          directEnabled: true,
           bookedAppointments: false,
         }),
         createFacility('984', {
-          directEnabled: false,
           bookedAppointments: true,
         }),
       ];
@@ -98,12 +63,10 @@ describe('covid-19-vaccine reducer', () => {
     it('should not auto-select facility when multiple facilities support scheduling with useVpg false', () => {
       const facilities = [
         createFacility('983', {
-          directEnabled: true,
-          bookedAppointments: false,
+          bookedAppointments: true,
         }),
         createFacility('984', {
-          directEnabled: true,
-          bookedAppointments: false,
+          bookedAppointments: true,
         }),
       ];
 
@@ -124,12 +87,10 @@ describe('covid-19-vaccine reducer', () => {
     it('should not auto-select facility when multiple facilities support scheduling with useVpg true', () => {
       const facilities = [
         createFacility('983', {
-          directEnabled: false,
-          bookedAppointments: true,
+          bookedAppointments: false,
         }),
         createFacility('984', {
-          directEnabled: false,
-          bookedAppointments: true,
+          bookedAppointments: false,
         }),
       ];
 
@@ -150,11 +111,11 @@ describe('covid-19-vaccine reducer', () => {
     it('should sort facilities by distance when residential address has coordinates', () => {
       const facilities = [
         {
-          ...createFacility('983', { directEnabled: true }),
+          ...createFacility('983', { bookedAppointments: true }),
           position: { latitude: 40.0, longitude: -85.0 }, // farther
         },
         {
-          ...createFacility('984', { directEnabled: true }),
+          ...createFacility('984', { bookedAppointments: true }),
           position: { latitude: 39.5, longitude: -84.5 }, // closer
         },
       ];

@@ -246,17 +246,6 @@ function selectFacilityPageSortMethod(state) {
   return getNewAppointment(state).facilityPageSortMethod;
 }
 
-function selectNoValidVAFacilities(state) {
-  const newAppointment = getNewAppointment(state);
-  const formInfo = getFormPageInfo(state, 'vaFacilityV2');
-  const { childFacilitiesStatus } = newAppointment;
-  const validFacilities = formInfo.schema?.properties.vaFacility.enum;
-
-  return (
-    childFacilitiesStatus === FETCH_STATUS.succeeded && !validFacilities?.length
-  );
-}
-
 function selectSingleValidVALocation(state) {
   const formInfo = getFormPageInfo(state, 'vaFacilityV2');
   const data = getFormData(state);
@@ -299,7 +288,6 @@ export function getFacilityPageV2Info(state) {
       childFacilitiesStatus === FETCH_STATUS.failed ||
       newAppointment.eligibilityStatus === FETCH_STATUS.failed,
     loadingEligibilityStatus: newAppointment.eligibilityStatus,
-    noValidVAFacilities: selectNoValidVAFacilities(state),
     requestLocationStatus,
     selectedFacility: getChosenFacilityInfo(state),
     singleValidVALocation: selectSingleValidVALocation(state),

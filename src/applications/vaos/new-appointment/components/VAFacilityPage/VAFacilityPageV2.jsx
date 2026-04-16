@@ -11,7 +11,6 @@ import EligibilityModal from './EligibilityModal';
 import InfoAlert from '../../../components/InfoAlert';
 import FacilitiesRadioWidget from './FacilitiesRadioWidget';
 import FormButtons from '../../../components/FormButtons';
-import NoValidVAFacilities from './NoValidVAFacilitiesV2';
 import SingleFacilityEligibilityCheckMessage from './SingleFacilityEligibilityCheckMessage';
 import FacilitiesNotShown from './FacilitiesNotShown';
 import SingleFacilityAvailable from './SingleFacilityAvailable';
@@ -25,7 +24,6 @@ import {
   hideEligibilityModal,
 } from '../../redux/actions';
 import { getPageTitle } from '../../newAppointmentFlow';
-import { selectFeatureRemoveFacilityConfigCheck } from '../../../redux/selectors';
 
 const initialSchema = {
   type: 'object',
@@ -51,10 +49,8 @@ export default function VAFacilityPageV2() {
     childFacilitiesStatus,
     data,
     eligibility,
-    facilities,
     hasDataFetchingError,
     loadingEligibilityStatus,
-    noValidVAFacilities,
     pageChangeInProgress,
     requestLocationStatus,
     schema,
@@ -65,9 +61,6 @@ export default function VAFacilityPageV2() {
     typeOfCare,
     fetchRecentLocationStatus,
   } = useSelector(state => getFacilityPageV2Info(state), shallowEqual);
-  const featureRemoveFacilityConfigCheck = useSelector(
-    selectFeatureRemoveFacilityConfigCheck,
-  );
 
   const sortOptions = [
     {
@@ -195,31 +188,6 @@ export default function VAFacilityPageV2() {
         label="We’re checking if we can create an appointment for you at this facility. This may take up to a minute."
         message="We’re checking if we can create an appointment for you at this facility. This may take up to a minute."
       />
-    );
-  }
-
-  if (!featureRemoveFacilityConfigCheck && noValidVAFacilities) {
-    return (
-      <div>
-        {pageHeader}
-        <NoValidVAFacilities
-          address={address}
-          facilities={facilities}
-          sortMethod={sortMethod}
-          typeOfCare={typeOfCare}
-        />
-        <div className="vads-u-margin-top--2">
-          <FormButtons
-            onBack={() =>
-              dispatch(routeToPreviousAppointmentPage(history, pageKey))
-            }
-            disabled
-            pageChangeInProgress={pageChangeInProgress}
-            loadingText="Page change in progress"
-            displayNextButton={false}
-          />
-        </div>
-      </div>
     );
   }
 

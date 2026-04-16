@@ -108,7 +108,7 @@ describe('VAOS community care flow - Audiology', () => {
         .clickNextButton();
 
       VAFacilityPageObject.assertUrl()
-        .assertSingleLocation({ locationName: /Facility 983/i })
+        .assertSingleLocation({ locationName: 'Facility 983' })
         .clickNextButton();
 
       // Assert

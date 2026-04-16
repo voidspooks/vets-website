@@ -19,7 +19,6 @@ import {
 import {
   transformParentFacilitiesV2,
   transformFacilitiesV2,
-  transformSettingsV2,
   transformFacilityV2,
   setSupportedSchedulingMethods,
   transformCommunityProviders,
@@ -88,12 +87,11 @@ export async function getLocation({ facilityId }) {
  * @param {Object} params
  * @param {Array<string>} params.siteIds The vista site ids of the facilities we want to fetch
  * @param {boolean} params.useVpg Whether to use VPG-specific scheduling configuration
- * @returns {Array<FacilitySettings>} An array of facility settings
+ * @returns {Promise} An array of facility settings
  */
-export async function getLocationSettings({ siteIds, useVpg }) {
+export async function getLocationSettings({ siteIds }) {
   try {
-    const settings = await getSchedulingConfigurations(siteIds);
-    return transformSettingsV2(settings, useVpg);
+    return getSchedulingConfigurations(siteIds);
   } catch (e) {
     if (e.errors) {
       throw mapToFHIRErrors(e.errors);
@@ -112,14 +110,13 @@ export async function getLocationSettings({ siteIds, useVpg }) {
  * @param {Object} params
  * @param {Array<string>} params.siteIds A list of 3 digit site ids to retrieve the settings for
  * @param {boolean} [params.sortByRecentLocations=false] Whether to sort the locations by recent visits
- * @param {boolean} [params.removeFacilityConfigCheck=false] Whether to skip the facility configurations endpoint check and use eligibility from the patient eligibility API SOT only
- * @returns {Array<Location>} An array of Locations with settings included
+ * @param {boolean} [params.isCovid] Flag to determine wheter to make facility configuration call.
+ * @returns {Promise} An array of Locations with settings included
  */
 export async function getLocationsByTypeOfCareAndSiteIds({
   siteIds,
   sortByRecentLocations = false,
-  removeFacilityConfigCheck = false,
-  useVpg = false,
+  isCovid = false,
 }) {
   try {
     let locations = [];
@@ -131,9 +128,9 @@ export async function getLocationsByTypeOfCareAndSiteIds({
       sortByRecentLocations,
     });
 
-    if (!removeFacilityConfigCheck) {
+    if (isCovid) {
       const uniqueIds = locations.map(location => location.id);
-      settings = await getLocationSettings({ siteIds: uniqueIds, useVpg });
+      settings = await getLocationSettings({ siteIds: uniqueIds });
     }
 
     locations = locations?.map(location =>
@@ -315,34 +312,4 @@ export function isCernerLocation(locationId, cernerSiteIds = []) {
       getRealFacilityId(cernerId),
     );
   });
-}
-
-/**
- * Returns true if location supports the given type of care
- *
- * @export
- * @param {Location} location The location to check
- * @param {string} typeOfCareId The type of care id to check against
- * @param {Array<string>} [cernerSiteIds=[]] The list of Cerner sites, because Cerner sites
- *   are active for all types of care
- * @param {boolean} [removeFacilityConfigCheck=false] Whether to skip the facility configurations endpoint check and use eligibility from the patient eligibility API SOT only
- * @returns {Boolean} True if the location supports the type of care (or is a Cerner site)
- */
-export function isTypeOfCareSupported(
-  location,
-  typeOfCareId,
-  cernerSiteIds = [],
-  removeFacilityConfigCheck = false,
-) {
-  const setting = location.legacyVAR.settings[typeOfCareId];
-  return (
-    removeFacilityConfigCheck ||
-    // Check old format (direct.enabled / request.enabled)
-    setting?.direct?.enabled ||
-    setting?.request?.enabled ||
-    // Check VPG format (bookedAppointments / apptRequests)
-    setting?.bookedAppointments ||
-    setting?.apptRequests ||
-    isCernerLocation(location.id, cernerSiteIds)
-  );
 }

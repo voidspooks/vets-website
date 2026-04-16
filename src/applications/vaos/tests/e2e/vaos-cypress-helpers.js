@@ -2,8 +2,9 @@
 // Location to custom commands type definitions.
 /// <reference path="./index.d.ts" />
 
-import schedulingConfigurations from '../../services/mocks/v2/scheduling_configurations.json';
+import { startOfDay, subYears } from 'date-fns';
 import featureFlags from '../../services/mocks/featureFlags';
+import schedulingConfigurations from '../../services/mocks/v2/scheduling_configurations_vpg.json';
 
 /**
  * Function to mock feature toggle endpoint.
@@ -307,7 +308,6 @@ export function mockSchedulingConfigurationApi({
   typeOfCareId = null,
   isDirect = false,
   isRequest = false,
-  overrideDirect = {},
 } = {}) {
   cy.intercept(
     {
@@ -325,30 +325,19 @@ export function mockSchedulingConfigurationApi({
             }),
           )
           .map(facility => {
-            const services = facility.attributes.services
+            const vaServices = facility.attributes.vaServices
               .map(
                 service =>
-                  service.id === typeOfCareId
+                  service.clinicalServiceId === typeOfCareId
                     ? {
                         ...service,
-                        direct: {
-                          ...service.direct,
-                          enabled: isDirect,
-                          ...overrideDirect,
-                        },
-                        request: { ...service.request, enabled: isRequest },
+                        bookedAppointments: isDirect,
+                        apptRequests: isRequest,
                       }
                     : null,
               )
               // Remove all falsey values from array
               .filter(Boolean);
-
-            // Create vaServices array for VPG feature support
-            const vaServices = services.map(service => ({
-              clinicalServiceId: service.id,
-              bookedAppointments: isDirect,
-              apptRequests: isRequest,
-            }));
 
             return {
               ...facility,
@@ -357,7 +346,6 @@ export function mockSchedulingConfigurationApi({
                 communityCare: true,
                 ...facility.attributes,
                 facilityId: facility.id,
-                services,
                 vaServices,
               },
             };
@@ -707,4 +695,21 @@ export function mockRelationshipsApi({ response: data, responseCode = 200 }) {
       req.reply({ data });
     },
   ).as('v2:get:relationships');
+}
+
+/**
+ * Return a collection of start and end dates. The start date starts from the current
+ * date and the end date will be the previous year.
+ *
+ * @export
+ * @param {number} [nbrOfYears=2] Number of years to compute the start and end dates
+ * @returns A collection of mock start and end date objects
+ */
+export function getDateRanges(nbrOfYears = 1) {
+  return Array.from(Array(nbrOfYears).keys()).map(i => {
+    return {
+      start: subYears(startOfDay(new Date()), i + 1),
+      end: subYears(startOfDay(new Date()), i),
+    };
+  });
 }

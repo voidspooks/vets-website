@@ -88,7 +88,7 @@ describe('OH request flow - Food and Nutrition', () => {
             ],
           });
           mockSchedulingConfigurationApi({
-            facilityIds: ['983'],
+            facilityIds: ['983', '984'],
             typeOfCareId,
             isDirect: true,
             isRequest: true,
@@ -192,7 +192,7 @@ describe('OH request flow - Food and Nutrition', () => {
             ],
           });
           mockSchedulingConfigurationApi({
-            facilityIds: ['983'],
+            facilityIds: ['983', '984'],
             typeOfCareId,
             isDirect: false,
             isRequest: true,
@@ -282,7 +282,7 @@ describe('OH request flow - Food and Nutrition', () => {
 
           mockFacilitiesApi({
             response: MockFacilityResponse.createResponses({
-              facilityIds: ['983', '984'],
+              facilityIds: ['983'],
             }),
           });
           mockEligibilityDirectApi({
@@ -315,9 +315,7 @@ describe('OH request flow - Food and Nutrition', () => {
           TypeOfFacilityPageObject.assertUrl()
             .selectTypeOfFacility(/VA medical center or clinic/i)
             .clickNextButton();
-          VAFacilityPageObject.assertUrl()
-            .selectLocation(/Facility 983/i)
-            .clickNextButton();
+          VAFacilityPageObject.assertUrl().clickNextButton();
           ProviderPageObject.assertUrl()
             .assertHeading({
               level: 1,
@@ -383,7 +381,7 @@ describe('OH request flow - Food and Nutrition', () => {
 
           mockFacilitiesApi({
             response: MockFacilityResponse.createResponses({
-              facilityIds: ['983', '984'],
+              facilityIds: ['983'],
             }),
           });
           mockEligibilityDirectApi({
@@ -416,9 +414,7 @@ describe('OH request flow - Food and Nutrition', () => {
           TypeOfFacilityPageObject.assertUrl()
             .selectTypeOfFacility(/VA medical center or clinic/i)
             .clickNextButton();
-          VAFacilityPageObject.assertUrl()
-            .selectLocation(/Facility 983/i)
-            .clickNextButton();
+          VAFacilityPageObject.assertUrl().clickNextButton();
           ProviderPageObject.assertUrl()
             .assertHeading({
               level: 1,

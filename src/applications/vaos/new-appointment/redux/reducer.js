@@ -75,7 +75,6 @@ import {
 
 import { getTypeOfCare } from './selectors';
 import { distanceBetween } from '../../utils/address';
-import { isTypeOfCareSupported } from '../../services/location';
 
 const REASON_ADDITIONAL_INFO_TITLES = {
   va:
@@ -340,10 +339,9 @@ export default function formReducer(state = initialState, action) {
     }
     case FORM_PAGE_FACILITY_V2_OPEN_SUCCEEDED: {
       let newSchema = action.schema;
-      const { removeFacilityConfigCheck } = action;
       let newData = state.data;
       let { facilities } = action;
-      const { typeOfCareId, address, cernerSiteIds } = action;
+      const { typeOfCareId, address } = action;
       const hasResidentialCoordinates =
         !!address?.latitude && !!address?.longitude;
 
@@ -377,26 +375,17 @@ export default function formReducer(state = initialState, action) {
         });
       }
 
-      const supportedFacilities = facilities.filter(facility =>
-        isTypeOfCareSupported(
-          facility,
-          typeOfCareId,
-          cernerSiteIds,
-          removeFacilityConfigCheck,
-        ),
-      );
-
-      if (supportedFacilities.length === 1) {
+      if (facilities.length === 1) {
         newData = {
           ...newData,
-          vaFacility: supportedFacilities[0]?.id,
+          vaFacility: facilities[0]?.id,
         };
       }
 
-      let sortedFacilities = supportedFacilities;
-      if (supportedFacilities.length > 0) {
+      let sortedFacilities = facilities;
+      if (facilities.length > 0) {
         if (sortMethod === FACILITY_SORT_METHODS.alphabetical) {
-          sortedFacilities = supportedFacilities.sort((a, b) =>
+          sortedFacilities = facilities.sort((a, b) =>
             a.name.localeCompare(b.name),
           );
         } else if (
@@ -421,7 +410,7 @@ export default function formReducer(state = initialState, action) {
       const { data, schema } = setupFormData(
         (newData = {
           ...newData,
-          isSingleVaFacility: supportedFacilities.length === 1,
+          isSingleVaFacility: sortedFacilities?.length === 1,
         }),
         newSchema,
         action.uiSchema,

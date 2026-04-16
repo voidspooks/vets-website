@@ -80,21 +80,21 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
-                requestEnabled: false,
+                bookedAppointments: true,
+                apptRequests: false,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GC',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
-                requestEnabled: false,
+                bookedAppointments: true,
+                apptRequests: false,
               }),
             ],
           }),
@@ -103,11 +103,11 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
 
       mockEligibilityFetches({
         facilityId: '983',
-        services: [
+        vaServices: [
           new MockServiceConfiguration({
             typeOfCareId: 'primaryCare',
-            limit: true,
-            directPastVisits: true,
+            hasFacilityRequestLimitExceededError: true,
+            hasDirectPatientHistoryInsufficientError: true,
           }),
         ],
       });
@@ -164,46 +164,46 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GC',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GB',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983HK',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983QA',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -212,14 +212,14 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: TYPE_OF_CARE_IDS.PRIMARY_CARE,
-        limit: true,
-        requestPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasRequestPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       const store = createTestStore(initialState);
       await setTypeOfCare(store, /primary care/i);
@@ -264,19 +264,19 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -285,14 +285,14 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: TYPE_OF_CARE_IDS.PRIMARY_CARE,
-        limit: true,
-        requestPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasRequestPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       const store = createTestStore(initialState);
       await setTypeOfCare(store, /primary care/i);
@@ -353,21 +353,21 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: false,
-                requestEnabled: false,
+                bookedAppointments: false,
+                apptRequests: false,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: false,
-                requestEnabled: false,
+                bookedAppointments: false,
+                apptRequests: false,
               }),
             ],
           }),
@@ -465,10 +465,10 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         id =>
           new MockSchedulingConfigurationResponse({
             facilityId: id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: false,
+                apptRequests: false,
               }),
             ],
           }),
@@ -529,37 +529,37 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GB',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'optometry',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984GB',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'optometry',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -615,10 +615,10 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -633,14 +633,14 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: TYPE_OF_CARE_IDS.PRIMARY_CARE,
-        limit: true,
-        requestPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasRequestPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
 
       const store = createTestStore({
@@ -716,10 +716,10 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -734,14 +734,14 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: TYPE_OF_CARE_IDS.PRIMARY_CARE,
-        limit: true,
-        requestPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasRequestPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       const store = createTestStore({
         ...initialState,
@@ -803,10 +803,10 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -821,8 +821,8 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockGetCurrentPosition();
       const store = createTestStore({
@@ -890,10 +890,10 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         facility =>
           new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -908,8 +908,8 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockGetCurrentPosition();
       const store = createTestStore({
@@ -961,11 +961,11 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         if (facility.id === '983' || facility.id === '984') {
           const config = new MockSchedulingConfigurationResponse({
             facilityId: facility.id,
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
-                requestEnabled: false,
+                bookedAppointments: true,
+                apptRequests: false,
               }),
             ],
           });
@@ -1054,17 +1054,17 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockSchedulingConfigurationsApi({
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
@@ -1119,41 +1119,41 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'optometry',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '983GC',
         typeOfCareId: 'ophthalmology',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockSchedulingConfigurationsApi({
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'optometry',
-                requestEnabled: true,
+                apptRequests: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GC',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'ophthalmology',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GD',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'ophthalmology',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -1205,47 +1205,47 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
       mockEligibilityFetches({
         facilityId: '983',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '984',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockEligibilityFetches({
         facilityId: '983GA',
         typeOfCareId: 'primaryCare',
-        limit: true,
-        directPastVisits: true,
+        hasFacilityRequestLimitExceededError: true,
+        hasDirectPatientHistoryInsufficientError: true,
       });
       mockSchedulingConfigurationsApi({
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '983GA',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
@@ -1349,19 +1349,19 @@ describe.skip('VAOS Page: VAFacilityPage', () => {
         response: [
           new MockSchedulingConfigurationResponse({
             facilityId: '983',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),
           new MockSchedulingConfigurationResponse({
             facilityId: '984',
-            services: [
+            vaServices: [
               new MockServiceConfiguration({
                 typeOfCareId: 'primaryCare',
-                directEnabled: true,
+                bookedAppointments: true,
               }),
             ],
           }),

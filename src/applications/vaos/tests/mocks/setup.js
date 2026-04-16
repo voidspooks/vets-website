@@ -237,11 +237,11 @@ export async function setVAFacility(
     response: [
       new MockSchedulingConfigurationResponse({
         facilityId: '983',
-        services: [
+        vaServices: [
           new MockServiceConfiguration({
             typeOfCareId,
-            directEnabled: true,
-            requestEnabled: true,
+            bookedAppointments: true,
+            apptRequests: true,
           }),
         ],
       }),
@@ -278,10 +278,10 @@ export async function setVaccineFacility(store, facilityData = {}) {
     response: [
       new MockSchedulingConfigurationResponse({
         facilityId: '983',
-        services: [
+        vaServices: [
           new MockServiceConfiguration({
             typeOfCareId: TYPE_OF_CARE_IDS.COVID_VACCINE_ID,
-            directEnabled: true,
+            bookedAppointments: true,
           }),
         ],
       }),

@@ -1,13 +1,17 @@
 import { expect } from 'chai';
 import {
   transformFacilityV2,
-  transformSettingsV2,
   setSupportedSchedulingMethods,
   transformCommunityProviders,
   transformParentFacilitiesV2,
   transformFacilitiesV2,
 } from './transformers';
 import { VHA_FHIR_ID, TYPE_OF_CARE_IDS } from '../../utils/constants';
+import { getTypeOfCareById } from '../../utils/appointment';
+import MockSchedulingConfigurationResponse, {
+  MockServiceConfiguration,
+} from '../../tests/fixtures/MockSchedulingConfigurationResponse';
+import { parseApiList } from '../utils';
 
 describe('vaos/services/location/transformers', () => {
   describe('transformFacilityV2', () => {
@@ -64,92 +68,20 @@ describe('vaos/services/location/transformers', () => {
     });
   });
 
-  describe('transformSettingsV2', () => {
-    const settingsMock = [
-      {
-        id: '983',
-        vaServices: [
-          {
-            clinicalServiceId: 'primaryCare',
-            bookedAppointments: true,
-            direct: { enabled: true },
-          },
-          {
-            clinicalServiceId: 'audiology',
-            bookedAppointments: false,
-            direct: { enabled: false },
-          },
-        ],
-        services: [
-          { id: 'primaryCare', direct: { enabled: true } },
-          { id: 'audiology', direct: { enabled: false } },
-        ],
-      },
-    ];
-
-    it('should use services when useVpg is false', () => {
-      const result = transformSettingsV2(settingsMock, false);
-
-      expect(result[0].services.length).to.equal(2);
-      // getTypeOfCareIdFromV2 maps 'primaryCare' to TYPE_OF_CARE_IDS.PRIMARY_CARE
-      expect(result[0].services[0]).to.have.property(
-        'id',
-        TYPE_OF_CARE_IDS.PRIMARY_CARE,
-      );
-      expect(result[0].services[1]).to.have.property(
-        'id',
-        TYPE_OF_CARE_IDS.AUDIOLOGY_ID,
-      );
-    });
-
-    it('should use vaServices when useVpg is true', () => {
-      const result = transformSettingsV2(settingsMock, true);
-
-      expect(result[0].services.length).to.equal(2);
-      // getTypeOfCareIdFromV2 maps 'primaryCare' to TYPE_OF_CARE_IDS.PRIMARY_CARE
-      expect(result[0].services[0]).to.have.property(
-        'id',
-        TYPE_OF_CARE_IDS.PRIMARY_CARE,
-      );
-      expect(result[0].services[0]).to.have.property(
-        'bookedAppointments',
-        true,
-      );
-      expect(result[0].services[1]).to.have.property(
-        'id',
-        TYPE_OF_CARE_IDS.AUDIOLOGY_ID,
-      );
-    });
-
-    it('should default useVpg to false', () => {
-      const result = transformSettingsV2(settingsMock);
-
-      expect(result[0].services.length).to.equal(2);
-      expect(result[0].services[0]).to.have.property(
-        'id',
-        TYPE_OF_CARE_IDS.PRIMARY_CARE,
-      );
-    });
-  });
-
   describe('setSupportedSchedulingMethods', () => {
-    const settingsMock = [
-      {
-        id: '983',
-        services: [
-          {
-            id: TYPE_OF_CARE_IDS.PRIMARY_CARE,
-            direct: { enabled: true },
-            bookedAppointments: true,
-          },
-          {
-            id: TYPE_OF_CARE_IDS.AUDIOLOGY_ID,
-            direct: { enabled: false },
-            bookedAppointments: false,
-          },
-        ],
-      },
-    ];
+    const response = new MockSchedulingConfigurationResponse({
+      facilityId: '983',
+      vaServices: [
+        new MockServiceConfiguration({
+          typeOfCareId: getTypeOfCareById(TYPE_OF_CARE_IDS.PRIMARY_CARE).idV2,
+          bookedAppointments: true,
+        }),
+        new MockServiceConfiguration({
+          typeOfCareId: getTypeOfCareById(TYPE_OF_CARE_IDS.AUDIOLOGY_ID).idV2,
+        }),
+      ],
+    });
+    const settings = parseApiList({ data: [response] });
 
     const locationMock = {
       id: '983',
@@ -165,32 +97,19 @@ describe('vaos/services/location/transformers', () => {
     it('should use services array to populate legacyVAR.settings', () => {
       const result = setSupportedSchedulingMethods({
         location: { ...locationMock },
-        settings: settingsMock,
+        settings,
       });
 
       expect(result.legacyVAR.settings).to.have.property(
-        TYPE_OF_CARE_IDS.PRIMARY_CARE,
+        getTypeOfCareById(TYPE_OF_CARE_IDS.PRIMARY_CARE).idV2,
       );
       expect(result.legacyVAR.settings).to.have.property(
-        TYPE_OF_CARE_IDS.AUDIOLOGY_ID,
+        getTypeOfCareById(TYPE_OF_CARE_IDS.AUDIOLOGY_ID).idV2,
       );
       expect(
-        result.legacyVAR.settings[TYPE_OF_CARE_IDS.PRIMARY_CARE].direct.enabled,
-      ).to.equal(true);
-    });
-
-    it('should include VPG format fields when present in services', () => {
-      const result = setSupportedSchedulingMethods({
-        location: { ...locationMock },
-        settings: settingsMock,
-      });
-
-      expect(result.legacyVAR.settings).to.have.property(
-        TYPE_OF_CARE_IDS.PRIMARY_CARE,
-      );
-      expect(
-        result.legacyVAR.settings[TYPE_OF_CARE_IDS.PRIMARY_CARE]
-          .bookedAppointments,
+        result.legacyVAR.settings[
+          getTypeOfCareById(TYPE_OF_CARE_IDS.PRIMARY_CARE).idV2
+        ].bookedAppointments,
       ).to.equal(true);
     });
 
@@ -203,7 +122,7 @@ describe('vaos/services/location/transformers', () => {
 
       const result = setSupportedSchedulingMethods({
         location: locationWithoutVHA,
-        settings: settingsMock,
+        settings,
       });
 
       expect(result.identifier).to.have.lengthOf(1);
@@ -214,7 +133,7 @@ describe('vaos/services/location/transformers', () => {
     it('should return empty settings when facility not found in settings', () => {
       const result = setSupportedSchedulingMethods({
         location: { ...locationMock, id: '999' },
-        settings: settingsMock,
+        settings,
       });
 
       expect(result.legacyVAR.settings).to.deep.equal({});
