@@ -8,7 +8,9 @@ import AppointmentColumn from '../../components/AppointmentColumn';
 
 const PendingReferralCard = ({ referral, index }) => {
   const first = index === 0;
-  const providerSelectLink = referral.onlineSchedule
+  // onlineSchedule is not yet implemented on the backend for pilot. Default to true if it is null/undefined.
+  const onlineSchedule = referral.onlineSchedule ?? true;
+  const providerSelectLink = onlineSchedule
     ? `schedule-referral/provider-selection?id=${
         referral.uuid
       }&referrer=referrals-requests`
@@ -49,7 +51,7 @@ const PendingReferralCard = ({ referral, index }) => {
             </p>
           )}
           {!referral.hasAppointments &&
-            referral.onlineSchedule && (
+            onlineSchedule && (
               <div className="vaos-hide-for-print vads-u-padding-left--0 vads-u-margin-top--0p5">
                 <va-link-action
                   type="secondary"
@@ -61,7 +63,7 @@ const PendingReferralCard = ({ referral, index }) => {
               </div>
             )}
           {!referral.hasAppointments &&
-            !referral.onlineSchedule && (
+            !onlineSchedule && (
               <p
                 className="vads-u-margin-top--0 vads-u-margin-bottom--0p5"
                 data-testid="cannot-schedule-online-message"

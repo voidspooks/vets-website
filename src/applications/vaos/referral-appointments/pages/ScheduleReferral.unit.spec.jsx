@@ -136,6 +136,44 @@ describe('VAOS Component: ScheduleReferral', () => {
     const scheduleButton = screen.queryByTestId('schedule-appointment-button');
     expect(scheduleButton).to.be.null;
   });
+  it('should default to schedulable when onlineSchedule is undefined', async () => {
+    const referral = createReferralById(referralDate, '1001');
+    referral.attributes.onlineSchedule = undefined;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const scheduleButton = await screen.findByTestId(
+      'schedule-appointment-button',
+    );
+    expect(scheduleButton).to.exist;
+
+    const alert = screen.queryByTestId('referral-alert');
+    expect(alert).to.be.null;
+  });
+  it('should default to schedulable when onlineSchedule is null', async () => {
+    const referral = createReferralById(referralDate, '1002');
+    referral.attributes.onlineSchedule = null;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const scheduleButton = await screen.findByTestId(
+      'schedule-appointment-button',
+    );
+    expect(scheduleButton).to.exist;
+
+    const alert = screen.queryByTestId('referral-alert');
+    expect(alert).to.be.null;
+  });
   it('should allow user to schedule from pilot expansion station', async () => {
     const referral = createReferralById(referralDate, '99999');
     referral.attributes.stationId = '508GE';

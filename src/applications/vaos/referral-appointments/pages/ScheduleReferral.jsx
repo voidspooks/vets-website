@@ -45,9 +45,11 @@ export default function ScheduleReferral(props) {
     };
   };
 
+  // onlineSchedule is not yet implemented on the backend for pilot. Default to true if it is null/undefined.
+  const onlineSchedule = currentReferral.onlineSchedule ?? true;
   const canScheduleAppointment =
     hasVeteranAddress &&
-    currentReferral.onlineSchedule &&
+    onlineSchedule &&
     !currentReferral.hasAppointments &&
     stationIdValid;
 

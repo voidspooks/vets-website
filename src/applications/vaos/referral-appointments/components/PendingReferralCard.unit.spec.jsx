@@ -57,6 +57,28 @@ describe('VAOS Component: PendingReferralCard', () => {
     expect(screen.queryByTestId('has-appointments-message')).to.not.exist;
   });
 
+  it('should default to schedule link when onlineSchedule is undefined', () => {
+    const undefinedReferral = {
+      ...referral,
+      onlineSchedule: undefined,
+    };
+    screen = render(
+      <PendingReferralCard referral={undefinedReferral} index={0} />,
+    );
+    expect(screen.getByTestId('schedule-appointment-link')).to.exist;
+    expect(screen.queryByTestId('cannot-schedule-online-message')).to.not.exist;
+  });
+
+  it('should default to schedule link when onlineSchedule is null', () => {
+    const nullReferral = {
+      ...referral,
+      onlineSchedule: null,
+    };
+    screen = render(<PendingReferralCard referral={nullReferral} index={0} />);
+    expect(screen.getByTestId('schedule-appointment-link')).to.exist;
+    expect(screen.queryByTestId('cannot-schedule-online-message')).to.not.exist;
+  });
+
   it('should display has-appointments message when hasAppointments is true', () => {
     const scheduledReferral = {
       ...referral,
