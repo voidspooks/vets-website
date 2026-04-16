@@ -38,7 +38,12 @@ export const ConfirmationPage = props => {
         content={<SubmissionContent confirmationNumber={confirmationNumber} />}
         actions={<></>}
       />
-      <ConfirmationView.WhatsNextProcessList item1Actions={<></>} />
+      <ConfirmationView.WhatsNextProcessList
+        item1Actions={<></>}
+        item1Content={
+          <p>When we receive your form, we’ll send you an email.</p>
+        }
+      />
       <ConfirmationView.GoBackLink />
       <p className="vads-u-margin-y--4">
         <va-button
