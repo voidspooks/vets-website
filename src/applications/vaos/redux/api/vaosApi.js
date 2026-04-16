@@ -97,8 +97,12 @@ export const vaosApi = createApi({
     getReferralProviders: builder.query({
       async queryFn({ referralId, page = 1, perPage = 5 }) {
         try {
+          const query = new URLSearchParams();
+          query.set('referral_id', referralId);
+          query.set('page', String(page));
+          query.set('perPage', String(perPage));
           const response = await apiRequestWithUrl(
-            `/vaos/v2/referrals/${referralId}/providers?page=${page}&perPage=${perPage}`,
+            `/vaos/v2/providers?${query}`,
           );
           return {
             data: {

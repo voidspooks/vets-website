@@ -674,7 +674,7 @@ const responses = {
       }),
     );
   },
-  'GET /vaos/v2/referrals/:referralId/providers': (req, res) => {
+  'GET /vaos/v2/providers': (req, res) => {
     const page = parseInt(req.query.page || '1', 10);
     const perPage = parseInt(req.query.perPage || '5', 10);
     const totalEntries = 8;

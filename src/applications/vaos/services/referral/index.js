@@ -21,10 +21,11 @@ export async function getProvidersByReferralId(
   referralId,
   { page = 1, perPage = 5 } = {},
 ) {
-  return apiRequestWithUrl(
-    `/vaos/v2/referrals/${referralId}/providers?page=${page}&perPage=${perPage}`,
-    { method: 'GET' },
-  );
+  const query = new URLSearchParams();
+  query.set('referral_id', referralId);
+  query.set('page', String(page));
+  query.set('perPage', String(perPage));
+  return apiRequestWithUrl(`/vaos/v2/providers?${query}`, { method: 'GET' });
 }
 
 export async function getAppointmentInfo(appointmentId, providerType = 'eps') {

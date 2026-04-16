@@ -33,9 +33,7 @@ describe('VAOS Page: ProviderSelection', () => {
     },
   };
 
-  const providersUrl = `${
-    environment.API_URL
-  }/vaos/v2/referrals/${referralId}/providers`;
+  const providersUrl = `${environment.API_URL}/vaos/v2/providers`;
 
   beforeEach(() => {
     global.XMLHttpRequest = sinon.useFakeXMLHttpRequest();
@@ -295,6 +293,8 @@ describe('VAOS Page: ProviderSelection', () => {
     const cards = screen.getAllByTestId('provider-selection-card');
     expect(cards.length).to.equal(5);
     const urlString = String(capturedUrl);
+    expect(urlString).to.include('/vaos/v2/providers');
+    expect(urlString).to.include(`referral_id=${referralId}`);
     expect(urlString).to.include('page=1');
     expect(urlString).to.include('perPage=5');
   });

@@ -245,23 +245,23 @@ export function mockAppointmentDetailsApi({
 /**
  * Function to mock the 'GET' referral providers endpoint.
  *
- * @example GET '/vaos/v2/referrals/:referralId/providers'
+ * @example GET '/vaos/v2/providers?referral_id=:referralId'
  *
  * @export
  * @param {Object} arguments - Function arguments.
- * @param {string} [arguments.referralId] - The id of the referral to mock providers for.
+ * @param {string} [arguments.referralId] - Unused; kept for call-site compatibility.
  * @param {Object} [arguments.response] - The response to return from the mock api call.
  * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
  */
 export function mockReferralProvidersApi({
-  referralId = '*',
+  referralId: _referralId = '*',
   response: data,
   responseCode = 200,
 } = {}) {
   cy.intercept(
     {
       method: 'GET',
-      pathname: `/vaos/v2/referrals/${referralId}/providers`,
+      pathname: '/vaos/v2/providers',
     },
     req => {
       req.reply({
@@ -276,23 +276,23 @@ export function mockReferralProvidersApi({
  * Function to mock the 'GET' referral providers endpoint with paginated responses.
  * Returns different responses based on the page query parameter.
  *
- * @example GET '/vaos/v2/referrals/:referralId/providers?page=1&perPage=5'
+ * @example GET '/vaos/v2/providers?referral_id=:referralId&page=1&perPage=5'
  *
  * @export
  * @param {Object} arguments - Function arguments.
- * @param {string} [arguments.referralId] - The id of the referral to mock providers for.
+ * @param {string} [arguments.referralId] - Unused; kept for call-site compatibility.
  * @param {Object} [arguments.responses] - Map of page number to response object.
  * @param {number} [arguments.responseCode=200] - The response code to return from the mock api call.
  */
 export function mockReferralProvidersApiPaginated({
-  referralId = '*',
+  referralId: _referralId = '*',
   responses = {},
   responseCode = 200,
 } = {}) {
   cy.intercept(
     {
       method: 'GET',
-      pathname: `/vaos/v2/referrals/${referralId}/providers`,
+      pathname: '/vaos/v2/providers',
     },
     req => {
       const url = new URL(req.url, 'http://localhost');

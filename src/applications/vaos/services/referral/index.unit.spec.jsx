@@ -57,4 +57,20 @@ describe('Referral Services', () => {
 
     expect(result).to.deep.equal({ appointment: { id: 'a1' } });
   });
+
+  it('getProvidersByReferralId calls the providers index with referral_id', async () => {
+    requestStub.resolves({ data: [], meta: {} });
+
+    await services.getProvidersByReferralId('enc-123', {
+      page: 2,
+      perPage: 10,
+    });
+
+    expect(
+      requestStub.calledWith(
+        '/vaos/v2/providers?referral_id=enc-123&page=2&perPage=10',
+        { method: 'GET' },
+      ),
+    ).to.be.true;
+  });
 });
