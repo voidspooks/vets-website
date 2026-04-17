@@ -133,6 +133,7 @@ export default {
         confirmRemove: true,
         confirmRemoveDescription:
           'This will remove this item from your application.',
+        reviewItemHeaderLevel: 4,
       },
       items: {
         'ui:validations': [validateOtherMedicalFacility],
@@ -157,8 +158,7 @@ export default {
         issuingFacility: selectUI({
           title:
             'At which VHA location did you receive the device, orthopedic appliance, or skin medication?',
-          description:
-            'Select a facility or PSAS from the list. If your facility isn’t listed, select "Other" and enter the name in the field provided.',
+          hint: VHA_MEDICAL_FACILITY.DESCRIPTION,
           labels: VHA_MEDICAL_FACILITY_LABELS,
           errorMessages: {
             required: VHA_MEDICAL_FACILITY.FIELD_ERROR,

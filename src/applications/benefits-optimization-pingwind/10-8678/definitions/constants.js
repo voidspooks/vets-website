@@ -85,22 +85,23 @@ export const FORM_10_8678 = {
   APPLICATION_CERTIFICATION: {
     TITLE: 'Application Certification Statement, Legal Information',
     DESCRIPTION:
-      'Select the checkboxes to certify that you regularly use a qualifying prosthetic device, orthopedic appliance, or skin medication because of a service-connected disability or skin condition that damages or irreparably stains your outer garments.',
+      'Select the checkbox to certify that you regularly use a qualifying prosthetic device, orthopedic appliance, or skin medication because of a service-connected disability, and that this device or medication damages or irreparably stains your outer clothing.',
     CERTIFICATION_SECTION: {
       TITLE: 'Application Certification',
       BODY:
-        'I certify that because of my service-connected disability authorized under 38 USC § 1162, in doing so I certify that because of my service-connected disability or disabilities, I regularly wear or use the prosthetic or orthopedic appliance(s) and/or skin medication(s) listed in this application which results in irreparable wear and tear to my clothing, or (2) use a skin medication listed in section 1 prescribed for this application which causes irreparable staining to my outer garments. Note: If I have multiple prosthetic and/or skin medication(s) appliances to claim for more than one clothing allowance benefit, I will need to notify VA in writing if I am no longer prescribed and use the identified items which may impact my entitlement to the annual clothing allowance benefit. By applying for this benefit, VA has the right to periodically review my continued entitlement to this benefit.',
-      CHECKBOX_LABEL: 'I’ve read and understand the Application Certification.',
+        'I hereby apply for the annual clothing allowance benefit authorized under 38 USC §1162. In doing so I certify that because of my service-connected disability or disabilities, I regularly (1) wear or use the prosthetic or orthopedic appliance(s)  identified in this application, which tends to wear out or tear my clothing; or (2) use a skin medication(s) identified in this application, which causes irreparable staining to my outergarments. Note: I understand that I must notify VA when I no longer am prescribed and use the identified items which may impact my entitlement to the annual clothing allowance benefit. By applying for this benefit, VA has the right to periodically review my continued entitlement to this benefit.',
+      CHECKBOX_LABEL:
+        'I have read and understand the Application Certification.',
       ERROR_MESSAGE:
-        'Select the checkbox to certify that you use a qualifying appliance or skin medication for a service-connected disability and wish to apply for this benefit',
+        'Select checkbox to confirm that you have read the application certification',
     },
     PENALTY: {
       TITLE: 'Penalty',
       BODY:
-        'The law provides severe penalties, which include fine or imprisonment for up to 5 years, or both, for willful submission of any statement or evidence of a material fact, knowing it to be false.',
+        'The law provides severe penalties including fine or imprisonment, or both, for willful submission of any false statement or evidence of material fact.',
     },
   },
-  BENEFIT_TERMINATION_CERTIFICATION: {
+  TERMINATION_CERTIFICATION: {
     TITLE: 'Benefit Termination Certification and Legal Information',
     DESCRIPTION:
       'Select the checkbox to confirm that you are no longer prescribed or regularly use a qualifying prosthetic device, orthopedic appliance, or skin medication because of a service-connected disability.',

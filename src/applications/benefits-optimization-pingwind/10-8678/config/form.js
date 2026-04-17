@@ -123,7 +123,7 @@ const formConfig = {
       },
     },
     applicationCertificationChapter: {
-      title: 'Application Certification',
+      title: 'Required certification',
       pages: {
         applicationCertification: {
           path: 'required-certifications',

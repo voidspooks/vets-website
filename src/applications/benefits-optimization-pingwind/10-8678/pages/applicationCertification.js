@@ -1,5 +1,6 @@
 // @ts-check
 import React from 'react';
+import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
 import {
   checkboxRequiredSchema,
@@ -17,36 +18,38 @@ export default {
       APPLICATION_CERTIFICATION.DESCRIPTION,
     ),
 
-    'view:applicationCertificationIntro': {
-      'ui:description': (
-        <div className="vads-u-margin-top--2">
-          <h2 className="vads-u-font-size--h3 vads-u-margin-top--0 vads-u-margin-bottom--1">
+    applicationCertificationAccepted: checkboxUI({
+      title: APPLICATION_CERTIFICATION.CERTIFICATION_SECTION.CHECKBOX_LABEL,
+      description: (
+        <>
+          <p className="vads-u-font-weight--bold vads-u-margin-top--0 vads-u-margin-bottom--2">
             {APPLICATION_CERTIFICATION.CERTIFICATION_SECTION.TITLE}
-          </h2>
+          </p>
           <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
             {APPLICATION_CERTIFICATION.CERTIFICATION_SECTION.BODY}
           </p>
-        </div>
+        </>
       ),
-    },
-
-    applicationCertificationAccepted: checkboxUI({
-      title: APPLICATION_CERTIFICATION.CERTIFICATION_SECTION.CHECKBOX_LABEL,
+      required: () => true,
+      classNames:
+        'vads-u-background-color--gray-lightest vads-u-padding--4 vads-u-margin-bottom--4',
       errorMessages: {
+        enum: APPLICATION_CERTIFICATION.CERTIFICATION_SECTION.ERROR_MESSAGE,
         required: APPLICATION_CERTIFICATION.CERTIFICATION_SECTION.ERROR_MESSAGE,
       },
     }),
 
     'view:penaltyNotice': {
+      'ui:field': 'ViewField',
       'ui:description': (
-        <div className="vads-u-background-color--gold-lightest vads-u-padding--2 vads-u-margin-top--3">
-          <h2 className="vads-u-font-size--h3 vads-u-margin-top--0 vads-u-margin-bottom--1">
+        <VaAlert status="warning" uswds visible>
+          <h2 slot="headline" className="vads-u-font-weight--bold">
             {APPLICATION_CERTIFICATION.PENALTY.TITLE}
           </h2>
-          <p className="vads-u-margin-y--0">
+          <p className="vads-u-margin--0">
             {APPLICATION_CERTIFICATION.PENALTY.BODY}
           </p>
-        </div>
+        </VaAlert>
       ),
     },
   },

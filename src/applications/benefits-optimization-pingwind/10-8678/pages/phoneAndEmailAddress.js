@@ -10,6 +10,8 @@ import VaCheckboxField from 'platform/forms-system/src/js/web-component-fields/V
 
 const phoneFieldUi = phoneUI({
   title: "Veteran's telephone number",
+  hint:
+    'Enter your 10-digit phone number, including the Area Code, such as 999-999-9999',
   errorMessages: {
     required: 'Please enter a 10-digit phone number (with or without dashes)',
     pattern: 'Please enter a 10-digit phone number (with or without dashes)',
