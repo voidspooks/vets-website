@@ -112,11 +112,13 @@ const RefillStatusProcessList = ({
   submitted = [],
   tooEarly = [],
 }) => (
-  <va-process-list>
-    <SubmittedStep submitted={submitted} tooEarly={tooEarly} />
-    <InProgressStep prescriptions={inProgress} />
-    <ShippedStep prescriptions={shipped} />
-  </va-process-list>
+  <div className="refill-status-process-list">
+    <va-process-list>
+      <SubmittedStep submitted={submitted} tooEarly={tooEarly} />
+      <InProgressStep prescriptions={inProgress} />
+      <ShippedStep prescriptions={shipped} />
+    </va-process-list>
+  </div>
 );
 
 RefillStatusProcessList.propTypes = {

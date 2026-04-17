@@ -42,9 +42,9 @@ describe('InnerNavigation component', () => {
   describe('desktop labels', () => {
     it('displays full labels on desktop', () => {
       const screen = setup('/', false);
-      expect(screen.getByText('Medication Refills')).to.exist;
-      expect(screen.getByText('Medications List')).to.exist;
-      expect(screen.getByText('Refill Status')).to.exist;
+      expect(screen.getByText('Medication refills')).to.exist;
+      expect(screen.getByText('Medications list')).to.exist;
+      expect(screen.getByText('Refill status')).to.exist;
     });
   });
 
@@ -53,7 +53,7 @@ describe('InnerNavigation component', () => {
       const screen = setup('/', true);
       expect(screen.getByText('Med refills')).to.exist;
       expect(screen.getByText('Meds list')).to.exist;
-      expect(screen.getByText('Refill Status')).to.exist;
+      expect(screen.getByText('Refill status')).to.exist;
     });
   });
 

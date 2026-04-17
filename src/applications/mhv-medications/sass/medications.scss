@@ -483,3 +483,7 @@ va-checkbox {
 .medications-list-style--none {
   list-style: none;
 }
+
+.refill-status-process-list va-process-list-item:last-child {
+  border-left: 0.5rem solid var(--vads-color-primary-lighter) !important;
+}

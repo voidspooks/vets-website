@@ -78,7 +78,7 @@ describe('createBreadcrumbs', () => {
       { href: medicationsUrls.MEDICATIONS_URL, label: 'Medications' },
       {
         href: medicationsUrls.MEDICATIONS_REFILL_STATUS,
-        label: 'Refill Status',
+        label: 'Refill status',
       },
     ]);
   });
@@ -93,7 +93,7 @@ describe('createBreadcrumbs', () => {
       { href: medicationsUrls.MEDICATIONS_URL, label: 'Medications' },
       {
         href: medicationsUrls.MEDICATIONS_LIST,
-        label: 'Medication list',
+        label: 'Medications list',
       },
     ]);
   });

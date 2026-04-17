@@ -49,16 +49,17 @@ const Prescription = ({ prescription, displayType }) => {
 
   return (
     <div>
-      <Link
-        className="vads-u-font-weight--bold"
-        to={getPrescriptionDetailUrl(prescription)}
-        data-testid="prescription-link"
-        data-dd-action-name={
-          dataDogActionNames.refillStatusPage.MEDICATION_NAME_LINK
-        }
-      >
-        {prescriptionName}
-      </Link>
+      <h3 className="vads-u-margin-bottom--0 vads-u-margin-top--0">
+        <Link
+          to={getPrescriptionDetailUrl(prescription)}
+          data-testid="prescription-link"
+          data-dd-action-name={
+            dataDogActionNames.refillStatusPage.MEDICATION_NAME_LINK
+          }
+        >
+          {prescriptionName}
+        </Link>
+      </h3>
       <p className="vads-u-margin-top--0">{getSubtext()}</p>
     </div>
   );

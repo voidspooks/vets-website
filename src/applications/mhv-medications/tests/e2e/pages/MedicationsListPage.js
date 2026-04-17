@@ -1246,6 +1246,137 @@ class MedicationsListPage {
     ).as('v2DelayAlert');
     cy.visit(medicationsUrls.MEDICATIONS_URL);
   };
+
+  visitPage = () => {
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
+  };
+
+  visitPageWithPrescriptions = (medications = prescriptions) => {
+    cy.intercept('GET', '/my_health/v1/prescriptions?*', medications).as(
+      'prescriptionsList',
+    );
+    cy.intercept(
+      'GET',
+      '/my_health/v1/medical_records/allergies',
+      allergies,
+    ).as('allergies');
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
+  };
+
+  visitPageWithApiError = () => {
+    cy.intercept('GET', '/my_health/v1/prescriptions?*', {
+      statusCode: 500,
+      body: {
+        errors: [
+          {
+            title: 'Internal Server Error',
+            detail: 'An error occurred while processing your request.',
+            status: '500',
+          },
+        ],
+      },
+    }).as('prescriptionsError');
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
+    cy.wait('@prescriptionsError');
+  };
+
+  visitPageWithEmptyList = () => {
+    cy.intercept('GET', '/my_health/v1/prescriptions?*', {
+      data: [],
+      meta: {
+        pagination: {
+          currentPage: 1,
+          perPage: 10,
+          totalPages: 0,
+          totalEntries: 0,
+        },
+        filterCount: {},
+      },
+    }).as('emptyPrescriptions');
+    cy.visit(medicationsUrls.MEDICATIONS_LIST);
+  };
+
+  verifyHeading = () => {
+    cy.findByTestId('medication-list-heading').should(
+      'have.text',
+      'Medications list',
+    );
+  };
+
+  verifyRefillStatusLink = () => {
+    cy.findByTestId('refill-status-inner-nav').should(
+      'contain',
+      'Refill status',
+    );
+  };
+
+  verifyRefillLink = () => {
+    cy.findByTestId('landing-inner-nav').should(
+      'contain',
+      'Medication refills',
+    );
+  };
+
+  verifyMedicationsListVisible = () => {
+    cy.findByTestId('medication-list').should('exist');
+  };
+
+  verifyMedicationCardVisible = () => {
+    cy.get('[data-testid="medications-list-details-link"]')
+      .first()
+      .should('exist');
+  };
+
+  verifySortDropdownVisible = () => {
+    cy.findByTestId('sort-dropdown').should('exist');
+  };
+
+  verifyApiErrorNotification = () => {
+    cy.get('[data-testid="api-error-notification"]').should('be.visible');
+  };
+
+  verifyEmptyListMessage = () => {
+    cy.contains('You don’t have any medication records').should('be.visible');
+  };
+
+  verifyNeedHelpSection = () => {
+    cy.findByTestId('rx-need-help-container').should('exist');
+  };
+
+  verifyNeedHelpManagingMedsLink = () => {
+    cy.findByTestId('learn-more-about-managing-medications-online-link').should(
+      'exist',
+    );
+  };
+
+  verifyMedicationResourcesSection = () => {
+    cy.findByTestId('rx-medication-resources-container').should('exist');
+  };
+
+  verifyMedicationResourcesOrderSuppliesLink = () => {
+    cy.findByTestId('order-medical-supplies-link').should('exist');
+  };
+
+  verifyMedicationResourcesSeiLink = () => {
+    cy.findByTestId(
+      'download-your-self-entered-health-information-link',
+    ).should('exist');
+  };
+
+  verifyMedicationResourcesNotificationSettingsLink = () => {
+    cy.findByTestId('update-notification-settings-link').should('exist');
+  };
+
+  verifyMedicationResourcesAllergiesLink = () => {
+    cy.findByTestId('review-your-allergies-and-reactions-link').should('exist');
+  };
+
+  verifyPageTotalInfo = (start, end, total) => {
+    cy.findByTestId('page-total-info').should(
+      'contain',
+      `Showing ${start} - ${end} of ${total}`,
+    );
+  };
 }
 
 export default MedicationsListPage;

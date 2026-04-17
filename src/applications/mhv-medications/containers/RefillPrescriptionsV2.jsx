@@ -34,6 +34,7 @@ import {
   REFILL_LOADING_MESSAGES,
   REFILL_ERROR_MESSAGES,
   RENEWAL_FILTER_KEY,
+  medicationsUrls,
 } from '../util/constants';
 import { dataDogActionNames, pageType } from '../util/dataDogConstants';
 import { refillProcessStepGuideV2 } from '../util/processListData';
@@ -354,8 +355,8 @@ const RefillPrescriptionsV2 = () => {
           </p>
           <va-link
             data-testid="refill-status-link"
-            href="#"
-            text="Check your refill request status"
+            href={medicationsUrls.MEDICATIONS_REFILL_STATUS}
+            text="Check your refill status"
           />
         </>
       ),

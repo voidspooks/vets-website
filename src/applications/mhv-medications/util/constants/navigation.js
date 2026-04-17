@@ -7,19 +7,19 @@ export const Paths = {
 export const InnerNavigationPaths = [
   {
     path: Paths.LANDING,
-    label: 'Medication Refills',
+    label: 'Medication refills',
     mobileLabel: 'Med refills',
     datatestid: 'landing-inner-nav',
   },
   {
     path: Paths.LIST,
-    label: 'Medications List',
+    label: 'Medications list',
     mobileLabel: 'Meds list',
     datatestid: 'list-inner-nav',
   },
   {
     path: Paths.REFILL_STATUS,
-    label: 'Refill Status',
+    label: 'Refill status',
     datatestid: 'refill-status-inner-nav',
   },
 ];

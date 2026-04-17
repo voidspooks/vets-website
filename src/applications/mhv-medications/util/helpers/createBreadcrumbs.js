@@ -42,7 +42,7 @@ export const createBreadcrumbs = (location, currentPage) => {
       { href: MEDICATIONS_URL, label: 'Medications' },
       {
         href: MEDICATIONS_REFILL_STATUS,
-        label: 'Refill Status',
+        label: 'Refill status',
       },
     ]);
   }
@@ -57,7 +57,7 @@ export const createBreadcrumbs = (location, currentPage) => {
       { href: MEDICATIONS_URL, label: 'Medications' },
       {
         href: MEDICATIONS_LIST,
-        label: 'Medication list',
+        label: 'Medications list',
       },
     ]);
   }
