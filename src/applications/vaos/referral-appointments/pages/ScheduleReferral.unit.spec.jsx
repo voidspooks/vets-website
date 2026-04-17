@@ -239,6 +239,69 @@ describe('VAOS Component: ScheduleReferral', () => {
     const scheduleButton = screen.queryByTestId('schedule-appointment-button');
     expect(scheduleButton).to.be.null;
   });
+  it('should display scheduled appointments content, appointments list link, and community care info when hasAppointments is true', async () => {
+    const referral = createReferralById(referralDate, 'has-appts');
+    referral.attributes.hasAppointments = true;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const hasAppointmentsContent = await screen.findByTestId(
+      'has-appointments-content',
+    );
+    expect(hasAppointmentsContent).to.exist;
+    expect(hasAppointmentsContent).to.contain.text(
+      'You\u2019ve scheduled 1 or more appointments for this referral.',
+    );
+    expect(hasAppointmentsContent).to.contain.text(
+      'If you have other appointments to schedule for this referral, contact your community care office.',
+    );
+
+    const appointmentsListLink = screen.getByTestId('appointments-list-link');
+    expect(appointmentsListLink).to.exist;
+    expect(appointmentsListLink).to.have.attribute(
+      'href',
+      '/my-health/appointments',
+    );
+
+    expect(screen.queryByTestId('referral-alert')).to.be.null;
+    expect(screen.queryByTestId('subtitle')).to.be.null;
+    expect(screen.queryByTestId('schedule-appointment-button')).to.be.null;
+  });
+  it('should display the schedule appointment button instead of scheduled appointments content when hasAppointments is false', async () => {
+    const referral = createReferralById(referralDate, 'no-appts');
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    await screen.findByTestId('schedule-appointment-button');
+    expect(screen.queryByTestId('has-appointments-content')).to.be.null;
+    expect(screen.queryByTestId('appointments-list-link')).to.be.null;
+  });
+  it('should display the address alert instead of scheduled appointments content when hasAppointments is true but veteranAddressPresent is false', async () => {
+    const referral = createReferralById(referralDate, 'addr-and-appts');
+    referral.attributes.hasAppointments = true;
+    referral.meta.veteranAddressPresent = false;
+
+    const store = createTestStore();
+
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { store },
+    );
+
+    const addressAlert = await screen.findByTestId('address-alert');
+    expect(addressAlert).to.exist;
+    expect(screen.queryByTestId('has-appointments-content')).to.be.null;
+  });
   it('should not display address alert when veteranAddressPresent is true', async () => {
     const referral = createReferralById(referralDate, '999');
 

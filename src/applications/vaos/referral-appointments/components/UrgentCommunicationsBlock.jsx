@@ -1,4 +1,5 @@
 import React from 'react';
+import NewTabAnchor from '../../components/NewTabAnchor';
 
 const UrgentCommunicationsBlock = () => {
   return (
@@ -16,13 +17,9 @@ const UrgentCommunicationsBlock = () => {
         </li>
         <li>
           Go to your nearest emergency room or{' '}
-          <a
-            href="/find-locations?facilityType=health&serviceType=UrgentCare"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            urgent care facility
-          </a>
+          <NewTabAnchor href="/find-locations?facilityType=health&serviceType=UrgentCare">
+            urgent care facility (opens in new tab)
+          </NewTabAnchor>
         </li>
       </ul>
     </div>

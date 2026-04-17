@@ -81,7 +81,7 @@ export class ChooseDateAndTimePageObject extends PageObject {
    */
   assertNoSlotsAvailableAlert() {
     cy.findByTestId('no-slots-alert').within(() => {
-      cy.findByText(/We couldn’t find any open time slots./).should('exist');
+      cy.findByText(/We couldn’t find any open time slots/).should('exist');
       cy.findByText(
         /Call this provider or your facility’s community care office to schedule an appointment./,
       ).should('exist');

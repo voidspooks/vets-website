@@ -36,23 +36,24 @@ export default function ConfirmationAppointmentCard({
         <AppointmentDate date={date} timezone={timezone} />
       </p>
       <h2
-        className="vads-u-margin-top--0 vads-u-margin-bottom-1"
+        className="vads-u-margin-top--0 vads-u-margin-bottom--2"
         data-testid="appointment-time-container"
       >
         <AppointmentTime date={date} timezone={timezone} />
       </h2>
-      <strong data-dd-privacy="mask" data-testid="appointment-type">
-        {titleCase(typeOfCare)}
-      </strong>
       <p
-        className="vads-u-margin-bottom--0"
-        data-testid="appointment-care-type"
+        className="vads-u-margin-y--1"
+        data-dd-privacy="mask"
+        data-testid="appointment-type"
       >
+        <strong>{titleCase(typeOfCare)}</strong>
+      </p>
+      <p className="vads-u-margin-y--1" data-testid="appointment-care-type">
         {isCC ? 'Community care' : 'VA care'}
       </p>
       {isCC ? (
         <p
-          className="vads-u-margin-bottom--0"
+          className="vads-u-margin-y--1"
           data-dd-privacy="mask"
           data-testid="appointment-provider-name"
         >
@@ -60,7 +61,7 @@ export default function ConfirmationAppointmentCard({
         </p>
       ) : (
         <p
-          className="vads-u-margin-bottom--0"
+          className="vads-u-margin-y--1"
           data-dd-privacy="mask"
           data-testid="appointment-clinic-name"
         >
@@ -68,7 +69,7 @@ export default function ConfirmationAppointmentCard({
         </p>
       )}
       <p
-        className="vads-u-margin-bottom--0 vads-u-display--flex vads-u-align-items--center"
+        className="vads-u-margin-y--1 vads-u-display--flex vads-u-align-items--center"
         data-testid="appointment-modality"
       >
         <va-icon
@@ -80,7 +81,7 @@ export default function ConfirmationAppointmentCard({
         <span>{modalityText}</span>
       </p>
       <p
-        className="vads-u-margin-bottom--0"
+        className="vads-u-margin-y--1"
         data-dd-privacy="mask"
         data-testid="appointment-organization-name"
       >

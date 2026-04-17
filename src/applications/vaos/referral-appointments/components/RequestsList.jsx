@@ -11,7 +11,7 @@ const RequestList = ({ appointments, requestsError }) => {
     return (
       <InfoAlert
         status="error"
-        headline="We’re sorry. We’ve run into a problem"
+        headline="We’re sorry. We’ve run into a problem."
       >
         We’re having trouble getting your requests. Please try again later.
       </InfoAlert>

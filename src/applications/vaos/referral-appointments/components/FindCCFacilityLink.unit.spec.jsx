@@ -38,6 +38,8 @@ describe('VAOS Component: FindCommunityCareOfficeLink', () => {
     );
     expect(link.getAttribute('target')).to.equal('_blank');
     expect(link.getAttribute('rel')).to.equal('noopener noreferrer');
-    expect(link.textContent).to.equal('Find your community care office');
+    expect(link.textContent).to.equal(
+      'Find your community care office (opens in new tab)',
+    );
   });
 });

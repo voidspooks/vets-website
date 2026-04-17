@@ -12,7 +12,7 @@ const FindCommunityCareOfficeLink = ({ newTab }) => {
         href={ccFacilityHref}
         data-testid="referral-community-care-office"
       >
-        Find your community care office
+        Find your community care office (opens in new tab)
       </NewTabAnchor>
     );
   }

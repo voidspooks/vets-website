@@ -65,7 +65,7 @@ describe('VAOS Component: ReferralList', () => {
       { initialState },
     );
 
-    expect(screen.getByText('We’re sorry. We’ve run into a problem')).to.exist;
+    expect(screen.getByText('We’re sorry. We’ve run into a problem.')).to.exist;
   });
 
   it('should render downtime notification when community care service is down', () => {

@@ -98,6 +98,36 @@ describe('VAOS Schedule Referral', () => {
       );
     });
 
+    it('should display scheduled appointments content and community care info when referral has appointments', () => {
+      const response = MockReferralDetailResponse.createSuccessResponse({
+        id: referralId,
+        referralNumber: referralId,
+        hasAppointments: true,
+      });
+
+      mockReferralDetailGetApi({
+        id: referralId,
+        response,
+      });
+
+      cy.visit(`/my-health/appointments/schedule-referral?id=${referralId}`);
+      cy.wait('@v2:get:referral:detail');
+
+      scheduleReferral.validate();
+      scheduleReferral.assertHasAppointmentsContent();
+      scheduleReferral.assertReferralDetails();
+      scheduleReferral.assertCommonQuestions();
+
+      cy.findByTestId('referral-alert').should('not.exist');
+      cy.findByTestId('subtitle').should('not.exist');
+      cy.findByTestId('schedule-appointment-button').should('not.exist');
+
+      cy.injectAxeThenAxeCheck();
+      saveScreenshot(
+        'vaos_ccDirectScheduling_scheduleReferral_hasAppointments',
+      );
+    });
+
     it('should display address alert when veteran address is not present', () => {
       const response = MockReferralDetailResponse.createSuccessResponse({
         id: referralId,

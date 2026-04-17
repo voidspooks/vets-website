@@ -50,7 +50,7 @@ export default function EpsAppointmentDetailsPage() {
             data-testid="error-alert"
             class="vads-u-margin-bottom--2"
           >
-            <h3>We’re sorry, we can’t find your appointment</h3>
+            <h3>We’re sorry. We’ve run into a problem.</h3>
             <p>
               Something went wrong on our end. Please try again later. If you
               need help, call your facility’s community care office.

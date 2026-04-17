@@ -44,7 +44,7 @@ export default function ReferralTaskCardWithReferral() {
         status="error"
         class="vads-u-margin-y--3"
       >
-        <h2>We’re sorry. We’ve run into a problem</h2>
+        <h2>We’re sorry. We’ve run into a problem.</h2>
         <p>
           We’re having trouble getting your referral information. Please try
           again later.

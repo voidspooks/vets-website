@@ -44,7 +44,10 @@ export class ScheduleReferralPageObject extends PageObject {
   /**
    * Validates that the community care office link is displayed
    */
-  assertCommunityCareOfficeLink() {
+  assertCommunityCareOfficeLink({ newTab = false } = {}) {
+    const matchText = newTab
+      ? 'Find your community care office (opens in new tab)'
+      : 'Find your community care office';
     cy.findByTestId('referral-community-care-office')
       .should('exist')
       .and(
@@ -59,7 +62,7 @@ export class ScheduleReferralPageObject extends PageObject {
             .text()
             .trim()
             .replace(/\s+open in new tab$/i, '');
-        expect(text).to.equal('Find your community care office');
+        expect(text).to.equal(matchText);
       });
 
     return this;
@@ -73,8 +76,39 @@ export class ScheduleReferralPageObject extends PageObject {
       cy.findByText(
         /Online scheduling isn’t available for this referral right now. Call your community care provider or your facility’s community care office to schedule an appointment./i,
       ).should('exist');
-      this.assertCommunityCareOfficeLink();
+      this.assertCommunityCareOfficeLink({ newTab: true });
     });
+    return this;
+  }
+
+  /**
+   * Validates that the has-appointments content is displayed when the referral
+   * already has one or more scheduled appointments.
+   */
+  assertHasAppointmentsContent() {
+    cy.findByTestId('has-appointments-content')
+      .should('exist')
+      .within(() => {
+        cy.findByText(
+          /You’ve scheduled 1 or more appointments for this referral\./i,
+        ).should('exist');
+        cy.findByText(
+          /If you have other appointments to schedule for this referral, contact your community care office\./i,
+        ).should('exist');
+
+        cy.findByTestId('appointments-list-link')
+          .should('exist')
+          .and('have.attr', 'href', '/my-health/appointments');
+
+        cy.findByTestId('referral-community-care-office')
+          .should('exist')
+          .and(
+            'have.attr',
+            'href',
+            '/COMMUNITYCARE/providers/Care-Coordination-Facilities.asp',
+          );
+      });
+
     return this;
   }
 

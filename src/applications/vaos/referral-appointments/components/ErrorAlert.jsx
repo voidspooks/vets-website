@@ -26,7 +26,7 @@ const ErrorAlert = ({
           href="/find-locations"
           data-testid="find-va-facility-link"
         >
-          Find your local VA health care facility
+          Find your local VA health care facility (opens in new tab)
         </NewTabAnchor>
         <UrgentCommunicationsBlock />
       </va-alert>

@@ -117,7 +117,7 @@ export const CompleteReferral = props => {
           <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
             {timedOut
               ? 'Try refreshing this page. If it still doesn’t work, call your facility’s community care office to schedule an appointment.'
-              : 'We’re sorry. Call your facility’s community care office to schedule an appointment'}
+              : 'We’re sorry. Call your facility’s community care office to schedule an appointment.'}
           </p>
           <FindCommunityCareOfficeLink />
         </va-alert>

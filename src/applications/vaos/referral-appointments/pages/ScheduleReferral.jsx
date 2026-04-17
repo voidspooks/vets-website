@@ -71,11 +71,31 @@ export default function ScheduleReferral(props) {
               for your address update to process through our system.
             </p>
             <NewTabAnchor href="/profile" data-testid="va-profile-link">
-              Go to your VA.gov profile
+              Go to your VA.gov profile (opens in new tab)
             </NewTabAnchor>
           </va-alert>
         )}
         {hasVeteranAddress &&
+          currentReferral.hasAppointments && (
+            <div data-testid="has-appointments-content">
+              <p className="vads-u-margin-top--0">
+                You’ve scheduled 1 or more appointments for this referral. Go to
+                your appointments list to review your upcoming appointments.
+              </p>
+              <va-link
+                href="/my-health/appointments"
+                text="Go to your appointments list"
+                data-testid="appointments-list-link"
+              />
+              <p>
+                If you have other appointments to schedule for this referral,
+                contact your community care office.
+              </p>
+              <FindCommunityCareOfficeLink newTab />
+            </div>
+          )}
+        {hasVeteranAddress &&
+          !currentReferral.hasAppointments &&
           !canScheduleAppointment && (
             <va-alert
               status="warning"
@@ -91,12 +111,14 @@ export default function ScheduleReferral(props) {
             </va-alert>
           )}
 
-        <p data-testid="subtitle">
-          We’ve approved your referral for community care.
-          {canScheduleAppointment
-            ? ' You can schedule your first appointment now.'
-            : ''}
-        </p>
+        {!currentReferral.hasAppointments && (
+          <p data-testid="subtitle">
+            We’ve approved your referral for community care.
+            {canScheduleAppointment
+              ? ' You can schedule your first appointment now.'
+              : ''}
+          </p>
+        )}
         {canScheduleAppointment && (
           <va-link-action
             className="vads-u-margin-top--1"
@@ -108,7 +130,13 @@ export default function ScheduleReferral(props) {
             data-testid="schedule-appointment-button"
           />
         )}
-        <h2>Details about your referral</h2>
+        <h2
+          className={
+            currentReferral.hasAppointments ? 'vads-u-margin-top--3' : ''
+          }
+        >
+          Details about your referral
+        </h2>
         <p data-testid="referral-details">
           <strong>Expiration date: </strong>
           {`All appointments for this referral must be scheduled by

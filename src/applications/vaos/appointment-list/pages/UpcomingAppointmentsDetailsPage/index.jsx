@@ -117,7 +117,7 @@ export default function UpcomingAppointmentsDetailsPage() {
           <InfoAlert
             status="error"
             level={1}
-            headline="We’re sorry, we can't find your appointment"
+            headline="We’re sorry. We’ve run into a problem."
           >
             Something went wrong on our end. Please refresh the page and try
             again.
