@@ -307,7 +307,6 @@ describe('Care Expenses Pages', () => {
       careDate: {
         from: '2004-04-04',
       },
-      monthlyAmount: 1200,
       typeOfCare: 'RESIDENTIAL',
       monthlyAmount: '123',
     };
@@ -326,7 +325,6 @@ describe('Care Expenses Pages', () => {
         from: '2004-04-04',
         to: '2005-05-05',
       },
-      monthlyAmount: 1200,
       typeOfCare: 'RESIDENTIAL',
       monthlyAmount: '123',
     };
