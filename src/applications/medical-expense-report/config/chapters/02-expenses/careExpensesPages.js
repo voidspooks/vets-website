@@ -8,6 +8,7 @@ import {
   numberUI,
   textUI,
   textSchema,
+  checkboxUI,
   arrayBuilderItemFirstPageTitleUI,
   arrayBuilderItemSubsequentPageTitleUI,
   currentOrPastDateRangeUI,
@@ -288,10 +289,16 @@ const datePage = {
       {
         title: 'Care end date',
         hint: 'Leave blank if care is ongoing.',
+        hideIf: (formData, index, fullData) => {
+          const careExpenses = formData?.careExpenses ?? fullData?.careExpenses;
+          const careExpense = careExpenses?.[index];
+          return careExpense?.noCareEndDate === true;
+        },
         removeDateHint: true,
         monthSelect: false,
       },
     ),
+    noCareEndDate: checkboxUI('No end date'),
   },
   schema: {
     type: 'object',
@@ -300,6 +307,9 @@ const datePage = {
       careDate: {
         ...currentOrPastDateRangeSchema,
         required: ['from'],
+      },
+      noCareEndDate: {
+        type: 'boolean',
       },
     },
     required: ['typeOfCare', 'provider'],

@@ -161,6 +161,58 @@ describe('Care Expenses Pages', () => {
       'Leave blank if care is ongoing.',
     );
   });
+  it('hides the care end date when no end date is selected in form data', async () => {
+    const { careExpensesDatesPage } = careExpensesPages;
+    const formData = {
+      noCareEndDate: true,
+    };
+    const form = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={careExpensesDatesPage.schema}
+        uiSchema={careExpensesDatesPage.uiSchema}
+        pagePerItemIndex={0}
+        data={{ [arrayPath]: [formData] }}
+      />,
+    );
+    const formDOM = getFormDOM(form);
+    const vaMemorableDateStart = $(
+      'va-memorable-date[label*="Care start date"]',
+      formDOM,
+    );
+    const vaMemorableDateEnd = $(
+      'va-memorable-date[label*="Care end date"]',
+      formDOM,
+    );
+
+    expect(vaMemorableDateStart).to.exist;
+    expect(vaMemorableDateEnd).to.not.exist;
+  });
+  it('hides the care end date when no end date is checked', async () => {
+    const { careExpensesDatesPage } = careExpensesPages;
+    const formData = {};
+    const form = render(
+      <DefinitionTester
+        arrayPath={arrayPath}
+        schema={careExpensesDatesPage.schema}
+        uiSchema={careExpensesDatesPage.uiSchema}
+        pagePerItemIndex={0}
+        data={{ [arrayPath]: [formData] }}
+      />,
+    );
+    const formDOM = getFormDOM(form);
+    const noCareEndDateCheckbox = $(
+      'va-checkbox[label*="No end date"]',
+      formDOM,
+    );
+
+    expect($('va-memorable-date[label*="Care end date"]', formDOM)).to.exist;
+
+    noCareEndDateCheckbox.__events.vaChange({ target: { checked: true } });
+
+    expect($('va-memorable-date[label*="Care end date"]', formDOM)).to.not
+      .exist;
+  });
   it('renders the cost of care page with no provider', async () => {
     const { careExpensesCostPage } = careExpensesPages;
     const formData = {};
@@ -255,6 +307,7 @@ describe('Care Expenses Pages', () => {
       careDate: {
         from: '2004-04-04',
       },
+      monthlyAmount: 1200,
       typeOfCare: 'RESIDENTIAL',
       monthlyAmount: '123',
     };
@@ -273,6 +326,7 @@ describe('Care Expenses Pages', () => {
         from: '2004-04-04',
         to: '2005-05-05',
       },
+      monthlyAmount: 1200,
       typeOfCare: 'RESIDENTIAL',
       monthlyAmount: '123',
     };
