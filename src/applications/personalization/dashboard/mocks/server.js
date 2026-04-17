@@ -55,11 +55,12 @@ const responses = {
       myVaFormPdfLink: true,
       veteranOnboardingShowWelcomeMessageToNewUsers: true,
       mhvEmailConfirmation: true,
+      myVaAuthExpRedesignEnabled: true,
     },
     true,
   ),
   'GET /v0/user': (req, res) => {
-    const userType = 'loa3'; // 'loa3', 'loa3NoHealth', 'loa3NoEmail', 'loa1', or 'loa1NoEmail'
+    const userType = 'loa1'; // 'loa3', 'loa3NoHealth', 'loa3NoEmail', 'loa1', or 'loa1NoEmail'
     switch (userType) {
       case 'loa3':
         return res.status(200).json(user.simpleUser); // This is an LOA3 user

@@ -42,7 +42,7 @@ const CernerAlertBox = ({
           >
             Go to My VA Health
           </a>
-          <va-additional-info trigger="Having trouble opening My VA Health?">
+          <va-details label="Having trouble opening My VA Health?">
             <p>Try these steps:</p>
             <ul>
               <li>Disable your browser’s pop-up blocker</li>
@@ -51,7 +51,7 @@ const CernerAlertBox = ({
                 in to VA.gov
               </li>
             </ul>
-          </va-additional-info>
+          </va-details>
         </div>
         <p className="vads-u-font-family--sans">
           <strong>For any other facility, go to My HealtheVet.</strong>

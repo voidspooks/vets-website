@@ -28,12 +28,12 @@ const MissingApplicationHelp = () => {
   return (
     <Toggler toggleName={Toggler.TOGGLE_NAMES.myVaAuthExpRedesignEnabled}>
       <Toggler.Enabled>
-        <va-additional-info
-          trigger="If you can’t find your application or form"
+        <va-details
+          label="If you can’t find your application or form"
           data-testid="missing-application-help-additional-info"
         >
           {content}
-        </va-additional-info>
+        </va-details>
       </Toggler.Enabled>
       <Toggler.Disabled>
         <va-accordion open-single="true" data-testid="missing-application-help">

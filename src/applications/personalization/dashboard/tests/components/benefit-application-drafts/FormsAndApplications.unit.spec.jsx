@@ -154,7 +154,7 @@ describe('<FormsAndApplications />', () => {
 
     it('renders the MissingApplicationHelp component', () => {
       const screen = renderComponent();
-      // MissingApplicationHelp renders either a va-accordion or va-additional-info
+      // MissingApplicationHelp renders either a va-accordion or va-details
       // depending on the feature toggle. Check for either test id.
       const help =
         screen.queryByTestId('missing-application-help') ||
