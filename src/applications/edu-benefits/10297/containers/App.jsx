@@ -23,10 +23,10 @@ function App({
   getPersonalInformation,
   setFormData,
   formData,
-  claimantInfo,
   user,
   getDirectDeposit,
   getDuplicateContactInfo,
+  claimantInfo,
   duplicateEmail,
   duplicatePhone,
 }) {
@@ -59,24 +59,6 @@ function App({
     [fetchedUserInfo, getPersonalInformation, user?.login?.currentlyLoggedIn],
   );
 
-  // Merge claimant info into form data when it becomes available
-  // This ensures prefill data is applied even on fresh form starts
-  useEffect(
-    () => {
-      if (!user?.login?.currentlyLoggedIn) {
-        return;
-      }
-      // Only merge if claimantId is missing in formData but available in claimantInfo
-      if (!formData?.claimantId && claimantInfo?.claimantId) {
-        setFormData({
-          ...formData,
-          ...claimantInfo,
-        });
-      }
-    },
-    [claimantInfo, formData, setFormData, user?.login?.currentlyLoggedIn],
-  );
-
   useEffect(
     () => {
       if (user?.login?.currentlyLoggedIn && !fetchedDirectDeposit) {
@@ -87,28 +69,64 @@ function App({
     [fetchedDirectDeposit, getDirectDeposit, user?.login?.currentlyLoggedIn],
   );
 
+  // Merge claimantInfo into formData if we have prefill data but formData doesn't
+  // Check for name/DOB presence instead of claimantId (which may be undefined in local dev)
+  useEffect(
+    () => {
+      const hasClaimantData =
+        claimantInfo?.applicantFullName?.first ||
+        claimantInfo?.applicantFullName?.last ||
+        claimantInfo?.dateOfBirth;
+
+      const formDataMissingName =
+        !formData?.applicantFullName?.first &&
+        !formData?.applicantFullName?.last;
+
+      if (hasClaimantData && formDataMissingName) {
+        setFormData({
+          ...formData,
+          ...claimantInfo,
+        });
+      }
+    },
+    [claimantInfo, formData, setFormData],
+  );
+
+  // Extract nested formData values to prevent infinite re-renders
+  // (following TOE pattern - see ToeApp.jsx lines 114-117)
+  const mobilePhoneContact = formData?.contactInfo?.mobilePhone?.contact;
+  const emailAddress = formData?.contactInfo?.emailAddress;
+  const formDataDuplicateEmail = formData?.duplicateEmail;
+  const formDataDuplicatePhone = formData?.duplicatePhone;
+
   useEffect(
     () => {
       if (
-        formData?.contactInfo?.mobilePhone &&
-        formData?.contactInfo?.emailAddress &&
-        !formData?.duplicateEmail &&
-        !formData?.duplicatePhone
+        mobilePhoneContact &&
+        emailAddress &&
+        !formDataDuplicateEmail &&
+        !formDataDuplicatePhone
       ) {
         getDuplicateContactInfo(
-          [{ value: formData?.contactInfo?.emailAddress, dupe: '' }],
-          [
-            {
-              value: formData?.contactInfo?.mobilePhone?.contact,
-              dupe: '',
-            },
-          ],
+          [{ value: emailAddress, dupe: '' }],
+          [{ value: mobilePhoneContact, dupe: '' }],
         );
       }
+    },
+    [
+      getDuplicateContactInfo,
+      mobilePhoneContact,
+      emailAddress,
+      formDataDuplicateEmail,
+      formDataDuplicatePhone,
+    ],
+  );
 
+  useEffect(
+    () => {
       if (
         duplicateEmail?.length > 0 &&
-        duplicateEmail !== formData?.duplicateEmail
+        duplicateEmail !== formDataDuplicateEmail
       ) {
         setFormData({
           ...formData,
@@ -118,7 +136,7 @@ function App({
 
       if (
         duplicatePhone?.length > 0 &&
-        duplicatePhone !== formData?.duplicatePhone
+        duplicatePhone !== formDataDuplicatePhone
       ) {
         setFormData({
           ...formData,
@@ -127,9 +145,10 @@ function App({
       }
     },
     [
-      getDuplicateContactInfo,
       duplicateEmail,
       duplicatePhone,
+      formDataDuplicateEmail,
+      formDataDuplicatePhone,
       formData,
       setFormData,
     ],
@@ -163,14 +182,14 @@ App.propTypes = {
 };
 
 const mapStateToProps = state => {
-  // Transform claimant info using prefillTransformer to get form-ready data
+  const formData = state.form?.data || {};
   const transformedClaimantInfo = prefillTransformer(null, {}, null, state);
   const claimantInfo = transformedClaimantInfo?.formData || {};
 
   return {
     userLoggedIn: isLoggedIn(state),
     user: state.user,
-    formData: state.form?.data || {},
+    formData,
     claimantInfo,
     duplicateEmail: state.data?.duplicateEmail,
     duplicatePhone: state.data?.duplicatePhone,

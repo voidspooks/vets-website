@@ -2,6 +2,7 @@ import {
   getLTSCountryCode,
   getTransformIntlPhoneNumber,
   dateSigned,
+  getAddressType,
 } from '../helpers';
 
 const trimObjectValuesWhiteSpace = (key, value) => {
@@ -62,6 +63,7 @@ export function transform(_formConfig, form) {
       contactInfo: {
         addressLine1: mailingAddress?.street,
         addressLine2: mailingAddress?.street2,
+        addressType: getAddressType(mailingAddress),
         city: mailingAddress?.city,
         stateCode: mailingAddress?.state,
         zipcode: mailingAddress?.postalCode,

@@ -18,6 +18,31 @@ describe('22-10297 Submit Transformer Function', () => {
     clock.restore();
   });
 
+  it('should include claimant firstName, lastName, and dateOfBirth in submission', () => {
+    const formDataWithName = {
+      ...transformTestData.data,
+      applicantFullName: {
+        first: 'TestFirst',
+        middle: 'TestMiddle',
+        last: 'TestLast',
+      },
+      dateOfBirth: '1985-06-15',
+    };
+
+    const submitData = JSON.parse(
+      transform(formConfig, {
+        data: formDataWithName,
+        formId: '22-10297',
+      }),
+    );
+
+    // Verify claimant name fields are included
+    expect(submitData.claimant.firstName).to.equal('TestFirst');
+    expect(submitData.claimant.middleName).to.equal('TestMiddle');
+    expect(submitData.claimant.lastName).to.equal('TestLast');
+    expect(submitData.claimant.dateOfBirth).to.equal('1985-06-15');
+  });
+
   it('should transform the form data on the ui to match the json schema', () => {
     const submitData = JSON.parse(
       transform(formConfig, {
@@ -49,5 +74,76 @@ describe('22-10297 Submit Transformer Function', () => {
     expect(submitData.employmentInfo.isEmployed).to.equal(true);
     expect(submitData.attestationAgreementAccepted).to.exist;
     expect(submitData.dateSigned).to.exist;
+  });
+
+  it('should include addressType in claimant contactInfo', () => {
+    const formDataWithDomestic = {
+      ...transformTestData.data,
+      mailingAddress: {
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        postalCode: '10001',
+        country: 'USA',
+        isMilitary: false,
+      },
+    };
+
+    const submitData = JSON.parse(
+      transform(formConfig, {
+        data: formDataWithDomestic,
+        formId: '22-10297',
+      }),
+    );
+
+    expect(submitData.claimant.contactInfo.addressType).to.equal('DOMESTIC');
+  });
+
+  it('should set addressType to MILITARY_OVERSEAS when isMilitary is true', () => {
+    const formDataWithMilitary = {
+      ...transformTestData.data,
+      mailingAddress: {
+        street: '123 Base St',
+        city: 'APO',
+        state: 'AE',
+        postalCode: '09012',
+        country: 'USA',
+        isMilitary: true,
+      },
+    };
+
+    const submitData = JSON.parse(
+      transform(formConfig, {
+        data: formDataWithMilitary,
+        formId: '22-10297',
+      }),
+    );
+
+    expect(submitData.claimant.contactInfo.addressType).to.equal(
+      'MILITARY_OVERSEAS',
+    );
+  });
+
+  it('should set addressType to FOREIGN for non-US addresses', () => {
+    const formDataWithForeign = {
+      ...transformTestData.data,
+      mailingAddress: {
+        street: '123 Rue Main',
+        city: 'Paris',
+        state: 'IDF',
+        postalCode: '75001',
+        country: 'FRA',
+        isMilitary: false,
+      },
+    };
+
+    const submitData = JSON.parse(
+      transform(formConfig, {
+        data: formDataWithForeign,
+        formId: '22-10297',
+      }),
+    );
+
+    expect(submitData.claimant.contactInfo.addressType).to.equal('FOREIGN');
   });
 });

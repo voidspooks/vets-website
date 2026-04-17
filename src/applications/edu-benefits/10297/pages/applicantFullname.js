@@ -15,6 +15,7 @@ const uiSchema = {
     ...fullNameNoSuffixUI(),
     'ui:options': {
       hideIf: () => true,
+      preserveHiddenData: true,
     },
   },
   dateOfBirth: {
@@ -24,6 +25,7 @@ const uiSchema = {
     }),
     'ui:options': {
       hideIf: () => true,
+      preserveHiddenData: true,
     },
   },
   eligibilityAlert: {

@@ -16,6 +16,7 @@ import {
   getTransformIntlPhoneNumber,
   parseDateToDateObj,
   lastDayOfMonth,
+  getAddressType,
 } from '../helpers';
 
 describe('10297 Helpers', () => {
@@ -526,5 +527,48 @@ describe('lastDayOfMonth', () => {
     expect(lastDayOfMonth(NaN, NaN)).to.equal(31);
     expect(lastDayOfMonth(NaN, 'XXXX')).to.equal(31);
     expect(lastDayOfMonth('XX')).to.equal(31);
+  });
+});
+
+describe('getAddressType', () => {
+  it('should return MILITARY_OVERSEAS when isMilitary is true', () => {
+    const address = {
+      isMilitary: true,
+      country: 'USA',
+      street: '123 Main St',
+      city: 'APO',
+      state: 'AE',
+    };
+    expect(getAddressType(address)).to.equal('MILITARY_OVERSEAS');
+  });
+
+  it('should return DOMESTIC when country is USA and not military', () => {
+    const address = {
+      isMilitary: false,
+      country: 'USA',
+      street: '123 Main St',
+      city: 'New York',
+      state: 'NY',
+    };
+    expect(getAddressType(address)).to.equal('DOMESTIC');
+  });
+
+  it('should return FOREIGN when country is not USA', () => {
+    const address = {
+      isMilitary: false,
+      country: 'CAN',
+      street: '123 Maple Ave',
+      city: 'Toronto',
+      state: 'ON',
+    };
+    expect(getAddressType(address)).to.equal('FOREIGN');
+  });
+
+  it('should return null when mailingAddress is null', () => {
+    expect(getAddressType(null)).to.be.null;
+  });
+
+  it('should return null when mailingAddress is undefined', () => {
+    expect(getAddressType(undefined)).to.be.null;
   });
 });

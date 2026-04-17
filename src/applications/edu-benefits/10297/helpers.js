@@ -577,6 +577,20 @@ export function getLTSCountryCode(schemaCountryValue) {
   return country?.ltsValue ? country.ltsValue : 'ZZ';
 }
 
+export function getAddressType(mailingAddress) {
+  if (!mailingAddress) {
+    return null;
+  }
+
+  if (mailingAddress.isMilitary) {
+    return 'MILITARY_OVERSEAS';
+  }
+  if (mailingAddress.country === 'USA') {
+    return 'DOMESTIC';
+  }
+  return 'FOREIGN';
+}
+
 export const addressSpecifications = {
   street: {
     minLength: 3,

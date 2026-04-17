@@ -191,4 +191,84 @@ describe('prefillTransformer', () => {
     const result = prefillTransformer(pages, formData, metadata, state);
     expect(result.formData).to.be.an('object');
   });
+
+  it('should extract claimant data from API response structure', () => {
+    const formData = {};
+    const state = {
+      user: {
+        profile: {
+          dob: '1985-05-15',
+          email: 'fallback@example.com',
+          userFullName: { first: 'ProfileFirst', last: 'ProfileLast' },
+        },
+      },
+      data: {
+        formData: {
+          data: {
+            attributes: {
+              claimant: {
+                claimantId: 123456,
+                firstName: 'APIFirst',
+                middleName: 'APIMiddle',
+                lastName: 'APILast',
+                suffix: 'Jr.',
+                dateOfBirth: '1980-03-25',
+                contactInfo: {
+                  addressLine1: '123 API Street',
+                  addressLine2: 'Apt 4B',
+                  city: 'API City',
+                  stateCode: 'TX',
+                  zipcode: '75001',
+                  countryCode: 'US',
+                  emailAddress: 'api@example.com',
+                  mobilePhoneNumber: '5551234567',
+                  homePhoneNumber: '5559876543',
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const result = prefillTransformer(pages, formData, metadata, state);
+    const data = result.formData;
+
+    // Verify claimant name data is extracted
+    expect(data.applicantFullName).to.deep.equal({
+      first: 'APIFirst',
+      middle: 'APIMiddle',
+      last: 'APILast',
+      suffix: 'Jr.',
+    });
+
+    // Verify date of birth is extracted from claimant API
+    expect(data.dateOfBirth).to.equal('1980-03-25');
+
+    // Verify claimant ID is extracted
+    expect(data.claimantId).to.equal(123456);
+
+    // Verify contact info is extracted from claimant API
+    expect(data.contactInfo.emailAddress).to.equal('api@example.com');
+    expect(data.contactInfo.mobilePhone).to.deep.equal({
+      callingCode: 1,
+      countryCode: 'US',
+      contact: '5551234567',
+    });
+    expect(data.contactInfo.homePhone).to.deep.equal({
+      callingCode: 1,
+      countryCode: 'US',
+      contact: '5559876543',
+    });
+
+    // Verify mailing address is extracted from claimant API
+    expect(data.mailingAddress).to.deep.equal({
+      street: '123 API Street',
+      street2: 'Apt 4B',
+      city: 'API City',
+      state: 'TX',
+      postalCode: '75001',
+      country: 'USA',
+    });
+  });
 });

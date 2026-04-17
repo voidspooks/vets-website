@@ -18,20 +18,21 @@ export default function prefillTransformer(pages, formData, metadata, state) {
   const prefillContactInformation = data => {
     const { applicantFullName, email, ssn, mailingAddress, dateOfBirth } = data;
 
-    // Name: prefer claimant data, fallback to profile
-    let prefillName;
-    if (claimant.firstName && claimant.lastName) {
-      prefillName = {
-        first: claimant.firstName,
-        middle: claimant.middleName,
-        last: claimant.lastName,
-        suffix: claimant.suffix,
-      };
-    } else if (applicantFullName?.first || applicantFullName?.last) {
-      prefillName = applicantFullName;
-    } else if (userFullName?.first || userFullName?.last) {
-      prefillName = userFullName;
-    }
+    // Name: prefer formData, then claimant, then profile (my-education-benefits pattern)
+    const firstName =
+      applicantFullName?.first || claimant?.firstName || userFullName?.first;
+    const middleName =
+      applicantFullName?.middle || claimant?.middleName || userFullName?.middle;
+    const lastName =
+      applicantFullName?.last || claimant?.lastName || userFullName?.last;
+    const suffix = applicantFullName?.suffix || claimant?.suffix;
+
+    // Only include fields with values
+    const prefillName = {};
+    if (firstName) prefillName.first = firstName;
+    if (middleName) prefillName.middle = middleName;
+    if (lastName) prefillName.last = lastName;
+    if (suffix) prefillName.suffix = suffix;
 
     // Email: prefer claimant, fallback to profile
     const emailAddress =
@@ -64,8 +65,8 @@ export default function prefillTransformer(pages, formData, metadata, state) {
       homePhone = getPrefillIntlPhoneNumber(vapContactInfo?.homePhone);
     }
 
-    // Date of birth: prefer claimant, fallback to profile
-    const prefillDob = dateOfBirth || claimant.dateOfBirth || dob;
+    // Date of birth: prefer formData, then claimant, then profile (my-education-benefits pattern)
+    const prefillDob = dateOfBirth || claimant?.dateOfBirth || dob;
 
     // Mailing address: prefer claimant, fallback to vapContactInfo
     let prefillMailingAddress = mailingAddress;
