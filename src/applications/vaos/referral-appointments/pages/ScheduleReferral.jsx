@@ -23,6 +23,9 @@ export default function ScheduleReferral(props) {
   const dispatch = useDispatch();
   const selectedSlotKey = getReferralSlotKey(currentReferral.uuid);
   const hasVeteranAddress = meta.veteranAddressPresent;
+  const expirationDate = currentReferral?.expirationDate
+    ? format(new Date(currentReferral.expirationDate), 'MMMM d, yyyy')
+    : '';
 
   const stationIdValid = getIsInPilotReferralStation(currentReferral);
   useEffect(
@@ -139,8 +142,7 @@ export default function ScheduleReferral(props) {
         </h2>
         <p data-testid="referral-details">
           <strong>Expiration date: </strong>
-          {`All appointments for this referral must be scheduled by
-          ${format(new Date(currentReferral.expirationDate), 'MMMM d, yyyy')}`}
+          {expirationDate}
           <br />
           <strong>Referral number: </strong>
           <span data-dd-privacy="mask">{currentReferral.referralNumber}</span>
