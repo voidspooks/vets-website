@@ -204,6 +204,7 @@ const validateForm = () => {
 - Handle routing and page-level logic
 - Key containers: `Compose`, `ThreadDetails`, `FolderThreadListView`, `SearchResults`, `MessageReply`
 - Pattern: Fetch data in `useEffect`, dispatch actions, pass data to presentational components
+- **CareTeamHelp**: Informational page ("Can't find your care team?") — must remain directly accessible via URL (e.g., bookmarked). Do NOT add redirect guards that prevent direct navigation.
 
 ## Custom Hooks
 

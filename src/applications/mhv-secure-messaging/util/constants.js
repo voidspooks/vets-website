@@ -28,8 +28,8 @@ export const Paths = {
 };
 
 export const ExternalLinks = {
-  MHV_ON_VAGOV_WHAT_TO_KNOW:
-    'https://www.va.gov/resources/my-healthevet-on-vagov-what-to-know/',
+  CARE_TEAM_NAME_GLOSSARY:
+    'https://www.va.gov/resources/health-messages-care-team-name-glossary',
 };
 
 export const DefaultFolders = {
