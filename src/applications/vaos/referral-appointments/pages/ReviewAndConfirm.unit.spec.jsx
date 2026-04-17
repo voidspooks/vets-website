@@ -5,6 +5,7 @@ import { waitFor } from '@testing-library/dom';
 import { cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
+import { defaultSerializeQueryArgs } from '@reduxjs/toolkit/query';
 import {
   createPostHandler,
   jsonResponse,
@@ -42,7 +43,19 @@ describe('VAOS Component: ReviewAndConfirm', () => {
   draftAppointmentInfo.attributes.slots = transformSlotsForCommunityCare(slots);
   draftAppointmentInfo.attributes.slots[0].start = slotDate;
 
-  const providerSlotsQueryKey = `getProviderSlots({"providerId":"${providerId}","referralId":"UUID"})`;
+  const providerSlotsSessionDefaults = {
+    providerType: 'community_care',
+    providerServiceId: providerId,
+    appointmentTypeId: 'ov',
+  };
+  const providerSlotsQueryArgs = {
+    referralId: 'UUID',
+    ...providerSlotsSessionDefaults,
+  };
+  const providerSlotsQueryKey = defaultSerializeQueryArgs({
+    endpointName: 'getProviderSlots',
+    queryArgs: providerSlotsQueryArgs,
+  });
 
   const createStateWithSlots = (overrides = {}) => ({
     featureToggles: {
@@ -51,6 +64,7 @@ describe('VAOS Component: ReviewAndConfirm', () => {
     referral: {
       selectedSlotStartTime: slotDate,
       selectedProviderId: providerId,
+      providerSlotsParams: providerSlotsSessionDefaults,
       currentPage: 'reviewAndConfirm',
       appointmentCreateStatus: FETCH_STATUS.notStarted,
       pollingRequestStart: null,
@@ -148,8 +162,10 @@ describe('VAOS Component: ReviewAndConfirm', () => {
   });
 
   it('should route to scheduleReferral if no providerId', async () => {
+    sessionStorage.clear();
     const noProviderState = createStateWithSlots({
       selectedProviderId: null,
+      providerSlotsParams: null,
     });
     const screen = renderWithStoreAndRouter(
       <ReviewAndConfirm
@@ -284,6 +300,120 @@ describe('VAOS Component: ReviewAndConfirm', () => {
     expect(screen.getByTestId('referral-community-care-office')).to.exist;
   });
 
+  describe('Provider slots failed (review layout)', () => {
+    const rejectedQueryEntry = {
+      status: 'rejected',
+      error: {
+        status: 500,
+        data: {
+          errors: [
+            {
+              title: 'Internal Server Error',
+              detail:
+                'An error occurred while retrieving the draft appointment',
+              code: '500',
+              status: '500',
+            },
+          ],
+        },
+      },
+      endpoint: 'getProviderSlots',
+      requestId: 'slots-rejected',
+    };
+
+    it('should display CC slots load error when getProviderSlots is rejected', async () => {
+      const store = createTestStore({
+        ...createStateWithSlots(),
+        appointmentApi: {
+          queries: {
+            [providerSlotsQueryKey]: rejectedQueryEntry,
+          },
+          subscriptions: {
+            [providerSlotsQueryKey]: {
+              'slots-rejected': { pollingInterval: 0 },
+            },
+          },
+        },
+      });
+
+      const screen = renderWithStoreAndRouter(
+        <ReviewAndConfirm
+          currentReferral={createReferralById('2024-09-09', 'UUID')}
+        />,
+        { store, path: testPath },
+      );
+
+      expect(await screen.findByTestId('error')).to.exist;
+      expect(
+        screen.getByText(/We\u2019re sorry. We\u2019ve run into a problem/i),
+      ).to.exist;
+      expect(screen.getByTestId('referral-community-care-office')).to.exist;
+    });
+
+    it('should display VA slots load error when getProviderSlots is rejected', async () => {
+      const vaProviderId = 'va-provider-1';
+      const vaProviderSlotsQueryArgs = {
+        referralId: 'UUID',
+        providerType: 'va',
+        clinicId: vaProviderId,
+        locationId: '648',
+        clinicalService: 'primaryCare',
+      };
+      const vaProviderSlotsQueryKey = defaultSerializeQueryArgs({
+        endpointName: 'getProviderSlots',
+        queryArgs: vaProviderSlotsQueryArgs,
+      });
+
+      const store = createTestStore({
+        featureToggles: {
+          vaOnlineSchedulingCCDirectScheduling: true,
+        },
+        referral: {
+          selectedSlotStartTime: slotDate,
+          selectedProviderId: vaProviderId,
+          providerSlotsParams: vaProviderSlotsQueryArgs,
+          currentPage: 'reviewAndConfirm',
+          appointmentCreateStatus: FETCH_STATUS.notStarted,
+          pollingRequestStart: null,
+          appointmentInfoError: false,
+          appointmentInfoLoading: false,
+          referralAppointmentInfo: {},
+        },
+        appointmentApi: {
+          queries: {
+            [vaProviderSlotsQueryKey]: rejectedQueryEntry,
+          },
+          subscriptions: {
+            [vaProviderSlotsQueryKey]: {
+              'slots-rejected': { pollingInterval: 0 },
+            },
+          },
+        },
+      });
+
+      const screen = renderWithStoreAndRouter(
+        <ReviewAndConfirm
+          currentReferral={createReferralById(
+            '2024-09-09',
+            'UUID',
+            undefined,
+            undefined,
+            true,
+            '534QD',
+            true,
+            'VA',
+          )}
+        />,
+        { store, path: testPath },
+      );
+
+      expect(await screen.findByTestId('error')).to.exist;
+      expect(screen.getByText(/This tool isn\u2019t working right now/i)).to
+        .exist;
+      expect(screen.getByTestId('find-va-facility-link')).to.exist;
+    });
+  });
+
   it('should display Community Care details section with correct content', async () => {
     const store = createTestStore(initialFullState);
 
@@ -373,7 +503,17 @@ describe('VAOS Component: ReviewAndConfirm', () => {
 
   describe('VA appointment flow', () => {
     const vaProviderId = 'va-provider-1';
-    const vaProviderSlotsQueryKey = `getProviderSlots({"providerId":"${vaProviderId}","referralId":"UUID"})`;
+    const vaProviderSlotsQueryArgs = {
+      referralId: 'UUID',
+      providerType: 'va',
+      clinicId: vaProviderId,
+      locationId: '648',
+      clinicalService: 'primaryCare',
+    };
+    const vaProviderSlotsQueryKey = defaultSerializeQueryArgs({
+      endpointName: 'getProviderSlots',
+      queryArgs: vaProviderSlotsQueryArgs,
+    });
 
     const vaDraftAppointmentInfo = {
       id: vaProviderId,
@@ -423,6 +563,12 @@ describe('VAOS Component: ReviewAndConfirm', () => {
       referral: {
         selectedSlotStartTime: slotDate,
         selectedProviderId: vaProviderId,
+        providerSlotsParams: {
+          providerType: 'va',
+          clinicId: vaProviderId,
+          locationId: '648',
+          clinicalService: 'primaryCare',
+        },
         currentPage: 'reviewAndConfirm',
         appointmentCreateStatus: FETCH_STATUS.notStarted,
         pollingRequestStart: null,

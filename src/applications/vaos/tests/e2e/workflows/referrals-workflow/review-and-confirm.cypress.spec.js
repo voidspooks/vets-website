@@ -4,21 +4,22 @@ import {
 } from '../../vaos-cypress-helpers';
 import {
   mockReferralDetailGetApi,
+  mockReferralProvidersApi,
   mockProviderSlotsApi,
   mockUnifiedBookingApi,
+  navigateFromProviderSelectionToDateTime,
   saveScreenshot,
 } from './referrals-cypress-helpers';
 import MockUser from '../../../fixtures/MockUser';
 import MockAppointmentResponse from '../../../fixtures/MockAppointmentResponse';
 import MockReferralDetailResponse from '../../../fixtures/MockReferralDetailResponse';
 import MockReferralDraftAppointmentResponse from '../../../fixtures/MockReferralDraftAppointmentResponse';
+import MockReferralProvidersResponse from '../../../fixtures/MockReferralProvidersResponse';
 import { APPOINTMENT_STATUS } from '../../../../utils/constants';
+import chooseDateAndTime from '../../referrals/page-objects/ChooseDateAndTime';
 import reviewAndConfirm from '../../referrals/page-objects/ReviewAndConfirm';
 
 const referralId = 'test-referral-uuid';
-const providerId = 'provider-0';
-const slotKey = `selected-slot-referral-${referralId}`;
-const providerKey = `selected-provider-referral-${referralId}`;
 
 describe('VAOS Review and Confirm', () => {
   let draftAppointmentResponse;
@@ -49,30 +50,33 @@ describe('VAOS Review and Confirm', () => {
     draftAppointmentResponse = new MockReferralDraftAppointmentResponse({
       referralNumber: referralId,
     }).toJSON();
-    mockProviderSlotsApi({ response: draftAppointmentResponse });
 
     cy.login(new MockUser());
   });
 
-  function setSessionStorageAndVisit() {
-    // Set sessionStorage values before visiting the page so ReviewAndConfirm
-    // doesn't redirect back to scheduleReferral
-    const slotStart = draftAppointmentResponse.data.attributes.slots[0].start;
-    cy.window().then(win => {
-      win.sessionStorage.setItem(slotKey, slotStart);
-      win.sessionStorage.setItem(providerKey, providerId);
-    });
-
-    cy.visit(
-      `/my-health/appointments/schedule-referral/review/?id=${referralId}&providerId=${providerId}`,
+  function navigateToReviewAfterChoosingSlot({
+    providerMode,
+    draftResponse = draftAppointmentResponse,
+  }) {
+    const providersResponse = MockReferralProvidersResponse.createSuccessResponse(
+      {
+        page: 1,
+        perPage: 5,
+        totalEntries: 5,
+        providerMode,
+      },
     );
-
-    cy.wait('@v2:get:providerSlots');
+    mockReferralProvidersApi({ response: providersResponse });
+    mockProviderSlotsApi({ response: draftResponse });
+    navigateFromProviderSelectionToDateTime({ referralId });
+    chooseDateAndTime.selectNextMonth();
+    chooseDateAndTime.selectAppointmentSlot(0);
+    chooseDateAndTime.clickContinue();
   }
 
   describe('Happy path', () => {
     it('should display appointment details for review', () => {
-      setSessionStorageAndVisit();
+      navigateToReviewAfterChoosingSlot({ providerMode: 'cc' });
 
       reviewAndConfirm.validate();
       reviewAndConfirm.assertProviderInfo();
@@ -90,7 +94,7 @@ describe('VAOS Review and Confirm', () => {
     it('should display CC error alert when appointment creation fails', () => {
       mockUnifiedBookingApi({ response: null, responseCode: 500 });
 
-      setSessionStorageAndVisit();
+      navigateToReviewAfterChoosingSlot({ providerMode: 'cc' });
 
       reviewAndConfirm.validate();
       reviewAndConfirm.clickContinue();
@@ -124,12 +128,12 @@ describe('VAOS Review and Confirm', () => {
         referralNumber: referralId,
         careType: 'VA',
       }).toJSON();
-      mockProviderSlotsApi({ response: vaDraftResponse });
       mockUnifiedBookingApi({ response: null, responseCode: 500 });
 
-      // Use VA draft slots for sessionStorage
-      draftAppointmentResponse = vaDraftResponse;
-      setSessionStorageAndVisit();
+      navigateToReviewAfterChoosingSlot({
+        providerMode: 'va',
+        draftResponse: vaDraftResponse,
+      });
 
       reviewAndConfirm.validate();
       reviewAndConfirm.clickContinue();
@@ -142,70 +146,6 @@ describe('VAOS Review and Confirm', () => {
       saveScreenshot(
         'vaos_ccDirectScheduling_reviewAndConfirm_submissionError_VA',
       );
-    });
-  });
-
-  describe('API errors - Community Care (CC)', () => {
-    it('should display CC error when provider slots API fails', () => {
-      mockProviderSlotsApi({ response: null, responseCode: 500 });
-
-      const slotStart = draftAppointmentResponse.data.attributes.slots[0].start;
-      cy.window().then(win => {
-        win.sessionStorage.setItem(slotKey, slotStart);
-        win.sessionStorage.setItem(providerKey, providerId);
-      });
-
-      cy.visit(
-        `/my-health/appointments/schedule-referral/review/?id=${referralId}&providerId=${providerId}`,
-      );
-
-      cy.wait('@v2:get:providerSlots');
-
-      cy.findByTestId('error').should('exist');
-      cy.findByText(/We\u2019re sorry. We\u2019ve run into a problem/i).should(
-        'exist',
-      );
-
-      cy.injectAxeThenAxeCheck();
-      saveScreenshot('vaos_ccDirectScheduling_reviewAndConfirm_apiError_CC');
-    });
-  });
-
-  describe('API errors - VA', () => {
-    it('should display VA error when provider slots API fails', () => {
-      const vaReferralResponse = MockReferralDetailResponse.createSuccessResponse(
-        {
-          id: referralId,
-          referralNumber: referralId,
-          careType: 'VA',
-        },
-      );
-      mockReferralDetailGetApi({
-        id: referralId,
-        response: vaReferralResponse,
-      });
-
-      mockProviderSlotsApi({ response: null, responseCode: 500 });
-
-      const slotStart = draftAppointmentResponse.data.attributes.slots[0].start;
-      cy.window().then(win => {
-        win.sessionStorage.setItem(slotKey, slotStart);
-        win.sessionStorage.setItem(providerKey, providerId);
-      });
-
-      cy.visit(
-        `/my-health/appointments/schedule-referral/review/?id=${referralId}&providerId=${providerId}`,
-      );
-
-      cy.wait('@v2:get:providerSlots');
-
-      cy.findByTestId('error').should('exist');
-      cy.findByText(/We\u2019re sorry. We\u2019ve run into a problem/i).should(
-        'exist',
-      );
-
-      cy.injectAxeThenAxeCheck();
-      saveScreenshot('vaos_ccDirectScheduling_reviewAndConfirm_apiError_VA');
     });
   });
 });

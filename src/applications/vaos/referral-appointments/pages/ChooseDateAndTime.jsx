@@ -12,6 +12,7 @@ import { useGetProviderSlotsQuery } from '../../redux/api/vaosApi';
 import { FETCH_STATUS } from '../../utils/constants';
 import DateAndTimeContent from '../components/DateAndTimeContent';
 import { getReferralProviderKey } from '../utils/referrals';
+import { getProviderSlotsParams } from '../redux/selectors';
 import { routeToCCPage } from '../flow';
 
 export const ChooseDateAndTime = props => {
@@ -21,7 +22,12 @@ export const ChooseDateAndTime = props => {
   const history = useHistory();
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const providerId = urlParams.get('providerId');
+  const providerSlotsParams = useSelector(getProviderSlotsParams);
+  const providerId =
+    urlParams.get('providerId') ||
+    (providerSlotsParams?.providerType === 'va'
+      ? providerSlotsParams.clinicId
+      : providerSlotsParams?.providerServiceId);
   const {
     data: providerSlotsInfo,
     isLoading: isProviderSlotsLoading,
@@ -31,9 +37,9 @@ export const ChooseDateAndTime = props => {
   } = useGetProviderSlotsQuery(
     {
       referralId: currentReferral.uuid,
-      providerId,
+      ...providerSlotsParams,
     },
-    { skip: !providerId },
+    { skip: !providerSlotsParams?.providerType },
   );
 
   const { futureStatus, appointmentsByMonth } = useSelector(
@@ -84,17 +90,19 @@ export const ChooseDateAndTime = props => {
 
   useEffect(
     () => {
+      if (!providerSlotsParams?.providerType) {
+        routeToCCPage(history, 'providerSelection', currentReferral.uuid);
+        return;
+      }
       if (providerId) {
         dispatch(setSelectedProviderId(providerId));
         sessionStorage.setItem(
           getReferralProviderKey(currentReferral.uuid),
           providerId,
         );
-      } else {
-        routeToCCPage(history, 'scheduleReferral', currentReferral.uuid);
       }
     },
-    [dispatch, history, providerId, currentReferral.uuid],
+    [dispatch, history, providerId, currentReferral.uuid, providerSlotsParams],
   );
 
   // Check for error state before showing loading indicator to prevent race condition

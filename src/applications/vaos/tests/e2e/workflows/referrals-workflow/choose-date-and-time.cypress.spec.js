@@ -4,18 +4,33 @@ import {
 } from '../../vaos-cypress-helpers';
 import {
   mockReferralDetailGetApi,
+  mockReferralProvidersApi,
   mockProviderSlotsApi,
+  navigateFromProviderSelectionToDateTime,
   saveScreenshot,
 } from './referrals-cypress-helpers';
 import MockUser from '../../../fixtures/MockUser';
 import MockAppointmentResponse from '../../../fixtures/MockAppointmentResponse';
 import MockReferralDetailResponse from '../../../fixtures/MockReferralDetailResponse';
 import MockReferralDraftAppointmentResponse from '../../../fixtures/MockReferralDraftAppointmentResponse';
+import MockReferralProvidersResponse from '../../../fixtures/MockReferralProvidersResponse';
 import { APPOINTMENT_STATUS } from '../../../../utils/constants';
 import chooseDateAndTime from '../../referrals/page-objects/ChooseDateAndTime';
 
 const referralId = 'test-referral-uuid';
-const providerId = 'provider-0';
+
+function mockProvidersAndOpenDateTime(providerMode) {
+  const providersResponse = MockReferralProvidersResponse.createSuccessResponse(
+    {
+      page: 1,
+      perPage: 5,
+      totalEntries: 5,
+      providerMode,
+    },
+  );
+  mockReferralProvidersApi({ response: providersResponse });
+  navigateFromProviderSelectionToDateTime({ referralId });
+}
 
 describe('VAOS Choose Date and Time', () => {
   beforeEach(() => {
@@ -52,12 +67,7 @@ describe('VAOS Choose Date and Time', () => {
         },
       ).toJSON();
       mockProviderSlotsApi({ response: draftAppointmentResponse });
-
-      cy.visit(
-        `/my-health/appointments/schedule-referral/date-time/?id=${referralId}&providerId=${providerId}`,
-      );
-
-      cy.wait('@v2:get:providerSlots');
+      mockProvidersAndOpenDateTime('cc');
 
       chooseDateAndTime.validate();
       chooseDateAndTime.assertProviderInfo({
@@ -79,12 +89,7 @@ describe('VAOS Choose Date and Time', () => {
         },
       ).toJSON();
       mockProviderSlotsApi({ response: draftAppointmentResponse });
-
-      cy.visit(
-        `/my-health/appointments/schedule-referral/date-time/?id=${referralId}&providerId=${providerId}`,
-      );
-
-      cy.wait('@v2:get:providerSlots');
+      mockProvidersAndOpenDateTime('va');
 
       chooseDateAndTime.validate();
       cy.findByText(
@@ -105,12 +110,7 @@ describe('VAOS Choose Date and Time', () => {
         },
       ).toJSON();
       mockProviderSlotsApi({ response: draftAppointmentResponse });
-
-      cy.visit(
-        `/my-health/appointments/schedule-referral/date-time/?id=${referralId}&providerId=${providerId}`,
-      );
-
-      cy.wait('@v2:get:providerSlots');
+      mockProvidersAndOpenDateTime('cc');
 
       chooseDateAndTime.assertNoSlotsAvailableAlert();
 
@@ -129,12 +129,7 @@ describe('VAOS Choose Date and Time', () => {
         },
       ).toJSON();
       mockProviderSlotsApi({ response: draftAppointmentResponse });
-
-      cy.visit(
-        `/my-health/appointments/schedule-referral/date-time/?id=${referralId}&providerId=${providerId}`,
-      );
-
-      cy.wait('@v2:get:providerSlots');
+      mockProvidersAndOpenDateTime('va');
 
       chooseDateAndTime.assertNoSlotsAvailableAlertVA();
 
@@ -159,12 +154,7 @@ describe('VAOS Choose Date and Time', () => {
           response: errorResponse,
           responseCode,
         });
-
-        cy.visit(
-          `/my-health/appointments/schedule-referral/date-time/?id=${referralId}&providerId=${providerId}`,
-        );
-
-        cy.wait('@v2:get:providerSlots');
+        mockProvidersAndOpenDateTime('cc');
 
         chooseDateAndTime.assertApiError();
 
@@ -207,12 +197,7 @@ describe('VAOS Choose Date and Time', () => {
           response: errorResponse,
           responseCode,
         });
-
-        cy.visit(
-          `/my-health/appointments/schedule-referral/date-time/?id=${referralId}&providerId=${providerId}`,
-        );
-
-        cy.wait('@v2:get:providerSlots');
+        mockProvidersAndOpenDateTime('va');
 
         chooseDateAndTime.assertApiErrorVA();
 

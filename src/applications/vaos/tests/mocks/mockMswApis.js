@@ -74,11 +74,11 @@ export const buildAppointmentsUrl = () => {
 };
 
 /**
- * Build the provider-slots API URL
- * @returns {string} The provider-slots API URL
+ * Build the provider_slots API URL
+ * @returns {string} The provider_slots API URL
  */
 export const buildProviderSlotsUrl = () => {
-  return `${environment.API_URL}/vaos/v2/provider-slots`;
+  return `${environment.API_URL}/vaos/v2/provider_slots`;
 };
 
 /**
@@ -252,9 +252,9 @@ export const mockAppointmentsGetApi = ({ response, responseCode = 200 }) => {
 };
 
 /**
- * Mock the provider-slots GET API endpoint using MSW
+ * Mock the provider_slots GET API endpoint using MSW
  *
- * @example GET '/vaos/v2/provider-slots?referral_id=...&provider_id=...'
+ * @example GET '/vaos/v2/provider_slots?referral_id=...&provider_type=...'
  *
  * @param {Object} options
  * @param {Object} options.response - The provider slots data to return

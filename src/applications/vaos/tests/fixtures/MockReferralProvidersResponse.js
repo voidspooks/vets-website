@@ -7,6 +7,7 @@ class MockReferralProvidersResponse {
       page: 1,
       perPage: 5,
       totalEntries: 10,
+      providerMode: null,
       success: true,
       notFound: false,
       serverError: false,
@@ -15,33 +16,72 @@ class MockReferralProvidersResponse {
   }
 
   /**
-   * Creates a single provider data object
+   * Creates a single unified provider row (matches /vaos/v2/providers JSON:API shape).
    *
    * @param {number} index - Index for unique provider generation
+   * @param {Object} [options]
+   * @param {'cc'|'va'|null} [options.providerMode] - When 'cc' or 'va', every row uses that type; when null, alternates by index (even CC, odd VA).
    * @returns {Object} A provider data object
    */
-  static createProvider(index = 0) {
+  static createProvider(index = 0, { providerMode = null } = {}) {
+    let isVa;
+    if (providerMode === 'va') {
+      isVa = true;
+    } else if (providerMode === 'cc') {
+      isVa = false;
+    } else {
+      isVa = index % 2 === 1;
+    }
+
+    const shared = {
+      driveTime: `${10 + index} min`,
+      driveTimeInSeconds: (10 + index) * 60,
+      distanceInMiles: 2 + index,
+      nextAvailableDate: '2026-04-15T12:00:00.000Z',
+      address: {
+        street1: `${100 + index} Main St`,
+        city: 'Portland',
+        state: 'OR',
+        zip: '97201',
+      },
+      phone: `503-555-${String(1000 + index).slice(0, 4)}`,
+      latitude: 45.5152 + index * 0.01,
+      longitude: -122.6784 + index * 0.01,
+    };
+
+    if (isVa) {
+      const clinicId = String(1081 + index);
+      return {
+        id: clinicId,
+        type: 'unified_provider',
+        attributes: {
+          ...shared,
+          name: `VA Clinic Provider ${index}`,
+          facilityName: `VA Medical Center ${index}`,
+          providerType: 'va',
+          locationId: '534',
+          serviceType: 'primaryCare',
+        },
+      };
+    }
+
     return {
       id: `provider-${index}`,
-      type: 'provider',
+      type: 'unified_provider',
       attributes: {
-        id: `provider-${index}`,
+        ...shared,
         name: `Dr. Provider ${index}`,
-        careType: index % 2 === 0 ? 'COMMUNITY CARE' : 'VA',
         facilityName: `Facility ${index}`,
-        driveTime: `${10 + index} min`,
-        driveTimeInSeconds: (10 + index) * 60,
-        distanceInMiles: 2 + index,
-        nextAvailableDate: '2026-04-15',
-        address: {
-          street1: `${100 + index} Main St`,
-          city: 'Portland',
-          state: 'OR',
-          zip: '97201',
-        },
-        phone: `503-555-${String(1000 + index).slice(0, 4)}`,
-        latitude: 45.5152 + index * 0.01,
-        longitude: -122.6784 + index * 0.01,
+        providerType: 'community_care',
+        providerServiceId: `provider-${index}`,
+        appointmentTypes: [
+          {
+            id: 'ov',
+            name: 'Office Visit',
+            isSelfSchedulable: true,
+          },
+        ],
+        networkId: 'sandbox-network-5vuTac8v',
       },
     };
   }
@@ -59,13 +99,16 @@ class MockReferralProvidersResponse {
     page = 1,
     perPage = 5,
     totalEntries = 10,
+    providerMode = null,
   } = {}) {
     const totalPages = Math.ceil(totalEntries / perPage);
     const startIndex = (page - 1) * perPage;
     const count = Math.min(perPage, totalEntries - startIndex);
 
     const providers = Array.from({ length: count }, (_, i) =>
-      MockReferralProvidersResponse.createProvider(startIndex + i),
+      MockReferralProvidersResponse.createProvider(startIndex + i, {
+        providerMode,
+      }),
     );
 
     return {
@@ -128,6 +171,7 @@ class MockReferralProvidersResponse {
       page,
       perPage,
       totalEntries,
+      providerMode,
       notFound,
       serverError,
       success,
@@ -149,6 +193,7 @@ class MockReferralProvidersResponse {
       page,
       perPage,
       totalEntries,
+      providerMode,
     });
   }
 }

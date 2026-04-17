@@ -221,6 +221,71 @@ const getReferralProviderKey = id => {
   return `selected-provider-referral-${id}`;
 };
 
+function appointmentTypeIsSelfSchedulable(apt) {
+  if (!apt) {
+    return false;
+  }
+  return apt.isSelfSchedulable === true || apt.is_self_schedulable === true;
+}
+
+function firstSelfSchedulableAppointmentTypeId(appointmentTypes) {
+  if (!Array.isArray(appointmentTypes)) {
+    return null;
+  }
+  const found = appointmentTypes.find(appointmentTypeIsSelfSchedulable);
+  return found?.id ?? null;
+}
+
+/**
+ * Builds query params for GET /vaos/v2/provider_slots after provider selection.
+ *
+ * @param {Object} provider Unified provider row ({ id, providerType, ...attributes })
+ * @returns {Object|null}
+ */
+function buildProviderSlotsQueryParams(provider) {
+  if (!provider?.providerType) {
+    return null;
+  }
+
+  const { providerType } = provider;
+
+  if (providerType === 'va') {
+    if (!provider.id || !provider.locationId) {
+      return null;
+    }
+    const payload = {
+      providerType: 'va',
+      clinicId: String(provider.id),
+      locationId: String(provider.locationId),
+    };
+    if (provider.serviceType) {
+      payload.clinicalService = String(provider.serviceType);
+    }
+    return payload;
+  }
+
+  if (providerType === 'community_care') {
+    const providerServiceId = provider.providerServiceId || provider.id;
+    const appointmentTypeId = firstSelfSchedulableAppointmentTypeId(
+      provider.appointmentTypes,
+    );
+    if (!providerServiceId || !appointmentTypeId) {
+      return null;
+    }
+    const payload = {
+      providerType: 'community_care',
+      providerServiceId: String(providerServiceId),
+      appointmentTypeId: String(appointmentTypeId),
+    };
+    if (provider.networkId) {
+      payload.networkId = String(provider.networkId);
+    }
+    return payload;
+  }
+
+  return null;
+}
+
 /**
  * Filters referrals by category of care.
  * @param {Array} referrals The referrals to filter
@@ -261,6 +326,7 @@ module.exports = {
   createReferrals,
   getReferralSlotKey,
   getReferralProviderKey,
+  buildProviderSlotsQueryParams,
   filterReferrals,
   expiredUUIDBase,
   getAddressString,

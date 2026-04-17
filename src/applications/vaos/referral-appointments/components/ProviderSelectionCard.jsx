@@ -1,10 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { format, parseISO } from 'date-fns';
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
 import { routeToNextReferralPage } from '../flow';
+import {
+  getReferralProviderKey,
+  buildProviderSlotsQueryParams,
+} from '../utils/referrals';
+import { setProviderSlotsParams } from '../redux/actions';
 import { selectCurrentPage } from '../redux/selectors';
 import ListItem from '../../components/ListItem';
 import AppointmentRow from '../../components/AppointmentRow';
@@ -14,6 +19,7 @@ import { GA_PREFIX, DATE_FORMATS } from '../../utils/constants';
 export default function ProviderSelectionCard({ provider, index, referralId }) {
   const first = index === 0;
   const currentPage = useSelector(selectCurrentPage);
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const goToNextPage = e => {
@@ -21,6 +27,14 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
     recordEvent({
       event: `${GA_PREFIX}-provider-selection-pressed`,
     });
+    const slotsParams = buildProviderSlotsQueryParams(provider);
+    if (slotsParams) {
+      dispatch(setProviderSlotsParams(slotsParams));
+    }
+    sessionStorage.setItem(
+      getReferralProviderKey(referralId),
+      String(provider.id),
+    );
     routeToNextReferralPage(
       history,
       currentPage,
@@ -34,12 +48,20 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
     return null;
   }
 
+  // API value is snake_case; local binding avoids a non-camelCase object literal key under eslint.
+  const communityCareProviderType = 'community_care';
   const careTypeMap = {
+    va: 'VA care',
+    [communityCareProviderType]: 'Community care',
     CC: 'Community care',
     'COMMUNITY CARE': 'Community care',
     VA: 'VA care',
   };
-  const careType = careTypeMap[provider.careType] || provider.careType || '';
+  const careType =
+    careTypeMap[provider.providerType] ||
+    careTypeMap[provider.careType] ||
+    provider.careType ||
+    '';
 
   const formattedDate = provider.nextAvailableDate
     ? format(

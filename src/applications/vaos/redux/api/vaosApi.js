@@ -81,11 +81,34 @@ export const vaosApi = createApi({
       },
     }),
     getProviderSlots: builder.query({
-      async queryFn({ referralId, providerId }) {
+      async queryFn({
+        referralId,
+        providerType,
+        clinicId,
+        locationId,
+        clinicalService,
+        providerServiceId,
+        appointmentTypeId,
+        networkId,
+      }) {
         try {
-          return await apiRequestWithUrl(
-            `/vaos/v2/provider-slots?referral_id=${referralId}&provider_id=${providerId}`,
-          );
+          const query = new URLSearchParams();
+          query.set('referral_id', referralId);
+          query.set('provider_type', providerType);
+          if (providerType === 'va') {
+            query.set('clinic_id', clinicId);
+            query.set('location_id', locationId);
+            if (clinicalService) {
+              query.set('clinical_service', clinicalService);
+            }
+          } else if (providerType === 'community_care') {
+            query.set('provider_service_id', providerServiceId);
+            query.set('appointment_type_id', appointmentTypeId);
+            if (networkId) {
+              query.set('network_id', networkId);
+            }
+          }
+          return await apiRequestWithUrl(`/vaos/v2/provider_slots?${query}`);
         } catch (error) {
           captureError(error, false, 'fetch provider slots');
           return {

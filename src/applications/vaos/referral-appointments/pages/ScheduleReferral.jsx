@@ -9,7 +9,7 @@ import ReferralLayout from '../components/ReferralLayout';
 import { routeToNextReferralPage } from '../flow';
 import { setFormCurrentPage, setInitReferralFlow } from '../redux/actions';
 import { selectCurrentPage } from '../redux/selectors';
-import { getReferralSlotKey } from '../utils/referrals';
+import { getReferralSlotKey, getReferralProviderKey } from '../utils/referrals';
 import { titleCase } from '../../utils/formatters';
 import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
 import NewTabAnchor from '../../components/NewTabAnchor';
@@ -22,6 +22,7 @@ export default function ScheduleReferral(props) {
   const currentPage = useSelector(selectCurrentPage);
   const dispatch = useDispatch();
   const selectedSlotKey = getReferralSlotKey(currentReferral.uuid);
+  const selectedProviderKey = getReferralProviderKey(currentReferral.uuid);
   const hasVeteranAddress = meta.veteranAddressPresent;
   const expirationDate = currentReferral?.expirationDate
     ? format(new Date(currentReferral.expirationDate), 'MMMM d, yyyy')
@@ -33,8 +34,9 @@ export default function ScheduleReferral(props) {
       dispatch(setFormCurrentPage('scheduleReferral'));
       dispatch(setInitReferralFlow());
       sessionStorage.removeItem(selectedSlotKey);
+      sessionStorage.removeItem(selectedProviderKey);
     },
-    [location, dispatch, selectedSlotKey],
+    [location, dispatch, selectedSlotKey, selectedProviderKey],
   );
   const categoryOfCare = titleCase(currentReferral.categoryOfCare);
 

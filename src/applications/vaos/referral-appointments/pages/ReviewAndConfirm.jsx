@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   getSelectedSlotStartTime,
   getSelectedProviderId,
+  getProviderSlotsParams,
 } from '../redux/selectors';
 import {
   setFormCurrentPage,
@@ -41,7 +42,13 @@ const ReviewAndConfirm = props => {
   const savedProviderId = sessionStorage.getItem(
     getReferralProviderKey(currentReferral.uuid),
   );
-  const providerId = selectedProviderId || savedProviderId;
+  const providerSlotsParams = useSelector(getProviderSlotsParams);
+  const providerId =
+    selectedProviderId ||
+    savedProviderId ||
+    (providerSlotsParams?.providerType === 'va'
+      ? providerSlotsParams.clinicId
+      : providerSlotsParams?.providerServiceId);
 
   const selectedSlot = useSelector(state => getSelectedSlotStartTime(state));
   const [createFailed, setCreateFailed] = useState(false);
@@ -58,12 +65,14 @@ const ReviewAndConfirm = props => {
   } = useGetProviderSlotsQuery(
     {
       referralId: currentReferral.uuid,
-      providerId,
+      ...providerSlotsParams,
     },
-    { skip: !providerId },
+    { skip: !providerSlotsParams?.providerType },
   );
 
-  const isCommunityCare = draftAppointmentInfo?.attributes?.careType !== 'VA';
+  const schedulingCareType =
+    draftAppointmentInfo?.attributes?.careType ?? currentReferral.careType;
+  const isCommunityCare = schedulingCareType !== 'VA';
 
   const slotDetails = getSlotByDate(
     draftAppointmentInfo?.attributes?.slots,
@@ -98,7 +107,11 @@ const ReviewAndConfirm = props => {
 
   useEffect(
     () => {
-      if (!providerId || (!selectedSlot && !savedSelectedSlot)) {
+      if (
+        !providerSlotsParams?.providerType ||
+        !providerId ||
+        (!selectedSlot && !savedSelectedSlot)
+      ) {
         routeToCCPage(history, 'scheduleReferral', currentReferral.uuid);
       }
     },
@@ -106,6 +119,7 @@ const ReviewAndConfirm = props => {
       currentReferral.uuid,
       history,
       providerId,
+      providerSlotsParams,
       savedSelectedSlot,
       selectedSlot,
     ],
@@ -203,6 +217,8 @@ const ReviewAndConfirm = props => {
       hasEyebrow
       heading="Review your appointment details"
       apiFailure={isDraftError}
+      errorAlertLinkNewTab
+      isVAAppointment={!isCommunityCare}
       loadingMessage={
         isDraftLoading && !isDraftError
           ? 'Loading your appointment details'

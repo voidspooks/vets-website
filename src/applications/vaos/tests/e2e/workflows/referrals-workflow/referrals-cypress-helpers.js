@@ -129,9 +129,9 @@ export function mockAppointmentDetailsApiWithPolling({
 }
 
 /**
- * Function to mock the 'GET' provider-slots endpoint.
+ * Function to mock the 'GET' provider_slots endpoint.
  *
- * @example GET '/vaos/v2/provider-slots?referral_id=...&provider_id=...'
+ * @example GET '/vaos/v2/provider_slots?referral_id=...&provider_type=...'
  *
  * @export
  * @param {Object} arguments - Function arguments.
@@ -145,7 +145,7 @@ export function mockProviderSlotsApi({
   cy.intercept(
     {
       method: 'GET',
-      pathname: '/vaos/v2/provider-slots',
+      pathname: '/vaos/v2/provider_slots',
     },
     req => {
       req.reply({
@@ -154,6 +154,26 @@ export function mockProviderSlotsApi({
       });
     },
   ).as('v2:get:providerSlots');
+}
+
+/**
+ * Visit provider selection and click through to date-time so Redux has providerSlotsParams
+ * (required after provider_slots params moved off sessionStorage).
+ * Prereqs: mockReferralProvidersApi + mockProviderSlotsApi registered, cy.login done.
+ */
+export function navigateFromProviderSelectionToDateTime({
+  referralId,
+  providerCardIndex = 0,
+}) {
+  cy.visit(
+    `/my-health/appointments/schedule-referral/provider-selection?id=${referralId}`,
+  );
+  cy.wait('@v2:get:referral:providers');
+  cy.findAllByTestId('provider-selection-card')
+    .eq(providerCardIndex)
+    .find('va-link')
+    .click();
+  cy.wait('@v2:get:providerSlots');
 }
 
 /**

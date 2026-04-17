@@ -7,7 +7,11 @@ import {
   createTestStore,
   renderWithStoreAndRouter,
 } from '../../tests/mocks/setup';
-import { createReferralById, getReferralSlotKey } from '../utils/referrals';
+import {
+  createReferralById,
+  getReferralSlotKey,
+  getReferralProviderKey,
+} from '../utils/referrals';
 
 describe('VAOS Component: ScheduleReferral', () => {
   afterEach(() => {
@@ -55,7 +59,11 @@ describe('VAOS Component: ScheduleReferral', () => {
   it('should reset slot selection', async () => {
     const referral = createReferralById(referralDate, '222');
     const selectedSlotKey = getReferralSlotKey(referral.attributes.uuid);
+    const selectedProviderKey = getReferralProviderKey(
+      referral.attributes.uuid,
+    );
     sessionStorage.setItem(selectedSlotKey, '0');
+    sessionStorage.setItem(selectedProviderKey, 'prov-1');
     const initialState = {
       featureToggles: {
         vaOnlineSchedulingCCDirectScheduling: true,
@@ -70,6 +78,7 @@ describe('VAOS Component: ScheduleReferral', () => {
     });
     await waitFor(() => {
       expect(sessionStorage.getItem(selectedSlotKey)).to.be.null;
+      expect(sessionStorage.getItem(selectedProviderKey)).to.be.null;
     });
   });
   it('should display warning alert when station id is not valid', async () => {

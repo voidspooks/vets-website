@@ -687,9 +687,14 @@ const responses = {
       }),
     );
   },
-  'GET /vaos/v2/provider-slots': (req, res) => {
+  'GET /vaos/v2/provider_slots': (req, res) => {
     const referralId = req.query.referral_id;
-    const providerId = req.query.provider_id;
+    const providerType = req.query.provider_type;
+    const providerId =
+      req.query.provider_id ||
+      (providerType === 'va'
+        ? req.query.clinic_id
+        : req.query.provider_service_id);
     if (!referralId) {
       return res.status(422).json({
         errors: [
@@ -722,7 +727,10 @@ const responses = {
       );
     }
 
-    if (providerId && providerId.startsWith('va-')) {
+    if (
+      providerType === 'va' ||
+      (providerId && String(providerId).startsWith('va-'))
+    ) {
       const rawVaSlots = getMockSlots({
         existingAppointments: getMockConfirmedAppointments().data,
         futureMonths: 2,

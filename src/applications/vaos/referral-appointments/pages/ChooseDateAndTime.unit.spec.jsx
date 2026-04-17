@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import { cleanup } from '@testing-library/react';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
+import { defaultSerializeQueryArgs } from '@reduxjs/toolkit/query';
 import {
   createGetHandler,
   jsonResponse,
@@ -24,6 +25,21 @@ import { vaosApi } from '../../redux/api/vaosApi';
 
 describe('VAOS ChooseDateAndTime component', () => {
   const sandbox = sinon.createSandbox();
+  const communityCareProviderSlotsParams = {
+    providerType: 'community_care',
+    providerServiceId: '9mN718pH',
+    appointmentTypeId: 'ov',
+  };
+  const providerSlotsQueryArgs = {
+    referralId: 'UUID',
+    providerType: 'community_care',
+    providerServiceId: '9mN718pH',
+    appointmentTypeId: 'ov',
+  };
+  const providerSlotsQueryKey = defaultSerializeQueryArgs({
+    endpointName: 'getProviderSlots',
+    queryArgs: providerSlotsQueryArgs,
+  });
   const confirmed = [
     {
       minutesDuration: 30,
@@ -104,6 +120,7 @@ describe('VAOS ChooseDateAndTime component', () => {
     },
     referral: {
       draftAppointmentInfo: createDraftAppointmentInfo(1),
+      providerSlotsParams: communityCareProviderSlotsParams,
     },
     appointments: {
       confirmed,
@@ -111,7 +128,7 @@ describe('VAOS ChooseDateAndTime component', () => {
     },
     appointmentApi: {
       queries: {
-        'getProviderSlots({"providerId":"9mN718pH","referralId":"UUID"})': {
+        [providerSlotsQueryKey]: {
           status: 'fulfilled',
           data: createDraftAppointmentInfo(1),
           endpoint: 'getProviderSlots',
@@ -121,7 +138,7 @@ describe('VAOS ChooseDateAndTime component', () => {
         },
       },
       subscriptions: {
-        'getProviderSlots({"providerId":"9mN718pH","referralId":"UUID"})': {
+        [providerSlotsQueryKey]: {
           abc: { pollingInterval: 0 },
         },
       },
@@ -134,6 +151,7 @@ describe('VAOS ChooseDateAndTime component', () => {
     referral: {
       draftAppointmentInfo: {},
       draftAppointmentCreateStatus: FETCH_STATUS.notStarted,
+      providerSlotsParams: communityCareProviderSlotsParams,
     },
     appointments: {
       confirmed,
@@ -143,6 +161,9 @@ describe('VAOS ChooseDateAndTime component', () => {
   const failedState = {
     featureToggles: {
       vaOnlineSchedulingCCDirectScheduling: true,
+    },
+    referral: {
+      providerSlotsParams: communityCareProviderSlotsParams,
     },
     appointmentApi: {
       mutations: {
@@ -177,6 +198,7 @@ describe('VAOS ChooseDateAndTime component', () => {
     await cleanup();
     sandbox.restore();
     server.resetHandlers();
+    sessionStorage.clear();
     // Reset RTK Query cache to prevent test pollution
     vaosApi.util.resetApiState();
   });
@@ -184,7 +206,7 @@ describe('VAOS ChooseDateAndTime component', () => {
     let apiCalled = false;
 
     server.use(
-      createGetHandler(`${environment.API_URL}/vaos/v2/provider-slots`, () => {
+      createGetHandler(`${environment.API_URL}/vaos/v2/provider_slots`, () => {
         apiCalled = true;
         return jsonResponse({ data: createDraftAppointmentInfo() });
       }),
@@ -209,7 +231,7 @@ describe('VAOS ChooseDateAndTime component', () => {
 
     server.use(
       createGetHandler(
-        `${environment.API_URL}/vaos/v2/provider-slots`,
+        `${environment.API_URL}/vaos/v2/provider_slots`,
         ({ request }) => {
           capturedUrl = request.url || null;
           return jsonResponse({ data: createDraftAppointmentInfo() });
@@ -231,12 +253,14 @@ describe('VAOS ChooseDateAndTime component', () => {
     );
     const urlString = capturedUrl.toString();
     expect(urlString).to.include('referral_id=UUID');
-    expect(urlString).to.include('provider_id=9mN718pH');
+    expect(urlString).to.include('provider_type=community_care');
+    expect(urlString).to.include('provider_service_id=9mN718pH');
+    expect(urlString).to.include('appointment_type_id=ov');
     sandbox.assert.calledOnce(fetchAppointmentsModule.fetchAppointments);
   });
   it('should show error if any fetch fails', async () => {
     server.use(
-      createGetHandler(`${environment.API_URL}/vaos/v2/provider-slots`, () =>
+      createGetHandler(`${environment.API_URL}/vaos/v2/provider_slots`, () =>
         jsonResponse(
           { error: { status: 500, message: 'Failed to create appointment' } },
           { status: 500 },
