@@ -1,6 +1,9 @@
 import { isMedicalClaim, isNewClaim, whenAll } from './form-config';
 
-export const policyDatesEnabled = formData =>
+export const policyDateFieldsEnabled = (formData, _, fullData) =>
+  (fullData || formData)['view:champvaClaimsInsuranceDates'];
+
+export const policyDatesPageEnabled = formData =>
   formData['view:champvaClaimsInsuranceDates'];
 
 export const hasOhi = whenAll(isNewClaim, formData => formData.hasOhi);

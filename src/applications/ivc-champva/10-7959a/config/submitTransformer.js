@@ -42,6 +42,16 @@ export default function transformForSubmit(
 
   let copyOfData = JSON.parse(JSON.stringify(transformedData));
 
+  // map policies for 2026 PDF update. TODO: remove post-launch
+  copyOfData.policies = (copyOfData.policies || []).map(policy => {
+    const { policyNumber, providerPhoneNumber, ...rest } = policy;
+    return {
+      ...rest,
+      policyNum: rest.policyNum || policyNumber,
+      providerPhone: rest.providerPhone || providerPhoneNumber,
+    };
+  });
+
   // If user is the sponsor, copy sponsor details into the certifier section:
   if (copyOfData.certifierRole === 'sponsor') {
     copyOfData.certifierName = copyOfData.sponsorName;

@@ -113,4 +113,47 @@ describe('Submit transformer', () => {
       sinon.assert.notCalled(recordEventStub);
     });
   });
+
+  // TODO: remove post-launch of 2026 PDF
+  context('Insurance policy field mapping', () => {
+    const submitWithPolicies = (policies = []) => {
+      const result = JSON.parse(
+        transformForSubmit(formConfig, {
+          data: {
+            'view:champvaClaimsInsuranceDates': true,
+            claimStatus: 'new',
+            hasOhi: true,
+            policies,
+          },
+        }),
+      );
+      return result.policies;
+    };
+
+    it('should map policyNumber to policyNum in policies array', () => {
+      const policies = submitWithPolicies([
+        { name: 'Provider A', policyNumber: '12345' },
+        { name: 'Provider B', policyNumber: '67890' },
+      ]);
+      expect(policies[0].policyNum).to.equal('12345');
+      expect(policies[1].policyNum).to.equal('67890');
+    });
+
+    it('should map providerPhoneNumber to providerPhone in policies array', () => {
+      const policies = submitWithPolicies([
+        { name: 'Provider A', providerPhoneNumber: '555-1234' },
+        { name: 'Provider B', providerPhoneNumber: '555-5678' },
+      ]);
+      expect(policies[0].providerPhone).to.equal('555-1234');
+      expect(policies[1].providerPhone).to.equal('555-5678');
+    });
+
+    it('should preserve existing policyNum and providerPhone values', () => {
+      const policies = submitWithPolicies([
+        { policyNum: 'OLD123', providerPhone: '555-0000' },
+      ]);
+      expect(policies[0].policyNum).to.equal('OLD123');
+      expect(policies[0].providerPhone).to.equal('555-0000');
+    });
+  });
 });

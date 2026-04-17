@@ -21,17 +21,17 @@ export default {
       fallback: content['noun--provider'],
       arrayBuilder: true,
     }),
-    policyNum: textUI({
+    policyNumber: textUI({
       title: INPUT_LABELS.policyNum,
       validations: [validateChars],
     }),
-    providerPhone: phoneUI(INPUT_LABELS.providerPhone),
+    providerPhoneNumber: phoneUI(INPUT_LABELS.providerPhone),
   },
   schema: {
     type: 'object',
     properties: {
-      policyNum: textSchema,
-      providerPhone: phoneSchema,
+      policyNumber: textSchema,
+      providerPhoneNumber: phoneSchema,
     },
   },
 };

@@ -3,7 +3,7 @@ import {
   hasOhi,
   hasTypeOther,
   isNewClaim,
-  policyDatesEnabled,
+  policyDatesPageEnabled,
   whenAll,
 } from '../../utils/helpers';
 import insuranceStatus from './insuranceStatus';
@@ -43,7 +43,7 @@ export const insurancePages = {
     insuranceProvider: pageBuilder.itemPage({
       title: 'Provider information',
       path: 'provider-info/:index',
-      depends: policyDatesEnabled,
+      depends: whenAll(hasOhi, policyDatesPageEnabled),
       ...provider,
     }),
     insuranceType: pageBuilder.itemPage({

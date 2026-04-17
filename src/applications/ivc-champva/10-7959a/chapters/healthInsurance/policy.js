@@ -8,7 +8,7 @@ import {
   textUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import content from '../../locales/en/content.json';
-import { not, policyDatesEnabled } from '../../utils/helpers';
+import { not, policyDateFieldsEnabled } from '../../utils/helpers';
 import { validateChars, validateDateRange } from '../../utils/validation';
 
 const TITLE_TEXT = content['health-insurance--policy-info-title'];
@@ -37,22 +37,22 @@ export default {
     effectiveDate: currentOrPastDateUI({
       title: INPUT_LABELS.effectiveDate,
       hint: HINT_TEXT.effectiveDate,
-      required: policyDatesEnabled,
-      hideIf: not(policyDatesEnabled),
+      required: policyDateFieldsEnabled,
+      hideIf: not(policyDateFieldsEnabled),
     }),
     expirationDate: currentOrPastDateUI({
       title: INPUT_LABELS.expirationDate,
       hint: HINT_TEXT.expirationDate,
-      hideIf: not(policyDatesEnabled),
+      hideIf: not(policyDateFieldsEnabled),
     }),
     policyNum: textUI({
       title: INPUT_LABELS.policyNum,
       validations: [validateChars],
-      hideIf: policyDatesEnabled,
+      hideIf: policyDateFieldsEnabled,
     }),
     providerPhone: phoneUI({
       title: INPUT_LABELS.providerPhone,
-      hideIf: policyDatesEnabled,
+      hideIf: policyDateFieldsEnabled,
     }),
     'ui:validations': [
       validateDateRange({
