@@ -168,26 +168,28 @@ describe('Medical Expenses Pages', () => {
     const item = {
       provider: 'Provider name is here',
     };
-    const { getByText } = render(options.text.getItemName(item));
-    expect(getByText('Provider name is here')).to.exist;
+    const { getByText } = render(options.text.getItemName(item, 0));
+    expect(getByText('Expense 1: Provider name is here')).to.exist;
   });
 
   it('should return the default title when provider is not present', () => {
     const item = {
       provider: '',
     };
-    const { getByText } = render(options.text.getItemName(item));
-    expect(getByText('Provider')).to.exist;
+    const { getByText } = render(options.text.getItemName(item, 0));
+    expect(getByText('Expense 1: Provider')).to.exist;
   });
 
   it('should return the correct card description with paymentDate', () => {
     const item = {
       paymentDate: '2004-04-04',
       paymentFrequency: 'ONCE_MONTH',
+      paymentAmount: 200,
     };
     const { getByText } = render(options.text.cardDescription(item));
     expect(getByText('04/04/2004')).to.exist;
     expect(getByText('Once a month')).to.exist;
+    expect(getByText('$200')).to.exist;
   });
   it('should return the null description when no paymentDate or paymentFrequency is present', () => {
     const item = {

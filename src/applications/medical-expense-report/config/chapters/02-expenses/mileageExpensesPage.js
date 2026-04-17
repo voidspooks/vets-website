@@ -24,9 +24,9 @@ import {
   travelLocationLabels,
 } from '../../../utils/labels';
 import {
-  transformDate,
   requiredIfMileageReimbursed,
   requiredIfMileageLocationOther,
+  transformDate,
 } from './helpers';
 
 const nounSingular = 'mileage expense';
@@ -70,8 +70,26 @@ export const options = {
   isItemIncomplete: item => checkIsItemIncomplete(item),
   maxItems: 12,
   text: {
-    getItemName: item => travelLocationLabels[(item?.travelLocation)] || '',
-    cardDescription: item => transformDate(item?.travelDate) || '',
+    getItemName: (item, index = 0) => {
+      const destination =
+        item?.travelLocation === 'OTHER'
+          ? item?.otherTravelLocation || travelLocationLabels.OTHER
+          : travelLocationLabels[(item?.travelLocation)] || '';
+
+      return `Expense ${index + 1}: ${destination}`;
+    },
+    cardDescription: item => {
+      return (
+        <>
+          <p className="vads-u-margin-y--0">
+            {transformDate(item?.travelDate)}
+          </p>
+          <p className="vads-u-margin-y--0">
+            {item?.travelMilesTraveled} miles
+          </p>
+        </>
+      );
+    },
     cancelAddTitle: `Cancel adding this ${nounSingular}?`,
     cancelEditTitle: `Cancel editing this ${nounSingular}?`,
     cancelAddYes: 'Yes, cancel adding',

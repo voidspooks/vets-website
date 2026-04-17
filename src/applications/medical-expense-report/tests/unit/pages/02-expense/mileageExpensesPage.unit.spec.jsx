@@ -178,16 +178,30 @@ describe('Mileage Expense Pages', () => {
     const item = {
       travelLocation: 'PHARMACY',
     };
-    const { getByText } = render(options.text.getItemName(item));
-    expect(getByText('Pharmacy')).to.exist;
+    const { getByText } = render(options.text.getItemName(item, 0));
+    expect(getByText('Expense 1: Pharmacy')).to.exist;
   });
-  it('should return the correct card description with travelDate', () => {
+
+  it('should return the correct card title with otherTravelLocation when location is OTHER', () => {
+    const item = {
+      travelLocation: 'OTHER',
+      otherTravelLocation: 'Community center',
+    };
+    const { getByText } = render(options.text.getItemName(item, 1));
+    expect(getByText('Expense 2: Community center')).to.exist;
+  });
+
+  it('should render mileage cardDescription content', () => {
     const item = {
       travelDate: '2004-04-04',
+      travelMilesTraveled: 45,
     };
+
     const { getByText } = render(options.text.cardDescription(item));
     expect(getByText('04/04/2004')).to.exist;
+    expect(getByText('45 miles')).to.exist;
   });
+
   it('should check if the item is incomplete', () => {
     const completeItem = {
       traveler: 'CHILD',

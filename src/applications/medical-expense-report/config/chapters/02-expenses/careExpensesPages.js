@@ -17,12 +17,18 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { arrayBuilderPages } from '~/platform/forms-system/src/js/patterns/array-builder';
 import { getArrayUrlSearchParams } from '~/platform/forms-system/src/js/patterns/array-builder/helpers';
-import { recipientTypeLabels, careTypeLabels } from '../../../utils/labels';
 import {
-  transformDate,
+  recipientTypeLabels,
+  careTypeLabels,
+  careFrequencyLabels,
+} from '../../../utils/labels';
+import { formatCurrency } from '../../../utils/helpers';
+import ExpenseCard from '../../../components/ExpenseCard';
+import {
   hideIfInHomeCare,
   requiredIfInHomeCare,
   getCostPageTitle,
+  transformDate,
 } from './helpers';
 
 const nounSingular = 'care expense';
@@ -142,17 +148,18 @@ export const options = {
   isItemIncomplete: item => checkIsItemIncomplete(item),
   maxItems: 8,
   text: {
-    getItemName: item => item?.provider || 'Provider',
+    getItemName: (item, index) =>
+      `Expense ${index + 1}: ${item?.provider || 'Care provider'}`,
     cardDescription: item => {
-      const fromDate = transformDate(item?.careDate?.from);
-      const toDate = transformDate(item?.careDate?.to);
-      if (fromDate && toDate) {
-        return `${fromDate} - ${toDate}`;
-      }
-      if (fromDate) {
-        return `${fromDate}`;
-      }
-      return '';
+      if (!item?.careDate || !item?.monthlyAmount) return null; // this prevents console errors when navigating backwards when there are no items
+      return (
+        <ExpenseCard
+          date={transformDate(item?.careDate?.from)}
+          endDate={transformDate(item?.careDate?.to)}
+          frequency={careFrequencyLabels?.ONCE_MONTH}
+          amount={formatCurrency(item?.monthlyAmount)}
+        />
+      );
     },
     cancelAddTitle: 'Cancel adding this care expense?',
     cancelEditTitle: 'Cancel editing this care expense?',

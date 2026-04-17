@@ -256,13 +256,15 @@ describe('Care Expenses Pages', () => {
         from: '2004-04-04',
       },
       typeOfCare: 'RESIDENTIAL',
+      monthlyAmount: '123',
     };
-    const { getByText: nameText } = render(options.text.getItemName(item));
+    const { getByText: nameText } = render(options.text.getItemName(item, 0));
     const { getByText: descriptionText } = render(
       options.text.cardDescription(item),
     );
-    expect(nameText('John Doe Provider')).to.exist;
+    expect(nameText('Expense 1: John Doe Provider')).to.exist;
     expect(descriptionText('04/04/2004')).to.exist;
+    expect(descriptionText('$123.00')).to.exist;
   });
   it('should return the correct card description when from and to date is provided', () => {
     const item = {
@@ -272,20 +274,22 @@ describe('Care Expenses Pages', () => {
         to: '2005-05-05',
       },
       typeOfCare: 'RESIDENTIAL',
+      monthlyAmount: '123',
     };
-    const { getByText: nameText } = render(options.text.getItemName(item));
+    const { getByText: nameText } = render(options.text.getItemName(item, 0));
     const { getByText: descriptionText } = render(
       options.text.cardDescription(item),
     );
-    expect(nameText('John Doe Provider')).to.exist;
+    expect(nameText('Expense 1: John Doe Provider')).to.exist;
     expect(descriptionText('04/04/2004 - 05/05/2005')).to.exist;
+    expect(descriptionText('$123.00')).to.exist;
   });
   it('should return default card description', () => {
     const item = {
       typeOfCare: 'BLAH',
     };
-    const { getByText: nameText } = render(options.text.getItemName(item));
-    expect(nameText('Provider')).to.exist;
+    const { getByText: nameText } = render(options.text.getItemName(item, 0));
+    expect(nameText('Expense 1: Care provider')).to.exist;
   });
   it('should check if the item is incomplete', () => {
     const completeItem = {

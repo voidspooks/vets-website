@@ -51,7 +51,6 @@
         "to": "2023-01-15"
       },
       "paymentPeriod": "monthly",
-      "paymentAmount": 25,
       "hourlyRate": 50,
       "typeOfCare": "RESIDENTIAL",
       "monthlyAmount": 100
@@ -66,7 +65,6 @@
         "to": "2023-03-15"
       },
       "paymentPeriod": "monthly",
-      "paymentAmount": 25,
       "hourlyRate": 50,
       "typeOfCare": "RESIDENTIAL",
       "monthlyAmount": 100

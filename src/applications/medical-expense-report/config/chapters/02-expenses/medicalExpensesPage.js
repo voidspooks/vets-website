@@ -19,24 +19,12 @@ import {
   careFrequencyLabels,
   recipientTypeLabels,
 } from '../../../utils/labels';
+import { formatCurrency } from '../../../utils/helpers';
 import { transformDate } from './helpers';
+import ExpenseCard from '../../../components/ExpenseCard';
 
 const nounSingular = 'medical expense';
 const nounPlural = 'medical expenses';
-
-function ItemDescription(item) {
-  const paymentDate = transformDate(item?.paymentDate);
-  const frequency = careFrequencyLabels[(item?.paymentFrequency)];
-  if (!paymentDate && !frequency) return null;
-  return (
-    <div>
-      {paymentDate && (
-        <span className="vads-u-display--block">{paymentDate}</span>
-      )}
-      {frequency && <span className="vads-u-display--block">{frequency}</span>}
-    </div>
-  );
-}
 
 function introDescription() {
   return (
@@ -77,8 +65,19 @@ export const options = {
   isItemIncomplete: item => checkIsItemIncomplete(item),
   maxItems: 14,
   text: {
-    getItemName: item => item?.provider || 'Provider',
-    cardDescription: item => ItemDescription(item),
+    getItemName: (item, index) =>
+      `Expense ${index + 1}: ${item?.provider || 'Provider'}`,
+    cardDescription: item => {
+      if (!item?.paymentDate || !item?.paymentAmount || !item?.paymentFrequency)
+        return null; // this prevents proptype console errors when navigating backwards when there are no items
+      return (
+        <ExpenseCard
+          date={transformDate(item?.paymentDate)}
+          amount={formatCurrency(item?.paymentAmount)}
+          frequency={careFrequencyLabels?.[item?.paymentFrequency]}
+        />
+      );
+    },
     cancelAddTitle: `Cancel adding this ${nounSingular}?`,
     cancelEditTitle: `Cancel editing this ${nounSingular}?`,
     cancelAddYes: 'Yes, cancel adding',
