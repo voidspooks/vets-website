@@ -260,6 +260,7 @@ const VaPrescription = prescription => {
                       <CallPharmacyPhone
                         cmopDivisionPhone={pharmacyPhone}
                         page={pageType.DETAILS}
+                        showPeriod={false}
                       />
                     )}{' '}
                     to check on your{' '}

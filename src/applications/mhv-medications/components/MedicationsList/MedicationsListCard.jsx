@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom-v5-compat';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectCernerFacilityIds } from 'platform/site-wide/drupal-static-data/source-files/vamc-ehr/selectors';
 import { VaAlert } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import ExtraDetails from '../shared/ExtraDetails';
@@ -42,9 +42,12 @@ import {
   dispStatusObjV2,
   medicationsUrls,
   NON_VA_MEDICATION_MESSAGE,
+  IN_PROGRESS_FILTER_KEY,
 } from '../../util/constants';
+import { setFilterOption } from '../../redux/preferencesSlice';
 
 const MedicationsListCard = ({ rx }) => {
+  const dispatch = useDispatch();
   const isCernerPilot = useSelector(selectCernerPilotFlag);
   const isV2StatusMapping = useSelector(selectV2StatusMappingFlag);
   const useV2StatusMapping = isCernerPilot && isV2StatusMapping;
@@ -265,8 +268,13 @@ const MedicationsListCard = ({ rx }) => {
           isFillInProgress && (
             <StatusAlertBanner testId="fill-in-progress-alert" icon="schedule">
               {isInitialFillInProgress ? 'Fill' : 'Refill'} in progress.{' '}
-              <Link to={getPrescriptionDetailUrl(rx)}>
-                Review prescription status
+              <Link
+                to={medicationsUrls.subdirectories.LIST}
+                onClick={() =>
+                  dispatch(setFilterOption(IN_PROGRESS_FILTER_KEY))
+                }
+              >
+                Go to in-progress medications
               </Link>
             </StatusAlertBanner>
           )}
@@ -315,9 +323,11 @@ const MedicationsListCard = ({ rx }) => {
               data-testid="no-refills-left-alert"
             >
               <p className="vads-u-margin-y--0">
-                {isExpiredRenewable
-                  ? 'You can’t refill this prescription. If you need more, send a secure message to your care team.'
-                  : 'You have no refills left. If you need more, request a renewal.'}
+                {isOracleHealth &&
+                rx.isRenewable &&
+                showSecureMessagingRenewalRequest
+                  ? 'You have no refills left. If you need more, request a renewal.'
+                  : 'You can’t refill this prescription. If you need more, send a secure message to your care team.'}
               </p>
               <SendRxRenewalMessage
                 rx={rx}

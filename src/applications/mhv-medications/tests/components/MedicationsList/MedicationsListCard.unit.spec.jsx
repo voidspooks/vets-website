@@ -216,13 +216,8 @@ describe('Medication card component', () => {
         );
         expect(getByTestId('fill-in-progress-alert')).to.exist;
         expect(getByText(/Fill in progress\./)).to.exist;
-        const link = getByText('Review prescription status');
-        expect(link).to.have.attribute(
-          'href',
-          `/prescription/${
-            prescriptionsListItem.prescriptionId
-          }?station_number=${prescriptionsListItem.stationNumber}`,
-        );
+        const link = getByText('Go to in-progress medications');
+        expect(link).to.have.attribute('href', '/list');
       });
 
       it('shows alert, link, and "Fill in progress" for "Active: Submitted"', () => {
@@ -238,13 +233,8 @@ describe('Medication card component', () => {
         );
         expect(getByTestId('fill-in-progress-alert')).to.exist;
         expect(getByText(/Fill in progress\./)).to.exist;
-        const link = getByText('Review prescription status');
-        expect(link).to.have.attribute(
-          'href',
-          `/prescription/${
-            prescriptionsListItem.prescriptionId
-          }?station_number=${prescriptionsListItem.stationNumber}`,
-        );
+        const link = getByText('Go to in-progress medications');
+        expect(link).to.have.attribute('href', '/list');
       });
 
       it('shows "Refills left" when not refillable and hides ExtraDetails', () => {
@@ -457,6 +447,46 @@ describe('Medication card component', () => {
           'If you need a refill, call your VA pharmacy',
         );
       });
+
+      it('shows pharmacy phone number when available', () => {
+        const rx = {
+          ...onHoldRx,
+          cmopDivisionPhone: '(555) 123-4567',
+          dialCmopDivisionPhone: '5551234567',
+        };
+        const { getByTestId } = setup(rx, managementImprovementsState);
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'You can’t refill this prescription online right now.',
+        );
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'If you need a refill, call your VA pharmacy',
+        );
+        expect(getByTestId('pharmacy-phone-number')).to.exist;
+      });
+
+      it('shows fallback message when pharmacy phone number is not available', () => {
+        const rx = {
+          ...onHoldRx,
+          cmopDivisionPhone: null,
+          dialCmopDivisionPhone: '',
+          pharmacyPhoneNumber: null,
+          rxRfRecords: [],
+        };
+        const { getByTestId, queryByTestId } = setup(
+          rx,
+          managementImprovementsState,
+        );
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'You can’t refill this prescription online right now.',
+        );
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'If you need a refill, call your VA pharmacy’s automated refill line.',
+        );
+        expect(getByTestId('active-onHold').textContent).to.include(
+          'The phone number is on your prescription label or in your medication details page.',
+        );
+        expect(queryByTestId('pharmacy-phone-number')).to.be.null;
+      });
     });
     describe('Transferred prescription card', () => {
       const transferredRx = {
@@ -530,14 +560,14 @@ describe('Medication card component', () => {
       expect(link).to.have.attribute('href', 'ABC123');
     });
 
-    it('shows no-refills-left alert, renew link, "Refills left: 0", and hides ExtraDetails for Active with 0 refills', () => {
+    it('shows no-refills-left alert with non-renewable message and Learn link for non-Oracle Health Active with 0 refills', () => {
       const { getByTestId, container } = setup(
         activeNoRefillsRx,
         managementImprovementsState,
       );
       expect(getByTestId('no-refills-left-alert')).to.exist;
       expect(getByTestId('no-refills-left-alert').textContent).to.include(
-        'You have no refills left. If you need more, request a renewal.',
+        'You can’t refill this prescription. If you need more, send a secure message to your care team.',
       );
       const link = getByTestId('learn-to-renew-prescriptions-link');
       expect(link).to.exist;
@@ -550,6 +580,37 @@ describe('Medication card component', () => {
         'Refills left: 0',
       );
       expect(container.querySelector('.shipping-info')).to.be.null;
+    });
+
+    it('shows no-refills-left alert with renewable message for Oracle Health Active with 0 refills', () => {
+      const oracleHealthRx = {
+        ...prescriptionsListItem,
+        dispStatus: 'Active',
+        isRefillable: false,
+        refillRemaining: 0,
+        stationNumber: '668',
+        sourceEhr: 'OH',
+        isRenewable: true,
+      };
+      const stateWithSMRenewal = {
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+          [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: true,
+        },
+        drupalStaticData: {
+          vamcEhrData: {
+            data: {
+              cernerFacilities: [{ facilityId: '668' }],
+            },
+          },
+        },
+      };
+      const { getByTestId } = setup(oracleHealthRx, stateWithSMRenewal);
+      expect(getByTestId('no-refills-left-alert')).to.exist;
+      expect(getByTestId('no-refills-left-alert').textContent).to.include(
+        'You have no refills left. If you need more, request a renewal.',
+      );
     });
 
     it('does not show no-refills-left alert when refills remain', () => {

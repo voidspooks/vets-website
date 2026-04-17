@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { dataDogActionNames } from '../../util/dataDogConstants';
 
-const CallPharmacyPhone = ({ cmopDivisionPhone, page }) => {
+const CallPharmacyPhone = ({ cmopDivisionPhone, page, showPeriod = true }) => {
   const number = cmopDivisionPhone
     ? cmopDivisionPhone.replace(/[^0-9]/g, '')
     : null;
@@ -19,12 +19,10 @@ const CallPharmacyPhone = ({ cmopDivisionPhone, page }) => {
               dataDogActionNames.shared.PHARMACY_PHONE_NUMBER_LINK
             }${page}`}
           />{' '}
-          <span>
-            (<va-telephone tty contact="711" />)
-          </span>
+          (<va-telephone tty contact="711" />){showPeriod && '.'}
         </>
       ) : (
-        <>.</>
+        <>{showPeriod && '.'}</>
       )}
     </>
   );
@@ -33,6 +31,7 @@ const CallPharmacyPhone = ({ cmopDivisionPhone, page }) => {
 CallPharmacyPhone.propTypes = {
   cmopDivisionPhone: PropTypes.string,
   page: PropTypes.string,
+  showPeriod: PropTypes.bool,
 };
 
 export default CallPharmacyPhone;
