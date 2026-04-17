@@ -26,7 +26,7 @@ export const claimantRelationshipOptions = {
   'CHILD_18-23_IN_SCHOOL':
     'Adult child who is 18-23 years old and still in school',
   HELPLESS_ADULT_CHILD: 'Adult child who is seriously disabled',
-  OTHER: 'Other',
+  OTHER: 'None of these options apply to me',
 };
 
 export const marriageEndOptions = {
