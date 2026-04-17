@@ -1,5 +1,7 @@
 import recordEvent from 'platform/monitoring/record-event';
 
+import { isIntentToFileExpiringSoon } from './helpers';
+
 /**
  * Analytics Event Schema for Upload Events
  *
@@ -9,7 +11,7 @@ import recordEvent from 'platform/monitoring/record-event';
  *
  * @typedef {Object} UploadAnalyticsEvent
  * @property {string} event - Event name (e.g., 'claims-upload-start', 'claims-upload-success')
- * @property {string} api-name - Human-readable API identifier
+ * @property {string|undefined} api-name - Human-readable API identifier
  * @property {string|undefined} api-status - 'started' | 'successful' | 'failed'
  * @property {string|undefined} error-key - Error code/identifier when applicable
  * @property {number|undefined} upload-cancel-file-count - Number of files being canceled
@@ -19,6 +21,20 @@ import recordEvent from 'platform/monitoring/record-event';
  * @property {boolean|undefined} upload-retry - Whether this upload includes retry attempts
  * @property {number|undefined} upload-retry-file-count - Number of files being retried
  * @property {number|undefined} upload-success-file-count - Number of files successfully uploaded
+ */
+
+/**
+ * Analytics Event Schema for Intent to File Events
+ *
+ * @typedef {Object} IntentToFileAnalyticsEvent
+ * @property {string} event
+ * @property {string} api-name - Human-readable API identifier
+ * @property {string} api-status - 'successful' | 'failed'
+ * @property {number|undefined} api-latency-ms - API call duration in milliseconds
+ * @property {string|undefined} error-key - Error reason when applicable
+ * @property {boolean} itf-none - True when the response contains no ITFs
+ * @property {number} itf-expiring-count - Count of ITFs expiring soon
+ * @property {number} itf-not-expiring-count - Count of ITFs not yet expiring
  */
 
 /**
@@ -48,6 +64,32 @@ const BASE_UPLOAD_EVENT_KEYS = {
 const createUploadEvent = (eventName, data) => ({
   event: eventName,
   ...BASE_UPLOAD_EVENT_KEYS,
+  ...data,
+});
+
+/**
+ * Base metadata keys for all ITF analytics events.
+ * Ensures consistent structure across all events for easier querying.
+ */
+const BASE_ITF_EVENT_KEYS = {
+  'api-name': undefined,
+  'api-status': undefined,
+  'api-latency-ms': undefined,
+  'error-key': undefined,
+  'itf-none': false,
+  'itf-expiring-count': 0,
+  'itf-not-expiring-count': 0,
+};
+
+/**
+ * Creates an intent-to-file analytics event with standardized structure.
+ * @param {Object} data - Event-specific data to merge with base keys
+ * @returns {Object} The complete event object
+ */
+const createIntentToFileEvent = data => ({
+  event: 'claims-itf-status',
+  ...BASE_ITF_EVENT_KEYS,
+  'api-name': 'GET intents to file',
   ...data,
 });
 
@@ -400,6 +442,52 @@ export const recordUploadCancelEvent = ({
       'upload-cancel-file-count': cancelFileCount,
       'upload-retry': retryFileCount > 0,
       'upload-retry-file-count': retryFileCount,
+    }),
+  );
+};
+
+/**
+ * Records an ITF API call event after `/intents_to_file` resolves or fails.
+ * On success, includes expiring/not-expiring counts derived from the response.
+ * @param {Object} params
+ * @param {Array<{ expirationDate: string }>} [params.intentsToFile=[]] - Resolved ITF data when `errorKey` is omitted (may be empty)
+ * @param {number} params.latencyMs - API call duration in milliseconds
+ * @param {string} [params.errorKey] - Error reason (omit on success; when set, `intentsToFile` is ignored)
+ */
+export const recordIntentToFilePageViewEvent = ({
+  intentsToFile = [],
+  latencyMs,
+  errorKey,
+}) => {
+  if (errorKey) {
+    recordEvent(
+      createIntentToFileEvent({
+        'api-status': 'failed',
+        'api-latency-ms': latencyMs,
+        'error-key': errorKey,
+      }),
+    );
+    return;
+  }
+
+  let expiringCount = 0;
+  let notExpiringCount = 0;
+
+  for (const itf of intentsToFile) {
+    if (isIntentToFileExpiringSoon(itf.expirationDate)) {
+      expiringCount += 1;
+    } else {
+      notExpiringCount += 1;
+    }
+  }
+
+  recordEvent(
+    createIntentToFileEvent({
+      'api-status': 'successful',
+      'api-latency-ms': latencyMs,
+      'itf-none': intentsToFile.length === 0,
+      'itf-expiring-count': expiringCount,
+      'itf-not-expiring-count': notExpiringCount,
     }),
   );
 };

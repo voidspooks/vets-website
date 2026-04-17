@@ -4,9 +4,11 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { addDays, formatISO } from 'date-fns';
 import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom-v5-compat';
 import * as api from '@department-of-veterans-affairs/platform-utilities/api';
+import * as recordEventModule from '~/platform/monitoring/record-event';
 
 import intentsToFileReducer from '../../reducers/intents-to-file';
 import IntentToFilePage from '../../containers/IntentToFilePage';
@@ -55,15 +57,26 @@ const renderWithRouterAtPath = (store, path = '/your-claims/intent-to-file') =>
     </Provider>,
   );
 
+const makeActiveItf = (today, { id, type, expiresInDays }) => ({
+  id,
+  type,
+  creationDate: new Date(Date.now()).toISOString(),
+  expirationDate: formatISO(addDays(today, expiresInDays)),
+  status: 'active',
+});
+
 describe('<IntentToFilePage>', () => {
   let apiStub;
+  let recordEventStub;
 
   beforeEach(() => {
     apiStub = sinon.stub(api, 'apiRequest');
+    recordEventStub = sinon.stub(recordEventModule, 'default');
   });
 
   afterEach(() => {
     apiStub.restore();
+    recordEventStub.restore();
   });
 
   context('when cstIntentsToFile feature toggle is enabled', () => {
@@ -85,6 +98,23 @@ describe('<IntentToFilePage>', () => {
 
         await waitFor(() => {
           screen.getByTestId('itf-empty-state');
+        });
+      });
+
+      it('should record analytics for empty ITF state', async () => {
+        renderWithRouterAtPath(getStore(true));
+
+        await waitFor(() => {
+          expect(
+            recordEventStub.calledWithMatch({
+              event: 'claims-itf-status',
+              'api-name': 'GET intents to file',
+              'api-status': 'successful',
+              'itf-none': true,
+              'itf-expiring-count': 0,
+              'itf-not-expiring-count': 0,
+            }),
+          ).to.be.true;
         });
       });
 
@@ -221,43 +251,163 @@ describe('<IntentToFilePage>', () => {
 
         expect(screen.queryByTestId('itf-empty-state')).to.not.exist;
       });
+
+      context(
+        'when ITF response contains active ITFs not nearing expiration',
+        () => {
+          it('should record event with the correct not-expiring count', async () => {
+            const today = new Date();
+            apiStub.resolves({
+              data: [
+                makeActiveItf(today, {
+                  id: '1',
+                  type: 'compensation',
+                  expiresInDays: 61,
+                }),
+              ],
+            });
+
+            renderWithRouterAtPath(getStore(true));
+
+            await waitFor(() => {
+              expect(
+                recordEventStub.calledWithMatch({
+                  event: 'claims-itf-status',
+                  'api-name': 'GET intents to file',
+                  'api-status': 'successful',
+                  'itf-none': false,
+                  'itf-expiring-count': 0,
+                  'itf-not-expiring-count': 1,
+                }),
+              ).to.be.true;
+            });
+          });
+        },
+      );
+
+      context(
+        'when ITF response contains active ITFs nearing expiration',
+        () => {
+          it('should record event with the correct expiring count', async () => {
+            const today = new Date();
+            apiStub.resolves({
+              data: [
+                makeActiveItf(today, {
+                  id: '1',
+                  type: 'compensation',
+                  expiresInDays: 45,
+                }),
+                makeActiveItf(today, {
+                  id: '2',
+                  type: 'pension',
+                  expiresInDays: 30,
+                }),
+              ],
+            });
+
+            renderWithRouterAtPath(getStore(true));
+
+            await waitFor(() => {
+              expect(
+                recordEventStub.calledWithMatch({
+                  event: 'claims-itf-status',
+                  'api-name': 'GET intents to file',
+                  'api-status': 'successful',
+                  'itf-none': false,
+                  'itf-expiring-count': 2,
+                  'itf-not-expiring-count': 0,
+                }),
+              ).to.be.true;
+            });
+          });
+        },
+      );
+
+      context(
+        'when ITF response contains both expiring and non-expiring ITFs',
+        () => {
+          it('should record a single event with both counts', async () => {
+            const today = new Date();
+            apiStub.resolves({
+              data: [
+                makeActiveItf(today, {
+                  id: '1',
+                  type: 'compensation',
+                  expiresInDays: 45,
+                }),
+                makeActiveItf(today, {
+                  id: '2',
+                  type: 'pension',
+                  expiresInDays: 61,
+                }),
+              ],
+            });
+
+            renderWithRouterAtPath(getStore(true));
+
+            await waitFor(() => {
+              expect(
+                recordEventStub.calledWithMatch({
+                  event: 'claims-itf-status',
+                  'api-name': 'GET intents to file',
+                  'api-status': 'successful',
+                  'itf-none': false,
+                  'itf-expiring-count': 1,
+                  'itf-not-expiring-count': 1,
+                }),
+              ).to.be.true;
+            });
+          });
+        },
+      );
+
+      context('with server error', () => {
+        let screen;
+
+        beforeEach(() => {
+          apiStub.rejects({
+            errors: [{ status: '500', title: 'Internal Server Error' }],
+          });
+          screen = renderWithRouterAtPath(getStore(true));
+        });
+
+        it('should render the error alert without the empty state or cards', async () => {
+          expect(await screen.findByTestId('itf-error-alert')).to.exist;
+
+          expect(screen.queryByTestId('itf-empty-state')).to.not.exist;
+          expect(screen.container.querySelectorAll('va-card')).to.have.length(
+            0,
+          );
+        });
+
+        it('should record a failed API call event', async () => {
+          await waitFor(() => {
+            expect(
+              recordEventStub.calledWithMatch({
+                event: 'claims-itf-status',
+                'api-name': 'GET intents to file',
+                'api-status': 'failed',
+                'error-key': '500',
+                'itf-none': false,
+                'itf-expiring-count': 0,
+                'itf-not-expiring-count': 0,
+              }),
+            ).to.be.true;
+          });
+        });
+      });
     });
 
-    context('with server error', () => {
+    context('when cstIntentsToFile feature toggle is disabled', () => {
       beforeEach(() => {
-        apiStub.rejects(new Error('500'));
+        apiStub.resolves({ data: [] });
       });
 
-      it('should render the error alert', async () => {
-        const screen = renderWithRouterAtPath(getStore(true));
-
-        await waitFor(() => {
-          screen.getByTestId('itf-error-alert');
-        });
+      it('should redirect to the claims index page', () => {
+        const screen = renderWithRouterAtPath(getStore(false));
+        expect(screen.queryByText('Your intents to file')).to.be.null;
+        expect(screen.getByTestId('claims-index')).to.exist;
       });
-
-      it('should not render the empty state or cards', async () => {
-        const screen = renderWithRouterAtPath(getStore(true));
-
-        await waitFor(() => {
-          screen.getByTestId('itf-error-alert');
-        });
-
-        expect(screen.queryByTestId('itf-empty-state')).to.not.exist;
-        expect(screen.container.querySelectorAll('va-card')).to.have.length(0);
-      });
-    });
-  });
-
-  context('when cstIntentsToFile feature toggle is disabled', () => {
-    beforeEach(() => {
-      apiStub.resolves({ data: [] });
-    });
-
-    it('should redirect to the claims index page', () => {
-      const screen = renderWithRouterAtPath(getStore(false));
-      expect(screen.queryByText('Your intents to file')).to.be.null;
-      screen.getByTestId('claims-index');
     });
   });
 });

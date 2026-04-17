@@ -2263,10 +2263,11 @@ const responses = {
   'GET /v0/intents_to_file': (() => {
     // Configuration for testing different ITF scenarios
     // Appropriate values:
-    // - 'multiple' : Two active ITFs (compensation not expiring, pension expiring soon)
-    // - 'single'   : One active ITF (compensation only)
-    // - 'empty'    : No active ITFs (empty state)
-    // - 'error'    : 500 server error (system alert)
+    // - 'multiple'       : Two active ITFs (compensation not expiring, pension expiring soon)
+    // - 'single'         : One active ITF (compensation, not expiring yet)
+    // - 'singleExpiring' : One active ITF (compensation, expiring soon)
+    // - 'empty'          : No active ITFs (empty state)
+    // - 'error'          : 500 server error (system alert)
     const itfScenario = 'multiple';
 
     const now = new Date();
@@ -2309,6 +2310,15 @@ const responses = {
           type: 'compensation',
           creationDate: monthsAgo(8),
           expirationDate: monthsFromNow(4),
+          status: 'active',
+        },
+      ],
+      singleExpiring: [
+        {
+          id: '193685',
+          type: 'compensation',
+          creationDate: monthsAgo(11),
+          expirationDate: daysFromNow(30),
           status: 'active',
         },
       ],

@@ -5,14 +5,14 @@ import {
   VaLink,
   VaTagStatus,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
-import { differenceInCalendarDays, parseISO } from 'date-fns';
 
-import { buildDateFormatter } from '../utils/helpers';
+import {
+  buildDateFormatter,
+  isIntentToFileExpiringSoon,
+} from '../utils/helpers';
 
 const formatDate = buildDateFormatter();
 const formatShortDate = buildDateFormatter('MM/dd/yyyy');
-
-const EXPIRING_THRESHOLD_DAYS = 60;
 
 const TYPE_LABELS = {
   compensation: 'Disability compensation',
@@ -21,16 +21,6 @@ const TYPE_LABELS = {
 };
 
 const getTypeLabel = type => TYPE_LABELS[type] || type;
-
-const isExpiringSoon = expirationDate => {
-  const daysUntilExpiration = differenceInCalendarDays(
-    parseISO(expirationDate),
-    new Date(),
-  );
-  return (
-    daysUntilExpiration >= 0 && daysUntilExpiration <= EXPIRING_THRESHOLD_DAYS
-  );
-};
 
 const getBodyText = (type, expirationDate, expiring) => {
   const formattedDate = formatDate(expirationDate);
@@ -45,7 +35,7 @@ const getBodyText = (type, expirationDate, expiring) => {
 
 const IntentToFileCard = ({ itf }) => {
   const { type, creationDate, expirationDate } = itf;
-  const expiring = isExpiringSoon(expirationDate);
+  const expiring = isIntentToFileExpiringSoon(expirationDate);
   const typeLabel = getTypeLabel(type);
   const recordedDate = formatDate(creationDate);
   const bodyText = getBodyText(type, expirationDate, expiring);

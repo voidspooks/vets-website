@@ -22,6 +22,7 @@ import { mockApi } from '../tests/e2e/fixtures/mocks/mock-api';
 import manifest from '../manifest.json';
 import { canUseMocks, ANCHOR_LINKS } from '../constants';
 import {
+  recordIntentToFilePageViewEvent,
   recordUploadCancelEvent,
   recordUploadFailureEvent,
   recordUploadStartEvent,
@@ -679,16 +680,28 @@ const sortByCreationDate = itfs =>
 
 export function getIntentsToFile() {
   return async dispatch => {
+    const startTime = Date.now();
+
     dispatch({ type: FETCH_INTENTS_TO_FILE_PENDING });
 
     try {
       const response = await apiRequest('/intents_to_file');
+      const intentsToFile = sortByCreationDate(response?.data || []);
+
       dispatch({
         type: FETCH_INTENTS_TO_FILE_SUCCESS,
-        data: sortByCreationDate(response?.data || []),
+        data: intentsToFile,
+      });
+      recordIntentToFilePageViewEvent({
+        intentsToFile,
+        latencyMs: Date.now() - startTime,
       });
     } catch (error) {
       dispatch({ type: FETCH_INTENTS_TO_FILE_ERROR });
+      recordIntentToFilePageViewEvent({
+        latencyMs: Date.now() - startTime,
+        errorKey: getErrorStatus(error),
+      });
     }
   };
 }

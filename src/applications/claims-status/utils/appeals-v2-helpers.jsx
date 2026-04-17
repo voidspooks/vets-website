@@ -1979,15 +1979,8 @@ export const UNKNOWN_STATUS = 'unknown';
  * @param {Object} response error response object from vets-api
  * @returns {string} status code or 'unknown'
  */
-export const getErrorStatus = response => {
-  if (response instanceof Error) {
-    Sentry.withScope(scope => {
-      scope.setTag('location', 'getStatus');
-      Sentry.captureException(response);
-    });
-  }
-  return response?.errors?.[0]?.status ?? UNKNOWN_STATUS;
-};
+export const getErrorStatus = response =>
+  response?.errors?.[0]?.status ?? UNKNOWN_STATUS;
 
 // Series of utility functions to sort claims and appeals by last updated date
 /**

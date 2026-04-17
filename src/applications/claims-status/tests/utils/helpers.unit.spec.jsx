@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { addDays, formatISO, subDays } from 'date-fns';
 import sinon from 'sinon';
 import { shallow } from 'enzyme';
 import { render } from '@testing-library/react';
@@ -44,6 +45,7 @@ import {
   mockData,
   roundToNearest,
   formatDateShortMonth,
+  isIntentToFileExpiringSoon,
   sentenceCase,
   setPageFocus,
   setTabDocumentTitle,
@@ -2194,5 +2196,29 @@ describe('Disability benefits helpers: ', () => {
         expect(formatDateShortMonth('')).to.equal('Invalid date');
       });
     });
+  });
+});
+
+describe('isIntentToFileExpiringSoon', () => {
+  const today = new Date();
+
+  it('returns false when expiration is in the past', () => {
+    expect(isIntentToFileExpiringSoon(formatISO(subDays(today, 1)))).to.be
+      .false;
+  });
+
+  it('returns true when expiration is within the ITF threshold (inclusive)', () => {
+    expect(isIntentToFileExpiringSoon(formatISO(addDays(today, 30)))).to.be
+      .true;
+  });
+
+  it('returns true when expiration is the same as the threshold', () => {
+    expect(isIntentToFileExpiringSoon(formatISO(addDays(today, 60)))).to.be
+      .true;
+  });
+
+  it('returns false when expiration is beyond the ITF threshold', () => {
+    expect(isIntentToFileExpiringSoon(formatISO(addDays(today, 61)))).to.be
+      .false;
   });
 });

@@ -1,8 +1,8 @@
 import React from 'react';
 import merge from 'lodash/merge';
-import { format, isValid, parseISO } from 'date-fns';
-import environment from '@department-of-veterans-affairs/platform-utilities/environment';
-import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/api';
+import { differenceInCalendarDays, format, isValid, parseISO } from 'date-fns';
+import environment from 'platform/utilities/environment';
+import { apiRequest } from 'platform/utilities/api';
 import { scrollAndFocus, scrollToTop } from 'platform/utilities/scroll';
 import titleCase from 'platform/utilities/data/titleCase';
 import { setUpPage, isTab } from './page';
@@ -1103,6 +1103,20 @@ export const buildDateFormatter = (formatString = DATE_FORMATS.LONG_DATE) => {
       ? format(parsedDate, formatString)
       : 'Invalid date';
   };
+};
+
+const INTENT_TO_FILE_EXPIRING_THRESHOLD_DAYS = 60;
+
+/** @param {string} expirationDate ISO date string */
+export const isIntentToFileExpiringSoon = expirationDate => {
+  const daysUntilExpiration = differenceInCalendarDays(
+    parseISO(expirationDate),
+    new Date(),
+  );
+  return (
+    daysUntilExpiration >= 0 &&
+    daysUntilExpiration <= INTENT_TO_FILE_EXPIRING_THRESHOLD_DAYS
+  );
 };
 
 // VA content style guide: abbreviate months when space is limited, with periods.

@@ -6,6 +6,7 @@ import {
   mockIntentsToFileEndpoint,
 } from './support/helpers/mocks';
 import { verifyTitleBreadcrumbsHeading } from './support/helpers/assertions';
+import { assertDataLayerEvent } from './analytics-helpers';
 import { LINKS } from '../../constants';
 
 const ITF_PAGE_URL = '/track-claims/your-claims/intent-to-file';
@@ -210,6 +211,46 @@ describe('Intent to File - List Page', () => {
 
         cy.axeCheck();
       });
+    });
+  });
+
+  context('analytics', () => {
+    it('should record a successful claims-itf-status event when ITFs load', () => {
+      setupItfPage({ itfs: buildMockItfs() });
+
+      cy.get('va-card').should('have.length', 2);
+
+      assertDataLayerEvent('claims-itf-status', [
+        'event',
+        'api-name',
+        'api-status',
+        'api-latency-ms',
+        'error-key',
+        'itf-none',
+        'itf-expiring-count',
+        'itf-not-expiring-count',
+      ]);
+
+      cy.axeCheck();
+    });
+
+    it('should record a failed claims-itf-status event on server error', () => {
+      setupItfPage({ itfStatusCode: 500 });
+
+      cy.get('va-alert[status="warning"]').should('exist');
+
+      assertDataLayerEvent('claims-itf-status', [
+        'event',
+        'api-name',
+        'api-status',
+        'api-latency-ms',
+        'error-key',
+        'itf-none',
+        'itf-expiring-count',
+        'itf-not-expiring-count',
+      ]);
+
+      cy.axeCheck();
     });
   });
 

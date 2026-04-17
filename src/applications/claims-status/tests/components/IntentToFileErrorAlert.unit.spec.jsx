@@ -5,11 +5,19 @@ import { render } from '@testing-library/react';
 import IntentToFileErrorAlert from '../../components/IntentToFileErrorAlert';
 
 describe('<IntentToFileErrorAlert>', () => {
-  it('renders a warning alert with the correct headline', () => {
+  it('renders a warning alert with the correct headline and body copy', () => {
     const screen = render(<IntentToFileErrorAlert />);
     const alert = screen.getByTestId('itf-error-alert');
     expect(alert).to.exist;
     expect(alert).to.have.attr('status', 'warning');
+    expect(screen.getByText(/We can.t access your intents to file right now/))
+      .to.exist;
+    expect(
+      screen.getByText(
+        /We.re sorry\. There.s a problem with our system\. Refresh this page or try again later\./,
+      ),
+    ).to.exist;
+    expect(screen.getByText(/If it still doesn.t work, call us at/)).to.exist;
   });
 
   it('renders the phone number and TTY components', () => {

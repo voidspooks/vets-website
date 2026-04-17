@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { addDays, formatISO } from 'date-fns';
 import {
   generateDocInstanceId,
   storeUploadAttempt,
@@ -10,6 +11,7 @@ import {
   recordUploadFailureEvent,
   recordUploadSuccessEvent,
   recordUploadCancelEvent,
+  recordIntentToFilePageViewEvent,
 } from '../../utils/analytics';
 
 describe('analytics helpers', () => {
@@ -561,6 +563,103 @@ describe('analytics helpers', () => {
         'upload-retry': true,
         'upload-retry-file-count': 2,
         'upload-success-file-count': undefined,
+      });
+    });
+  });
+
+  describe('recordIntentToFilePageViewEvent', () => {
+    const today = new Date();
+    const TEST_LATENCY = 5000;
+
+    const buildItf = (expirationDate, id = '1') => ({
+      id,
+      type: 'compensation',
+      creationDate: '2025-06-01T12:00:00.000+00:00',
+      expirationDate,
+      status: 'active',
+    });
+
+    const expectedSuccessEvent = (overrides = {}) => ({
+      event: 'claims-itf-status',
+      'api-name': 'GET intents to file',
+      'api-status': 'successful',
+      'api-latency-ms': TEST_LATENCY,
+      'error-key': undefined,
+      'itf-none': false,
+      'itf-expiring-count': 0,
+      'itf-not-expiring-count': 0,
+      ...overrides,
+    });
+
+    const recordSuccess = intentsToFile => {
+      recordIntentToFilePageViewEvent({
+        intentsToFile,
+        latencyMs: TEST_LATENCY,
+      });
+    };
+
+    const assertSingleEvent = expected => {
+      expect(window.dataLayer.length).to.equal(1);
+      expect(window.dataLayer[0]).to.deep.equal(expected);
+    };
+
+    context('with empty ITF response', () => {
+      it('records a successful event with zero counts and itf-none true', () => {
+        recordSuccess([]);
+        assertSingleEvent(expectedSuccessEvent({ 'itf-none': true }));
+      });
+    });
+
+    context('with ITF response containing expiring ITFs', () => {
+      it('records a successful event with the correct expiring count', () => {
+        recordSuccess([buildItf(formatISO(addDays(today, 15)))]);
+        assertSingleEvent(expectedSuccessEvent({ 'itf-expiring-count': 1 }));
+      });
+    });
+
+    context('with ITF response containing non-expiring ITFs', () => {
+      it('records a successful event with the correct not-expiring count', () => {
+        recordSuccess([buildItf(formatISO(addDays(today, 200)))]);
+        assertSingleEvent(
+          expectedSuccessEvent({ 'itf-not-expiring-count': 1 }),
+        );
+      });
+    });
+
+    context(
+      'when ITF response contains both expiring and non-expiring ITFs',
+      () => {
+        it('records a single event with both counts', () => {
+          recordSuccess([
+            buildItf(formatISO(addDays(today, 200)), '1'),
+            buildItf(formatISO(addDays(today, 30)), '2'),
+          ]);
+          assertSingleEvent(
+            expectedSuccessEvent({
+              'itf-expiring-count': 1,
+              'itf-not-expiring-count': 1,
+            }),
+          );
+        });
+      },
+    );
+
+    context('when the API call fails', () => {
+      it('records a failed event with the error key', () => {
+        recordIntentToFilePageViewEvent({
+          latencyMs: TEST_LATENCY,
+          errorKey: 'Network error',
+        });
+        assertSingleEvent({
+          event: 'claims-itf-status',
+          'api-name': 'GET intents to file',
+          'api-status': 'failed',
+          'api-latency-ms': TEST_LATENCY,
+          'error-key': 'Network error',
+          'itf-none': false,
+          'itf-expiring-count': 0,
+          'itf-not-expiring-count': 0,
+        });
       });
     });
   });
