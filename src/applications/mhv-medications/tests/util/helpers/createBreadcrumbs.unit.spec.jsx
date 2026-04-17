@@ -78,7 +78,7 @@ describe('createBreadcrumbs', () => {
       { href: medicationsUrls.MEDICATIONS_URL, label: 'Medications' },
       {
         href: medicationsUrls.MEDICATIONS_REFILL_STATUS,
-        label: 'Refill Status medications',
+        label: 'Refill Status',
       },
     ]);
   });

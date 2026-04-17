@@ -1,35 +1,36 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+
+import { selectIsCernerPatient } from 'platform/user/cerner-dsot/selectors';
+
 import Prescription from './Prescription';
 import TooEarlyToRefillCard from './TooEarlyToRefillCard';
+
 import pluralize from '../../util/helpers/pluralize';
-import { IN_PROGRESS_MEDS_DISPLAY_TYPES } from '../../util/constants';
+import { REFILL_STATUS_DISPLAY_TYPES } from '../../util/constants';
 
 const SubmittedStep = ({ submitted = [], tooEarly = [] }) => {
   const descriptionText = submitted.length
     ? `We’ve received your request to refill ${pluralize(
         submitted.length,
-        'this medication',
-        'these medications',
+        'this prescription',
+        'these prescriptions',
       )}. It may take up to 7 days to start processing your request.`
-    : 'You haven’t requested any medication refills.';
-
-  const noteText = submitted.length
-    ? 'Medications prescribed in the last 24 hours may not be here yet.'
-    : 'Medication refills you requested in the last 24 hours may not be here yet.';
+    : 'You don’t have any refill requests.';
 
   return (
     <va-process-list-item header="Request submitted" level={2}>
       <p>{descriptionText}</p>
       <p>
-        <strong>Note:</strong>
-        {` ${noteText}`}
+        <strong>Note: </strong>
+        Medications prescribed in the last 24 hours may not appear here yet.
       </p>
       <div data-testid="submitted-prescriptions">
         {submitted.map(prescription => (
           <Prescription
             key={prescription.prescriptionId}
-            displayType={IN_PROGRESS_MEDS_DISPLAY_TYPES.SUBMITTED}
+            displayType={REFILL_STATUS_DISPLAY_TYPES.SUBMITTED}
             prescription={prescription}
           />
         ))}
@@ -45,25 +46,26 @@ SubmittedStep.propTypes = {
 };
 
 const InProgressStep = ({ prescriptions }) => {
+  const isOHUser = useSelector(selectIsCernerPatient);
   const descriptionText = prescriptions.length
-    ? `Our pharmacy team is working to fill ${pluralize(
+    ? `We’re working to fill ${pluralize(
         prescriptions.length,
-        'this medication request',
-        'these medication requests',
-      )}. We'll tell you when we expect to ship ${pluralize(
-        prescriptions.length,
-        'it',
-        'them',
-      )}.`
-    : 'No fills are currently in progress.';
+        'this prescription',
+        'these prescriptions',
+      )}.${
+        isOHUser
+          ? ' If your refill is taking longer than expected, call your VA pharmacy’s automated refill line. The phone number is on your prescription label or in your medication details page.'
+          : ''
+      }`
+    : 'You don’t have any fills in progress.';
   return (
     <va-process-list-item header="Fill in progress" level={2}>
       <p>{descriptionText}</p>
-      <div data-testid="in-progress-prescriptions">
+      <div data-testid="refill-status-prescriptions">
         {prescriptions.map(prescription => (
           <Prescription
             key={prescription.prescriptionId}
-            displayType={IN_PROGRESS_MEDS_DISPLAY_TYPES.IN_PROGRESS}
+            displayType={REFILL_STATUS_DISPLAY_TYPES.IN_PROGRESS}
             prescription={prescription}
           />
         ))}
@@ -80,18 +82,18 @@ const ShippedStep = ({ prescriptions }) => {
   const descriptionText = prescriptions.length
     ? `${pluralize(
         prescriptions.length,
-        'This medication is on its way to you or has already arrived',
-        'These medications are on their way to you or have already arrived',
-      )}. It usually takes 3-5 days after shipping for medications to arrive at your address.`
-    : 'No medications have recently shipped.';
+        'This prescription is on its way to you or has already arrived',
+        'These prescriptions are on their way to you or have already arrived',
+      )}. It usually takes 3-5 days after shipping for prescriptions to arrive at your address.`
+    : 'You don’t have any prescriptions shipped within the past 15 days.';
   return (
-    <va-process-list-item header="Medication shipped" level={2}>
+    <va-process-list-item header="Prescription shipped" level={2}>
       <p>{descriptionText}</p>
       <div data-testid="shipped-prescriptions">
         {prescriptions.map(prescription => (
           <Prescription
             key={prescription.prescriptionId}
-            displayType={IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED}
+            displayType={REFILL_STATUS_DISPLAY_TYPES.SHIPPED}
             prescription={prescription}
           />
         ))}
@@ -104,7 +106,7 @@ ShippedStep.propTypes = {
   prescriptions: PropTypes.array.isRequired,
 };
 
-const InProgressMedicationsProcessList = ({
+const RefillStatusProcessList = ({
   inProgress = [],
   shipped = [],
   submitted = [],
@@ -117,7 +119,7 @@ const InProgressMedicationsProcessList = ({
   </va-process-list>
 );
 
-InProgressMedicationsProcessList.propTypes = {
+RefillStatusProcessList.propTypes = {
   inProgress: PropTypes.arrayOf(
     PropTypes.shape({
       prescriptionId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
@@ -144,4 +146,4 @@ InProgressMedicationsProcessList.propTypes = {
   ),
 };
 
-export default InProgressMedicationsProcessList;
+export default RefillStatusProcessList;

@@ -4,14 +4,14 @@ import React from 'react';
 import { cleanup } from '@testing-library/react';
 import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
-import * as useFetchPrescriptionsInProgressModule from '../../hooks/PrescriptionsInProgress/useFetchPrescriptionsInProgress';
-import PrescriptionsInProgress from '../../containers/PrescriptionsInProgress';
+import * as useFetchRefillStatus from '../../hooks/RefillStatus/useFetchRefillStatus';
+import PrescriptionsRefillStatus from '../../containers/RefillStatus';
 import reducers from '../../reducers';
 import { dataDogActionNames } from '../../util/dataDogConstants';
 
-describe('PrescriptionsInProgress container', () => {
+describe('PrescriptionsRefillStatus container', () => {
   let sandbox;
-  let useFetchPrescriptionsInProgressStub;
+  let useFetchRefillStatusStub;
 
   const recentDate = new Date().toISOString();
 
@@ -58,7 +58,7 @@ describe('PrescriptionsInProgress container', () => {
     prescriptionsApiError = null,
     isLoading = false,
   } = {}) => {
-    return useFetchPrescriptionsInProgressStub.returns({
+    return useFetchRefillStatusStub.returns({
       submitted,
       inProgress,
       shipped,
@@ -75,7 +75,7 @@ describe('PrescriptionsInProgress container', () => {
       },
     };
 
-    return renderWithStoreAndRouterV6(<PrescriptionsInProgress />, {
+    return renderWithStoreAndRouterV6(<PrescriptionsRefillStatus />, {
       initialState,
       reducers,
       initialEntries: ['/refill-status'],
@@ -84,10 +84,7 @@ describe('PrescriptionsInProgress container', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    useFetchPrescriptionsInProgressStub = sandbox.stub(
-      useFetchPrescriptionsInProgressModule,
-      'default',
-    );
+    useFetchRefillStatusStub = sandbox.stub(useFetchRefillStatus, 'default');
   });
 
   afterEach(() => {
@@ -105,23 +102,13 @@ describe('PrescriptionsInProgress container', () => {
     stubFetchHook(mockCategorizedPrescriptions);
     const screen = setup();
     const heading = screen.getByRole('heading', {
-      name: 'In-progress medications',
+      name: 'Prescription refill status',
       level: 1,
     });
     expect(heading).to.exist;
   });
 
-  it('displays the introductory paragraph', () => {
-    stubFetchHook(mockCategorizedPrescriptions);
-    const screen = setup();
-    expect(
-      screen.getByText(
-        /Medications that are shipped will remain in this list for 15 days from the date of shipping/i,
-      ),
-    ).to.exist;
-  });
-
-  it('displays the medication list link', () => {
+  it('displays the medication history link', () => {
     stubFetchHook(mockCategorizedPrescriptions);
     const screen = setup();
     const link = screen.getByRole('link', {
@@ -130,7 +117,7 @@ describe('PrescriptionsInProgress container', () => {
     expect(link).to.exist;
     expect(link.getAttribute('href')).to.equal('/list');
     expect(link.getAttribute('data-dd-action-name')).to.equal(
-      dataDogActionNames.inProgressPage
+      dataDogActionNames.refillStatusPage
         .GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK,
     );
   });
@@ -144,7 +131,7 @@ describe('PrescriptionsInProgress container', () => {
     expect(link).to.exist;
     expect(link.getAttribute('href')).to.equal('/');
     expect(link.getAttribute('data-dd-action-name')).to.equal(
-      dataDogActionNames.inProgressPage.REFILL_MEDICATIONS_LINK,
+      dataDogActionNames.refillStatusPage.REFILL_MEDICATIONS_LINK,
     );
   });
 
@@ -206,7 +193,6 @@ describe('PrescriptionsInProgress container', () => {
     it('displays the process list when prescriptions are loaded', () => {
       stubFetchHook(mockCategorizedPrescriptions);
       const screen = setup();
-      expect(screen.queryByTestId('in-progress-empty-view-card')).to.not.exist;
       const processListItems = screen.container.querySelectorAll(
         'va-process-list-item',
       );
@@ -218,7 +204,7 @@ describe('PrescriptionsInProgress container', () => {
         'Fill in progress',
       );
       expect(processListItems[2].getAttribute('header')).to.equal(
-        'Medication shipped',
+        'Prescription shipped',
       );
     });
 
@@ -237,9 +223,12 @@ describe('PrescriptionsInProgress container', () => {
     it('renders process list with empty prescriptions array', () => {
       stubFetchHook(emptyPrescriptions);
       const screen = setup();
-      expect(screen.getByTestId('in-progress-empty-view-card')).to.exist;
-      expect(screen.queryByTestId('in-progress-medications-process-list')).to
-        .not.exist;
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: /You don’t have any refill requests in progress/,
+        }),
+      ).to.exist;
 
       const processListItems = screen.container.querySelectorAll(
         'va-process-list-item',

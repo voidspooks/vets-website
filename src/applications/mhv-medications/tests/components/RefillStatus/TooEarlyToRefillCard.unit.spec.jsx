@@ -1,16 +1,18 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { within } from '@testing-library/react';
 import { expect } from 'chai';
-import { MemoryRouter } from 'react-router-dom-v5-compat';
-import TooEarlyToRefillCard from '../../../components/PrescriptionsInProgress/TooEarlyToRefillCard';
+
+import { renderWithStoreAndRouterV6 } from '~/platform/testing/unit/react-testing-library-helpers';
+
+import TooEarlyToRefillCard from '../../../components/RefillStatus/TooEarlyToRefillCard';
+import reducers from '../../../reducers';
 
 describe('TooEarlyToRefillCard Component', () => {
   const setup = (tooEarly = []) =>
-    render(
-      <MemoryRouter>
-        <TooEarlyToRefillCard tooEarly={tooEarly} />
-      </MemoryRouter>,
-    );
+    renderWithStoreAndRouterV6(<TooEarlyToRefillCard tooEarly={tooEarly} />, {
+      initialState: {},
+      reducers,
+    });
 
   it('renders without errors', () => {
     const screen = setup();

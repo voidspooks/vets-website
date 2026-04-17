@@ -1,5 +1,5 @@
 import MedicationsSite from './med_site/MedicationsSite';
-import MedicationsInProgressPage from './pages/MedicationsInProgressPage';
+import RefillStatusPage from './pages/RefillStatusPage';
 
 const errorResponse = {
   statusCode: 500,
@@ -13,18 +13,18 @@ const errorResponse = {
   },
 };
 
-describe('In-progress medications page - API error', () => {
+describe('Refill status page - API error', () => {
   it('displays an error notification when the prescriptions API fails', () => {
     const site = new MedicationsSite();
     site.loginWithManagementImprovements();
 
-    const inProgressPage = new MedicationsInProgressPage();
-    inProgressPage.visitPageWithError(errorResponse);
+    const refillStatusPage = new RefillStatusPage();
+    refillStatusPage.visitPageWithError(errorResponse);
     cy.wait('@prescriptionsError');
 
-    inProgressPage.verifyHeading();
-    inProgressPage.verifyApiErrorNotification();
-    inProgressPage.verifyNeedHelpSection();
+    refillStatusPage.verifyHeading();
+    refillStatusPage.verifyApiErrorNotification();
+    refillStatusPage.verifyNeedHelpSection();
 
     cy.injectAxe();
     cy.axeCheck('main');

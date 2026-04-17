@@ -83,11 +83,11 @@ describe('InnerNavigation component', () => {
       const historyLink = screen
         .getByTestId('list-inner-nav')
         .querySelector('a');
-      const inProgressLink = screen
+      const refillStatusLink = screen
         .getByTestId('refill-status-inner-nav')
         .querySelector('a');
       expect(historyLink.getAttribute('aria-current')).to.be.null;
-      expect(inProgressLink.getAttribute('aria-current')).to.be.null;
+      expect(refillStatusLink.getAttribute('aria-current')).to.be.null;
     });
   });
 });

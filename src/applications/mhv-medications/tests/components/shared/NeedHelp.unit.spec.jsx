@@ -150,8 +150,8 @@ describe('Need Help shared component', () => {
         actions: dataDogActionNames.medicationsHistoryPage,
       },
       {
-        page: pageType.IN_PROGRESS,
-        actions: dataDogActionNames.inProgressPage,
+        page: pageType.REFILL_STATUS,
+        actions: dataDogActionNames.refillStatusPage,
       },
     ];
 

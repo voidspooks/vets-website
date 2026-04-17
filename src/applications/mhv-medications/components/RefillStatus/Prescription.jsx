@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom-v5-compat';
+import { useSelector } from 'react-redux';
+import { selectIsCernerPatient } from 'platform/user/cerner-dsot/selectors';
 
 import { dateFormat, getPrescriptionDetailUrl } from '../../util/helpers';
 import {
-  IN_PROGRESS_MEDS_DISPLAY_TYPES,
+  REFILL_STATUS_DISPLAY_TYPES,
   trackingConfig,
 } from '../../util/constants';
 import { dataDogActionNames } from '../../util/dataDogConstants';
@@ -20,14 +22,19 @@ const Prescription = ({ prescription, displayType }) => {
     ? carrierConfig.url + trackingNumber
     : trackingNumber;
 
+  const isOHUser = useSelector(selectIsCernerPatient);
+
   const getSubtext = () => {
     switch (displayType) {
-      case IN_PROGRESS_MEDS_DISPLAY_TYPES.IN_PROGRESS:
-        return `Expected fill date: ${dateFormat(prescription.refillDate)}`;
-      case IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED:
+      case REFILL_STATUS_DISPLAY_TYPES.IN_PROGRESS:
+        return isOHUser
+          ? `Request submitted: ${dateFormat(prescription.refillSubmitDate)}`
+          : `Expected fill date: ${dateFormat(prescription.refillDate)}`;
+      case REFILL_STATUS_DISPLAY_TYPES.SHIPPED:
         return (
           <>
-            Date shipped: {dateFormat(trackingList?.[0]?.completeDateTime)} |{' '}
+            Date shipped: {dateFormat(trackingList?.[0]?.completeDateTime)}
+            <br />
             <a href={trackingUrl} rel="noreferrer">
               Get tracking info
             </a>
@@ -47,7 +54,7 @@ const Prescription = ({ prescription, displayType }) => {
         to={getPrescriptionDetailUrl(prescription)}
         data-testid="prescription-link"
         data-dd-action-name={
-          dataDogActionNames.inProgressPage.MEDICATION_NAME_LINK
+          dataDogActionNames.refillStatusPage.MEDICATION_NAME_LINK
         }
       >
         {prescriptionName}

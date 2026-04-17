@@ -1,8 +1,8 @@
 import React from 'react';
 import { expect } from 'chai';
 import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
-import Prescription from '../../../components/PrescriptionsInProgress/Prescription';
-import { IN_PROGRESS_MEDS_DISPLAY_TYPES } from '../../../util/constants';
+import Prescription from '../../../components/RefillStatus/Prescription';
+import { REFILL_STATUS_DISPLAY_TYPES } from '../../../util/constants';
 import { dataDogActionNames } from '../../../util/dataDogConstants';
 import reducers from '../../../reducers';
 
@@ -17,11 +17,12 @@ describe('Prescription Component', () => {
 
   const setup = (
     prescription = defaultPrescription,
-    displayType = IN_PROGRESS_MEDS_DISPLAY_TYPES.SUBMITTED,
+    displayType = REFILL_STATUS_DISPLAY_TYPES.SUBMITTED,
+    initialState = {},
   ) =>
     renderWithStoreAndRouterV6(
       <Prescription prescription={prescription} displayType={displayType} />,
-      { reducers },
+      { reducers, initialState },
     );
 
   it('renders without errors', () => {
@@ -44,7 +45,7 @@ describe('Prescription Component', () => {
     const link = screen.getByTestId('prescription-link');
     expect(link).to.have.attribute(
       'data-dd-action-name',
-      dataDogActionNames.inProgressPage.MEDICATION_NAME_LINK,
+      dataDogActionNames.refillStatusPage.MEDICATION_NAME_LINK,
     );
   });
 
@@ -60,18 +61,42 @@ describe('Prescription Component', () => {
     it('displays "Request submitted" for SUBMITTED displayType', () => {
       const screen = setup(
         defaultPrescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SUBMITTED,
+        REFILL_STATUS_DISPLAY_TYPES.SUBMITTED,
       );
       const subtext = screen.getByText(/Request submitted:/);
       expect(subtext).to.exist;
     });
 
-    it('displays "Expected fill date" for IN_PROGRESS displayType', () => {
+    it('displays "Expected fill date" for IN_PROGRESS displayType when not an OH user', () => {
       const screen = setup(
         defaultPrescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.IN_PROGRESS,
+        REFILL_STATUS_DISPLAY_TYPES.IN_PROGRESS,
       );
       const subtext = screen.getByText(/Expected fill date:/);
+      expect(subtext).to.exist;
+    });
+
+    it('displays "Request submitted" for IN_PROGRESS displayType when user is an OH user', () => {
+      const ohState = {
+        drupalStaticData: {
+          vamcEhrData: {
+            data: {
+              cernerFacilities: [{ vhaId: '123' }],
+            },
+          },
+        },
+        user: {
+          profile: {
+            facilities: [{ facilityId: '123' }],
+          },
+        },
+      };
+      const screen = setup(
+        defaultPrescription,
+        REFILL_STATUS_DISPLAY_TYPES.IN_PROGRESS,
+        ohState,
+      );
+      const subtext = screen.getByText(/Request submitted:/);
       expect(subtext).to.exist;
     });
 
@@ -86,10 +111,7 @@ describe('Prescription Component', () => {
           },
         ],
       };
-      const screen = setup(
-        prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED,
-      );
+      const screen = setup(prescription, REFILL_STATUS_DISPLAY_TYPES.SHIPPED);
       const subtext = screen.getByText(/Date shipped:/);
       expect(subtext).to.exist;
     });
@@ -105,10 +127,7 @@ describe('Prescription Component', () => {
         ...defaultPrescription,
         refillSubmitDate: null,
       };
-      const screen = setup(
-        prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SUBMITTED,
-      );
+      const screen = setup(prescription, REFILL_STATUS_DISPLAY_TYPES.SUBMITTED);
       const subtext = screen.getByText(/Request submitted:\s*None noted/);
       expect(subtext).to.exist;
     });
@@ -120,7 +139,7 @@ describe('Prescription Component', () => {
       };
       const screen = setup(
         prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.IN_PROGRESS,
+        REFILL_STATUS_DISPLAY_TYPES.IN_PROGRESS,
       );
       const subtext = screen.getByText(/Expected fill date:\s*None noted/);
       expect(subtext).to.exist;
@@ -139,10 +158,7 @@ describe('Prescription Component', () => {
           },
         ],
       };
-      const screen = setup(
-        prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED,
-      );
+      const screen = setup(prescription, REFILL_STATUS_DISPLAY_TYPES.SHIPPED);
       const trackingLink = screen.getByText('Get tracking info');
       expect(trackingLink.getAttribute('href')).to.include(
         'ups.com/WebTracking',
@@ -163,10 +179,7 @@ describe('Prescription Component', () => {
           },
         ],
       };
-      const screen = setup(
-        prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED,
-      );
+      const screen = setup(prescription, REFILL_STATUS_DISPLAY_TYPES.SHIPPED);
       const trackingLink = screen.getByText('Get tracking info');
       expect(trackingLink.getAttribute('href')).to.include('usps.com');
       expect(trackingLink.getAttribute('href')).to.include(
@@ -185,10 +198,7 @@ describe('Prescription Component', () => {
           },
         ],
       };
-      const screen = setup(
-        prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED,
-      );
+      const screen = setup(prescription, REFILL_STATUS_DISPLAY_TYPES.SHIPPED);
       const trackingLink = screen.getByText('Get tracking info');
       expect(trackingLink.getAttribute('href')).to.include('fedex.com');
       expect(trackingLink.getAttribute('href')).to.include('123456789012');
@@ -205,10 +215,7 @@ describe('Prescription Component', () => {
           },
         ],
       };
-      const screen = setup(
-        prescription,
-        IN_PROGRESS_MEDS_DISPLAY_TYPES.SHIPPED,
-      );
+      const screen = setup(prescription, REFILL_STATUS_DISPLAY_TYPES.SHIPPED);
       const trackingLink = screen.getByText('Get tracking info');
       expect(trackingLink.getAttribute('href')).to.equal('ABC123');
     });

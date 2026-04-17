@@ -158,7 +158,7 @@ describe('RefillNotification', () => {
       expect(link.textContent).to.include('Review your refill requests');
     });
 
-    it('should link to the in-progress medications page', () => {
+    it('should link to the refill status medications page', () => {
       const screen = setup(
         initRefillStatus,
         initSuccessfulMeds,

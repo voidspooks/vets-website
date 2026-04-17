@@ -32,9 +32,7 @@ const RefillPrescriptionsV2 = lazyWithRetry(() =>
 const RefillPrescriptions = lazyWithRetry(() =>
   import('./containers/RefillPrescriptions'),
 );
-const PrescriptionsInProgress = lazyWithRetry(() =>
-  import('./containers/PrescriptionsInProgress'),
-);
+const RefillStatus = lazyWithRetry(() => import('./containers/RefillStatus'));
 const MedicationList = lazyWithRetry(() =>
   import('./containers/MedicationList'),
 );
@@ -130,7 +128,7 @@ const routes = [
     path: 'refill-status',
     element: (
       <FeatureFlaggedRoute
-        Component={PrescriptionsInProgress}
+        Component={RefillStatus}
         selector={selectMedicationsManagementImprovementsFlag}
       />
     ),

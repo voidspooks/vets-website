@@ -1,8 +1,8 @@
 import MedicationsSite from './med_site/MedicationsSite';
-import MedicationsInProgressPage from './pages/MedicationsInProgressPage';
+import RefillStatusPage from './pages/RefillStatusPage';
 import inProgressPrescriptions from './fixtures/in-progress-prescriptions.json';
 
-describe('In-progress medications page - successful data load (empty view)', () => {
+describe('Refill Status page - successful data load (empty view)', () => {
   it('displays the empty view when there are no in-progress medications', () => {
     const site = new MedicationsSite();
     site.loginWithManagementImprovements();
@@ -16,14 +16,13 @@ describe('In-progress medications page - successful data load (empty view)', () 
       ...emptyData.meta,
     };
 
-    const inProgressPage = new MedicationsInProgressPage();
-    inProgressPage.visitPage(emptyData);
+    const refillStatusPage = new RefillStatusPage();
+    refillStatusPage.visitPage(emptyData);
     cy.wait('@prescriptions');
 
-    inProgressPage.verifyHeading();
-    inProgressPage.verifyEmptyViewCard();
-    inProgressPage.verifyEmptyViewProcessListSteps();
-    inProgressPage.verifyNeedHelpSection();
+    refillStatusPage.verifyHeading();
+    refillStatusPage.verifyEmptyViewProcessListSteps();
+    refillStatusPage.verifyNeedHelpSection();
 
     cy.injectAxe();
     cy.axeCheck('main');

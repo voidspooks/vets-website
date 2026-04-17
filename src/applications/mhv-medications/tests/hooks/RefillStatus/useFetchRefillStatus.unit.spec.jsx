@@ -3,7 +3,7 @@ import { waitFor, cleanup } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import * as sinon from 'sinon';
 import * as prescriptionsApiModule from '../../../api/prescriptionsApi';
-import { useFetchPrescriptionsInProgress } from '../../../hooks/PrescriptionsInProgress/useFetchPrescriptionsInProgress';
+import useFetchRefillStatus from '../../../hooks/RefillStatus/useFetchRefillStatus';
 import { dispStatusObj } from '../../../util/constants';
 
 /**
@@ -38,7 +38,7 @@ const getMockQueryResponse = (overrides = {}) => ({
   ...overrides,
 });
 
-describe('useFetchPrescriptionsInProgress', () => {
+describe('useFetchRefillStatus', () => {
   let sandbox;
 
   beforeEach(() => {
@@ -55,7 +55,7 @@ describe('useFetchPrescriptionsInProgress', () => {
       .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
       .returns(getMockQueryResponse({ data: undefined }));
 
-    const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+    const { result } = renderHook(() => useFetchRefillStatus());
 
     await waitFor(() => {
       expect(result.current.inProgress).to.deep.equal([]);
@@ -72,7 +72,7 @@ describe('useFetchPrescriptionsInProgress', () => {
       .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
       .returns(getMockQueryResponse({ data: { prescriptions: [] } }));
 
-    const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+    const { result } = renderHook(() => useFetchRefillStatus());
 
     await waitFor(() => {
       expect(result.current.inProgress).to.deep.equal([]);
@@ -88,7 +88,7 @@ describe('useFetchPrescriptionsInProgress', () => {
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse({ isLoading: true }));
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.isLoading).to.be.true;
@@ -100,7 +100,7 @@ describe('useFetchPrescriptionsInProgress', () => {
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse({ isFetching: true }));
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.isLoading).to.be.true;
@@ -112,7 +112,7 @@ describe('useFetchPrescriptionsInProgress', () => {
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse({ isLoading: false, isFetching: false }));
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.isLoading).to.be.false;
@@ -127,7 +127,7 @@ describe('useFetchPrescriptionsInProgress', () => {
         .stub(prescriptionsApiModule, 'useGetPrescriptionsListQuery')
         .returns(getMockQueryResponse({ error: mockError }));
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.prescriptionsApiError).to.deep.equal(mockError);
@@ -174,7 +174,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.submitted).to.have.lengthOf(1);
@@ -223,7 +223,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.submitted).to.deep.equal([]);
@@ -255,7 +255,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.shipped).to.have.lengthOf(1);
@@ -285,7 +285,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.shipped).to.have.lengthOf(1);
@@ -312,7 +312,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.shipped).to.deep.equal([]);
@@ -339,7 +339,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.shipped).to.deep.equal([]);
@@ -361,7 +361,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.shipped).to.deep.equal([]);
@@ -383,7 +383,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         expect(result.current.shipped).to.deep.equal([]);
@@ -414,7 +414,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         // Should NOT be in shipped because the first tracking entry is older than 15 days
@@ -444,7 +444,7 @@ describe('useFetchPrescriptionsInProgress', () => {
           }),
         );
 
-      const { result } = renderHook(() => useFetchPrescriptionsInProgress());
+      const { result } = renderHook(() => useFetchRefillStatus());
 
       await waitFor(() => {
         // tooEarly logic is not implemented yet per the TODO in the hook

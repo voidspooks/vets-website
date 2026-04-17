@@ -3,7 +3,7 @@ import { useGetPrescriptionsListQuery } from '../../api/prescriptionsApi';
 import { dispStatusObj, rxListSortingOptions } from '../../util/constants';
 
 /**
- * Custom hook to fetch in-progress prescription data.
+ * Custom hook to fetch in-progress prescription refill status data.
  * Filters prescriptions to only include those that are:
  * - Submitted (dispStatus === 'Active: Submitted')
  * - In progress (dispStatus === 'Active: Refill in Process')
@@ -11,7 +11,7 @@ import { dispStatusObj, rxListSortingOptions } from '../../util/constants';
  *
  * @returns {Object} The prescription data, loading state, and error state
  */
-export const useFetchPrescriptionsInProgress = () => {
+export const useFetchRefillStatus = () => {
   const { data, error, isLoading, isFetching } = useGetPrescriptionsListQuery(
     { sortEndpoint: rxListSortingOptions.alphabeticalOrder.API_ENDPOINT },
     { refetchOnMountOrArgChange: true },
@@ -58,4 +58,4 @@ export const useFetchPrescriptionsInProgress = () => {
   };
 };
 
-export default useFetchPrescriptionsInProgress;
+export default useFetchRefillStatus;

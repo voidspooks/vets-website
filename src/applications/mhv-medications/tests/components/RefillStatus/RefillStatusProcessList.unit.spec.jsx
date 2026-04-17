@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { within } from '@testing-library/react';
 import { expect } from 'chai';
-import { MemoryRouter } from 'react-router-dom-v5-compat';
-import InProgressMedicationsProcessList from '../../../components/PrescriptionsInProgress/InProgressMedicationsProcessList';
+import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
+import RefillStatusProcessList from '../../../components/RefillStatus/RefillStatusProcessList';
+import reducers from '../../../reducers';
 
-describe('InProgressMedicationsProcessList Component', () => {
+describe('RefillStatusProcessList Component', () => {
   const recentDate = new Date().toISOString();
 
   const defaultProps = {
@@ -47,12 +48,11 @@ describe('InProgressMedicationsProcessList Component', () => {
     tooEarly: [],
   };
 
-  const setup = (props = defaultProps) =>
-    render(
-      <MemoryRouter>
-        <InProgressMedicationsProcessList {...props} />
-      </MemoryRouter>,
-    );
+  const setup = (props = defaultProps, initialState = {}) =>
+    renderWithStoreAndRouterV6(<RefillStatusProcessList {...props} />, {
+      initialState,
+      reducers,
+    });
 
   it('renders without errors', () => {
     const screen = setup();
@@ -77,7 +77,7 @@ describe('InProgressMedicationsProcessList Component', () => {
       .exist;
 
     const inProgressSection = within(
-      screen.getByTestId('in-progress-prescriptions'),
+      screen.getByTestId('refill-status-prescriptions'),
     );
     expect(inProgressSection.getByRole('link', { name: 'Medication C' })).to
       .exist;
@@ -119,7 +119,7 @@ describe('InProgressMedicationsProcessList Component', () => {
         ],
       };
       const screen = setup(props);
-      expect(screen.getByText(/this medication/)).to.exist;
+      expect(screen.getByText(/this prescription/)).to.exist;
     });
 
     it('displays plural text when multiple prescriptions are submitted', () => {
@@ -141,13 +141,13 @@ describe('InProgressMedicationsProcessList Component', () => {
         ],
       };
       const screen = setup(props);
-      expect(screen.getByText(/these medications/)).to.exist;
+      expect(screen.getByText(/these prescriptions/)).to.exist;
     });
 
     it('displays the note about medications prescribed in the last 24 hours', () => {
       const screen = setup();
-      expect(screen.getByText(/in the last 24 hours may not be here yet/)).to
-        .exist;
+      expect(screen.getByText(/in the last 24 hours may not appear here yet/))
+        .to.exist;
     });
 
     it('renders Prescription components for each submitted prescription', () => {
@@ -186,8 +186,7 @@ describe('InProgressMedicationsProcessList Component', () => {
 
     it('displays empty state text when no prescriptions are submitted', () => {
       const screen = setup(emptyProps);
-      expect(screen.getByText(/You haven’t requested any medication refills/))
-        .to.exist;
+      expect(screen.getByText('You don’t have any refill requests.')).to.exist;
     });
 
     it('does not display the too early section when no tooEarly prescriptions exist', () => {
@@ -237,7 +236,7 @@ describe('InProgressMedicationsProcessList Component', () => {
         ],
       };
       const screen = setup(props);
-      expect(screen.getByText(/this medication request/)).to.exist;
+      expect(screen.getByText(/this prescription/)).to.exist;
     });
 
     it('displays plural text when multiple prescriptions are in progress', () => {
@@ -259,14 +258,60 @@ describe('InProgressMedicationsProcessList Component', () => {
         ],
       };
       const screen = setup(props);
-      expect(screen.getByText(/these medication requests/)).to.exist;
+      expect(screen.getByText(/these prescriptions/)).to.exist;
     });
 
     it('displays empty state text when no prescriptions are in progress', () => {
       const screen = setup(emptyProps);
-      expect(screen.getByText(/No fills are currently in progress/)).to.exist;
+      expect(screen.getByText('You don’t have any fills in progress.')).to
+        .exist;
+    });
+    it('does not display OH pharmacy text for non-OH users', () => {
+      const props = {
+        ...emptyProps,
+        inProgress: [
+          {
+            prescriptionId: 1,
+            prescriptionName: 'Medication A',
+            dispStatus: 'Active: Refill in Process',
+            refillDate: '2025-01-20T10:00:00Z',
+          },
+        ],
+      };
+      const screen = setup(props);
+      expect(screen.queryByText(/call your VA pharmacy/)).to.be.null;
     });
 
+    it('displays OH pharmacy text for OH users when prescriptions are in progress', () => {
+      const ohState = {
+        drupalStaticData: {
+          vamcEhrData: {
+            data: {
+              cernerFacilities: [{ vhaId: '123' }],
+            },
+          },
+        },
+        user: {
+          profile: {
+            facilities: [{ facilityId: '123' }],
+          },
+        },
+      };
+      const props = {
+        ...emptyProps,
+        inProgress: [
+          {
+            prescriptionId: 1,
+            prescriptionName: 'Medication A',
+            dispStatus: 'Active: Refill in Process',
+            refillDate: '2025-01-20T10:00:00Z',
+          },
+        ],
+      };
+      const screen = setup(props, ohState);
+      expect(screen.getByText(/call your VA pharmacy’s automated refill line/))
+        .to.exist;
+    });
     it('renders Prescription components for each in-progress prescription', () => {
       const props = {
         ...emptyProps,
@@ -287,7 +332,7 @@ describe('InProgressMedicationsProcessList Component', () => {
       };
       const screen = setup(props);
       const inProgressSection = within(
-        screen.getByTestId('in-progress-prescriptions'),
+        screen.getByTestId('refill-status-prescriptions'),
       );
 
       const linkA = inProgressSection.getByRole('link', {
@@ -309,7 +354,9 @@ describe('InProgressMedicationsProcessList Component', () => {
         'va-process-list-item',
       );
       const shippedStep = processListItems[2];
-      expect(shippedStep.getAttribute('header')).to.equal('Medication shipped');
+      expect(shippedStep.getAttribute('header')).to.equal(
+        'Prescription shipped',
+      );
     });
 
     it('displays singular text when one prescription is shipped', () => {
@@ -327,7 +374,7 @@ describe('InProgressMedicationsProcessList Component', () => {
       const screen = setup(props);
       expect(
         screen.getByText(
-          /This medication is on its way to you or has already arrived/,
+          /This prescription is on its way to you or has already arrived./,
         ),
       ).to.exist;
     });
@@ -354,14 +401,18 @@ describe('InProgressMedicationsProcessList Component', () => {
       const screen = setup(props);
       expect(
         screen.getByText(
-          /These medications are on their way to you or have already arrived/,
+          /These prescriptions are on their way to you or have already arrived./,
         ),
       ).to.exist;
     });
 
     it('displays empty state text when no prescriptions are shipped', () => {
       const screen = setup(emptyProps);
-      expect(screen.getByText(/No medications have recently shipped/)).to.exist;
+      expect(
+        screen.getByText(
+          'You don’t have any prescriptions shipped within the past 15 days.',
+        ),
+      ).to.exist;
     });
 
     it('renders Prescription components for each shipped prescription', () => {

@@ -1,32 +1,25 @@
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { expect } from 'chai';
-import InProgressMedicationsEmptyView from '../../../components/PrescriptionsInProgress/InProgressMedicationsEmptyView';
+import RefillStatusEmptyView from '../../../components/RefillStatus/RefillStatusEmptyView';
 
-describe('InProgressMedicationsEmptyView Component', () => {
-  const setup = () => render(<InProgressMedicationsEmptyView />);
-
-  it('renders without errors', () => {
-    const screen = setup();
-    expect(screen).to.exist;
-    expect(screen.getByTestId('in-progress-empty-view-card')).to.exist;
-  });
+describe('RefillStatusEmptyView Component', () => {
+  const setup = () => render(<RefillStatusEmptyView />);
 
   it('renders the correct content', () => {
     const screen = setup();
     const { container } = screen;
 
-    // "You don't have any..." card
-    const card = within(screen.getByTestId('in-progress-empty-view-card'));
+    // "You don't have any..." section
     expect(
-      card.getByRole('heading', {
+      screen.getByRole('heading', {
         level: 2,
-        name: 'You don’t have any in-progress medications right now',
+        name: /You don’t have any refill requests in progress/,
       }),
     ).to.exist;
     expect(
-      card.getByText(
-        'If you have questions about a prescription, contact your care team.',
+      screen.getByText(
+        /You don’t have any prescription refills requested, in progress, or being shipped/,
       ),
     ).to.exist;
 

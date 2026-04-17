@@ -25,9 +25,10 @@ const innerNavDDActions = {
         .GO_TO_YOUR_IN_PROGRESS_MEDICATIONS_LINK,
   },
   [Paths.REFILL_STATUS]: {
-    [Paths.LANDING]: dataDogActionNames.inProgressPage.REFILL_MEDICATIONS_LINK,
+    [Paths.LANDING]:
+      dataDogActionNames.refillStatusPage.REFILL_MEDICATIONS_LINK,
     [Paths.LIST]:
-      dataDogActionNames.inProgressPage
+      dataDogActionNames.refillStatusPage
         .GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK,
   },
 };

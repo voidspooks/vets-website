@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
-import InProgressMedicationsProcessList from '../components/PrescriptionsInProgress/InProgressMedicationsProcessList';
+import RefillStatusProcessList from '../components/RefillStatus/RefillStatusProcessList';
 import NeedHelp from '../components/shared/NeedHelp';
 import ApiErrorNotification from '../components/shared/ApiErrorNotification';
-import useFetchPrescriptionsInProgress from '../hooks/PrescriptionsInProgress/useFetchPrescriptionsInProgress';
+import useFetchRefillStatus from '../hooks/RefillStatus/useFetchRefillStatus';
 import { pageType } from '../util/dataDogConstants';
-import InProgressMedicationsEmptyView from '../components/PrescriptionsInProgress/InProgressMedicationsEmptyView';
+import RefillStatusEmptyView from '../components/RefillStatus/RefillStatusEmptyView';
 import MedicationResources from '../components/shared/MedicationResources';
 import InnerNavigation from '../components/shared/InnerNavigation';
 
-const PrescriptionsInProgress = () => {
+const RefillStatus = () => {
   const {
     inProgress,
     shipped,
@@ -17,7 +17,7 @@ const PrescriptionsInProgress = () => {
     tooEarly,
     prescriptionsApiError,
     isLoading,
-  } = useFetchPrescriptionsInProgress();
+  } = useFetchRefillStatus();
 
   const renderContent = () => {
     if (isLoading) {
@@ -38,11 +38,11 @@ const PrescriptionsInProgress = () => {
       submitted.length === 0 &&
       tooEarly.length === 0
     ) {
-      return <InProgressMedicationsEmptyView />;
+      return <RefillStatusEmptyView />;
     }
 
     return (
-      <InProgressMedicationsProcessList
+      <RefillStatusProcessList
         inProgress={inProgress}
         shipped={shipped}
         submitted={submitted}
@@ -57,23 +57,16 @@ const PrescriptionsInProgress = () => {
 
   return (
     <div>
-      <h1 data-testid="in-progress-medications-heading">
-        In-progress medications
-      </h1>
+      <h1 data-testid="refill-status-heading">Prescription refill status</h1>
       {prescriptionsApiError && (
         <ApiErrorNotification errorType="access" content="medications" />
       )}
       <InnerNavigation />
-      <p>
-        Medications that are shipped will remain in this list for 15 days from
-        the date of shipping. To review all your medications, go to your
-        medication history.
-      </p>
       {renderContent()}
-      <MedicationResources page={pageType.IN_PROGRESS} headingLevel={2} />
-      <NeedHelp page={pageType.IN_PROGRESS} headingLevel={2} />
+      <MedicationResources page={pageType.REFILL_STATUS} headingLevel={2} />
+      <NeedHelp page={pageType.REFILL_STATUS} headingLevel={2} />
     </div>
   );
 };
 
-export default PrescriptionsInProgress;
+export default RefillStatus;

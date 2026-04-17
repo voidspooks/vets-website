@@ -1,6 +1,6 @@
 import { medicationsUrls } from '../../../util/constants';
 
-class MedicationsInProgressPage {
+class RefillStatusPage {
   visitPage = fixture => {
     cy.intercept('GET', '/my_health/v1/prescriptions*', fixture).as(
       'prescriptions',
@@ -16,14 +16,10 @@ class MedicationsInProgressPage {
   };
 
   verifyHeading = () => {
-    cy.findByTestId('in-progress-medications-heading').should(
+    cy.findByTestId('refill-status-heading').should(
       'have.text',
-      'In-progress medications',
+      'Prescription refill status',
     );
-  };
-
-  verifyEmptyViewCard = () => {
-    cy.findByTestId('in-progress-empty-view-card').should('exist');
   };
 
   verifyEmptyViewProcessListSteps = () => {
@@ -35,7 +31,7 @@ class MedicationsInProgressPage {
   verifyProcessListSteps = () => {
     cy.findByText('Request submitted').should('exist');
     cy.findByText('Fill in progress').should('exist');
-    cy.findByText('Medication shipped').should('exist');
+    cy.findByText('Prescription shipped').should('exist');
   };
 
   verifySubmittedPrescription = name => {
@@ -45,7 +41,7 @@ class MedicationsInProgressPage {
   };
 
   verifyInProgressPrescription = name => {
-    cy.findByTestId('in-progress-prescriptions').within(() => {
+    cy.findByTestId('refill-status-prescriptions').within(() => {
       cy.findByRole('link', { name }).should('exist');
     });
   };
@@ -70,4 +66,4 @@ class MedicationsInProgressPage {
   };
 }
 
-export default MedicationsInProgressPage;
+export default RefillStatusPage;

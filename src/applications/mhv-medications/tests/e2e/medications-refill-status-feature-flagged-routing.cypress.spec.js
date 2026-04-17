@@ -1,7 +1,7 @@
 import MedicationsSite from './med_site/MedicationsSite';
-import MedicationsInProgressPage from './pages/MedicationsInProgressPage';
+import RefillStatusPage from './pages/RefillStatusPage';
 
-describe('In-progress medications page', () => {
+describe('Refill status page', () => {
   const site = new MedicationsSite();
 
   beforeEach(() => {
@@ -9,14 +9,14 @@ describe('In-progress medications page', () => {
   });
 
   it('renders page not found when feature flag is false', () => {
-    const inProgressPage = new MedicationsInProgressPage();
+    const refillStatusPage = new RefillStatusPage();
 
-    inProgressPage.visitPage();
+    refillStatusPage.visitPage();
     cy.findByTestId('mhv-page-not-found');
     cy.injectAxeThenAxeCheck();
   });
 
-  it('renders the in-progress medications page when feature flag is true', () => {
+  it('renders the refill status page when feature flag is true', () => {
     cy.intercept('GET', '/v0/feature_toggles?*', {
       data: {
         type: 'feature_toggles',
@@ -29,10 +29,10 @@ describe('In-progress medications page', () => {
       },
     }).as('featureToggles');
 
-    const inProgressPage = new MedicationsInProgressPage();
+    const refillStatusPage = new RefillStatusPage();
 
-    inProgressPage.visitPage();
-    inProgressPage.verifyHeading();
+    refillStatusPage.visitPage();
+    refillStatusPage.verifyHeading();
     cy.injectAxeThenAxeCheck();
   });
 });

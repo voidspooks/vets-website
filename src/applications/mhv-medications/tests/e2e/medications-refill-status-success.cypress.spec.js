@@ -1,5 +1,5 @@
 import MedicationsSite from './med_site/MedicationsSite';
-import MedicationsInProgressPage from './pages/MedicationsInProgressPage';
+import RefillStatusPage from './pages/RefillStatusPage';
 import inProgressPrescriptions from './fixtures/in-progress-prescriptions.json';
 
 /**
@@ -21,48 +21,48 @@ const withRecentShippingDate = fixture => {
   return clone;
 };
 
-describe('In-progress medications page - successful data load', () => {
+describe('Refill Status page - successful data load', () => {
   it('displays medications in each process step', () => {
     const site = new MedicationsSite();
     site.loginWithManagementImprovements();
 
     const fixture = withRecentShippingDate(inProgressPrescriptions);
-    const inProgressPage = new MedicationsInProgressPage();
-    inProgressPage.visitPage(fixture);
+    const refillStatusPage = new RefillStatusPage();
+    refillStatusPage.visitPage(fixture);
     cy.wait('@prescriptions');
 
-    inProgressPage.verifyHeading();
-    inProgressPage.verifyProcessListSteps();
+    refillStatusPage.verifyHeading();
+    refillStatusPage.verifyProcessListSteps();
 
-    inProgressPage.verifySubmittedPrescription(
+    refillStatusPage.verifySubmittedPrescription(
       inProgressPrescriptions.data[0].attributes.prescriptionName,
     );
 
-    inProgressPage.verifyInProgressPrescription(
+    refillStatusPage.verifyInProgressPrescription(
       inProgressPrescriptions.data[1].attributes.prescriptionName,
     );
 
-    inProgressPage.verifyShippedPrescription(
+    refillStatusPage.verifyShippedPrescription(
       inProgressPrescriptions.data[2].attributes.prescriptionName,
     );
 
-    inProgressPage.verifySubmittedPrescription(
+    refillStatusPage.verifySubmittedPrescription(
       inProgressPrescriptions.data[3].attributes.prescriptionName,
     );
 
-    inProgressPage.verifyInProgressPrescription(
+    refillStatusPage.verifyInProgressPrescription(
       inProgressPrescriptions.data[4].attributes.prescriptionName,
     );
 
-    inProgressPage.verifyPrescriptionNotInList(
+    refillStatusPage.verifyPrescriptionNotInList(
       inProgressPrescriptions.data[5].attributes.prescriptionName,
     );
 
-    inProgressPage.verifyPrescriptionNotInList(
+    refillStatusPage.verifyPrescriptionNotInList(
       inProgressPrescriptions.data[6].attributes.prescriptionName,
     );
 
-    inProgressPage.verifyNeedHelpSection();
+    refillStatusPage.verifyNeedHelpSection();
     cy.injectAxe();
     cy.axeCheck('main');
   });

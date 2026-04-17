@@ -9,7 +9,7 @@ import {
 export const pageType = {
   DETAILS: 'Details Page',
   DOCUMENTATION: 'Documentation Page',
-  IN_PROGRESS: 'In-progress Page',
+  REFILL_STATUS: 'Refill Status Page',
   HISTORY: 'History Page',
   LIST: 'List Page',
   REFILL: 'Refill Page',
@@ -177,31 +177,31 @@ export const dataDogActionNames = {
       pageType.HISTORY
     }`,
   },
-  inProgressPage: {
+  refillStatusPage: {
     GO_TO_REVIEW_AND_PRINT_MEDICATION_HISTORY_LINK: `Review and print list of medications link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
     REFILL_MEDICATIONS_LINK: `Refill medications link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
-    MEDICATION_NAME_LINK: `Medication name link - ${pageType.IN_PROGRESS}`,
+    MEDICATION_NAME_LINK: `Medication name link - ${pageType.REFILL_STATUS}`,
     GO_TO_SELF_ENTERED_HEALTH_INFORMATION_LINK: `Go to self-entered health information link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
     GO_TO_ALLERGIES_AND_REACTIONS_LINK: `Go to allergies and reactions link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
     LEARN_MORE_ABOUT_MANAGING_MEDICATIONS_ONLINE_LINK: `Learn more about managing medications online link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
     START_A_NEW_MESSAGE_LINK: `Start a new message link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
     GO_TO_UPDATE_NOTIFICATION_SETTINGS_LINK: `Go to update notification settings link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
     ORDER_MEDICAL_SUPPLIES_LINK: `Order medical supplies link - ${
-      pageType.IN_PROGRESS
+      pageType.REFILL_STATUS
     }`,
   },
 };

@@ -17,7 +17,7 @@ const NeedHelp = ({ page, headingLevel = 3 }) => {
         [pageType.LIST]: dataDogActionNames.medicationsListPage,
         [pageType.REFILL]: dataDogActionNames.refillPage,
         [pageType.HISTORY]: dataDogActionNames.medicationsHistoryPage,
-        [pageType.IN_PROGRESS]: dataDogActionNames.inProgressPage,
+        [pageType.REFILL_STATUS]: dataDogActionNames.refillStatusPage,
       };
 
       const pageActions = pageActionMap[page] || dataDogActionNames.refillPage;
