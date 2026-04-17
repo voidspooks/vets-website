@@ -231,7 +231,7 @@ The `App.jsx` container auto-opens review chapters for incomplete owned assets a
 
 ### Containers
 - `App.jsx` — Root container. Feature toggle gating (`incomeAndAssetsFormEnabled`), Datadog monitoring, post-MVP content flag sync, auto-opens review chapters for incomplete assets/trusts, redirects unauthenticated users
-- `IntroductionPage.jsx` — Form intro with accordion-based guidance per claimant type, VerifyAlert for LOA1 users (when `pbbFormsRequireLoa3`), SaveInProgressIntro, OMB info
+- `IntroductionPage.jsx` — Form intro with accordion-based guidance per claimant type, SaveInProgressIntro, OMB info
 - `ConfirmationPage.jsx` — Uses `ConfirmationView` pattern. Shows submission alert, confirmation number, print/save, NextStepsSection, SupplementaryFormsSection, WhatsNextProcessList, income change notification
 - `PreSubmitInfo.jsx` — Dual-mode pre-submit (privacy agreement for logged-in veterans, Statement of Truth for others)
 
@@ -294,7 +294,6 @@ The `App.jsx` container auto-opens review chapters for incomplete owned assets a
 | `incomeAndAssetsFormEnabled` | Controls whether the form renders or shows `NoFormPage` (Flipper: `income_and_assets_form_enabled`) |
 | `incomeAndAssetsContentUpdates` | Controls post-MVP content updates via `sessionStorage.showUpdatedContent` |
 | `incomeAndAssetsBrowserMonitoringEnabled` | Enables Datadog browser/session monitoring |
-| `pbbFormsRequireLoa3` | Requires LOA3 verification before starting the form |
 
 ## Redux State Shape
 

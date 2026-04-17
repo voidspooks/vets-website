@@ -10,7 +10,6 @@ import formConfig from '../../config/form';
 
 const getStore = ({
   loggedIn = true,
-  toggle = false,
   verified = false,
   savedForm = false,
 } = {}) => ({
@@ -38,7 +37,6 @@ const getStore = ({
     featureToggles: {
       loading: false,
       [`burials_form_enabled`]: true,
-      [`pbb_forms_require_loa3`]: toggle,
     },
   }),
   subscribe: () => {},
@@ -71,23 +69,13 @@ describe('IntroductionPage', () => {
     ).to.exist;
     expect(screen.queryByText('Follow the steps below to apply:')).to.exist;
 
-    // logged in false, toggle false, verified false, saved form false
+    // logged in false, verified false, saved form false
     expect($('va-alert-sign-in[variant="signInOptional"]', screen.container)).to
       .exist;
   });
 
-  it('renders start action link when logged in, no saved form & toggle off', () => {
-    // logged in true, toggle false, verified false, saved form false
-    const { container } = render(
-      <Provider store={getStore()}>
-        <IntroductionPage {...props} />
-      </Provider>,
-    );
-    expect($('va-link-action, .vads-c-action-link--green', container)).to.exist;
-  });
-
-  it('renders continue app button when logged in, with saved form & toggle off', () => {
-    // logged in true, toggle false, verified false, saved form true
+  it('renders continue app button when logged in & with saved form', () => {
+    // logged in true, verified false, saved form true
     const { container } = render(
       <Provider store={getStore({ savedForm: true })}>
         <IntroductionPage {...props} />
@@ -96,19 +84,19 @@ describe('IntroductionPage', () => {
     expect($('[data-testid="continue-your-application"]', container)).to.exist;
   });
 
-  it('renders the verify alert (logged in, toggle on, not verified, no in progress)', () => {
-    // logged in true, toggle true, verified false, saved form false
+  it('renders the verify alert (logged in, not verified, no in progress)', () => {
+    // logged in true, verified false, saved form false
     const { container } = render(
-      <Provider store={getStore({ toggle: true })}>
+      <Provider store={getStore()}>
         <IntroductionPage {...props} />
       </Provider>,
     );
     expect($('va-alert-sign-in[variant="verifyIdMe"]', container)).to.exist;
   });
 
-  it('renders the continue app button (logged in, toggle on, not verified & has in progress)', () => {
-    // logged in true, toggle true, verified false, saved form true
-    const mockStore = getStore({ toggle: true, savedForm: true });
+  it('renders the continue app button (logged in, not verified & has in progress)', () => {
+    // logged in true, verified false, saved form true
+    const mockStore = getStore({ savedForm: true });
     const { container } = render(
       <Provider store={mockStore}>
         <IntroductionPage {...props} />
@@ -117,10 +105,9 @@ describe('IntroductionPage', () => {
     expect($('[data-testid="continue-your-application"]', container)).to.exist;
   });
 
-  it('renders continue app button when logged in, with saved form, verified & toggle on', () => {
-    // logged in true, toggle true, verified true, saved form true
+  it('renders continue app button when logged in, with saved form & verified', () => {
+    // logged in true, verified true, saved form true
     const mockStore = getStore({
-      toggle: true,
       savedForm: true,
       verified: true,
     });
@@ -132,11 +119,10 @@ describe('IntroductionPage', () => {
     expect($('[data-testid="continue-your-application"]', container)).to.exist;
   });
 
-  it('renders start action link when logged in & toggle on', () => {
-    // logged in true, toggle true, verified true, saved form false
+  it('renders start action link when logged in', () => {
+    // logged in true, verified true, saved form false
     const mockStore = getStore({
       loggedIn: true,
-      toggle: true,
       verified: true,
       savedForm: false,
     });

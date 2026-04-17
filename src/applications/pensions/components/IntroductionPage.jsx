@@ -16,7 +16,6 @@ const IntroductionPage = props => {
   const { formConfig, pageList } = route;
 
   const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
-  const pbbFormsRequireLoa3 = useToggleValue(TOGGLE_NAMES.pbbFormsRequireLoa3);
   const pensionRatingAlertLoggingEnabled = useToggleValue(
     TOGGLE_NAMES.pensionRatingAlertLoggingEnabled,
   );
@@ -150,7 +149,7 @@ const IntroductionPage = props => {
         - the user does not have an in-progress form (we want LOA1 users to be
           able to continue their form)
       */}
-      {loggedIn && pbbFormsRequireLoa3 && !isVerified && !hasInProgressForm ? (
+      {loggedIn && !isVerified && !hasInProgressForm ? (
         <>
           <VerifyAlert />
           <p>
@@ -169,7 +168,6 @@ const IntroductionPage = props => {
         </>
       ) : (
         <SaveInProgressIntro
-          hideUnauthedStartLink={pbbFormsRequireLoa3}
           formConfig={formConfig}
           prefillEnabled={formConfig.prefillEnabled}
           pageList={pageList}

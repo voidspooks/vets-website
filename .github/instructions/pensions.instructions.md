@@ -322,7 +322,6 @@ Controlled by `pensionPdfFormAlignment` feature flag (stored in sessionStorage).
 | `pensionMultiplePageResponse` | Controls multi-page response behavior (stored in sessionStorage) |
 | `pensionPdfFormAlignment` | Controls PDF form alignment features affecting marriage history logic |
 | `pensionsBrowserMonitoringEnabled` | Enables Datadog browser/session monitoring |
-| `pbbFormsRequireLoa3` | Requires LOA3 verification before starting the form |
 | `pensionRatingAlertLoggingEnabled` | Enables disability rating alert with Datadog logging on intro page |
 
 ## Redux State Shape

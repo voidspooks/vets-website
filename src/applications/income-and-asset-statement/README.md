@@ -53,7 +53,6 @@ Active toggle names:
 
 - `income_and_assets_form_enabled`: Enables the 21P-0969 form
 - `income_and_assets_browser_monitoring_enabled`: Enables Datadog RUM monitoring for 21P-0969
-- `pbb_forms_require_loa3`: Require LOA3 to access form
 - `income_and_assets_content_updates`: Enables plain language and content updates (Deprecated)
 - `income_and_assets_error_email_notification`: Enables sending of the 'Action needed' email notification
 - `income_and_assets_submitted_email_notification`: Enables sending of the 'Submitted' email notification

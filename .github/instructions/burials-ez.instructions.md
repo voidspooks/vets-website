@@ -173,7 +173,7 @@ Controlled by `burialPdfFormAlignment` feature flag (stored in sessionStorage). 
 - `DirectDeposit` — Factory function creating direct deposit page config with masked bank input
 - `ErrorText` — Error text with VBA center link
 - `GetFormHelp` — MyVA411 contact info (24/7)
-- `IntroductionPage` — Process list, LOA3 verify gate (behind `pbbFormsRequireLoa3`), SaveInProgressIntro
+- `IntroductionPage` — Process list, SaveInProgressIntro
 - `ListItemView` — Simple `<h3>` title view for arrays
 - `MaskedBankAccountInfo` — Bank input masking all but last 4 chars with ●
 - `NoFormPage` — Shown when `burialFormEnabled` is false; fetches saved data from `/in_progress_forms/21P-530EZ` and displays summary
@@ -229,7 +229,6 @@ Controlled by `burialPdfFormAlignment` feature flag (stored in sessionStorage). 
 | `burialFormEnabled` | Controls whether the form renders or shows `NoFormPage` |
 | `burialPdfFormAlignment` | Controls PDF form alignment features (service period layout, faster claim processing page visibility) |
 | `burialBrowserMonitoringEnabled` | Enables Datadog browser/session monitoring |
-| `pbbFormsRequireLoa3` | Requires LOA3 verification before starting the form |
 | `burialConfirmationPage` | Toggle between new `ConfirmationView` and legacy confirmation layout |
 
 ## Redux State Shape

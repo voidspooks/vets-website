@@ -58,7 +58,6 @@ Active toggle names:
 
 - `pension_form_enabled`: Enable the pension form
 - `pension_browser_monitoring_enabled`: Pension Datadog RUM monitoring
-- `pbb_forms_require_loa3`: Require LOA3 to access forms
 - `pension_rating_alert_logging_enabled`: Show disability rating alert - 100% disability pays more than pension
 - `pension_multiple_page_response`: Enables Multiple Page Response (Array builder) pattern for list-and-loops
 - `pension_pdf_form_alignment`: Enable updates to match upcoming PDF changes

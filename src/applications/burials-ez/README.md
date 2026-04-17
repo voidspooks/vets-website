@@ -128,21 +128,6 @@ Active toggle names:
 
   This feature toggle is being used to enable DataDog Real User Monitoring (RUM) and Logging.
 
-- `pbb_forms_require_loa3`
-
-  Updated Burials form to show a get verified alert if not LOA3 behind feature toggle. New code does not block Veterans that are not verified and have an in-progress form
-
-  | Logged in | Toggle | Verified (LOA3) | Has saved form | What you'll see |
-  |:---:|:---:|:---:|:---:|---|
-  | No | Off | No | No | Optional Sign in (unauthenticated link) |
-  | No | On | No | No | Required Sign in |
-  | Yes | Off | No | Yes | Continue application button |
-  | Yes | On | No | Yes | Continue application button |
-  | Yes | On | Yes | Yes | Continue application button |
-  | Yes | Off | No | No | Start form action link |
-  | Yes | On | Yes | No | Start form action link |
-  | Yes | On | No | No | Verify alert |
-
 - `burial_confirmation_page`
 
   Change the confirmation page to show the "Print this page" button and new content.

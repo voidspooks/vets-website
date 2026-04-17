@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 
 import { isLoggedIn, selectProfile } from 'platform/user/selectors';
 
@@ -21,9 +20,6 @@ export const IntroductionPage = ({ route }) => {
       form => form.form === route.formConfig.formId,
     ),
   );
-
-  const { useToggleValue, TOGGLE_NAMES } = useFeatureToggle();
-  const pbbFormsRequireLoa3 = useToggleValue(TOGGLE_NAMES.pbbFormsRequireLoa3);
 
   const renderIfVeteranContent = authenticated => {
     const prefix = authenticated ? 'You’ll' : 'If you’re the Veteran, you’ll';
@@ -187,7 +183,7 @@ export const IntroductionPage = ({ route }) => {
         - the user does not have an in-progress form (we want LOA1 users to be
           able to continue their form)
       */}
-      {loggedIn && pbbFormsRequireLoa3 && !isVerified && !hasInProgressForm ? (
+      {loggedIn && !isVerified && !hasInProgressForm ? (
         <>
           <VerifyAlert />
           <p>
@@ -206,7 +202,6 @@ export const IntroductionPage = ({ route }) => {
         </>
       ) : (
         <SaveInProgressIntro
-          hideUnauthedStartLink={pbbFormsRequireLoa3}
           headingLevel={2}
           prefillEnabled={formConfig.prefillEnabled}
           messages={formConfig.savedFormMessages}
