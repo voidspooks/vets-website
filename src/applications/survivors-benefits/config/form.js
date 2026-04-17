@@ -59,7 +59,6 @@ import { grossMonthlyIncomePages } from './chapters/06-financial-information/inc
 import { careExpensesPages } from './chapters/06-financial-information/careFacilityExpenses/careExpensesPages';
 import { medicalExpensesPages } from './chapters/06-financial-information/medicalExpenses/medicalExpensesPages';
 import totalAssets from './chapters/06-financial-information/incomeAndAssets/totalAssets';
-import submitSupportingDocs from './chapters/06-financial-information/incomeAndAssets/submitSupportingDocs';
 import transferredAssets from './chapters/06-financial-information/incomeAndAssets/transferredAssets';
 import homeOwnership from './chapters/06-financial-information/incomeAndAssets/homeOwnership';
 import landLotSize from './chapters/06-financial-information/incomeAndAssets/landLotSize';
@@ -527,15 +526,6 @@ const formConfig = {
             formData?.survivorsBenefitsForm2025VersionEnabled,
           uiSchema: incomeAndAssets.uiSchema2025,
           schema: incomeAndAssets.schema,
-        },
-        submitSupportingDocs: {
-          title: 'Submit supporting documents',
-          path: 'financial-information/submit-supporting-documents',
-          depends: formData =>
-            formData?.totalNetWorth === true &&
-            formData?.claims?.survivorsPension === true,
-          uiSchema: submitSupportingDocs.uiSchema,
-          schema: submitSupportingDocs.schema,
         },
         totalAssets: {
           title: 'Total assets',

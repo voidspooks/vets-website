@@ -30,6 +30,8 @@ export const AdditionalMarriagesAlert = () => (
 const RequestFormAlert = ({
   title,
   formName,
+  onlineLink,
+  onlineLinkText,
   formLink,
   advisory,
   children,
@@ -47,6 +49,12 @@ const RequestFormAlert = ({
       We’ll ask you to upload this document at the end of this application. Or
       you can send it to us by mail.
     </p>
+    {onlineLink &&
+      onlineLinkText && (
+        <p>
+          <va-link href={onlineLink} external text={`${onlineLinkText}`} />
+        </p>
+      )}
     <p>
       <va-link href={formLink} external text={`Get ${formName} to download`} />
     </p>
@@ -59,6 +67,8 @@ RequestFormAlert.propTypes = {
   title: PropTypes.string.isRequired,
   advisory: PropTypes.string,
   children: PropTypes.node,
+  onlineLink: PropTypes.string,
+  onlineLinkText: PropTypes.string,
 };
 
 export const RequestNursingHomeInformationAlert = () => (
@@ -85,6 +95,8 @@ export const IncomeAssetStatementFormAlert = () => (
     title="Income and Asset Statement in Support of Claim for Pension or Parents' Dependency and Indemnity Compensation"
     formName="VA Form 21P-0969"
     formLink="https://www.va.gov/find-forms/about-form-21p-0969/"
+    onlineLink="https://www.va.gov/supporting-forms-for-claims/submit-income-and-asset-statement-form-21p-0969"
+    onlineLinkText="Submit income and asset statement to support your claim"
   />
 );
 

@@ -35,6 +35,7 @@ describe('Income and assets page', () => {
       const formDOM = getFormDOM(form);
       const vaRadios = $$('va-radio', formDOM);
       const vaRadioOptions = $$('va-radio-option', formDOM);
+      const vaAlerts = $$('va-alert-expandable', formDOM);
       const vaAccordions = $$('va-accordion', formDOM);
       const vaAssetsThresholdRadio = $(
         'va-radio[label*="Do you and your dependents have over $25,000 in assets?"]',
@@ -53,6 +54,11 @@ describe('Income and assets page', () => {
       expect(vaRadioOptions[1].getAttribute('label')).to.equal('No');
 
       expect(vaAccordions.length).to.equal(1);
+      expect(vaAlerts.length).to.equal(0);
+      vaAssetsThresholdRadio.__events.vaValueChange({
+        detail: { value: 'Y' },
+      });
+      expect($$('va-alert-expandable', formDOM).length).to.equal(1);
     });
 
     it('renders the $25,000 description text', () => {
@@ -83,7 +89,7 @@ describe('Income and assets page', () => {
         'va-radio[label*="Do you and your dependents have over $75,000 in assets?"]',
         formDOM,
       );
-
+      const vaAlerts = $$('va-alert-expandable', formDOM);
       expect(form.getByRole('heading', { level: 3 })).to.have.text(
         'Income and assets',
       );
@@ -94,6 +100,11 @@ describe('Income and assets page', () => {
       expect(vaRadioOptions.length).to.equal(2);
       expect(vaRadioOptions[0].getAttribute('label')).to.equal('Yes');
       expect(vaRadioOptions[1].getAttribute('label')).to.equal('No');
+      expect(vaAlerts.length).to.equal(0);
+      vaAssetsThresholdRadio.__events.vaValueChange({
+        detail: { value: 'Y' },
+      });
+      expect($$('va-alert-expandable', formDOM).length).to.equal(1);
     });
 
     it('renders the $75,000 description text', () => {

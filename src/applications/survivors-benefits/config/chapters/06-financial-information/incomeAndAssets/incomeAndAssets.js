@@ -5,6 +5,7 @@ import {
   yesNoSchema,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { useFeatureToggle } from 'platform/utilities/feature-toggles';
+import { IncomeAssetStatementFormAlert } from '../../../../components/FormAlerts';
 
 const h5Style =
   'vads-u-margin-y--1 vads-u-font-family--sans vads-u-font-size--md';
@@ -121,6 +122,13 @@ const uiSchema = {
   totalNetWorth: yesNoUI({
     title: 'Do you and your dependents have over $25,000 in assets?',
   }),
+  incomeAssetStatementFormAlertYes: {
+    'ui:description': IncomeAssetStatementFormAlert,
+    'ui:options': {
+      hideIf: formData => formData?.totalNetWorth !== true,
+      displayEmptyObjectOnReview: true,
+    },
+  },
 };
 
 const uiSchema2025 = {
@@ -129,6 +137,13 @@ const uiSchema2025 = {
   totalNetWorth: yesNoUI({
     title: 'Do you and your dependents have over $75,000 in assets?',
   }),
+  incomeAssetStatementFormAlertYes: {
+    'ui:description': IncomeAssetStatementFormAlert,
+    'ui:options': {
+      hideIf: formData => formData?.totalNetWorth !== true,
+      displayEmptyObjectOnReview: true,
+    },
+  },
 };
 
 const schema = {
@@ -136,6 +151,10 @@ const schema = {
   required: ['totalNetWorth'],
   properties: {
     totalNetWorth: yesNoSchema,
+    incomeAssetStatementFormAlertYes: {
+      type: 'object',
+      properties: {},
+    },
   },
 };
 

@@ -371,23 +371,6 @@ describe('Survivors Benefits Form config', () => {
       expect(pages.incomeSources.depends(noSurvivorsPension)).to.be.false;
     });
 
-    it('should show submitSupportingDocs when totalNetWorth is true', () => {
-      const { financialInformation } = formConfig.chapters;
-      const { pages } = financialInformation;
-
-      const netWorthTrue = {
-        claims: { survivorsPension: true },
-        totalNetWorth: true,
-      };
-      const netWorthFalse = {
-        claims: { survivorsPension: true },
-        totalNetWorth: false,
-      };
-
-      expect(pages.submitSupportingDocs.depends(netWorthTrue)).to.be.true;
-      expect(pages.submitSupportingDocs.depends(netWorthFalse)).to.be.false;
-    });
-
     it('should show totalAssets when totalNetWorth is false', () => {
       const { financialInformation } = formConfig.chapters;
       const { pages } = financialInformation;
