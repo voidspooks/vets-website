@@ -239,7 +239,7 @@ const ProofOfAttendancePage = () => {
             .replace(/, ([^,]*)$/, ', or $1')}{' '}
           file
         </li>
-        <li>Note that we’ll rename your file "proof-of-attendance"</li>
+        <li>Note that we’ll rename your file “proof-of-attendance”</li>
       </ul>
       {isFetchingDocument ? (
         <va-loading-indicator message="Loading your proof of attendance..." />
