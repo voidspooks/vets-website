@@ -106,6 +106,8 @@
 
     &--info {
       flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
 
       li {
         border-bottom: 1px solid $vads-color-base;
@@ -117,8 +119,7 @@
 
         @media (min-width: $small-desktop-screen) {
           flex-direction: row;
-          height: 56px;
-          align-items: center;
+          align-items: flex-start;
           padding: 16px;
         }
 

@@ -417,7 +417,7 @@ const ClaimantOverviewPage = () => {
                       style={{ marginTop: '20px' }}
                     >
                       {claimant?.intentToFile?.length > 1 && (
-                        <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+                        <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--5">
                           {ITF_SECTION_TITLES[itf.benefitType] ||
                             itf.benefitType}
                         </h4>
@@ -437,15 +437,14 @@ const ClaimantOverviewPage = () => {
                                   {showExpiryWarning(itf.expirationDate) && (
                                     <va-icon
                                       icon="warning"
-                                      size="2"
-                                      style={{ color: '#fdb81e' }}
-                                      className="vads-u-margin-right--0p5"
+                                      size={3}
+                                      class="yellow-warning vads-u-margin-right--0p5"
                                     />
                                   )}
                                   <span>
                                     {formatItfDate(itf.itfDate)}
                                     {itf.expirationDate && (
-                                      <span className="vads-u-color--gray-medium">
+                                      <span>
                                         {'\u00A0'}
                                         {formatExpiresText(itf.expirationDate)}
                                       </span>
@@ -462,14 +461,14 @@ const ClaimantOverviewPage = () => {
                 </>
               ) : (
                 <>
-                  <p className="vads-u-margin-top--0 vads-u-margin-bottom--3">
+                  <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
                     This claimant doesn’t have an intent to file. To establish
                     an intent to file within minutes, submit online VA Form
                     21-0966.
                   </p>
 
                   <a
-                    className="vads-c-action-link--blue vads-u-margin-top--2"
+                    className="vads-c-action-link--blue"
                     href="/representative/representative-form-upload/submit-va-form-21-0966/introduction"
                     target="_blank"
                     rel="noreferrer"
