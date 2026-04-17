@@ -183,7 +183,7 @@ const resolveLandingPageLinks = (
     },
     {
       href: mmiEnabled
-        ? '/my-health/medications/history'
+        ? '/my-health/medications/list'
         : '/my-health/medications',
       text: mmiEnabled ? 'Review medications list' : 'Review medications',
     },

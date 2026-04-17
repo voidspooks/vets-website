@@ -239,7 +239,7 @@ describe(manifest.appName, () => {
             '/my-health/medications/refill-status',
           );
           expect(links[2].text).to.equal('Review medications list');
-          expect(links[2].href).to.equal('/my-health/medications/history');
+          expect(links[2].href).to.equal('/my-health/medications/list');
         });
       });
 
