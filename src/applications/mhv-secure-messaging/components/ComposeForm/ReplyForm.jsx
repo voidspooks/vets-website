@@ -11,6 +11,7 @@ import CannotReplyAlert from '../shared/CannotReplyAlert';
 import StaleMessageAlert from '../shared/StaleMessageAlert';
 
 import BlockedTriageGroupAlert from '../shared/BlockedTriageGroupAlert';
+import MigratedMessageAlert from '../shared/MigratedMessageAlert';
 import ReplyDrafts from './ReplyDrafts';
 import MessageActionButtons from '../MessageActionButtons';
 import {
@@ -195,16 +196,20 @@ const ReplyForm = props => {
           />
         )}
 
-        {currentRecipient &&
-          !isInMigrationPhase && (
-            <BlockedTriageGroupAlert
-              alertStyle={BlockedTriageAlertStyles.ALERT}
-              parentComponent={ParentComponent.REPLY_FORM}
-              currentRecipient={currentRecipient}
-              setShowBlockedTriageGroupAlert={setShowBlockedTriageGroupAlert}
-              isOhMessage={replyMessage.isOhMessage}
-            />
-          )}
+        {currentRecipient && (
+          <>
+            <MigratedMessageAlert />
+            {!isInMigrationPhase && (
+              <BlockedTriageGroupAlert
+                alertStyle={BlockedTriageAlertStyles.ALERT}
+                parentComponent={ParentComponent.REPLY_FORM}
+                currentRecipient={currentRecipient}
+                setShowBlockedTriageGroupAlert={setShowBlockedTriageGroupAlert}
+                isOhMessage={replyMessage.isOhMessage}
+              />
+            )}
+          </>
+        )}
 
         {customFoldersRedesignEnabled &&
           !hasDraftReplyActive && (

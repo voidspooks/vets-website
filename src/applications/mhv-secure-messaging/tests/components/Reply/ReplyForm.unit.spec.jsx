@@ -439,6 +439,62 @@ describe('Reply form component', () => {
     );
   });
 
+  it('displays MigratedMessageAlert when a message has migratedToOracleHealth', async () => {
+    const migratedMessages = threadDetails.messages.map(message => ({
+      ...message,
+      migratedToOracleHealth: true,
+    }));
+
+    const customState = {
+      ...initialState,
+      sm: {
+        ...initialState.sm,
+        threadDetails: {
+          ...threadDetailsReducer.threadDetails,
+          messages: migratedMessages,
+        },
+      },
+    };
+
+    const screen = render(customState, {
+      drafts: threadDetails.drafts,
+      recipients: customState.sm.recipients,
+      messages: migratedMessages,
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('migrated-message-alert')).to.exist;
+    });
+  });
+
+  it('does not display MigratedMessageAlert when a message has not migratedToOracleHealth', async () => {
+    const migratedMessages = threadDetails.messages.map(message => ({
+      ...message,
+      migratedToOracleHealth: false,
+    }));
+
+    const customState = {
+      ...initialState,
+      sm: {
+        ...initialState.sm,
+        threadDetails: {
+          ...threadDetailsReducer.threadDetails,
+          messages: migratedMessages,
+        },
+      },
+    };
+
+    const screen = render(customState, {
+      drafts: threadDetails.drafts,
+      recipients: customState.sm.recipients,
+      messages: migratedMessages,
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('migrated-message-alert')).to.not.exist;
+    });
+  });
+
   describe('OH Migration Phase tests', () => {
     const migrationSchedules = [
       {

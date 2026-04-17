@@ -48,7 +48,7 @@ const MigratedMessageAlert = () => {
     return (
       <va-alert-expandable
         status="warning"
-        trigger="You can’t send messages in this conversation"
+        trigger="You can’t send a message in this conversation"
         data-testid="migrated-message-alert"
         data-dd-privacy="mask"
         data-dd-action-name="Migrated Message Alert Expandable"
@@ -56,25 +56,17 @@ const MigratedMessageAlert = () => {
         <div className="vads-u-padding-bottom--1">
           <p className="vads-u-margin-bottom--1p5">
             We’ve updated this care team’s name.
-            {crosswalkMatch && (
-              <>
-                {' '}
-                <strong>{crosswalkMatch.vistaTriageGroupName}</strong> is now{' '}
-                <strong>{crosswalkMatch.ohTriageGroupName}</strong>.
-              </>
-            )}{' '}
-            If you need to contact them, you can call your VA health care
-            facility directly.
           </p>
-          <va-link
-            data-testid="find-facility-link"
-            href="https://www.va.gov/find-locations/"
-            text="Find your facility's contact information"
-          />
+          {crosswalkMatch && (
+            <p className="vads-u-margin-bottom--1p5">
+              {' '}
+              <strong>{crosswalkMatch.vistaTriageGroupName}</strong> is now{' '}
+              <strong>{crosswalkMatch.ohTriageGroupName}</strong>
+            </p>
+          )}
           <p className="vads-u-margin-bottom--1p5">
-            {' '}
-            Or you can send a new message to this care team. To send a message,
-            you’ll need to select your care team’s updated name.
+            To contact them, you’ll need to start a new message. Then you can
+            select your care team’s updated name.
           </p>
           <RouterLinkAction
             data-dd-action-name={DATADOG_START_NEW_MESSAGE_LINK}
