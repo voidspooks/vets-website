@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import {
   CLEAR_UNSAVED_EXPENSE_CHANGES,
   CREATE_COMPLEX_CLAIM_FAILURE,
@@ -98,508 +99,442 @@ function transposeExpenses(expenses, documents) {
   });
 }
 
-const initialState = {
-  travelClaims: {
-    isLoading: false,
-    claims: {},
-  },
-  claimDetails: {
-    isLoading: false,
-    error: null,
-    data: {},
-  },
-  appointment: {
-    isLoading: false,
-    error: null,
-    data: null,
-  },
-  claimSubmission: {
-    isSubmitting: false,
-    error: null,
-    data: null,
-  },
-  reviewPageAlert: null,
-  complexClaim: {
-    claim: {
-      creation: {
-        isLoading: false,
-        error: null,
-      },
-      submission: {
-        id: '',
-        isSubmitting: false,
-        error: null,
-        data: null,
-      },
-      fetch: {
-        isLoading: false,
-        error: null,
-      },
+const initialTravelClaimsState = {
+  isLoading: false,
+  claims: {},
+};
+
+const initialClaimDetailsState = {
+  isLoading: false,
+  error: null,
+  data: {},
+};
+
+const initialAppointmentState = {
+  isLoading: false,
+  error: null,
+  data: null,
+};
+
+const initialClaimSubmissionState = {
+  isSubmitting: false,
+  error: null,
+  data: null,
+};
+
+const initialComplexClaimState = {
+  claim: {
+    creation: {
+      isLoading: false,
+      error: null,
+    },
+    submission: {
+      id: '',
+      isSubmitting: false,
+      error: null,
       data: null,
     },
-    expenses: {
-      creation: {
-        isLoading: false,
-        error: null,
-      },
-      update: {
-        id: '',
-        isLoading: false,
-        error: null,
-      },
-      delete: {
-        id: '',
-        isLoading: false,
-        error: null,
-      },
-      fetch: {
-        id: '',
-        isLoading: false,
-        error: null,
-      },
-      data: [],
-      hasUnsavedChanges: false,
+    fetch: {
+      isLoading: false,
+      error: null,
     },
-    documentDelete: {
+    data: null,
+  },
+  expenses: {
+    creation: {
+      isLoading: false,
+      error: null,
+    },
+    update: {
       id: '',
       isLoading: false,
       error: null,
     },
-    expenseBackDestination: null,
-    proofOfAttendance: {
+    delete: {
+      id: '',
       isLoading: false,
       error: null,
     },
-    unsavedChangesModal: {
-      visible: false,
-      source: null,
+    fetch: {
+      id: '',
+      isLoading: false,
+      error: null,
     },
+    data: [],
+    hasUnsavedChanges: false,
+  },
+  documentDelete: {
+    id: '',
+    isLoading: false,
+    error: null,
+  },
+  expenseBackDestination: null,
+  proofOfAttendance: {
+    isLoading: false,
+    error: null,
+  },
+  unsavedChangesModal: {
+    visible: false,
+    source: null,
   },
 };
 
-function updateProofOfAttendance(state, updates) {
-  return {
-    ...state,
-    complexClaim: {
-      ...state.complexClaim,
-      proofOfAttendance: {
-        ...state.complexClaim.proofOfAttendance,
-        ...updates,
-      },
-    },
-  };
-}
+export const initialState = {
+  travelClaims: initialTravelClaimsState,
+  claimDetails: initialClaimDetailsState,
+  appointment: initialAppointmentState,
+  claimSubmission: initialClaimSubmissionState,
+  reviewPageAlert: null,
+  complexClaim: initialComplexClaimState,
+};
 
-function travelPayReducer(state = initialState, action) {
-  /* eslint-disable sonarjs/max-switch-cases */
+// ── Top-level slice reducers ──────────────────────────────────────────────────
+
+function travelClaimsReducer(state = initialTravelClaimsState, action) {
   switch (action.type) {
     case FETCH_TRAVEL_CLAIMS_STARTED:
       return {
         ...state,
-        travelClaims: {
-          ...state.travelClaims,
-          isLoading: true,
-        },
+        isLoading: true,
       };
     case FETCH_TRAVEL_CLAIMS_SUCCESS:
       return {
         ...state,
-        travelClaims: {
-          ...state.travelClaims,
-          isLoading: false,
-          claims: {
-            ...state.travelClaims.claims,
-            [action.dateRangeId]: {
-              error: null,
-              metadata: action.payload.metadata,
-              data: action.payload.data,
-            },
+        isLoading: false,
+        claims: {
+          ...state.claims,
+          [action.dateRangeId]: {
+            error: null,
+            metadata: action.payload.metadata,
+            data: action.payload.data,
           },
         },
       };
     case FETCH_TRAVEL_CLAIMS_FAILURE:
       return {
         ...state,
-        travelClaims: {
-          ...state.travelClaims,
-          isLoading: false,
-          claims: {
-            ...state.travelClaims.claims,
-            [action.dateRangeId]: {
-              error: action.error,
-              metadata: {},
-              data: [],
-            },
+        isLoading: false,
+        claims: {
+          ...state.claims,
+          [action.dateRangeId]: {
+            error: action.error,
+            metadata: {},
+            data: [],
           },
         },
       };
+    default:
+      return state;
+  }
+}
+
+function claimDetailsReducer(state = initialClaimDetailsState, action) {
+  switch (action.type) {
     case FETCH_CLAIM_DETAILS_STARTED:
       return {
         ...state,
-        claimDetails: {
-          ...state.claimDetails,
-          isLoading: true,
-        },
+        isLoading: true,
       };
     case FETCH_CLAIM_DETAILS_SUCCESS:
       return {
-        ...state,
-        claimDetails: {
-          error: null,
-          isLoading: false,
-          data: {
-            ...state.claimDetails.data,
-            [action.id]: action.payload,
-          },
+        error: null,
+        isLoading: false,
+        data: {
+          ...state.data,
+          [action.id]: action.payload,
         },
       };
     case FETCH_CLAIM_DETAILS_FAILURE:
       return {
         ...state,
-        claimDetails: {
-          ...state.claimDetails,
-          isLoading: false,
-          error: action.error,
-        },
+        isLoading: false,
+        error: action.error,
       };
+    default:
+      return state;
+  }
+}
 
+function appointmentReducer(state = initialAppointmentState, action) {
+  switch (action.type) {
     case FETCH_APPOINTMENT_STARTED:
     case FETCH_APPOINTMENT_BY_DATE_STARTED:
       return {
         ...state,
-        appointment: {
-          ...state.appointment,
-          isLoading: true,
-        },
+        isLoading: true,
       };
     case FETCH_APPOINTMENT_SUCCESS:
     case FETCH_APPOINTMENT_BY_DATE_SUCCESS:
       return {
-        ...state,
-        appointment: {
-          error: null,
-          isLoading: false,
-          data: action.payload,
-        },
+        error: null,
+        isLoading: false,
+        data: action.payload,
       };
     case FETCH_APPOINTMENT_FAILURE:
     case FETCH_APPOINTMENT_BY_DATE_FAILURE:
       return {
         ...state,
-        appointment: {
-          ...state.appointment,
-          isLoading: false,
-          error: action.error,
-        },
+        isLoading: false,
+        error: action.error,
       };
+    default:
+      return state;
+  }
+}
+
+function claimSubmissionReducer(state = initialClaimSubmissionState, action) {
+  switch (action.type) {
     case SUBMIT_CLAIM_STARTED:
       return {
         ...state,
-        claimSubmission: {
-          ...state.claimSubmission,
-          isSubmitting: true,
-        },
+        isSubmitting: true,
       };
     case SUBMIT_CLAIM_SUCCESS:
       return {
-        ...state,
-        claimSubmission: {
-          error: null,
-          isSubmitting: false,
-          data: action.payload,
-        },
+        error: null,
+        isSubmitting: false,
+        data: action.payload,
       };
     case SUBMIT_CLAIM_FAILURE:
       return {
         ...state,
-        claimSubmission: {
-          ...state.claimSubmission,
-          isSubmitting: false,
-          error: action.error,
-        },
+        isSubmitting: false,
+        error: action.error,
       };
+    default:
+      return state;
+  }
+}
+
+function reviewPageAlertReducer(state = null, action) {
+  switch (action.type) {
+    case SET_REVIEW_PAGE_ALERT:
+      return action.payload;
+    case CLEAR_REVIEW_PAGE_ALERT:
+      return null;
+    default:
+      return state;
+  }
+}
+
+// ── complexClaim slice reducer ────────────────────────────────────────────────
+
+function complexClaimReducer(state = initialComplexClaimState, action) {
+  switch (action.type) {
     case SUBMIT_COMPLEX_CLAIM_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            submission: {
-              ...state.complexClaim.claim.submission,
-              isSubmitting: true,
-              error: null,
-            },
+        claim: {
+          ...state.claim,
+          submission: {
+            ...state.claim.submission,
+            isSubmitting: true,
+            error: null,
           },
         },
       };
     case SUBMIT_COMPLEX_CLAIM_SUCCESS:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            submission: {
-              ...state.complexClaim.claim.submission,
-              isSubmitting: false,
-              error: null,
-              data: action.payload,
-            },
+        claim: {
+          ...state.claim,
+          submission: {
+            ...state.claim.submission,
+            isSubmitting: false,
+            error: null,
+            data: action.payload,
           },
         },
       };
     case SUBMIT_COMPLEX_CLAIM_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            submission: {
-              ...state.complexClaim.claim.submission,
-              isSubmitting: false,
-              error: action.error,
-            },
+        claim: {
+          ...state.claim,
+          submission: {
+            ...state.claim.submission,
+            isSubmitting: false,
+            error: action.error,
           },
         },
       };
     case CREATE_COMPLEX_CLAIM_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            creation: {
-              isLoading: true,
-              error: null,
-            },
+        claim: {
+          ...state.claim,
+          creation: {
+            isLoading: true,
+            error: null,
           },
         },
       };
     case CREATE_COMPLEX_CLAIM_SUCCESS:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            creation: {
-              error: null,
-              isLoading: false,
-              data: action.payload,
-            },
+        claim: {
+          ...state.claim,
+          creation: {
+            error: null,
+            isLoading: false,
             data: action.payload,
           },
+          data: action.payload,
         },
       };
     case CREATE_COMPLEX_CLAIM_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            creation: {
-              isLoading: false,
-              error: action.error,
-            },
+        claim: {
+          ...state.claim,
+          creation: {
+            isLoading: false,
+            error: action.error,
           },
         },
       };
     case UPDATE_EXPENSE_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            update: {
-              id: action.expenseId,
-              isLoading: true,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          update: {
+            id: action.expenseId,
+            isLoading: true,
+            error: null,
           },
         },
       };
-
     case FETCH_EXPENSE_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            fetch: {
-              id: action.expenseId,
-              isLoading: true,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          fetch: {
+            id: action.expenseId,
+            isLoading: true,
+            error: null,
           },
         },
       };
-
     case UPDATE_EXPENSE_SUCCESS:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            update: {
-              id: '',
-              isLoading: false,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          update: {
+            id: '',
+            isLoading: false,
+            error: null,
           },
         },
       };
-
-    case FETCH_EXPENSE_SUCCESS: {
+    case FETCH_EXPENSE_SUCCESS:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            fetch: {
-              id: action.expenseId,
-              isLoading: false,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          fetch: {
+            id: action.expenseId,
+            isLoading: false,
+            error: null,
           },
         },
       };
-    }
-
     case UPDATE_EXPENSE_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            update: {
-              id: action.expenseId,
-              isLoading: false,
-              error: action.error,
-            },
+        expenses: {
+          ...state.expenses,
+          update: {
+            id: action.expenseId,
+            isLoading: false,
+            error: action.error,
           },
         },
       };
-
     case FETCH_EXPENSE_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            fetch: {
-              id: action.expenseId,
-              isLoading: false,
-              error: action.error,
-            },
+        expenses: {
+          ...state.expenses,
+          fetch: {
+            id: action.expenseId,
+            isLoading: false,
+            error: action.error,
           },
         },
       };
-
-    case DELETE_EXPENSE_DELETE_DOCUMENT_STARTED: {
+    case DELETE_EXPENSE_DELETE_DOCUMENT_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            delete: {
-              id: action.expenseId,
-              isLoading: true,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          delete: {
+            id: action.expenseId,
+            isLoading: true,
+            error: null,
           },
         },
       };
-    }
     case DELETE_EXPENSE_DELETE_DOCUMENT_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            delete: {
-              id: action.expenseId,
-              isLoading: false,
-              error: action.error,
-            },
+        expenses: {
+          ...state.expenses,
+          delete: {
+            id: action.expenseId,
+            isLoading: false,
+            error: action.error,
           },
         },
       };
-
-    // New bifurcated expense operations
     case CREATE_EXPENSE_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            creation: {
-              isLoading: true,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          creation: {
+            isLoading: true,
+            error: null,
           },
         },
       };
-
     case CREATE_EXPENSE_SUCCESS:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            creation: {
-              isLoading: false,
-              error: null,
-            },
+        expenses: {
+          ...state.expenses,
+          creation: {
+            isLoading: false,
+            error: null,
           },
         },
       };
-
     case CREATE_EXPENSE_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            creation: {
-              isLoading: false,
-              error: action.error,
-            },
+        expenses: {
+          ...state.expenses,
+          creation: {
+            isLoading: false,
+            error: action.error,
           },
         },
       };
-
     case FETCH_COMPLEX_CLAIM_DETAILS_STARTED:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            fetch: {
-              isLoading: true,
-              error: null,
-            },
+        claim: {
+          ...state.claim,
+          fetch: {
+            isLoading: true,
+            error: null,
           },
         },
       };
-
     case FETCH_COMPLEX_CLAIM_DETAILS_SUCCESS: {
-      const existingExpenses = state.complexClaim.expenses.data || [];
+      const existingExpenses = state.expenses.data || [];
       const claimDocuments = action.payload?.documents || [];
       const newExpenses = action.payload?.expenses || [];
       const mergedExpenses = mergeExpenses(existingExpenses, newExpenses);
@@ -610,39 +545,31 @@ function travelPayReducer(state = initialState, action) {
 
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            fetch: {
-              isLoading: false,
-              error: null,
-            },
-            data: action.payload,
+        claim: {
+          ...state.claim,
+          fetch: {
+            isLoading: false,
+            error: null,
           },
-          expenses: {
-            ...state.complexClaim.expenses,
-            data: transposedExpenses,
-          },
+          data: action.payload,
+        },
+        expenses: {
+          ...state.expenses,
+          data: transposedExpenses,
         },
       };
     }
-
     case FETCH_COMPLEX_CLAIM_DETAILS_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            fetch: {
-              isLoading: false,
-              error: action.error,
-            },
+        claim: {
+          ...state.claim,
+          fetch: {
+            isLoading: false,
+            error: action.error,
           },
         },
       };
-
     case DELETE_EXPENSE_DELETE_DOCUMENT_SUCCESS: {
       const claimDocuments = action.payload?.documents || [];
       const newExpenses = action.payload?.expenses || [];
@@ -650,156 +577,116 @@ function travelPayReducer(state = initialState, action) {
 
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-            data: action.payload,
-          },
-          expenses: {
-            ...state.complexClaim.expenses,
-            delete: {
-              id: '',
-              isLoading: false,
-              error: null,
-            },
-            data: transposedExpenses,
-          },
+        claim: {
+          ...state.claim,
+          data: action.payload,
         },
-      };
-    }
-
-    case DELETE_DOCUMENT_STARTED:
-      return {
-        ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-          },
-          expenses: {
-            ...state.complexClaim.expenses,
-          },
-          documentDelete: {
-            id: action.documentId,
-            isLoading: true,
-            error: null,
-          },
-        },
-      };
-
-    case DELETE_DOCUMENT_SUCCESS:
-      return {
-        ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-          },
-          expenses: {
-            ...state.complexClaim.expenses,
-          },
-          documentDelete: {
+        expenses: {
+          ...state.expenses,
+          delete: {
             id: '',
             isLoading: false,
             error: null,
           },
+          data: transposedExpenses,
         },
       };
-
+    }
+    case DELETE_DOCUMENT_STARTED:
+      return {
+        ...state,
+        documentDelete: {
+          id: action.documentId,
+          isLoading: true,
+          error: null,
+        },
+      };
+    case DELETE_DOCUMENT_SUCCESS:
+      return {
+        ...state,
+        documentDelete: {
+          id: '',
+          isLoading: false,
+          error: null,
+        },
+      };
     case DELETE_DOCUMENT_FAILURE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          claim: {
-            ...state.complexClaim.claim,
-          },
-          expenses: {
-            ...state.complexClaim.expenses,
-          },
-          documentDelete: {
-            id: action.documentId,
-            isLoading: false,
-            error: action.error,
-          },
+        documentDelete: {
+          id: action.documentId,
+          isLoading: false,
+          error: action.error,
         },
       };
-
     case SET_UNSAVED_EXPENSE_CHANGES:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            hasUnsavedChanges: action.payload,
-          },
+        expenses: {
+          ...state.expenses,
+          hasUnsavedChanges: action.payload,
         },
       };
-
     case CLEAR_UNSAVED_EXPENSE_CHANGES:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenses: {
-            ...state.complexClaim.expenses,
-            hasUnsavedChanges: false,
-          },
+        expenses: {
+          ...state.expenses,
+          hasUnsavedChanges: false,
         },
       };
-
-    case SET_REVIEW_PAGE_ALERT:
-      return {
-        ...state,
-        reviewPageAlert: action.payload,
-      };
-
-    case CLEAR_REVIEW_PAGE_ALERT:
-      return {
-        ...state,
-        reviewPageAlert: null,
-      };
-
     case SET_EXPENSE_BACK_DESTINATION:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          expenseBackDestination: action.payload,
-        },
+        expenseBackDestination: action.payload,
       };
-
     case SET_UNSAVED_CHANGES_MODAL_VISIBLE:
       return {
         ...state,
-        complexClaim: {
-          ...state.complexClaim,
-          unsavedChangesModal: {
-            visible: action.payload.visible,
-            source: action.payload.source,
-          },
+        unsavedChangesModal: {
+          visible: action.payload.visible,
+          source: action.payload.source,
         },
       };
-
     case UPLOAD_POA_STARTED:
-      return updateProofOfAttendance(state, { isLoading: true, error: null });
-
+      return {
+        ...state,
+        proofOfAttendance: {
+          ...state.proofOfAttendance,
+          isLoading: true,
+          error: null,
+        },
+      };
     case UPLOAD_POA_SUCCESS:
-      return updateProofOfAttendance(state, { isLoading: false, error: null });
-
+      return {
+        ...state,
+        proofOfAttendance: {
+          ...state.proofOfAttendance,
+          isLoading: false,
+          error: null,
+        },
+      };
     case UPLOAD_POA_FAILURE:
-      return updateProofOfAttendance(state, {
-        isLoading: false,
-        error: action.error,
-      });
-
+      return {
+        ...state,
+        proofOfAttendance: {
+          ...state.proofOfAttendance,
+          isLoading: false,
+          error: action.error,
+        },
+      };
     default:
       return state;
   }
 }
 
 export default {
-  travelPay: travelPayReducer,
+  travelPay: combineReducers({
+    travelClaims: travelClaimsReducer,
+    claimDetails: claimDetailsReducer,
+    appointment: appointmentReducer,
+    claimSubmission: claimSubmissionReducer,
+    reviewPageAlert: reviewPageAlertReducer,
+    complexClaim: complexClaimReducer,
+  }),
 };

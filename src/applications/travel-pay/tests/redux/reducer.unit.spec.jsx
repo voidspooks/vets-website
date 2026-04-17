@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import travelPayReducer from '../../redux/reducer';
+import travelPayReducer, { initialState } from '../../redux/reducer';
 import {
   FETCH_TRAVEL_CLAIMS_STARTED,
   FETCH_TRAVEL_CLAIMS_SUCCESS,
@@ -22,12 +22,7 @@ import {
 
 const { travelPay: reducer } = travelPayReducer;
 
-const defaultState = {
-  appointment: {},
-  travelClaims: {},
-  claimDetails: {},
-  claimSubmission: {},
-};
+const defaultState = initialState;
 
 describe('Redux - reducer', () => {
   it('should update state as expected for FETCH_TRAVEL_CLAIMS_STARTED action', () => {
@@ -37,6 +32,7 @@ describe('Redux - reducer', () => {
       ...defaultState,
       travelClaims: {
         isLoading: true,
+        claims: {},
       },
     });
   });
@@ -98,6 +94,8 @@ describe('Redux - reducer', () => {
       ...defaultState,
       claimDetails: {
         isLoading: true,
+        error: null,
+        data: {},
       },
     });
   });
@@ -132,6 +130,7 @@ describe('Redux - reducer', () => {
       claimDetails: {
         error: { status: 400, message: 'there was a problem' },
         isLoading: false,
+        data: {},
       },
     });
   });
@@ -145,6 +144,8 @@ describe('Redux - reducer', () => {
       ...defaultState,
       appointment: {
         isLoading: true,
+        error: null,
+        data: null,
       },
     });
   });
@@ -176,6 +177,7 @@ describe('Redux - reducer', () => {
       appointment: {
         error: { status: 400, message: 'there was a problem' },
         isLoading: false,
+        data: null,
       },
     });
   });
@@ -189,6 +191,8 @@ describe('Redux - reducer', () => {
       ...defaultState,
       claimSubmission: {
         isSubmitting: true,
+        error: null,
+        data: null,
       },
     });
   });
@@ -220,6 +224,7 @@ describe('Redux - reducer', () => {
       claimSubmission: {
         error: { status: 400, message: 'there was a problem' },
         isSubmitting: false,
+        data: null,
       },
     });
   });
