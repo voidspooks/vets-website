@@ -1,7 +1,7 @@
 import React from 'react';
 import { additionalInfo } from '../../../components/fileInputComponent/AdditionalUploadInfo';
 
-export const pmrTitle = 'Upload copies of private medical records';
+export const pmrTitle = 'Upload your private medical records';
 
 const pmrBody = (
   <>

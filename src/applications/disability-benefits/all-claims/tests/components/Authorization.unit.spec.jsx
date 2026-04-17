@@ -36,7 +36,7 @@ describe('PrivateRecordsAuthorization', () => {
       );
       const heading = wrapper.find('h3').first();
       expect(heading.text()).to.equal(
-        'Authorize the release of non-VA medical records to VA',
+        'Authorize the release of private medical records to VA',
       );
       wrapper.unmount();
     });

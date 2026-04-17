@@ -1121,7 +1121,7 @@ export const pageHooks = (cy, testOptions) => ({
           .invoke('text')
           .then(textValue => {
             expect(textValue).to.include(
-              'Authorize the release of non-VA medical records to VA',
+              'Authorize the release of private medical records to VA',
             );
           });
         cy.get('input[name="privacy-agreement"]').focus();

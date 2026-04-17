@@ -138,7 +138,7 @@ const PrivateRecordsAuthorization = ({
 
   return (
     <>
-      <h3>Authorize the release of non-VA medical records to VA</h3>
+      <h3>Authorize the release of private medical records to VA</h3>
       <p>
         Only provide this authorization if you want The Department of Veterans
         Affairs (VA) to get your non-VA treatment records for you. If you’ve

@@ -9,10 +9,12 @@ import get from '@department-of-veterans-affairs/platform-forms-system/get';
 import { validateIfHasEvidence } from '../validations';
 
 import { evidenceTypeHelp } from '../content/evidenceTypesBDD';
+import { standardTitle } from '../content/form0781';
 
 import { BddEvidenceSubmitLater } from '../content/bddEvidenceSubmitLater';
 
 export const uiSchema = {
+  'ui:title': standardTitle('Types of supporting evidence'),
   'view:hasEvidence': yesNoUI({
     title:
       'Do you want to upload any other documents or evidence at this time?',

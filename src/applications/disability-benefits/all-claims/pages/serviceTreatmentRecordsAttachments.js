@@ -3,18 +3,16 @@ import { validateFileField } from 'platform/forms-system/src/js/validation';
 
 import { ancillaryFormUploadUi } from '../utils/schemas';
 import { UploadDescription } from '../content/fileUploadDescriptions';
+import { standardTitle } from '../content/form0781';
 
-const fileUploadUi = ancillaryFormUploadUi(
-  'Upload your service treatment records',
-  '',
-  {
-    attachmentId: '',
-    addAnotherLabel: 'Add another file',
-    buttonText: 'Upload file',
-  },
-);
+const fileUploadUi = ancillaryFormUploadUi('', '', {
+  attachmentId: '',
+  addAnotherLabel: 'Add another file',
+  buttonText: 'Upload file',
+});
 
 export const uiSchema = {
+  'ui:title': standardTitle('Upload your service treatment records'),
   // 'view:uploadServiceTreatmentRecordsQualifier'
   serviceTreatmentRecordsAttachments: {
     ...fileUploadUi,

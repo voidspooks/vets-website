@@ -4,20 +4,18 @@ import _ from 'platform/utilities/data';
 import { UploadDescription } from '../content/fileUploadDescriptions';
 import { ancillaryFormUploadUi } from '../utils/schemas';
 import { DATA_PATHS } from '../constants';
+import { standardTitle } from '../content/form0781';
 
 const { privateMedicalRecordAttachments } = fullSchema.properties;
 
-const fileUploadUi = ancillaryFormUploadUi(
-  'Upload your private medical records',
-  ' ',
-  {
-    attachmentId: '',
-    addAnotherLabel: 'Add another file',
-    buttonText: 'Upload file',
-  },
-);
+const fileUploadUi = ancillaryFormUploadUi('', ' ', {
+  attachmentId: '',
+  addAnotherLabel: 'Add another file',
+  buttonText: 'Upload file',
+});
 
 export const uiSchema = {
+  'ui:title': standardTitle('Upload your private medical records'),
   privateMedicalRecordAttachments: {
     ...fileUploadUi,
     'ui:options': { ...fileUploadUi['ui:options'] },

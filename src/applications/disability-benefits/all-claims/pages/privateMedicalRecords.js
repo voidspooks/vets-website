@@ -19,7 +19,7 @@ const isNotUploadingPrivateRecords = data =>
   data?.['view:hasPrivateRecordsToUpload'] === false;
 
 export const uiSchema = {
-  'ui:title': standardTitle('Options for providing non-VA treatment records'),
+  'ui:title': standardTitle('Options for providing private medical records'),
   'view:recordsConfirmAlertBanner': {
     'ui:description': recordsConfirmAlertBanner,
   },

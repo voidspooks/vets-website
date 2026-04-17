@@ -169,9 +169,7 @@ describe('Summary of Evidence', () => {
     );
 
     const text = form.render().text();
-    expect(text).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(text).to.contain('Summary of evidence');
     expect(text).to.contain('You haven’t uploaded any evidence.');
     expect(text).to.not.contain(
       'You provided documents to support your claim.',
@@ -492,7 +490,7 @@ describe('Summary of Evidence', () => {
     form.unmount();
   });
 
-  it('should render with updated title when the enhancment feature is on', () => {
+  it('should render with standard title when the enhancement feature is on', () => {
     const form = mount(
       <DefinitionTester
         definitions={formConfig.defaultDefinitions}
@@ -505,9 +503,7 @@ describe('Summary of Evidence', () => {
       />,
     );
 
-    expect(form.render().text()).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.find('li').length).to.equal(0);
     form.unmount();
   });
@@ -557,9 +553,7 @@ describe('Summary of Evidence', () => {
       />,
     );
 
-    expect(form.render().text()).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.render().text()).to.contain(
       'You provided documents to support your claim.',
     );
@@ -597,9 +591,7 @@ describe('Summary of Evidence', () => {
       />,
     );
 
-    expect(form.render().text()).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.render().text()).to.not.contain(
       'You provided documents to support your claim.',
     );
@@ -634,9 +626,7 @@ describe('Summary of Evidence', () => {
       />,
     );
 
-    expect(form.render().text()).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.render().text()).to.not.contain(
       'You provided documents to support your claim.',
     );
@@ -671,9 +661,7 @@ describe('Summary of Evidence', () => {
       />,
     );
 
-    expect(form.render().text()).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.render().text()).to.not.contain(
       'You provided documents to support your claim.',
     );
@@ -708,9 +696,7 @@ describe('Summary of Evidence', () => {
       />,
     );
 
-    expect(form.render().text()).to.contain(
-      'Summary of supporting evidence for your disability claim',
-    );
+    expect(form.render().text()).to.contain('Summary of evidence');
     expect(form.render().text()).to.not.contain(
       'You provided documents to support your claim.',
     );

@@ -656,7 +656,7 @@ const formConfig = {
           schema: serviceTreatmentRecords.schema,
         },
         serviceTreatmentRecordsAttachments: {
-          title: 'Service treatment records upload',
+          title: 'Upload your service treatment records',
           path: 'supporting-evidence/service-treatment-records-upload',
           depends: formData => isUploadingSTR(formData),
           uiSchema: serviceTreatmentRecordsAttachments.uiSchema,
@@ -698,7 +698,7 @@ const formConfig = {
           schema: medicalRecords.schema,
         },
         evidenceTypesBDD: {
-          title: 'Types of supporting evidence for BDD',
+          title: 'Types of supporting evidence',
           path: 'supporting-evidence/evidence-types-bdd',
           depends: formData => isBDD(formData),
           uiSchema: evidenceTypesBDD.uiSchema,
@@ -712,7 +712,7 @@ const formConfig = {
           schema: vaMedicalRecords.schema,
         },
         privateMedicalRecords: {
-          title: 'Options for providing non-VA treatment records',
+          title: 'Options for providing private medical records',
           path: 'supporting-evidence/private-medical-records',
           depends: hasPrivateEvidence,
           uiSchema: privateMedicalRecords.uiSchema,
@@ -725,7 +725,7 @@ const formConfig = {
          * @todo Remove the `disability526SupportingEvidenceEnhancement` guard once the feature is live to all users
          */
         privateMedicalRecordsUpload: {
-          title: 'Upload non-VA treatment records',
+          title: 'Upload your private medical records',
           path: 'supporting-evidence/private-medical-records-upload-evidence',
           depends: formData =>
             isEvidenceEnhancement(formData) &&
@@ -740,7 +740,7 @@ const formConfig = {
          * Shown when enhancement is ON but FileInputV3 is OFF (V1 fallback).
          */
         privateMedicalRecordsUploadV1: {
-          title: 'Upload non-VA treatment records',
+          title: 'Upload your private medical records',
           path: 'supporting-evidence/private-medical-records-upload-file',
           depends: formData =>
             isEvidenceEnhancement(formData) &&
@@ -755,7 +755,7 @@ const formConfig = {
          * @todo Remove page once the enhancement is rolled out to 100% in production
          */
         privateMedicalRecordsAttachments: {
-          title: 'Non-VA treatment records',
+          title: 'Upload your private medical records',
           path: 'supporting-evidence/private-medical-records-upload',
           depends: formData =>
             !isEvidenceEnhancement(formData) &&
@@ -766,7 +766,7 @@ const formConfig = {
         },
         // 2024 authorization
         privateMedicalAuthorizeRelease: {
-          title: 'Authorization to release non-VA treatment records to VA',
+          title: 'Authorize the release of private medical records to VA',
           path: 'supporting-evidence/private-medical-records-authorize-release',
           depends: formData =>
             hasPrivateEvidence(formData) &&

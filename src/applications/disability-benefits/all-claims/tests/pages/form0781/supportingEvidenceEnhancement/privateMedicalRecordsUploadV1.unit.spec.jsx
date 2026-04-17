@@ -17,7 +17,7 @@ describe('Private Medical Records Upload V1 page', () => {
 
   describe('page configuration', () => {
     it('should have correct title', () => {
-      expect(page.title).to.equal('Upload non-VA treatment records');
+      expect(page.title).to.equal('Upload your private medical records');
     });
 
     it('should have correct path', () => {
