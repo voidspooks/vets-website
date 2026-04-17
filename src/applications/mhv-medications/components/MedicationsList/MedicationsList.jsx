@@ -142,7 +142,7 @@ const MedicationsList = props => {
       <VaPagination
         max-page-list-length={MAX_PAGE_LIST_LENGTH}
         id="pagination"
-        className="pagination vads-u-justify-content--center no-print"
+        className="pagination vads-u-justify-content--flex-start no-print"
         onPageSelect={e => onPageChange(e.detail.page)}
         page={pagination.currentPage}
         pages={pagination.totalPages}

@@ -34,63 +34,65 @@ const MedicationsListSort = props => {
     <div className="medications-list-sort">
       <div className="vads-u-margin-bottom--0p5">
         {shouldShowSelect && (
-          <VaSelect
-            id="sort-order-dropdown"
-            data-testid="sort-dropdown"
-            label="Sort by"
-            name="sort-order"
-            data-dd-action-name={
-              dataDogActionNames.medicationsListPage
-                .SHOW_MEDICATIONS_IN_ORDER_SELECT
-            }
-            value={selectedSortOption}
-            onVaSelect={e => {
-              const newSortOption = e.detail.value;
+          <div className="sort-inline-container">
+            <VaSelect
+              id="sort-order-dropdown"
+              data-testid="sort-dropdown"
+              label="Sort by"
+              name="sort-order"
+              data-dd-action-name={
+                dataDogActionNames.medicationsListPage
+                  .SHOW_MEDICATIONS_IN_ORDER_SELECT
+              }
+              value={selectedSortOption}
+              onVaSelect={e => {
+                const newSortOption = e.detail.value;
 
-              /**
-               * Workaround for changing page focus overriding the aria-live messaging
-               * when sort element disappears. Just move the focus to an sr-only element
-               * with the correct message.
-               *
-               * The VASelect element with focus on selection is not rendered while the page is loading,
-               * so the change in focus results in aria-live messages being overwritten.
-               */
-              const sortActionSrText = document.querySelector(
-                "[data-testid='sort-action-sr-text']",
-              );
-              sortActionSrText.textContent = `Sorting: ${
-                activeSortingOptions[newSortOption].LABEL
-              }`;
-              focusElement(sortActionSrText);
+                /**
+                 * Workaround for changing page focus overriding the aria-live messaging
+                 * when sort element disappears. Just move the focus to an sr-only element
+                 * with the correct message.
+                 *
+                 * The VASelect element with focus on selection is not rendered while the page is loading,
+                 * so the change in focus results in aria-live messages being overwritten.
+                 */
+                const sortActionSrText = document.querySelector(
+                  "[data-testid='sort-action-sr-text']",
+                );
+                sortActionSrText.textContent = `Sorting: ${
+                  activeSortingOptions[newSortOption].LABEL
+                }`;
+                focusElement(sortActionSrText);
 
-              sortRxList(null, newSortOption);
-              navigate(`${route}?page=1`, {
-                replace: true,
-              });
-              waitForRenderThenFocus(
-                "[data-testid='page-total-info']",
-                document,
-                500,
-              );
-              const capitalizedOption = newSortOption
-                .replace(/([a-z])([A-Z])/g, '$1 $2')
-                .split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
-              datadogRum.addAction(
-                `${capitalizedOption} Option - ${pageType.LIST}`,
-              );
-            }}
-            uswds
-          >
-            {rxSortingOptions.map(option => {
-              return (
-                <option key={option} value={option} data-testid="sort-option">
-                  {activeSortingOptions[option].LABEL}
-                </option>
-              );
-            })}
-          </VaSelect>
+                sortRxList(null, newSortOption);
+                navigate(`${route}?page=1`, {
+                  replace: true,
+                });
+                waitForRenderThenFocus(
+                  "[data-testid='page-total-info']",
+                  document,
+                  500,
+                );
+                const capitalizedOption = newSortOption
+                  .replace(/([a-z])([A-Z])/g, '$1 $2')
+                  .split(' ')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ');
+                datadogRum.addAction(
+                  `${capitalizedOption} Option - ${pageType.LIST}`,
+                );
+              }}
+              uswds
+            >
+              {rxSortingOptions.map(option => {
+                return (
+                  <option key={option} value={option} data-testid="sort-option">
+                    {activeSortingOptions[option].LABEL}
+                  </option>
+                );
+              })}
+            </VaSelect>
+          </div>
         )}
         <div
           className="sr-only"

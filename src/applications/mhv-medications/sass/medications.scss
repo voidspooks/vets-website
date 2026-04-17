@@ -2,7 +2,7 @@
 @import "./prescription-details";
 @import "./print-download";
 
-.medication-list-filter {
+.medication-list-filter-panel {
   va-radio {
     width: max-content;
 
@@ -11,8 +11,8 @@
     }
   }
 
-  .filter-option--selected va-radio-option label {
-    font-weight: bold;
+  va-radio-option input[type="radio"]:checked + label {
+    font-weight: bold !important;
   }
 }
 
@@ -100,12 +100,15 @@
   flex-wrap: wrap;
 }
 
-// Mobile sort label stacking
-@media (max-width: $medium-screen) {
-  .medications-list-sort {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
+.sort-inline-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-inline-container #sort-order-dropdown {
+  width: fit-content;
+  max-width: 250px;
 }
 
 .link-button,
@@ -266,6 +269,7 @@
 .pagination {
   max-width: 500px;
   border-top: 0px;
+  justify-content: flex-start;
 }
 
 @media print {

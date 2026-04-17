@@ -328,10 +328,7 @@ const RefillPrescriptionsV2 = () => {
     } else if (!isCernerPilot) {
       lastFilledText = 'Not filled yet';
     }
-    const descriptionLines = [
-      `Prescription number: ${prescription.prescriptionNumber ||
-        'Not available'}`,
-    ];
+    const descriptionLines = [];
     if (lastFilledText) {
       descriptionLines.push(lastFilledText);
     }
@@ -459,12 +456,12 @@ const RefillPrescriptionsV2 = () => {
           </div>
         ) : (
           <>
-            <h2
+            <h3
               className="vads-u-margin-top--3"
               data-testid="refill-page-subtitle"
             >
               You don’t have any available refills
-            </h2>
+            </h3>
             <p data-testid="no-refills-message">
               You don’t have any VA medications with available refills. If you
               need more of your medication, contact your care team.

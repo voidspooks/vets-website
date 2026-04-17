@@ -3,6 +3,7 @@ import MedicationsListPage from './pages/MedicationsListPage';
 import nonVARx from './fixtures/non-VA-prescription-on-list-page.json';
 import MedicationsDetailsPage from './pages/MedicationsDetailsPage';
 import rxList from './fixtures/listOfPrescriptions.json';
+import { medicationsUrls, STATION_NUMBER_PARAM } from '../../util/constants';
 
 describe('Medications Details Page NonVARx Status DropDown', () => {
   it('visits Medications Details Page Active NonVA Rx Status DropDown', () => {
@@ -22,20 +23,23 @@ describe('Medications Details Page NonVARx Status DropDown', () => {
 
   it('displays updated Non-VA status definition when MedicationsManagementImprovement flag is enabled', () => {
     const site = new MedicationsSite();
-    const listPage = new MedicationsListPage();
     const detailsPage = new MedicationsDetailsPage();
-    const cardNumber = 5;
     site.loginWithManagementImprovements();
-    listPage.visitMedicationListPageURL(rxList);
-    cy.injectAxe();
-    cy.axeCheck('main');
-    // Add intercept with station_number query param for prescription details API
+    const { prescriptionId } = nonVARx.data.attributes;
+    const { stationNumber } = nonVARx.data.attributes;
     cy.intercept(
       'GET',
-      `/my_health/v1/prescriptions/${nonVARx.data.attributes.prescriptionId}?*`,
+      `/my_health/v1/prescriptions/${prescriptionId}?*`,
       nonVARx,
-    ).as('prescriptionDetailsWithStation');
-    detailsPage.clickMedicationDetailsLink(nonVARx, cardNumber);
+    ).as('prescriptionDetails');
+    cy.visit(
+      `${
+        medicationsUrls.PRESCRIPTION_DETAILS
+      }/${prescriptionId}?${STATION_NUMBER_PARAM}=${stationNumber}`,
+    );
+    cy.wait('@prescriptionDetails');
+    cy.injectAxe();
+    cy.axeCheck('main');
     detailsPage.verifyActiveNonVAStatusDisplayedOnDetailsPage('Active: Non-VA');
     detailsPage.clickWhatDoesThisStatusMeanDropDown();
     detailsPage.verifyNonVAStatusDropDownDefinition(true);
