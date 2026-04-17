@@ -9,7 +9,8 @@
         "stationNumber": "607",
         "blockedStatus": true,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -21,7 +22,8 @@
         "stationNumber": "607",
         "blockedStatus": true,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -33,7 +35,8 @@
         "stationNumber": "607",
         "blockedStatus": true,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     }
   ],

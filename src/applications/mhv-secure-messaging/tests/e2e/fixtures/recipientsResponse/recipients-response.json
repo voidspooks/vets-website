@@ -19,7 +19,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -41,7 +42,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -63,7 +65,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -85,7 +88,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -107,7 +111,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -129,7 +134,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -151,7 +157,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -173,7 +180,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": true
       }
     },
     {
@@ -195,7 +203,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": true
+        "ohTriageGroup": true,
+        "signatureRequired": false
       }
     },
     {
@@ -217,7 +226,8 @@
         "subGroupTypeEnumVal": null,
         "groupTypePatientDisplay": null,
         "subGroupTypePatientDisplay": null,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": true
       }
     }
   ],

@@ -9,7 +9,8 @@
           "stationNumber": "649",
           "blockedStatus": true,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -21,7 +22,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -33,7 +35,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -45,7 +48,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -57,7 +61,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -69,7 +74,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -81,7 +87,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "relationshipType": "PATIENT",
-          "preferredTeam": true
+          "preferredTeam": true,
+          "signatureRequired": false
         }
       },
       {
@@ -93,7 +100,8 @@
           "stationNumber": "989",
           "blockedStatus": false,
           "preferredTeam": true,
-          "relationshipType": "PATIENT"
+          "relationshipType": "PATIENT",
+          "signatureRequired": true
         }
       },
       {
@@ -105,7 +113,8 @@
           "stationNumber": "649",
           "blockedStatus": false,
           "preferredTeam": true,
-          "relationshipType": "PATIENT"
+          "relationshipType": "PATIENT",
+          "signatureRequired": true
         }
       },
       {
@@ -117,7 +126,8 @@
           "stationNumber": "757",
           "blockedStatus": false,
           "preferredTeam": true,
-          "relationshipType": "PATIENT"
+          "relationshipType": "PATIENT",
+          "signatureRequired": true
         }
       },
       {
@@ -129,11 +139,14 @@
           "stationNumber": "756",
           "blockedStatus": false,
           "preferredTeam": true,
-          "relationshipType": "PATIENT"
+          "relationshipType": "PATIENT",
+          "signatureRequired": true
         }
       }
     ],
     "meta": {
+        "associatedTriageGroups": 11,
+        "associatedBlockedTriageGroups": 1,
         "sort": {
           "name": "ASC"
         }

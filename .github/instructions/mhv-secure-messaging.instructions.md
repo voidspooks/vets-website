@@ -92,10 +92,8 @@ applyTo: "src/applications/mhv-secure-messaging/**"
 ### Electronic Signature Requirements
 
 - Some recipients require electronic signatures (Privacy Issue, Release of Information, Medical Records teams)
-- Detection regex in `actions/recipients.js`:
-  ```javascript
-  /.*[\s_]*(Privacy Issue|Privacy Issues|Release of Information Medical Records|Record Amendment)[\s_]*Admin|.*[\s_]*Release[\s_]*of[\s_]*Information/i
-  ```
+- `signatureRequired` boolean is provided by the vets-api backend in the recipients API response (`/messaging/allrecipients`, `/messaging/recipients`)
+- The FE passes through `signatureRequired` from the API — no client-side regex determination
 - `signatureRequired` flag on recipient; show/hide `ElectronicSignature` component dynamically
 - Validation: alphabetic-only full name + checkbox; use `validateNameSymbols()` from `platform/forms-system`
 - Signature format: `\n--------------------------------------------------\n\n[Full Name]\nSigned electronically on [Date].`

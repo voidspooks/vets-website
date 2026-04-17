@@ -109,6 +109,47 @@ mockApiRequest({ method: 'POST', data: {}, status: 200 }); // Custom
 - JSON files for mock API responses
 - Import pattern: `import mockData from '../fixtures/data.json'`
 
+### Fixture Completeness When Adding or Migrating API Fields
+
+**When to use:** Adding a new field to the API response (or migrating FE-computed logic to the backend)
+
+When a new attribute is introduced in an API response (e.g., `signatureRequired` on triage teams), it must be added to **every** fixture that mocks that endpoint — not just the obvious ones:
+- `tests/fixtures/mock-api-responses/` (unit test fixtures)
+- `tests/e2e/fixtures/` (Cypress fixtures)
+- `tests/e2e/fixtures/recipientsResponse/` (all variant fixtures: blocked, facility-blocked, etc.)
+- `api/mocks/` (local dev mock server)
+
+**Anti-pattern:**
+```
+// Only updating one fixture and assuming others are fine
+// Causes: reducer deep-equal failures, Cypress tests silently missing UI behavior
+```
+
+**Why:** The FE spreads attributes through reducers (`formatRecipient()`), and `deep.equal` assertions catch unexpected extra/missing properties. Missing the field in any fixture causes test failures or, worse, silently broken E2E paths.
+
+### Test Absent Fields During BE→FE Migrations
+
+**When to use:** Migrating logic from FE to a new backend API field
+
+Always include a test verifying the FE handles the field being **absent** (not just `true`/`false`). During the rollout window, the backend may not yet be deployed, or cached responses may lack the new field.
+
+**Pattern:**
+```javascript
+it('should not crash when newField is absent from the API response', async () => {
+  const mockResponse = {
+    data: [{ id: '1', attributes: { name: 'Some Team' } }],
+  };
+  const store = mockStore();
+  mockApiRequest(mockResponse);
+  return store.dispatch(myAction()).then(() => {
+    const actions = store.getActions();
+    expect(actions[0].response.data[0].attributes).to.not.have.property('newField');
+  });
+});
+```
+
+**Why:** Caught during review of #137464 — the `signatureRequired` migration initially lacked this test, creating a gap during the deploy window where the ElectronicSignature box could silently disappear.
+
 ## Testing with Feature Flags
 
 Set feature flags in test store's initial state:

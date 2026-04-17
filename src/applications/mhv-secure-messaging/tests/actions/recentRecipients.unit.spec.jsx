@@ -23,7 +23,7 @@ const buildAllRecipientsResponse = (list = []) => ({
 });
 
 describe('actions: getAllTriageTeamRecipients (enhanced)', () => {
-  it('dispatches GET_LIST with signatureRequired and healthCareSystemName fallback', async () => {
+  it('dispatches GET_LIST with signatureRequired passthrough and healthCareSystemName fallback', async () => {
     const store = mockStore({
       drupalStaticData: {
         vamcEhrData: {
@@ -39,7 +39,8 @@ describe('actions: getAllTriageTeamRecipients (enhanced)', () => {
     const response = buildAllRecipientsResponse([
       {
         triageTeamId: 1,
-        name: 'Record Amendment Admin', // triggers signatureRequired = true
+        name: 'Record Amendment Admin',
+        signatureRequired: true,
         stationNumber: '649',
         blockedStatus: false,
         preferredTeam: true,
@@ -48,7 +49,8 @@ describe('actions: getAllTriageTeamRecipients (enhanced)', () => {
       },
       {
         triageTeamId: 2,
-        name: 'General Medicine Team', // signatureRequired = false
+        name: 'General Medicine Team',
+        signatureRequired: false,
         stationNumber: '649',
         blockedStatus: false,
         preferredTeam: true,

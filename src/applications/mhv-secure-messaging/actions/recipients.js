@@ -15,43 +15,25 @@ import {
   DefaultFolders,
 } from '../util/constants';
 
-const isSignatureRequired = recipients => {
-  const regex = /.*[\s_]*(Privacy Issue|Privacy Issues|Release of Information Medical Records|Record Amendment)[\s_]*Admin|.*[\s_]*Release[\s_]*of[\s_]*Information/i;
-
-  return recipients.map(recipient => {
-    const requiresSignature = regex.test(recipient.attributes.name);
-    return {
-      ...recipient,
-      attributes: {
-        ...recipient.attributes,
-        signatureRequired: requiresSignature,
-      },
-    };
-  });
-};
-
 export const getAllTriageTeamRecipients = () => async (dispatch, getState) => {
   const ehrDataByVhaId = selectEhrDataByVhaId(getState());
   try {
     const response = await getAllRecipients();
 
-    const recipients = isSignatureRequired(response.data);
     const updatedResponse = {
       ...response,
-      data: recipients.map(recipient => {
-        return {
-          ...recipient,
-          attributes: {
-            ...recipient.attributes,
-            healthCareSystemName:
-              recipient.attributes.healthCareSystemName ||
-              getVamcSystemNameFromVhaId(
-                ehrDataByVhaId,
-                recipient.attributes.stationNumber,
-              ),
-          },
-        };
-      }),
+      data: response.data.map(recipient => ({
+        ...recipient,
+        attributes: {
+          ...recipient.attributes,
+          healthCareSystemName:
+            recipient.attributes.healthCareSystemName ||
+            getVamcSystemNameFromVhaId(
+              ehrDataByVhaId,
+              recipient.attributes.stationNumber,
+            ),
+        },
+      })),
     };
 
     dispatch({

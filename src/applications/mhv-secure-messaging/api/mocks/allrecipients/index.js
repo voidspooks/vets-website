@@ -11,6 +11,7 @@ const allRecipients = {
         blockedStatus: false,
         preferredTeam: true,
         relationshipType: 'PATIENT',
+        signatureRequired: false,
       },
     },
     {
@@ -23,6 +24,7 @@ const allRecipients = {
         blockedStatus: false,
         preferredTeam: true,
         relationshipType: 'PATIENT',
+        signatureRequired: false,
       },
     },
   ],

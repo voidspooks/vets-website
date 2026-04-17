@@ -10,7 +10,8 @@
         "blockedStatus": true,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -23,7 +24,8 @@
         "blockedStatus": false,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -36,7 +38,8 @@
         "blockedStatus": false,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -49,7 +52,8 @@
         "blockedStatus": false,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -62,7 +66,8 @@
         "blockedStatus": false,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -75,7 +80,8 @@
         "blockedStatus": false,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     },
     {
@@ -83,12 +89,13 @@
       "type": "al_triage_teams",
       "attributes": {
         "triageTeamId": 56219,
-        "name": "Liana's SLC4 PCMM",
+        "name": "Liana\u2019s SLC4 PCMM",
         "stationNumber": "649",
         "blockedStatus": false,
         "relationshipType": "PATIENT",
         "preferredTeam": true,
-        "ohTriageGroup": false
+        "ohTriageGroup": false,
+        "signatureRequired": false
       }
     }
   ],

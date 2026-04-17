@@ -9,7 +9,8 @@
         "stationNumber": "989",
         "blockedStatus": false,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -21,7 +22,8 @@
         "stationNumber": "989",
         "blockedStatus": false,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -33,7 +35,8 @@
         "stationNumber": "989",
         "blockedStatus": false,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -45,7 +48,8 @@
         "stationNumber": "989",
         "blockedStatus": true,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -57,7 +61,8 @@
         "stationNumber": "989",
         "blockedStatus": false,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -69,7 +74,8 @@
         "stationNumber": "989",
         "blockedStatus": false,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     },
     {
@@ -81,7 +87,8 @@
         "stationNumber": "989",
         "blockedStatus": false,
         "relationType": "PATIENT",
-        "preferredTeam": true
+        "preferredTeam": true,
+        "signatureRequired": false
       }
     }
   ],
