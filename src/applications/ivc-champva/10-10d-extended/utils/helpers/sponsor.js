@@ -1,4 +1,4 @@
-import { certifierRoleIs } from './signer';
+import { certifierRoleIs } from './certifier';
 import { formValue, not } from './form-config';
 
 export const isSponsor = certifierRoleIs('sponsor');

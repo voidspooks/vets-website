@@ -5,7 +5,7 @@ import {
 } from '../../definitions';
 import content from '../../locales/en/content.json';
 
-const TITLE_TEXT = content['signer--name-title'];
+const TITLE_TEXT = content['certifier--name-title'];
 
 export default {
   uiSchema: {

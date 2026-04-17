@@ -4,8 +4,8 @@ import { focusElement } from 'platform/utilities/ui';
 
 const ConfirmationScreenView = ({
   alertTitle,
+  certifierName,
   isTypeNew,
-  signerName,
   submitDate,
 }) => {
   useEffect(() => focusElement('.success-message'), []);
@@ -41,10 +41,10 @@ const ConfirmationScreenView = ({
 
         <h4>Who submitted this form</h4>
         <p
-          className="signer-fullname dd-privacy-mask"
-          data-dd-action-name="Signer name"
+          className="certifier-fullname dd-privacy-mask"
+          data-dd-action-name="Certifier name"
         >
-          {signerName}
+          {certifierName}
         </p>
 
         {submitDate && (
@@ -72,8 +72,8 @@ const ConfirmationScreenView = ({
 
 ConfirmationScreenView.propTypes = {
   alertTitle: PropTypes.string,
+  certifierName: PropTypes.string,
   isTypeNew: PropTypes.bool,
-  signerName: PropTypes.string,
   submitDate: PropTypes.string,
 };
 

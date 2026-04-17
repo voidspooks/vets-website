@@ -4,8 +4,8 @@ import content from '../../locales/en/content.json';
 
 const ConfirmationPrintView = ({
   alertTitle,
+  certifierName,
   isTypeNew,
-  signerName,
   submitDate,
 }) => (
   <>
@@ -42,10 +42,10 @@ const ConfirmationPrintView = ({
 
     <h4>Who submitted this form</h4>
     <p
-      className="signer-fullname dd-privacy-mask"
-      data-dd-action-name="Signer name"
+      className="certifier-fullname dd-privacy-mask"
+      data-dd-action-name="Certifier name"
     >
-      {signerName}
+      {certifierName}
     </p>
 
     {submitDate && (
@@ -66,8 +66,8 @@ const ConfirmationPrintView = ({
 
 ConfirmationPrintView.propTypes = {
   alertTitle: PropTypes.string,
+  certifierName: PropTypes.string,
   isTypeNew: PropTypes.bool,
-  signerName: PropTypes.string,
   submitDate: PropTypes.string,
 };
 

@@ -2,9 +2,9 @@ import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
 import { addressSelectionUI } from '../../definitions';
 import content from '../../locales/en/content.json';
 
-const TITLE_TEXT = content['signer--address-title'];
+const TITLE_TEXT = content['certifier--address-title'];
 const DESC_TEXT = content['address--page-description'];
-const INPUT_LABEL = content['signer--address-label'];
+const INPUT_LABEL = content['certifier--address-label'];
 
 export default {
   uiSchema: {

@@ -36,7 +36,7 @@ const selectFormData = state => ({
 
 const ConfirmationPage = () => {
   const { formData, timestamp } = useSelector(selectFormData, shallowEqual);
-  const signerName = useMemo(
+  const certifierName = useMemo(
     () => formData.statementOfTruthSignature ?? formData.signature ?? '',
     [formData],
   );
@@ -48,10 +48,10 @@ const ConfirmationPage = () => {
     () => ({
       alertTitle: getSubmissionTypeTitle(formData),
       isTypeNew: isNewSubmission(formData),
-      signerName,
+      certifierName,
       submitDate,
     }),
-    [formData, signerName, submitDate],
+    [formData, certifierName, submitDate],
   );
 
   return (

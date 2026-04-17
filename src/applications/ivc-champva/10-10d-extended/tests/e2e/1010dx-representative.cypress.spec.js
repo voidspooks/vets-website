@@ -3,7 +3,7 @@ import { getConfig } from './utils';
 
 const testConfig = getConfig({
   dataSets: ['representative'],
-  includeSignerAddressHook: true,
+  includeCertifierAddressHook: true,
 });
 
 testForm(testConfig);
