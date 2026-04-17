@@ -70,7 +70,8 @@ export const buildPrescriptionsListQuery = (params = {}) => {
   const {
     page,
     perPage,
-    sortEndpoint = rxListSortingOptions[defaultSelectedSortOption].API_ENDPOINT,
+    sortEndpoint = rxListSortingOptions[defaultSelectedSortOption]
+      ?.API_ENDPOINT || Object.values(rxListSortingOptions)[0].API_ENDPOINT,
     filterOption = '',
     includeImage = false,
   } = params;

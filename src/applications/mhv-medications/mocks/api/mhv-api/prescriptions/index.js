@@ -398,6 +398,18 @@ function generateMockPrescriptions(
       refillDate: eightDaysAgo,
       rxRfRecords: [{ refillDate: 'not-a-date' }, { refillDate: eightDaysAgo }],
     }),
+    edgeCasePrescription({
+      prescriptionId: 22500001,
+      prescriptionName: 'AMOXICILLIN 500MG CAP',
+      dispStatus: dispStatusObj.REFILL_IN_PROCESS,
+      refillDate: eightDaysAgo,
+    }),
+    edgeCasePrescription({
+      prescriptionId: 22500002,
+      prescriptionName: 'METFORMIN 500MG TAB',
+      dispStatus: dispStatusObj.SUBMITTED,
+      refillSubmitDate: eightDaysAgo,
+    }),
   ];
 
   const generatedPrescriptions = [

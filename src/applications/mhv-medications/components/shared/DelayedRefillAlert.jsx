@@ -47,7 +47,10 @@ const DelayedRefillAlert = props => {
                 data-dd-privacy="mask"
                 data-testid={`refill-alert-link-${rxId}`}
                 className="vads-u-font-weight--bold"
-                to={getPrescriptionDetailUrl(rx)}
+                to={getPrescriptionDetailUrl({
+                  ...rx,
+                  prescriptionId: rxId,
+                })}
                 data-dd-action-name={dataDogActionName}
               >
                 {rx.prescriptionName}

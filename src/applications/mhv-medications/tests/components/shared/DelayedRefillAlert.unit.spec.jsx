@@ -92,4 +92,72 @@ describe('Alert if refill is taking longer than expected', () => {
       ),
     );
   });
+
+  it('generates correct link href using prescriptionId (V1 API)', () => {
+    const screen = setup();
+
+    const link = screen.getByTestId(
+      `refill-alert-link-${refillAlertList[0].prescriptionId}`,
+    );
+    expect(link.closest('a').getAttribute('href')).to.contain(
+      `/prescription/${refillAlertList[0].prescriptionId}`,
+    );
+  });
+
+  it('generates correct link href when only id is available (V2 API)', () => {
+    const screen = setup(refillAlertListWithIdOnly);
+
+    const link = screen.getByTestId(
+      `refill-alert-link-${refillAlertListWithIdOnly[0].id}`,
+    );
+    expect(link.closest('a').getAttribute('href')).to.contain(
+      `/prescription/${refillAlertListWithIdOnly[0].id}`,
+    );
+  });
+
+  it('generates correct link href with stationNumber', () => {
+    const alertListWithStation = [
+      {
+        prescriptionId: 111222,
+        prescriptionName: 'Test with station',
+        stationNumber: '688',
+      },
+    ];
+    const screen = setup(alertListWithStation);
+
+    const link = screen.getByTestId(`refill-alert-link-111222`);
+    const href = link.closest('a').getAttribute('href');
+    expect(href).to.contain('/prescription/111222');
+    expect(href).to.contain('station_number=688');
+  });
+
+  it('prefers prescriptionId over id when both are present', () => {
+    const alertListWithBoth = [
+      {
+        prescriptionId: 999888,
+        id: 'should-not-use',
+        prescriptionName: 'Both IDs present',
+      },
+    ];
+    const screen = setup(alertListWithBoth);
+
+    const link = screen.getByTestId('refill-alert-link-999888');
+    expect(link.closest('a').getAttribute('href')).to.contain(
+      '/prescription/999888',
+    );
+  });
+
+  it('sorts prescriptions alphabetically by name', () => {
+    const unsortedList = [
+      { prescriptionId: 1, prescriptionName: 'Zoloft' },
+      { prescriptionId: 2, prescriptionName: 'Amoxicillin' },
+      { prescriptionId: 3, prescriptionName: 'Metformin' },
+    ];
+    const screen = setup(unsortedList);
+
+    const links = screen.getAllByRole('link');
+    expect(links[0].textContent).to.equal('Amoxicillin');
+    expect(links[1].textContent).to.equal('Metformin');
+    expect(links[2].textContent).to.equal('Zoloft');
+  });
 });

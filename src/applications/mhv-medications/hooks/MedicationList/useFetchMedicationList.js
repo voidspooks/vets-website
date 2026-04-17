@@ -29,7 +29,8 @@ const resolveSortEndpoint = (key, isManagementImprovements) => {
   }
   return (
     rxListSortingOptions[key]?.API_ENDPOINT ||
-    rxListSortingOptions[defaultSelectedSortOption].API_ENDPOINT
+    rxListSortingOptions[defaultSelectedSortOption]?.API_ENDPOINT ||
+    Object.values(rxListSortingOptions)[0].API_ENDPOINT
   );
 };
 

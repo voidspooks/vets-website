@@ -169,7 +169,9 @@ const Prescriptions = () => {
       return dispatch(
         getPrescriptionsExportList.initiate(
           {
-            sortEndpoint: rxListSortingOptions[selectedSortOption].API_ENDPOINT,
+            sortEndpoint:
+              rxListSortingOptions[selectedSortOption]?.API_ENDPOINT ||
+              Object.values(rxListSortingOptions)[0].API_ENDPOINT,
             filterOption: currentFilterOptions[selectedFilterOption]?.url || '',
             includeImage: false,
           },
@@ -215,6 +217,9 @@ const Prescriptions = () => {
     }
 
     if (newSortOption && newSortOption !== selectedSortOption) {
+      // updates.sortEndpoint =
+      //   rxListSortingOptions[newSortOption]?.API_ENDPOINT ||
+      //   Object.values(rxListSortingOptions)[0].API_ENDPOINT;
       updates.sortEndpoint = rxListSortingOptions[newSortOption].API_ENDPOINT;
       dispatch(setSortOption(newSortOption));
       resetExportState();
