@@ -181,7 +181,7 @@ describe('Medication card component', () => {
     };
 
     describe('active refillable prescription', () => {
-      it('shows "Refills left", hides rx number, status label, and in-progress alert', () => {
+      it('shows "Refills left", rx number, hides status label and in-progress alert', () => {
         const rx = {
           ...prescriptionsListItem,
           isRefillable: true,
@@ -196,7 +196,7 @@ describe('Medication card component', () => {
         expect(getByTestId('rx-refill-remaining')).to.have.text(
           'Refills left: 3',
         );
-        expect(queryByTestId('rx-number')).to.be.null;
+        expect(getByTestId('rx-number')).to.have.text('Rx #: 12345');
         expect(queryByTestId('rxStatus')).to.be.null;
         expect(queryByTestId('fill-in-progress-alert')).to.be.null;
       });
@@ -405,10 +405,10 @@ describe('Medication card component', () => {
         expect(container.querySelector('va-card[background]')).to.exist;
       });
 
-      it('hides prescription number', () => {
+      it('shows prescription number', () => {
         const rx = { ...discontinuedRx, prescriptionNumber: '12345' };
-        const { queryByTestId } = setup(rx, managementImprovementsState);
-        expect(queryByTestId('rx-number')).to.be.null;
+        const { getByTestId } = setup(rx, managementImprovementsState);
+        expect(getByTestId('rx-number')).to.have.text('Rx #: 12345');
       });
     });
 
@@ -430,12 +430,15 @@ describe('Medication card component', () => {
         sortedDispensedDate: '2026-01-05T05:00:00.000Z',
       };
 
-      it('hides last filled info, status label, and rx number', () => {
+      it('hides last filled info and status label, shows rx number', () => {
         const rx = { ...onHoldRx, prescriptionNumber: '12345' };
-        const { queryByTestId } = setup(rx, managementImprovementsState);
+        const { getByTestId, queryByTestId } = setup(
+          rx,
+          managementImprovementsState,
+        );
         expect(queryByTestId('rx-last-filled-date')).to.be.null;
         expect(queryByTestId('rxStatus')).to.be.null;
-        expect(queryByTestId('rx-number')).to.be.null;
+        expect(getByTestId('rx-number')).to.have.text('Rx #: 12345');
       });
 
       it('shows updated on-hold message text', () => {
@@ -507,14 +510,17 @@ describe('Medication card component', () => {
         );
       });
 
-      it('hides status label, prescription number, refills, and last filled date', () => {
+      it('hides status label, refills, and last filled date, shows rx number', () => {
         const rx = {
           ...transferredRx,
           prescriptionNumber: '12345',
         };
-        const { queryByTestId } = setup(rx, managementImprovementsState);
+        const { getByTestId, queryByTestId } = setup(
+          rx,
+          managementImprovementsState,
+        );
         expect(queryByTestId('rxStatus')).to.be.null;
-        expect(queryByTestId('rx-number')).to.be.null;
+        expect(getByTestId('rx-number')).to.have.text('Rx #: 12345');
         expect(queryByTestId('rx-refill-remaining')).to.be.null;
         expect(queryByTestId('rx-last-filled-date')).to.be.null;
       });
@@ -978,6 +984,42 @@ describe('Medication card component', () => {
         ),
       );
     });
+
+    it('shows prescription number for pending new prescriptions', () => {
+      const screen = setup(
+        {
+          ...prescriptionsListItem,
+          prescriptionSource: 'PD',
+          dispStatus: 'NewOrder',
+          prescriptionNumber: '1234567',
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      expect(screen.getByTestId('rx-number')).to.exist;
+      expect(screen.getByTestId('rx-number')).to.have.text('Rx #: 1234567');
+    });
+
+    it('shows prescription number for pending renewals', () => {
+      const screen = setup(
+        {
+          ...prescriptionsListItem,
+          prescriptionSource: 'PD',
+          dispStatus: 'Renew',
+          prescriptionNumber: '1234567',
+        },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+      expect(screen.getByTestId('rx-number')).to.exist;
+      expect(screen.getByTestId('rx-number')).to.have.text('Rx #: 1234567');
+    });
   });
 
   it('renders a Non-VA Prescription with an orderedDate', () => {
@@ -1104,6 +1146,18 @@ describe('Medication card component', () => {
       mhvMedicationsManagementImprovements: true,
     });
     expect(screen.queryByTestId('rx-last-filled-date')).to.not.exist;
+  });
+
+  it('does not render Rx # for Unknown status with mhvMedicationsManagementImprovements enabled', () => {
+    const rxWithUnknownStatus = {
+      ...prescriptionsListItem,
+      dispStatus: 'Unknown',
+      prescriptionNumber: '12345',
+    };
+    const screen = setupWithFlags(rxWithUnknownStatus, {
+      medsImprovements: true,
+    });
+    expect(screen.queryByTestId('rx-number')).to.not.exist;
   });
 
   it('does not render aria-describedby attribute on the link', () => {

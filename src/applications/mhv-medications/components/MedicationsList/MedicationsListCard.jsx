@@ -492,6 +492,18 @@ const MedicationsListCard = ({ rx }) => {
               </span>
             </p>
           )}
+        {isMedsImprovements &&
+          !isNonVaPrescription &&
+          !isUnknownStatus && (
+            <p
+              data-testid="rx-number"
+              data-dd-privacy="mask"
+              id={`prescription-number-${rx.prescriptionId}`}
+              className="vads-u-margin-top--0 vads-u-margin-bottom--0 vads-u-color--gray-dark"
+            >
+              Rx #: {rx.prescriptionNumber || 'Not available'}
+            </p>
+          )}
         {cardBodyContent()}
       </div>
     </va-card>

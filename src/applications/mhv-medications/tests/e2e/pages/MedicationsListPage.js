@@ -927,7 +927,7 @@ class MedicationsListPage {
   ) => {
     cy.get('.rx-card-container')
       .eq(cardNumber - 1)
-      .should('not.contain', prescriptionNumber);
+      .should('contain', prescriptionNumber);
   };
 
   verifyPendingNewRxInfoTextOnMedicationCardOnListPage = text => {
