@@ -28,6 +28,7 @@ const ClaimantSearchNoPOA = searchData => {
         </strong>
         . Check the entered information and try the search again.
       </p>
+      <h2 className="sr-only">Search results</h2>
       <va-banner
         data-label="Info banner"
         headline="You don’t represent this claimant"

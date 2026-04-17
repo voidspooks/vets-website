@@ -26,11 +26,33 @@ const setUpInterceptsAndVisit = (featureToggles, url) => {
   setFeatureToggles(
     featureToggles || {
       isAppEnabled: true,
+      isInPilot: true,
       isClaimantDetailsEnabled: true,
     },
   );
   cy.visit(url || '/representative');
   cy.injectAxeThenAxeCheck();
+};
+
+const setEmptyClaimantSubmissions = identifier => {
+  cy.intercept(
+    `/accredited_representative_portal/v0/claimant_claim_submissions/${identifier}**`,
+    {
+      data: [],
+      meta: {
+        page: {
+          number: 1,
+          size: 20,
+          total: 0,
+          totalPages: 1,
+        },
+      },
+      claimant: {
+        firstName: 'Brooke',
+        lastName: 'Santiago',
+      },
+    },
+  ).as('fetchEmptyClaimantSubmissions');
 };
 
 describe('Claimant details submissions history', () => {
@@ -118,5 +140,24 @@ describe('Claimant details submissions history', () => {
     cy.get('ul.submissions__list li:nth-of-type(8)')
       .find('va-icon')
       .should('not.exist');
+  });
+});
+
+describe('Claimant details submissions history - empty state', () => {
+  beforeEach(() => {
+    setEmptyClaimantSubmissions('f87aaa2f-37da-4dc7-ae20-bf36aedbbc85');
+    cy.loginArpUser();
+    setUpInterceptsAndVisit(null, CLAIMANT_DETAILS_SUBMISSIONS_PAGE);
+  });
+
+  it('Shows empty state when no submissions currently exist for a claimant', () => {
+    cy.injectAxeThenAxeCheck();
+    cy.contains('Submission history').should('be.visible');
+    cy.contains('Santiago, Brooke').should('be.visible');
+    cy.findByTestId('submissions-table-fetcher-empty').should(
+      'contain',
+      'No form submissions found',
+    );
+    cy.findByTestId('submissions-card').should('not.exist');
   });
 });
