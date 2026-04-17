@@ -9,6 +9,7 @@ import {
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { focusElement } from '~/platform/utilities/ui';
 import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
+import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
 import RepTypeSelector from './RepTypeSelector';
 import { ErrorTypes } from '../../constants';
 import { searchAreaOptions } from '../../config';
@@ -79,9 +80,13 @@ const SearchControls = ({ onSubmit }) => {
 
   const handleGeolocationButtonClick = e => {
     e.preventDefault();
-    // recordEvent({
-    //   event: 'fl-get-geolocation',
-    // });
+
+    recordEvent({
+      event: 'nav-link-click',
+      'link-label': 'Use my location',
+      'link-destination': undefined,
+    });
+
     dispatch(geolocateUser);
   };
 
