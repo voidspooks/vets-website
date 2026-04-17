@@ -4,7 +4,6 @@ import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platfo
 import { waitFor } from '@testing-library/react';
 import { beforeEach } from 'mocha';
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
-import { mockApiRequest } from '@department-of-veterans-affairs/platform-testing/helpers';
 import LabsAndTests from '../../containers/LabsAndTests';
 import reducer from '../../reducers';
 import labsAndTests from '../fixtures/labsAndTests.json';
@@ -498,89 +497,6 @@ describe('Labs and tests accelerated path with imaging studies gating', () => {
 
     // NewRecordsIndicator should not render in the accelerated path
     expect(screen.queryByTestId('new-records-indicator')).to.not.exist;
-  });
-
-  it('dispatches getAcceleratedImagingStudiesList when both flags are true', async () => {
-    mockApiRequest({ entry: [] });
-    const dispatchedActions = [];
-    const recordingMiddleware = () => next => action => {
-      dispatchedActions.push(action);
-      return next(action);
-    };
-
-    const initialState = buildAcceleratedState({
-      [FEATURE_FLAG_NAMES.mhvMedicalRecordsFetchScdfImagingStudies]: true,
-    });
-
-    renderWithStoreAndRouter(<LabsAndTests />, {
-      initialState,
-      reducers: reducer,
-      path: '/labs-and-tests',
-      additionalMiddlewares: [recordingMiddleware],
-    });
-
-    await waitFor(() => {
-      const hasImagingStudiesAction = dispatchedActions.some(
-        a => a.type === 'MR_LABS_AND_TESTS_GET_IMAGING_STUDIES',
-      );
-      expect(hasImagingStudiesAction).to.be.true;
-    });
-  });
-
-  it('does not dispatch SCDF images action when studies flag is false', async () => {
-    const dispatchedActions = [];
-    const recordingMiddleware = () => next => action => {
-      dispatchedActions.push(action);
-      return next(action);
-    };
-
-    const initialState = buildAcceleratedState({
-      [FEATURE_FLAG_NAMES.mhvMedicalRecordsFetchScdfImagingStudies]: false,
-    });
-
-    renderWithStoreAndRouter(<LabsAndTests />, {
-      initialState,
-      reducers: reducer,
-      path: '/labs-and-tests',
-      additionalMiddlewares: [recordingMiddleware],
-    });
-
-    // Wait a tick to allow any effects to fire
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    const hasImagingStudiesAction = dispatchedActions.some(
-      a => a.type === 'MR_LABS_AND_TESTS_GET_IMAGING_STUDIES',
-    );
-    expect(hasImagingStudiesAction).to.be.false;
-  });
-
-  it('does not dispatch SCDF images action when labs flag is false', async () => {
-    const dispatchedActions = [];
-    const recordingMiddleware = () => next => action => {
-      dispatchedActions.push(action);
-      return next(action);
-    };
-
-    // Disable labs acceleration but enable imaging studies
-    const initialState = buildAcceleratedState({
-      [FEATURE_FLAG_NAMES.mhvAcceleratedDeliveryLabsAndTestsEnabled]: false,
-      [FEATURE_FLAG_NAMES.mhvMedicalRecordsFetchScdfImagingStudies]: true,
-    });
-
-    renderWithStoreAndRouter(<LabsAndTests />, {
-      initialState,
-      reducers: reducer,
-      path: '/labs-and-tests',
-      additionalMiddlewares: [recordingMiddleware],
-    });
-
-    // Wait a tick to allow any effects to fire
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    const hasImagingStudiesAction = dispatchedActions.some(
-      a => a.type === 'MR_LABS_AND_TESTS_GET_IMAGING_STUDIES',
-    );
-    expect(hasImagingStudiesAction).to.be.false;
   });
 });
 

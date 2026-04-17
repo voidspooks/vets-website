@@ -35,12 +35,12 @@ describe('Medical Records - SCDF Radiology Images List', () => {
     LabsAndTests.goToLabAndTestPage();
 
     cy.wait('@labs-and-test-list');
-    cy.wait('@imagingStudies');
 
     LabsAndTests.selectRadiologyRecord({
       labName: 'CT HEAD W/O CONTRAST',
     });
 
+    cy.wait('@imagingStudies');
     cy.wait('@imagingThumbnails');
 
     // Verify the "Images ready" alert appears on the detail page
@@ -66,12 +66,12 @@ describe('Medical Records - SCDF Radiology Images List', () => {
     LabsAndTests.goToLabAndTestPage();
 
     cy.wait('@labs-and-test-list');
-    cy.wait('@imagingStudies');
 
     LabsAndTests.selectRadiologyRecord({
       labName: 'CT HEAD W/O CONTRAST',
     });
 
+    cy.wait('@imagingStudies');
     cy.wait('@imagingThumbnails');
 
     LabsAndTests.clickViewAllImages();

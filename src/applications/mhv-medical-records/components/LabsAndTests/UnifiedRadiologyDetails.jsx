@@ -9,6 +9,13 @@ import {
   makePdf,
 } from '@department-of-veterans-affairs/mhv/exports';
 import FEATURE_FLAG_NAMES from '@department-of-veterans-affairs/platform-utilities/featureFlagNames';
+import {
+  addDays,
+  subDays,
+  format as dateFnsFormat,
+  parseISO,
+  isValid,
+} from 'date-fns';
 import PrintHeader from '../shared/PrintHeader';
 import DateSubheading from '../shared/DateSubheading';
 import HeaderSection from '../shared/HeaderSection';
@@ -46,7 +53,6 @@ const UnifiedRadiologyDetails = props => {
   const scdfImagingStudiesMerged = useSelector(
     state => state.mr.labsAndTests.scdfImagingStudiesMerged,
   );
-  const dateRange = useSelector(state => state.mr.labsAndTests.dateRange);
 
   const isAcceleratingImagingStudies = useSelector(
     state =>
@@ -92,10 +98,12 @@ const UnifiedRadiologyDetails = props => {
       )
         return;
       if (!scdfImagingStudies) {
+        const parsed = record.sortDate ? parseISO(record.sortDate) : null;
+        const studyDate = parsed && isValid(parsed) ? parsed : new Date();
         dispatch(
           getAcceleratedImagingStudiesList({
-            startDate: dateRange?.fromDate,
-            endDate: dateRange?.toDate,
+            startDate: dateFnsFormat(subDays(studyDate, 2), 'yyyy-MM-dd'),
+            endDate: dateFnsFormat(addDays(studyDate, 2), 'yyyy-MM-dd'),
           }),
         );
       } else {
@@ -107,7 +115,6 @@ const UnifiedRadiologyDetails = props => {
       scdfImagingStudies,
       scdfImagingStudiesMerged,
       isAcceleratingImagingStudies,
-      dateRange,
       dispatch,
     ],
   );
@@ -358,6 +365,7 @@ UnifiedRadiologyDetails.propTypes = {
     location: PropTypes.string,
     comments: PropTypes.arrayOf(PropTypes.string),
     result: PropTypes.string,
+    sortDate: PropTypes.string,
     source: PropTypes.string,
     imageCount: PropTypes.number,
     imagingStudyId: PropTypes.string,

@@ -35,13 +35,14 @@ describe('Medical Records - Unified Radiology Details', () => {
       site.loadPage();
       LabsAndTests.goToLabAndTestPage();
 
-      // Wait for list to load and imaging studies to merge
+      // Wait for the labs and tests list to load before selecting a radiology record
       cy.wait('@labs-and-test-list');
-      cy.wait('@imagingStudies');
 
       LabsAndTests.selectRadiologyRecord({
         labName: 'CT HEAD W/O CONTRAST',
       });
+
+      cy.wait('@imagingStudies');
 
       LabsAndTests.verifyRadiologyDetailFields({
         name: 'CT HEAD W/O CONTRAST',
@@ -63,11 +64,12 @@ describe('Medical Records - Unified Radiology Details', () => {
       LabsAndTests.goToLabAndTestPage();
 
       cy.wait('@labs-and-test-list');
-      cy.wait('@imagingStudies');
 
       LabsAndTests.selectRadiologyRecord({
         labName: 'CT HEAD W/O CONTRAST',
       });
+
+      cy.wait('@imagingStudies');
 
       cy.wait('@imagingThumbnails');
 
@@ -104,11 +106,12 @@ describe('Medical Records - Unified Radiology Details', () => {
       LabsAndTests.goToLabAndTestPage();
 
       cy.wait('@labs-and-test-list');
-      cy.wait('@imagingStudies');
 
       LabsAndTests.selectRadiologyRecord({
         labName: 'CT HEAD W/O CONTRAST',
       });
+
+      cy.wait('@imagingStudies');
 
       cy.wait('@imagingThumbnails');
 
