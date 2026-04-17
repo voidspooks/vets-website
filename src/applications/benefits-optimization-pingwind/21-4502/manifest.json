@@ -8,7 +8,7 @@
     "vagovprod": false,
     "layout": "page-react.html",
     "includeBreadcrumbs": false,
-    "minimalExcludePaths": ["/confirmation"],
+    "minimalExcludePaths": ["/introduction", "/confirmation"],
     "minimalFooter": true,
     "minimalHeader": {
       "title": "Application for Automobile or Other Conveyance and Adaptive Equipment (Under 38 U.S.C. 3901-3904)",
