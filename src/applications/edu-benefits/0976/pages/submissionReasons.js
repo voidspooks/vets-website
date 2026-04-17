@@ -9,7 +9,7 @@ const Options = {
   initialApplication: {
     title: 'Initial application',
     description:
-      'This is a request for an initial approval to be designated as an institution with programs eligible for participation in a VA GA Bill benefit.',
+      'This is a request for an initial approval to be designated as an institution with programs eligible for participation in a VA GI Bill Benefit.',
   },
   approvalOfNewPrograms: {
     title: 'Approval of new programs',
@@ -19,7 +19,7 @@ const Options = {
   reapproval: {
     title: 'Reapprovals',
     description:
-      'This is a request for a full reapproval of currently approved GI Bill program. Program reapprovals are required every 24 months.',
+      'This is a request for a full reapproval of currently approved GI Bill program. Program reapprovals are required every 48 months.',
   },
   updateInformation: {
     title: 'Update information',
