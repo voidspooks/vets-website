@@ -7,7 +7,7 @@ export const initialState = {
   hasCheckedKeepAlive: false,
 };
 
-export default function loginStuff(state = initialState, action) {
+export default function authReducer(state = initialState, action) {
   switch (action.type) {
     case UPDATE_LOGGEDIN_STATUS:
       return set('currentlyLoggedIn', action.value, state);

@@ -93,7 +93,7 @@ export { default as DEV } from './authentication/config/dev.config';
 export { default as STAGING } from './authentication/config/staging.config';
 export { default as PROD } from './authentication/config/prod.config';
 
-export { default as loginStuff } from './authentication/reducers/index';
+export { default as authReducer } from './authentication/reducers/index';
 
 export {
   API_VERSION,
