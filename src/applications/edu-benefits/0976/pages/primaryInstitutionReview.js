@@ -17,7 +17,7 @@ function PrimaryInstitutionSummary() {
     return <div />;
   }
 
-  return <DetailsCard details={primaryInstitutionDetails} />;
+  return <DetailsCard details={primaryInstitutionDetails} isWithoutCode />;
 }
 
 /** @type {PageSchema} */

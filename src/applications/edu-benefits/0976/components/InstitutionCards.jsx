@@ -1,5 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import FacilityCodeAdditionalInfo from './FacilityCodeAdditionalInfo';
+
+import { getCountryLabel } from '../helpers';
 
 export const EmptyCard = () => {
   return (
@@ -10,7 +13,7 @@ export const EmptyCard = () => {
   );
 };
 
-export const DetailsCard = ({ details }) => {
+export const DetailsCard = ({ details, isWithoutCode = false }) => {
   const {
     street,
     street2,
@@ -18,6 +21,7 @@ export const DetailsCard = ({ details }) => {
     city,
     state,
     postalCode,
+    country,
   } = details.mailingAddress;
 
   return (
@@ -26,10 +30,29 @@ export const DetailsCard = ({ details }) => {
       <p className="vads-u-margin-bottom--0">{street}</p>
       {street2 && <p className="vads-u-margin-y--0">{street2}</p>}
       {street3 && <p className="vads-u-margin-y--0">{street3}</p>}
-      <p className="vads-u-margin-top--0">
+      <p className="vads-u-margin-y--0">
         {city}, {state} {postalCode}
+      </p>
+      <p className="vads-u-margin-top--0">
+        {getCountryLabel(country, isWithoutCode)}
       </p>
       <FacilityCodeAdditionalInfo />
     </div>
   );
+};
+
+DetailsCard.propTypes = {
+  details: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    mailingAddress: PropTypes.shape({
+      street: PropTypes.string.isRequired,
+      street2: PropTypes.string,
+      street3: PropTypes.string,
+      city: PropTypes.string.isRequired,
+      state: PropTypes.string,
+      postalCode: PropTypes.string,
+      country: PropTypes.string,
+    }),
+  }).isRequired,
+  isWithoutCode: PropTypes.bool.isRequired,
 };

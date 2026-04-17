@@ -1,5 +1,7 @@
 import React from 'react';
 
+import constants from 'vets-json-schema/dist/constants.json';
+
 function convertNameToInitials(fullName) {
   const { first, last } = fullName;
   if (!first || !last) {
@@ -58,6 +60,25 @@ export function setAtPath(data, path, value) {
   });
   temp[lastPart] = value;
 }
+
+export const getCountryLabel = (country, isTitlecase = false) => {
+  if (!country) return '';
+
+  /**
+   * An address can come from either a response or user input which means the case is inconsistent.
+   * Converting the country to lowercase will allow us to match with case-insensitivity.
+   */
+  const countryLower = country.toLowerCase();
+
+  const label =
+    constants.countries.find(
+      c =>
+        c.value.toLowerCase() === countryLower ||
+        c.label.toLowerCase() === countryLower,
+    )?.label || '';
+
+  return isTitlecase ? label : label.toUpperCase();
+};
 
 export function institutionResponseToObject(responseData) {
   const attrs = responseData.attributes || {};
@@ -131,7 +152,12 @@ export const additionalInstitutionsWithCodeArrayOptions = {
             ]
               .filter(Boolean)
               .join(', ')}{' '}
-            {item.mailingAddress?.postalCode}
+            {[
+              item.mailingAddress?.postalCode,
+              getCountryLabel(item.mailingAddress?.country),
+            ]
+              .filter(Boolean)
+              .join(', ')}
           </p>
         </>
       );
@@ -178,7 +204,12 @@ export const additionalInstitutionsWithoutCodeArrayOptions = {
             ]
               .filter(Boolean)
               .join(', ')}{' '}
-            {item.mailingAddress?.postalCode}
+            {[
+              item.mailingAddress?.postalCode,
+              getCountryLabel(item.mailingAddress?.country, true),
+            ]
+              .filter(Boolean)
+              .join(', ')}
           </p>
         </>
       );

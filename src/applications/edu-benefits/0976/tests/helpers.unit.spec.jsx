@@ -9,9 +9,10 @@ import {
   programInformationArrayOptions,
   officialsArrayOptions,
   institutionResponseToObject,
+  getCountryLabel,
 } from '../helpers';
 
-describe('0839 Helpers', () => {
+describe('0976 Helpers', () => {
   describe('validateInitialsMatch', () => {
     let errors;
     const formData = {
@@ -108,6 +109,28 @@ describe('0839 Helpers', () => {
 
       setAtPath(original, 'b.c.1.d', 'goodbye');
       expect(original.b.c[1].d).to.eq('goodbye');
+    });
+  });
+
+  describe('#getCountryLabel', () => {
+    it('should return an empty string if the given country is empty', () => {
+      expect(getCountryLabel(undefined)).to.equal('');
+    });
+
+    it('should return an empty string if no country match is found', () => {
+      expect(getCountryLabel('XYZ123')).to.equal('');
+    });
+
+    it('should return a matching label for country codes', () => {
+      expect(getCountryLabel('USA')).to.equal('UNITED STATES');
+    });
+
+    it('should return a matching label for country names', () => {
+      expect(getCountryLabel('UNITED STATES')).to.equal('UNITED STATES');
+    });
+
+    it('should return a titlecase label when *isTitlecase* is set to true', () => {
+      expect(getCountryLabel('UNITED STATES', true)).to.equal('United States');
     });
   });
 
