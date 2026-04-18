@@ -34,9 +34,16 @@ export default function ReferralAppointments() {
   // Don't redirect if on the initial schedule referral page (first page of flow)
   // Check if pathname matches the base path exactly (no sub-routes like /review or /date-time)
   const isOnInitialScheduleReferralPage = location.pathname === basePath.url;
+  // Provider selection handles its own redirect when the referral already has
+  // an appointment so that it can route the user to ScheduleReferral and
+  // surface the "already scheduled" alert instead of bouncing back to the
+  // referrals list.
+  const isOnProviderSelectionPage =
+    location.pathname === `${basePath.url}/provider-selection`;
   if (
     referral?.attributes?.hasAppointments &&
-    !isOnInitialScheduleReferralPage
+    !isOnInitialScheduleReferralPage &&
+    !isOnProviderSelectionPage
   ) {
     return <Redirect to="/referrals-requests" />;
   }

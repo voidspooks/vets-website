@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import ReferralLayout from '../components/ReferralLayout';
 import ProviderSelectionCard from '../components/ProviderSelectionCard';
 import FindCCFacilityLink from '../components/FindCCFacilityLink';
@@ -12,16 +13,24 @@ const PER_PAGE = 5;
 
 export default function ProviderSelection({ currentReferral }) {
   const { attributes: referralAttributes } = currentReferral;
-  const referralId = referralAttributes.uuid;
+  const { uuid: referralId, hasAppointments } = referralAttributes;
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
 
+  // Guard against the case where the referrals list was cached with a stale
+  // `hasAppointments: false`. The fresh detail fetched above may now report
+  // that the referral has already been booked; in that case, route the user
+  // back to ScheduleReferral with a flag so it can display the "already
+  // scheduled" alert instead of letting them re-book.
   const {
     data: providersData,
     isLoading,
     isFetching,
     isError,
-  } = useGetReferralProvidersQuery({ referralId, page, perPage: PER_PAGE });
+  } = useGetReferralProvidersQuery(
+    { referralId, page, perPage: PER_PAGE },
+    { skip: hasAppointments },
+  );
 
   useEffect(
     () => {
@@ -29,6 +38,18 @@ export default function ProviderSelection({ currentReferral }) {
     },
     [dispatch],
   );
+
+  if (hasAppointments) {
+    return (
+      <Redirect
+        to={{
+          pathname: '/schedule-referral',
+          search: `?id=${referralId}`,
+          state: { alreadyScheduledAlert: true },
+        }}
+      />
+    );
+  }
 
   const providers =
     providersData?.providers?.map(p => ({

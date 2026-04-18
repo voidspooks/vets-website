@@ -101,11 +101,14 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
             >
               {driveTimeDisplay}
             </p>
-            <p className="vads-u-margin--0" data-testid="next-available-label">
+            <p
+              className="vads-u-margin--0 vads-u-font-weight--bold"
+              data-testid="next-available-label"
+            >
               Next available:
             </p>
             <p
-              className="vads-u-margin--0 vads-u-padding-bottom--1 vads-u-font-weight--bold"
+              className="vads-u-margin--0 vads-u-padding-bottom--1"
               data-testid="next-available-date"
             >
               {formattedDate}

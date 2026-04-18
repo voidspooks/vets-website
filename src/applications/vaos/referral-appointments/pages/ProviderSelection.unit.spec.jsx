@@ -312,4 +312,43 @@ describe('VAOS Page: ProviderSelection', () => {
       screen.getByTestId('different-provider-section').textContent,
     ).to.include('(585) 297-1000');
   });
+
+  describe('when the referral already has an appointment', () => {
+    const bookedReferral = createReferralById('2024-09-09', 'booked-uuid-456');
+    bookedReferral.attributes.hasAppointments = true;
+
+    it('should redirect to ScheduleReferral with the already-scheduled alert flag', async () => {
+      let providersRequested = false;
+      server.resetHandlers();
+      server.use(
+        createGetHandler(providersUrl, () => {
+          providersRequested = true;
+          return jsonResponse(page1Response);
+        }),
+      );
+
+      const store = createTestStore(initialState);
+      const screen = renderWithStoreAndRouter(
+        <ProviderSelection currentReferral={bookedReferral} />,
+        { store },
+      );
+
+      await waitFor(() => {
+        expect(screen.history.replace.called).to.be.true;
+      });
+
+      const replacedTo = screen.history.replace.firstCall.args[0];
+      expect(replacedTo).to.deep.include({
+        pathname: '/schedule-referral',
+        search: `?id=${bookedReferral.attributes.uuid}`,
+      });
+      expect(replacedTo.state).to.deep.equal({
+        alreadyScheduledAlert: true,
+      });
+
+      expect(providersRequested).to.be.false;
+      expect(screen.queryByTestId('provider-selection-card')).to.be.null;
+      expect(screen.queryByTestId('loading-container')).to.be.null;
+    });
+  });
 });

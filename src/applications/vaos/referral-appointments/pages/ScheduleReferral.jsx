@@ -29,6 +29,12 @@ export default function ScheduleReferral(props) {
     : '';
 
   const stationIdValid = getIsInPilotReferralStation(currentReferral);
+  // Set when the user reaches this page after clicking "Schedule an
+  // appointment" on a pending referral card whose cached list data was stale
+  // (the fresh referral fetch showed the referral now has an appointment).
+  const alreadyScheduledAlert =
+    location.state?.alreadyScheduledAlert === true &&
+    currentReferral.hasAppointments;
   useEffect(
     () => {
       dispatch(setFormCurrentPage('scheduleReferral'));
@@ -80,8 +86,25 @@ export default function ScheduleReferral(props) {
             </NewTabAnchor>
           </va-alert>
         )}
+        {alreadyScheduledAlert && (
+          <va-alert
+            status="warning"
+            data-testid="already-scheduled-alert"
+            class="vads-u-margin-bottom--2"
+          >
+            <h2 slot="headline" className="vads-u-margin-top--0">
+              You’ve already scheduled an appointment for this referral
+            </h2>
+            <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+              Contact this provider if you need to reschedule or cancel your
+              appointment. Or if you need to make another appointment for this
+              referral.
+            </p>
+          </va-alert>
+        )}
         {hasVeteranAddress &&
-          currentReferral.hasAppointments && (
+          currentReferral.hasAppointments &&
+          !alreadyScheduledAlert && (
             <div data-testid="has-appointments-content">
               <p className="vads-u-margin-top--0">
                 You’ve scheduled 1 or more appointments for this referral. Go to
@@ -116,7 +139,7 @@ export default function ScheduleReferral(props) {
             </va-alert>
           )}
 
-        {!currentReferral.hasAppointments && (
+        {(!currentReferral.hasAppointments || alreadyScheduledAlert) && (
           <p data-testid="subtitle">
             We’ve approved your referral for community care.
             {canScheduleAppointment
