@@ -3,6 +3,12 @@ import { AUTH_ERRORS, AUTH_LEVEL } from 'platform/user/authentication/errors';
 import ContactCenterInformation from 'platform/user/authentication/components/ContactCenterInformation';
 import StatusPage from './StatusPage';
 
+// This component is used for web errors. Errors that are sent through the API (i.e. Mobile Authentication errors) will not be rendered through this component, but instead will be handled by the API error handling in vets-api.
+
+// Any changes to errors 001, 007, 009, 102, 106, and 400 need to also be updated in vets-api (app/services/sign_in/error_page_renderer.rb) to ensure the correct error message is rendered on the mobile app.
+
+// vets-api tests might also needto be updated for any changes to the above errors. See vets-api app/services/sign_in/error_page_renderer_spec.rb for more details.
+
 export default function RenderErrorContainer({
   code = AUTH_ERRORS.DEFAULT.errorCode,
   auth = AUTH_LEVEL.FAIL,
