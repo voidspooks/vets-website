@@ -113,9 +113,9 @@ const formConfig = {
   transformForSubmit,
   savedFormMessages: {
     notFound:
-      "Please start over to complete your veteran's application for increased compensation based on unemployability.",
+      "Please start over to complete your Veteran's application for increased compensation based on unemployability.",
     noAuth:
-      "Please sign in again to continue your veteran's application for increased compensation based on unemployability.",
+      "Please sign in again to continue your Veteran's application for increased compensation based on unemployability.",
   },
   hideUnauthedStartLink: true,
   title:
@@ -123,7 +123,7 @@ const formConfig = {
   subTitle:
     'Please take your time to complete this form as accurately as you can.',
   customText: {
-    appType: 'veteran application',
+    appType: 'Veteran application',
   },
   ...minimalHeaderFormConfigOptions({
     breadcrumbList: [

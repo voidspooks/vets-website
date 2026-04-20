@@ -17,7 +17,7 @@ export const IntroductionPage = ({ route, userIdVerified, userLoggedIn }) => {
     formTitle:
       "Veteran's Application for Increased Compensation Based on Unemployability (VA 21-8940) ",
     formSubTitle: '',
-    authStartFormText: "Start the veteran's application",
+    authStartFormText: "Start the Veteran's application",
     saveInProgressText:
       'Please complete the 21-8940 form to provide information about your employment.',
     displayNonVeteranMessaging: true,
