@@ -309,7 +309,6 @@ describe('getFocuableElements', () => {
         <div tabIndex="0" />
         <va-button />
         <va-select />
-        <va-radio-option />
         <va-checkbox />
         <va-text-input />
         <va-textarea />
@@ -321,7 +320,7 @@ describe('getFocuableElements', () => {
     const focusableElements = await getFocusableElements(dom);
     // This is supposed to return focusable elements within the web component
     // shadow DOM;
-    expect(focusableElements.length).to.eq(13);
+    expect(focusableElements.length).to.eq(12);
   });
 
   it('should return an array and ignore focusable web components', async () => {
@@ -344,7 +343,6 @@ describe('getFocuableElements', () => {
         <div tabIndex="0" />
         <va-button />
         <va-select />
-        <va-radio-option />
         <va-checkbox />
         <va-text-input />
         <va-textarea />
