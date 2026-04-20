@@ -29,13 +29,16 @@ const uiSchema = {
     date: {
       ...currentOrPastDateUI({
         title: 'Date of termination',
-        hint: "This date can't be in the past",
+        hint:
+          'This date can’t be in the past. It must be a future date within 5 years from today.',
         expandUnder: 'duration',
         monthSelect: false,
         removeDateHint: true,
         errorMessages: {
-          required: 'You must enter a valid date that’s within 5 years',
-          pattern: 'You must enter a valid date that’s within 5 years',
+          required:
+            'You must enter a valid future date that’s within 5 years from today',
+          pattern:
+            'You must enter a valid future date that’s within 5 years from today',
         },
         expandUnderCondition: value => value === 'date',
         required: formData => formData?.lengthOfRelease?.duration === 'date',
