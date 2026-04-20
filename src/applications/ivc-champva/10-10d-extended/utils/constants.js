@@ -3,7 +3,7 @@ export const APPLICANTS_MAX = 25;
 export const ATTACHMENT_IDS = Object.freeze({
   adoptionPapers: 'Court ordered adoption papers',
   birthCert: 'Birth certificate',
-  civilUnionCert: 'Certificate of civil union',
+  civilUnionCert: 'Civil union papers',
   divorceDecree: 'Divorce decree',
   marriageCert: 'Marriage certificate',
   medicareAbCardFront: 'Front of Medicare Parts A or B card',

@@ -10,13 +10,7 @@ import FormFooter from '../components/FormFooter';
 import content from '../locales/en/content.json';
 import migrations from './migrations';
 import transformForSubmit from './submitTransformer';
-import { medicarePages } from '../chapters/medicare';
-import { certifierPages } from '../chapters/certifier';
-import { sponsorPages } from '../chapters/sponsor';
-import { applicantPages } from '../chapters/applicant';
-import { healthInsurancePages } from '../chapters/healthInsurance';
-import { applicationStatusPages } from '../chapters/applicationStatus';
-import { roleIsOther } from '../utils/helpers';
+import { chapters } from '../chapters';
 
 /** @type {FormConfig}  */
 const formConfig = {
@@ -97,34 +91,7 @@ const formConfig = {
   title: content['form-title'],
   subTitle: content['form-subtitle'],
   defaultDefinitions: {},
-  chapters: {
-    applicationStatus: {
-      title: 'Application status',
-      pages: applicationStatusPages,
-    },
-    sponsorInformation: {
-      title: 'Veteran information',
-      pages: sponsorPages,
-    },
-    applicantInformation: {
-      title: 'Applicant information',
-      pages: applicantPages,
-    },
-    medicareInformation: {
-      title: 'Other Health Insurance Certification: Medicare information',
-      pages: medicarePages,
-    },
-    healthInsuranceInformation: {
-      title:
-        'Other Health Insurance Certification: Health insurance information',
-      pages: healthInsurancePages,
-    },
-    certifierInformation: {
-      title: 'Your information',
-      pages: certifierPages,
-      depends: roleIsOther,
-    },
-  },
+  chapters,
 };
 
 export default formConfig;

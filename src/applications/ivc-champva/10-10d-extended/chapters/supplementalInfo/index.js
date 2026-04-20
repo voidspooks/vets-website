@@ -1,3 +1,7 @@
+import {
+  isEnrollmentSubmission,
+  isExistingSubmission,
+} from '../../utils/helpers';
 import applicantInformation from './applicantInformation';
 import applicantMemberNumber from './applicantMemberNumber';
 import healthInsurance from './healthInsurance';
@@ -8,37 +12,40 @@ import supportingDocs from './supportingDocs';
 
 export const supplementalPages = {
   supplementalOhi: {
-    path: 'supporting-insurance-information',
+    path: 'additional-health-insurance',
     title: 'Other health insurance information',
     ...healthInsurance,
   },
   supplementalOverview: {
-    path: 'supporting-information-overview',
+    path: 'update-overview',
     title: 'Supporting information',
     ...sectionOverview,
   },
   supplementalApplicantPersonalInfo: {
-    path: 'supporting-applicant-or-beneficiary-personal-information',
-    title: 'Applicant or beneficiary’s name and date of birth',
+    path: 'beneficiary-name-and-date-of-birth',
+    title: 'Applicant or beneficiary name and date of birth',
     ...applicantInformation,
   },
   supplementalApplicantMemberNumber: {
-    path: 'supporting-beneficiary-champva-information',
+    path: 'beneficiary-champva-member-number',
     title: 'Beneficiary’s CHAMPVA information',
+    depends: isEnrollmentSubmission,
     ...applicantMemberNumber,
   },
   supplementalSponsorPersonalInfo: {
-    path: 'supporting-sponsor-personal-information',
+    path: 'sponsor-name-and-date-of-birth',
     title: `Veteran’s name and date of birth`,
+    depends: isExistingSubmission,
     ...sponsorInformation,
   },
   supplementalSponsorIdentityInfo: {
-    path: 'supporting-sponsor-identity-information',
+    path: 'sponsor-identification-number',
     title: 'Veteran’s identification information',
+    depends: isExistingSubmission,
     ...sponsorSsn,
   },
   supplementalDocsUpload: {
-    path: 'supporting-documents-upload',
+    path: 'supporting-documents',
     title: 'Supporting documents',
     ...supportingDocs,
   },
