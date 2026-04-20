@@ -15,7 +15,7 @@ describe('10278 securitySetupHighSchool page', () => {
     const fieldSchema = schema.properties.securityAnswerText;
     expect(fieldSchema).to.include({
       type: 'string',
-      maxLength: 30,
+      maxLength: 100,
     });
 
     expect(schema.required).to.deep.equal(['securityAnswerText']);

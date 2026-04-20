@@ -8,11 +8,11 @@ const uiSchema = {
   securityAnswerText: {
     ...textUI({
       title: 'Name of high school',
-      hint: 'Maximum limit is 30 characters',
+      hint: 'Maximum limit is 100 characters',
       charcount: true,
       errorMessages: {
         required: 'You must provide an answer',
-        maxLength: 'You must enter 30 characters or fewer',
+        maxLength: 'You must enter 100 characters or fewer',
       },
     }),
   },
@@ -23,7 +23,7 @@ const schema = {
   properties: {
     securityAnswerText: {
       type: 'string',
-      maxLength: 30,
+      maxLength: 100,
     },
   },
   required: ['securityAnswerText'],
