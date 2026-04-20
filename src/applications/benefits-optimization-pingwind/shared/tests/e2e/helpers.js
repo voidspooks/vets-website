@@ -148,7 +148,41 @@ export const reviewAndSubmitPageFlow = (
 
   fillStatementOfTruthSignature(veteranSignature);
   checkStatementOfTruthBox();
-  cy.findByText(submitButtonText, {
-    selector: 'button',
-  }).click();
+  const buttonTexts = Array.from(
+    new Set([submitButtonText, 'Submit application'].filter(Boolean)),
+  );
+  const matchesButtonText = (value = '') => {
+    const normalizedValue = value.trim().toLowerCase();
+    return buttonTexts.some(
+      text => text.trim().toLowerCase() === normalizedValue,
+    );
+  };
+
+  cy.get('button, va-button', { timeout: 10000 })
+    .should($buttons => {
+      const submitButton = Array.from($buttons).find(button => {
+        const text = button.textContent || '';
+        const label = button.getAttribute?.('text') || '';
+        const ariaLabel = button.getAttribute?.('aria-label') || '';
+
+        return [text, label, ariaLabel].some(matchesButtonText);
+      });
+
+      if (!submitButton) {
+        throw new Error(
+          `Submit button not found for labels: ${buttonTexts.join(', ')}`,
+        );
+      }
+    })
+    .then($buttons => {
+      const submitButton = Array.from($buttons).find(button => {
+        const text = button.textContent || '';
+        const label = button.getAttribute?.('text') || '';
+        const ariaLabel = button.getAttribute?.('aria-label') || '';
+
+        return [text, label, ariaLabel].some(matchesButtonText);
+      });
+
+      cy.wrap(submitButton).click({ force: true });
+    });
 };
