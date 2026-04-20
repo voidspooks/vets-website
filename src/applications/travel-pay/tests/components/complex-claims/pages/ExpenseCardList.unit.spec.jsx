@@ -30,10 +30,17 @@ const expensesList = [
   },
 ];
 
-// Needed for navigation tests
+// Captures both pathname and state for navigation assertions
 const LocationDisplay = () => {
   const location = useLocation();
-  return <div data-testid="location-display">{location.pathname}</div>;
+  return (
+    <>
+      <div data-testid="location-display">{location.pathname}</div>
+      <div data-testid="location-state">
+        {location.state?.prevPage ?? 'none'}
+      </div>
+    </>
+  );
 };
 
 const initialState = {
@@ -179,6 +186,41 @@ describe('Complex Claims - <ExpenseCardList />', () => {
     expect(getByTestId('location-display').textContent).to.equal(
       `/file-new-claim/${apptId}/${claimId}/parking`,
     );
+  });
+
+  it('passes location.state with prevPage="review" when the Add button is clicked', () => {
+    const { container, getByTestId } = renderWithStoreAndRouter(
+      <MemoryRouter
+        initialEntries={[`/file-new-claim/${apptId}/${claimId}/review`]}
+      >
+        <Routes>
+          <Route
+            path="/file-new-claim/:apptId/:claimId/review"
+            element={
+              // eslint-disable-next-line react/jsx-wrap-multilines
+              <ExpenseCardList
+                type="Parking"
+                expensesList={expensesList}
+                showAddButton
+              />
+            }
+          />
+          <Route
+            path="/file-new-claim/:apptId/:claimId/parking"
+            element={<div>Parking Page</div>}
+          />
+        </Routes>
+        <LocationDisplay />
+      </MemoryRouter>,
+      { initialState, reducers: reducer },
+    );
+
+    const button = container.querySelector('#add-parking-expense-button');
+    expect(button).to.exist;
+
+    fireEvent.click(button);
+
+    expect(getByTestId('location-state').textContent).to.equal('review');
   });
 
   describe('decreaseHeaderLevel prop on ExpenseCard', () => {

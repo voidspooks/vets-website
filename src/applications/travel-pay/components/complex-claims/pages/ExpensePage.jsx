@@ -774,12 +774,17 @@ const ExpensePage = () => {
     } else if (!isEditMode && hasUnsavedChanges) {
       // On add mode, the back button should trigger the "leave page" modal if there are unsaved changes
       dispatch(setUnsavedChangesModalVisible(true, 'expense-back'));
-    } else {
+    } else if (isEditMode) {
+      // Edit mode with no unsaved changes: Cancel returns to where editing started
       navigate(
         `/file-new-claim/${apptId}/${claimId}/${
           backDestination === 'review' ? 'review' : 'choose-expense'
         }`,
       );
+    } else {
+      // Add mode with no unsaved changes: Back goes to wherever the user came from
+      const prevPage = location.state?.prevPage ?? 'choose-expense';
+      navigate(`/file-new-claim/${apptId}/${claimId}/${prevPage}`);
     }
   };
 

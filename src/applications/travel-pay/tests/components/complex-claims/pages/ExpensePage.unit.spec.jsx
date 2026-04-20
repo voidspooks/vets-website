@@ -1817,22 +1817,17 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
     );
   });
 
-  describe('Back button navigation with backDestination', () => {
-    it('navigates to review page when back button is clicked in add mode with backDestination="review"', async () => {
-      const baseState = getEditState([]);
-      const stateWithBackDestination = {
-        ...baseState,
-        travelPay: {
-          ...baseState.travelPay,
-          complexClaim: {
-            ...baseState.travelPay.complexClaim,
-            expenseBackDestination: 'review',
-          },
-        },
-      };
-
+  describe('Back button navigation in add mode', () => {
+    it('navigates to review page when back button is clicked and location.state.prevPage is "review"', async () => {
       const { container, getByTestId } = renderWithStoreAndRouter(
-        <MemoryRouter initialEntries={['/file-new-claim/12345/43555/lodging']}>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/file-new-claim/12345/43555/lodging',
+              state: { prevPage: 'review' },
+            },
+          ]}
+        >
           <Routes>
             <Route
               path="/file-new-claim/:apptId/:claimId/:expenseTypeRoute"
@@ -1849,10 +1844,9 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
           </Routes>
           <LocationDisplay />
         </MemoryRouter>,
-        { initialState: stateWithBackDestination, reducers: reducer },
+        { initialState: getEditState([]), reducers: reducer },
       );
 
-      // Wait for page to load
       await waitFor(() => {
         const vendorField = container.querySelector(
           'va-text-input[name="vendor"]',
@@ -1860,7 +1854,6 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
         expect(vendorField).to.exist;
       });
 
-      // Find and click the Back button in the button pair
       const buttonGroup = container.querySelector('.travel-pay-button-group');
       const backButton = Array.from(
         buttonGroup.querySelectorAll('va-button'),
@@ -1868,30 +1861,23 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
       expect(backButton).to.exist;
       fireEvent.click(backButton);
 
-      // Verify navigation to review page
       await waitFor(() => {
-        const location = getByTestId('location-display');
-        expect(location.textContent).to.equal(
+        expect(getByTestId('location-display').textContent).to.equal(
           '/file-new-claim/12345/43555/review',
         );
       });
     });
 
-    it('navigates to choose-expense page when back button is clicked in add mode without backDestination="review"', async () => {
-      const baseState = getEditState([]);
-      const stateWithoutReviewDestination = {
-        ...baseState,
-        travelPay: {
-          ...baseState.travelPay,
-          complexClaim: {
-            ...baseState.travelPay.complexClaim,
-            expenseBackDestination: 'choose-expense',
-          },
-        },
-      };
-
+    it('navigates to choose-expense page when back button is clicked and location.state.prevPage is "choose-expense"', async () => {
       const { container, getByTestId } = renderWithStoreAndRouter(
-        <MemoryRouter initialEntries={['/file-new-claim/12345/43555/lodging']}>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/file-new-claim/12345/43555/lodging',
+              state: { prevPage: 'choose-expense' },
+            },
+          ]}
+        >
           <Routes>
             <Route
               path="/file-new-claim/:apptId/:claimId/:expenseTypeRoute"
@@ -1908,10 +1894,9 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
           </Routes>
           <LocationDisplay />
         </MemoryRouter>,
-        { initialState: stateWithoutReviewDestination, reducers: reducer },
+        { initialState: getEditState([]), reducers: reducer },
       );
 
-      // Wait for page to load
       await waitFor(() => {
         const vendorField = container.querySelector(
           'va-text-input[name="vendor"]',
@@ -1919,7 +1904,6 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
         expect(vendorField).to.exist;
       });
 
-      // Find and click the Back button in the button pair
       const buttonGroup = container.querySelector('.travel-pay-button-group');
       const backButton = Array.from(
         buttonGroup.querySelectorAll('va-button'),
@@ -1927,28 +1911,14 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
       expect(backButton).to.exist;
       fireEvent.click(backButton);
 
-      // Verify navigation to choose-expense page
       await waitFor(() => {
-        const location = getByTestId('location-display');
-        expect(location.textContent).to.equal(
+        expect(getByTestId('location-display').textContent).to.equal(
           '/file-new-claim/12345/43555/choose-expense',
         );
       });
     });
 
-    it('navigates to choose-expense page when back button is clicked in add mode with undefined backDestination', async () => {
-      const baseState = getEditState([]);
-      const stateWithUndefinedDestination = {
-        ...baseState,
-        travelPay: {
-          ...baseState.travelPay,
-          complexClaim: {
-            ...baseState.travelPay.complexClaim,
-            expenseBackDestination: undefined,
-          },
-        },
-      };
-
+    it('defaults to choose-expense when back button is clicked and no location.state is present', async () => {
       const { container, getByTestId } = renderWithStoreAndRouter(
         <MemoryRouter initialEntries={['/file-new-claim/12345/43555/toll']}>
           <Routes>
@@ -1967,10 +1937,9 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
           </Routes>
           <LocationDisplay />
         </MemoryRouter>,
-        { initialState: stateWithUndefinedDestination, reducers: reducer },
+        { initialState: getEditState([]), reducers: reducer },
       );
 
-      // Wait for page to load
       await waitFor(() => {
         const amountField = container.querySelector(
           'va-text-input[name="costRequested"]',
@@ -1978,7 +1947,6 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
         expect(amountField).to.exist;
       });
 
-      // Find and click the Back button in the button pair
       const buttonGroup = container.querySelector('.travel-pay-button-group');
       const backButton = Array.from(
         buttonGroup.querySelectorAll('va-button'),
@@ -1986,10 +1954,8 @@ describe('Travel Pay – ExpensePage (Editing existing expense)', () => {
       expect(backButton).to.exist;
       fireEvent.click(backButton);
 
-      // Verify navigation to choose-expense page
       await waitFor(() => {
-        const location = getByTestId('location-display');
-        expect(location.textContent).to.equal(
+        expect(getByTestId('location-display').textContent).to.equal(
           '/file-new-claim/12345/43555/choose-expense',
         );
       });

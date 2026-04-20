@@ -87,9 +87,17 @@ const ChooseExpenseType = () => {
     );
 
     if (selectedExpense) {
-      // Set back destination so expense page knows to return to choose-expense
-      dispatch(setExpenseBackDestination('choose-expense'));
-      navigate(`/file-new-claim/${apptId}/${claimId}/${selectedExpense.route}`);
+      // Preserve 'review' back destination when adding from the review page;
+      // only set 'choose-expense' when starting a fresh add flow.
+      if (backDestination !== 'review') {
+        dispatch(setExpenseBackDestination('choose-expense'));
+      }
+      navigate(
+        `/file-new-claim/${apptId}/${claimId}/${selectedExpense.route}`,
+        {
+          state: { prevPage: 'choose-expense' },
+        },
+      );
     }
   };
 

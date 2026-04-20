@@ -31,7 +31,9 @@ const ExpenseCardList = ({
 
   const onAddExpense = expenseRoute => {
     dispatch(setExpenseBackDestination('review'));
-    navigate(`/file-new-claim/${apptId}/${claimId}/${expenseRoute}`);
+    navigate(`/file-new-claim/${apptId}/${claimId}/${expenseRoute}`, {
+      state: { prevPage: 'review' },
+    });
   };
 
   return (

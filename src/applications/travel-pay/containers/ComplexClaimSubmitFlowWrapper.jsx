@@ -19,7 +19,6 @@ import {
   selectHasUnsavedExpenseChanges,
   selectIsUnsavedChangesModalVisible,
   selectUnsavedChangesModalSource,
-  selectExpenseBackDestination,
   selectHasProofOfAttendance,
   selectAllExpenses,
 } from '../redux/selectors';
@@ -110,7 +109,6 @@ const ComplexClaimSubmitFlowWrapper = () => {
   const unsavedChangesModalSource = useSelector(
     selectUnsavedChangesModalSource,
   );
-  const backDestination = useSelector(selectExpenseBackDestination);
   const isComplexClaimCreationLoading = useSelector(
     selectComplexClaimCreationLoadingState,
   );
@@ -174,11 +172,11 @@ const ComplexClaimSubmitFlowWrapper = () => {
 
     if (unsavedChangesModalSource === 'expense-back') {
       // In-flow navigation (back button on expense/mileage page)
-      navigate(
-        `/file-new-claim/${apptId}/${effectiveClaimId}/${
-          backDestination === 'review' ? 'review' : 'choose-expense'
-        }`,
-      );
+      // Use prevPage from location state when available (set by the page that navigated here)
+      // to correctly handle both "Add another X expense" (prevPage: 'review') and
+      // "Add more expenses" → choose-expense flows (prevPage: 'choose-expense').
+      const prevPage = location.state?.prevPage ?? 'choose-expense';
+      navigate(`/file-new-claim/${apptId}/${effectiveClaimId}/${prevPage}`);
     } else {
       // Breadcrumb navigation (exit the flow entirely)
       const backHref = getBackRoute({

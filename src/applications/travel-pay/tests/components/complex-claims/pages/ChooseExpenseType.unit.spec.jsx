@@ -684,8 +684,7 @@ describe('ChooseExpenseType', () => {
       });
     });
 
-    it('dispatches setExpenseBackDestination with "choose-expense" when continue is clicked with selected expense', async () => {
-      // Component to verify Redux state
+    it('does not overwrite backDestination when it is already "review"', async () => {
       const BackDestinationDisplay = () => {
         const expenseBackDestination = useSelector(
           state => state.travelPay.complexClaim.expenseBackDestination,
@@ -695,6 +694,17 @@ describe('ChooseExpenseType', () => {
             {expenseBackDestination || 'none'}
           </div>
         );
+      };
+
+      const reviewBackState = {
+        ...initialState,
+        travelPay: {
+          ...initialState.travelPay,
+          complexClaim: {
+            ...initialState.travelPay.complexClaim,
+            expenseBackDestination: 'review',
+          },
+        },
       };
 
       const { getByTestId } = renderWithStoreAndRouter(
@@ -710,7 +720,71 @@ describe('ChooseExpenseType', () => {
           <BackDestinationDisplay />
         </MemoryRouter>,
         {
-          initialState: { ...initialState },
+          initialState: reviewBackState,
+          reducers: reducer,
+        },
+      );
+
+      const vaRadio = $('va-radio');
+      const lodgingOption = $('va-radio-option[value="lodging"]');
+
+      fireEvent(lodgingOption, new CustomEvent('click', { detail: {} }));
+      fireEvent(
+        vaRadio,
+        new CustomEvent('vaValueChange', { detail: { value: 'lodging' } }),
+      );
+
+      const buttonPair = $('va-button-pair');
+      fireEvent(buttonPair, new CustomEvent('primaryClick', { detail: {} }));
+
+      // backDestination should remain 'review', not be overwritten with 'choose-expense'
+      await waitFor(() => {
+        expect(getByTestId('expense-back-destination').textContent).to.equal(
+          'review',
+        );
+      });
+    });
+
+    it('dispatches setExpenseBackDestination with "choose-expense" when continue is clicked with selected expense', async () => {
+      // Component to verify Redux state
+      const BackDestinationDisplay = () => {
+        const expenseBackDestination = useSelector(
+          state => state.travelPay.complexClaim.expenseBackDestination,
+        );
+        return (
+          <div data-testid="expense-back-destination">
+            {expenseBackDestination || 'none'}
+          </div>
+        );
+      };
+
+      // Use an explicit deep-copied state with expenseBackDestination cleared to avoid
+      // picking up mutations left by earlier tests in this describe block.
+      const freshState = {
+        ...initialState,
+        travelPay: {
+          ...initialState.travelPay,
+          complexClaim: {
+            ...initialState.travelPay.complexClaim,
+            expenseBackDestination: null,
+          },
+        },
+      };
+
+      const { getByTestId } = renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={['/file-new-claim/12345/claim123/choose-expense']}
+        >
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId/:claimId/choose-expense"
+              element={<ChooseExpenseType />}
+            />
+          </Routes>
+          <BackDestinationDisplay />
+        </MemoryRouter>,
+        {
+          initialState: freshState,
           reducers: reducer,
         },
       );
@@ -747,6 +821,58 @@ describe('ChooseExpenseType', () => {
         expect(getByTestId('expense-back-destination').textContent).to.equal(
           'choose-expense',
         );
+      });
+    });
+
+    it('passes location.state with prevPage="choose-expense" when navigating to the expense page', async () => {
+      const LocationStateDisplay = () => {
+        const location = useLocation();
+        return (
+          <div data-testid="location-state">
+            {location.state?.prevPage ?? 'none'}
+          </div>
+        );
+      };
+
+      renderWithStoreAndRouter(
+        <MemoryRouter
+          initialEntries={['/file-new-claim/12345/claim123/choose-expense']}
+        >
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId/:claimId/choose-expense"
+              element={<ChooseExpenseType />}
+            />
+            <Route
+              path="/file-new-claim/:apptId/:claimId/lodging"
+              element={<LocationStateDisplay />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        {
+          initialState: { ...initialState },
+          reducers: reducer,
+        },
+      );
+
+      const vaRadio = $('va-radio');
+      const lodgingOption = $('va-radio-option[value="lodging"]');
+
+      fireEvent(lodgingOption, new CustomEvent('click', { detail: {} }));
+      fireEvent(
+        vaRadio,
+        new CustomEvent('vaValueChange', { detail: { value: 'lodging' } }),
+      );
+
+      const buttonPair = $('va-button-pair');
+      fireEvent(buttonPair, new CustomEvent('primaryClick', { detail: {} }));
+
+      await waitFor(() => {
+        expect(document.querySelector('[data-testid="location-state"]')).to
+          .exist;
+        expect(
+          document.querySelector('[data-testid="location-state"]').textContent,
+        ).to.equal('choose-expense');
       });
     });
   });
