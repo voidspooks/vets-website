@@ -17,63 +17,80 @@ class MockReferralAppointmentDetailsResponse {
    *
    * @param {Object} options - Options for the response
    * @param {string} options.appointmentId - ID for the appointment
-   * @param {string} options.referralNumber - ID for the referral
-   * @param {string} options.typeOfCare - Type of care for the appointment
-   * @param {string} options.providerName - Name of the provider
-   * @param {string} options.organizationName - Name of the provider organization
+   * @param {string} [options.status] - 'booked' or 'proposed'
+   * @param {string} [options.start] - ISO timestamp for the booked appointment start
+   * @param {string} [options.referralId] - Referral id to attach to the appointment
+   * @param {string} [options.typeOfCare] - Category of care for the appointment
+   * @param {string} [options.careType] - 'CC' or 'VA'
+   * @param {Object} [options.provider] - Pre-built provider object to use instead of the default Dr. Smith
+   * @param {string} [options.organizationName] - Location/organization display name
    * @returns {Object} A successful response object
    */
   static createSuccessResponse({
     appointmentId = 'EEKoGzEf',
     organizationName = 'Meridian Health',
     status = 'booked',
+    start,
+    referralId = '123abc',
+    typeOfCare,
+    careType = 'CC',
+    provider,
   } = {}) {
+    const resolvedStart =
+      start ||
+      new Date(new Date().setDate(new Date().getDate() + 30)).toISOString();
+
     const baseAttributes =
       status === 'booked'
         ? {
             id: appointmentId,
             status,
-            careType: 'CC',
-            start: new Date(
-              new Date().setDate(new Date().getDate() + 30),
-            ).toISOString(),
+            careType,
+            start: resolvedStart,
             isLatest: true,
             lastRetrieved: new Date().toISOString(),
-            referralId: '123abc',
+            referralId,
             past: false,
+            ...(typeOfCare ? { typeOfCare } : {}),
           }
         : {
             id: appointmentId,
             status,
-            careType: 'CC',
-            modality: 'communityCareUnified',
+            careType,
+            modality: careType === 'VA' ? 'clinic' : 'communityCareUnified',
           };
+
+    const resolvedProvider = provider || {
+      id: 'test-provider-id',
+      name: 'Dr. Smith @ Acme Cardiology - Anywhere, USA',
+      practice: 'Acme Cardiology',
+      phone: '555-555-0001',
+      location: {
+        name: organizationName,
+        address: '7500 CENTRAL AVE, STE 108, PHILADELPHIA, PA 19111-2430',
+        latitude: 40.06999282694126,
+        longitude: -75.08769957031448,
+        timezone: 'America/New_York',
+      },
+    };
+
+    const resolvedOrganizationName =
+      resolvedProvider?.location?.name || organizationName;
+    const resolvedTimezone =
+      resolvedProvider?.location?.timezone || 'America/New_York';
 
     const bookedAttributes =
       status === 'booked'
         ? {
-            modality: 'communityCareUnified',
-            provider: {
-              id: 'test-provider-id',
-              name: 'Dr. Smith @ Acme Cardiology - Anywhere, USA',
-              practice: 'Acme Cardiology',
-              phone: '555-555-0001',
-              location: {
-                name: organizationName,
-                address:
-                  '7500 CENTRAL AVE, STE 108, PHILADELPHIA, PA 19111-2430',
-                latitude: 40.06999282694126,
-                longitude: -75.08769957031448,
-                timezone: 'America/New_York',
-              },
-            },
+            modality: careType === 'VA' ? 'clinic' : 'communityCareUnified',
+            provider: resolvedProvider,
             location: {
               id: 'test-location-id',
               type: 'appointments',
               attributes: {
-                name: organizationName,
+                name: resolvedOrganizationName,
                 timezone: {
-                  timeZoneId: 'America/New_York',
+                  timeZoneId: resolvedTimezone,
                 },
               },
             },
@@ -137,13 +154,16 @@ class MockReferralAppointmentDetailsResponse {
   toJSON() {
     const {
       appointmentId,
-      typeOfCare = 'Physical Therapy',
-      providerName = 'Dr. Bones',
+      typeOfCare,
       organizationName = 'Meridian Health',
       success,
       notFound,
       serverError,
       status = 'booked',
+      start,
+      referralId,
+      careType,
+      provider,
     } = this.options;
 
     // Return 404 error if notFound is true
@@ -167,9 +187,12 @@ class MockReferralAppointmentDetailsResponse {
     return MockReferralAppointmentDetailsResponse.createSuccessResponse({
       appointmentId,
       typeOfCare,
-      providerName,
       organizationName,
       status,
+      start,
+      referralId,
+      careType,
+      provider,
     });
   }
 }

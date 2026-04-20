@@ -187,6 +187,9 @@ const MockReferralDraftAppointmentResponse = require('../../tests/fixtures/MockR
 const MockReferralAppointmentDetailsResponse = require('../../tests/fixtures/MockReferralAppointmentDetailsResponse');
 const MockUnifiedBookingResponse = require('../../tests/fixtures/MockUnifiedBookingResponse');
 const MockReferralProvidersResponse = require('../../tests/fixtures/MockReferralProvidersResponse');
+const {
+  getProviderById,
+} = require('../../tests/fixtures/MockReferralProvidersResponse');
 
 // Returns the meta object without any backend service errors
 const meta = require('./v2/meta.json');
@@ -204,6 +207,129 @@ const {
 const mockAppts = [];
 let currentMockId = 1;
 const draftAppointmentPollCount = {};
+
+// In-memory demo state used to keep the referral scheduling flow internally
+// consistent when running against the mock server. See
+// src/applications/vaos/referral-appointments/README.md for the flow.
+// - referralCache: remembers each referral's categoryOfCare / careType / referralNumber
+//   so we can attach the right context to booked appointments.
+// - draftByReferralId: remembers the last draft generated for a referral (provider
+//   + slot list) so we can look up the selected slot on POST.
+// - bookedByAppointmentId: remembers each booked appointment's provider, start
+//   time, referralId, categoryOfCare, and careType so the polling and details
+//   endpoints can return the same data the user selected.
+const referralCache = {};
+const draftByReferralId = {};
+const bookedByAppointmentId = {};
+
+/**
+ * Builds the provider object returned inside a draft appointment response from
+ * a resolved catalog entry. Mirrors the shape the app expects on
+ * `draftAppointmentInfo.attributes.provider`.
+ */
+function buildDraftProviderFromCatalog(entry) {
+  if (!entry) return null;
+  const address = entry.address
+    ? `${entry.address.street1}, ${entry.address.city}, ${
+        entry.address.state
+      }, ${entry.address.zip}, US`
+    : '';
+  if (entry.providerType === 'va') {
+    return {
+      id: entry.clinicId || entry.id,
+      name: entry.name,
+      careType: 'VA',
+      facilityName: entry.facilityName,
+      phone: entry.phone,
+      visitMode: entry.visitMode || 'inPerson',
+      locationId: entry.locationId,
+      clinicId: entry.clinicId || entry.id,
+      serviceType: entry.serviceType || 'primaryCare',
+      providerServiceId: null,
+      networkId: null,
+      networkIds: [],
+      appointmentTypes: null,
+      location: {
+        name: entry.facilityName,
+        address,
+        latitude: entry.latitude,
+        longitude: entry.longitude,
+        timezone: entry.timezone,
+      },
+    };
+  }
+
+  return {
+    id: entry.providerServiceId || entry.id,
+    name: `${entry.name} @ ${entry.facilityName}`,
+    isActive: true,
+    phone: entry.phone,
+    tty: '711',
+    individualProviders: [
+      {
+        name: entry.name,
+        npi: '91560381x',
+      },
+    ],
+    providerOrganization: {
+      name: entry.organizationName || entry.facilityName,
+    },
+    location: {
+      name: entry.facilityName,
+      address,
+      latitude: entry.latitude,
+      longitude: entry.longitude,
+      timezone: entry.timezone,
+    },
+    networkIds: [
+      entry.networkId || MockReferralProvidersResponse.DEMO_NETWORK_ID,
+    ],
+    schedulingNotes:
+      'New patients need to send their previous records to the office prior to their appt.',
+    appointmentTypes: entry.appointmentTypes || [
+      {
+        id: 'ov',
+        name: 'Office Visit',
+        isSelfSchedulable: true,
+      },
+    ],
+    specialties: entry.specialty ? [entry.specialty] : [],
+    visitMode: entry.visitMode || 'inPerson',
+    features: {
+      isDigital: true,
+      directBooking: {
+        isEnabled: true,
+        requiredFields: ['phone', 'address', 'name', 'birthdate', 'gender'],
+      },
+    },
+  };
+}
+
+/**
+ * Reshapes the draft-provider object into the shape the appointment details
+ * endpoints return (nested `provider.location` with address + timezone).
+ */
+function buildDetailsProviderFromDraftProvider(draftProvider, careType) {
+  if (!draftProvider) return null;
+  const locationName =
+    careType === 'VA'
+      ? draftProvider.location?.name
+      : draftProvider.providerOrganization?.name ||
+        draftProvider.location?.name;
+  return {
+    id: draftProvider.id,
+    name: draftProvider.name,
+    practice: draftProvider.providerOrganization?.name,
+    phone: draftProvider.phone,
+    location: {
+      name: locationName,
+      address: draftProvider.location?.address,
+      latitude: draftProvider.location?.latitude,
+      longitude: draftProvider.location?.longitude,
+      timezone: draftProvider.location?.timezone,
+    },
+  };
+}
 
 // key: NPI, value: Provider Name
 const providerMock = {
@@ -633,46 +759,65 @@ const responses = {
     );
   },
   'GET /vaos/v2/referrals/:referralId': (req, res) => {
-    if (req.params.referralId === 'error') {
+    const { referralId } = req.params;
+    if (referralId === 'error') {
       return res.status(500).json({ error: true });
     }
 
-    if (req.params.referralId === 'scheduled-referral') {
-      return res.json(
-        new MockReferralDetailResponse({
-          id: req.params.referralId,
-          expirationDate: '2024-12-02',
-          hasAppointments: true,
-        }),
-      );
-    }
-
-    if (req.params.referralId === 'online-schedule-false') {
-      return res.json(
-        new MockReferralDetailResponse({
-          id: req.params.referralId,
-          referralNumber: req.params.referralId,
-          onlineSchedule: false,
-        }),
-      );
-    }
-
-    if (req.params.referralId === 'no-veteran-address') {
-      return res.json(
-        new MockReferralDetailResponse({
-          id: req.params.referralId,
-          referralNumber: req.params.referralId,
-          veteranAddressPresent: false,
-        }),
-      );
-    }
-
-    return res.json(
-      new MockReferralDetailResponse({
-        id: req.params.referralId,
-        referralNumber: req.params.referralId,
-      }),
+    // Look up the referral from the predefined list so the detail response
+    // reflects the categoryOfCare/careType/referralNumber the list advertised.
+    const predefined = MockReferralListResponse.getPredefinedReferrals().find(
+      r => r.id === referralId,
     );
+    const detailOverrides = predefined
+      ? {
+          categoryOfCare: predefined.attributes.categoryOfCare,
+          careType: predefined.attributes.careType,
+          referralNumber: predefined.attributes.referralNumber,
+          stationId: predefined.attributes.stationId,
+        }
+      : {};
+
+    let response;
+    if (referralId === 'scheduled-referral') {
+      response = new MockReferralDetailResponse({
+        id: referralId,
+        expirationDate: '2024-12-02',
+        hasAppointments: true,
+        ...detailOverrides,
+      });
+    } else if (referralId === 'online-schedule-false') {
+      response = new MockReferralDetailResponse({
+        id: referralId,
+        referralNumber: referralId,
+        onlineSchedule: false,
+        ...detailOverrides,
+      });
+    } else if (referralId === 'no-veteran-address') {
+      response = new MockReferralDetailResponse({
+        id: referralId,
+        referralNumber: referralId,
+        veteranAddressPresent: false,
+        ...detailOverrides,
+      });
+    } else {
+      response = new MockReferralDetailResponse({
+        id: referralId,
+        referralNumber: referralId,
+        ...detailOverrides,
+      });
+    }
+
+    const payload = response.toJSON();
+    if (payload?.data?.attributes) {
+      referralCache[referralId] = {
+        referralId,
+        categoryOfCare: payload.data.attributes.categoryOfCare,
+        careType: payload.data.attributes.careType,
+        referralNumber: payload.data.attributes.referralNumber,
+      };
+    }
+    return res.json(payload);
   },
   'GET /vaos/v2/providers': (req, res) => {
     const page = parseInt(req.query.page || '1', 10);
@@ -727,6 +872,12 @@ const responses = {
       );
     }
 
+    // Resolve the provider the user selected on ProviderSelection so the
+    // draft/slots page reflects that same provider instead of a hardcoded one.
+    const catalogEntry = getProviderById(providerId);
+    const cachedReferral = referralCache[referralId] || {};
+    const categoryOfCare = cachedReferral.categoryOfCare || 'PRIMARY CARE';
+
     if (
       providerType === 'va' ||
       (providerId && String(providerId).startsWith('va-'))
@@ -743,65 +894,115 @@ const responses = {
         end: undefined,
       }));
 
-      return res.json({
+      const vaEntry =
+        catalogEntry ||
+        getProviderById(`va-${providerId}`) ||
+        getProviderById('1082');
+      const vaEntryForProvider = { ...vaEntry, providerType: 'va' };
+      const draftProvider = buildDraftProviderFromCatalog(vaEntryForProvider);
+      const { address } = vaEntry;
+      const draftEnvelope = {
         data: {
           id: providerId,
           type: 'provider_slots',
           attributes: {
             careType: 'VA',
-            provider: {
-              id: providerId,
-              name: 'Primary Care Clinic A',
-              careType: 'VA',
-              facilityName: 'Portland VA Medical Center',
-              phone: '(503) 555-0100',
-              visitMode: 'inPerson',
-              locationId: '648',
-              clinicId: providerId,
-              serviceType: 'primaryCare',
-              providerServiceId: null,
-              networkId: null,
-              networkIds: [],
-              appointmentTypes: null,
-              location: {
-                name: 'Portland VA Medical Center',
-                address: '3710 SW US Veterans Hospital Rd, Portland, OR 97239',
-                latitude: 45.4977,
-                longitude: -122.6834,
-                timezone: 'America/Los_Angeles',
-              },
-            },
+            provider: { ...draftProvider, careType: 'VA' },
             slots: vaSlots,
             drivetime: {
-              origin: { latitude: 45.5152, longitude: -122.6784 },
+              origin: {
+                latitude: vaEntry.latitude - 0.02,
+                longitude: vaEntry.longitude - 0.01,
+              },
               destination: {
                 distanceInMiles: 3,
                 driveTimeInSecondsWithoutTraffic: 600,
                 driveTimeInSecondsWithTraffic: 900,
-                latitude: 45.4977,
-                longitude: -122.6834,
+                latitude: vaEntry.latitude,
+                longitude: vaEntry.longitude,
               },
             },
           },
         },
-      });
+      };
+
+      draftByReferralId[referralId] = {
+        draftId: draftEnvelope.data.id,
+        provider: draftEnvelope.data.attributes.provider,
+        slots: vaSlots,
+        careType: 'VA',
+        categoryOfCare,
+        providerType: 'va',
+        address,
+      };
+
+      return res.json(draftEnvelope);
     }
 
-    return res.json(
-      new MockReferralDraftAppointmentResponse({
-        referralNumber: referralId,
-        categoryOfCare: 'PRIMARY CARE',
-        startDate: new Date(),
-      }),
-    );
+    // Community care branch
+    const ccEntry =
+      catalogEntry ||
+      getProviderById(providerId) ||
+      getProviderById('provider-0');
+    const ccEntryForProvider = { ...ccEntry, providerType: 'community_care' };
+    const draftProvider = buildDraftProviderFromCatalog(ccEntryForProvider);
+
+    const mockResponse = new MockReferralDraftAppointmentResponse({
+      referralNumber: referralId,
+      categoryOfCare,
+      startDate: new Date(),
+      providerOverride: draftProvider,
+      drivetimeOverride: {
+        origin: {
+          latitude: ccEntry.latitude - 0.02,
+          longitude: ccEntry.longitude - 0.01,
+        },
+        destination: {
+          distanceInMiles: 3,
+          driveTimeInSecondsWithoutTraffic: 600,
+          driveTimeInSecondsWithTraffic: 900,
+          latitude: ccEntry.latitude,
+          longitude: ccEntry.longitude,
+        },
+      },
+    });
+    const payload = mockResponse.toJSON();
+
+    draftByReferralId[referralId] = {
+      draftId: payload?.data?.id,
+      provider: payload?.data?.attributes?.provider,
+      slots: payload?.data?.attributes?.slots || [],
+      careType: 'CC',
+      categoryOfCare,
+      providerType: 'community_care',
+      address: ccEntry.address,
+    };
+
+    return res.json(payload);
   },
   'GET /vaos/v2/unified_bookings/:appointmentId': (req, res) => {
     let successPollCount = 2;
     const { appointmentId } = req.params;
 
+    const booked = bookedByAppointmentId[appointmentId];
+    const bookedOverrides = booked
+      ? {
+          start: booked.start,
+          referralId: booked.referralId,
+          typeOfCare: booked.categoryOfCare,
+          careType: booked.careType,
+          provider: buildDetailsProviderFromDraftProvider(
+            booked.provider,
+            booked.careType,
+          ),
+          organizationName: booked.provider?.location?.name,
+        }
+      : {};
+
     let mockAppointment = new MockReferralAppointmentDetailsResponse({
       appointmentId,
       status: 'proposed',
+      ...bookedOverrides,
     });
 
     const serverError = new MockReferralAppointmentDetailsResponse({
@@ -826,6 +1027,7 @@ const responses = {
       mockAppointment = new MockReferralAppointmentDetailsResponse({
         appointmentId,
         status: 'booked',
+        ...bookedOverrides,
       });
     }
 
@@ -852,15 +1054,36 @@ const responses = {
       return res.status(500).json(serverError);
     }
 
+    const booked = bookedByAppointmentId[appointmentId];
+    const bookedOverrides = booked
+      ? {
+          start: booked.start,
+          referralId: booked.referralId,
+          typeOfCare: booked.categoryOfCare,
+          careType: booked.careType,
+          provider: buildDetailsProviderFromDraftProvider(
+            booked.provider,
+            booked.careType,
+          ),
+          organizationName: booked.provider?.location?.name,
+        }
+      : {};
+
     return res.json(
       new MockReferralAppointmentDetailsResponse({
         appointmentId,
         status: 'booked',
+        ...bookedOverrides,
       }),
     );
   },
   'POST /vaos/v2/unified_bookings': (req, res) => {
-    const { providerType, slotId, providerServiceId } = req.body;
+    const {
+      providerType,
+      slotId,
+      providerServiceId,
+      referralNumber,
+    } = req.body;
 
     if ((!providerType && !providerServiceId) || !slotId) {
       return res.status(400).json(
@@ -871,11 +1094,57 @@ const responses = {
       );
     }
 
-    const appointmentId = `mock-${Date.now()}`;
+    // Look up the cached draft (keyed by referralId) so we can resolve the
+    // selected slot's actual start time and carry the selected provider
+    // through to the polling/details endpoints.
+    let draft;
+    let referralIdForBooking;
+    if (referralNumber && draftByReferralId[referralNumber]) {
+      draft = draftByReferralId[referralNumber];
+      referralIdForBooking = referralNumber;
+    } else {
+      // Fallback: find any cached draft that contains this slot. Handles the VA
+      // booking payload, which doesn't include referralNumber.
+      const match = Object.entries(draftByReferralId).find(([, d]) =>
+        (d.slots || []).some(s => s.id === slotId),
+      );
+      if (match) {
+        [referralIdForBooking, draft] = match;
+      }
+    }
+
+    const selectedSlot = draft?.slots?.find(s => s.id === slotId);
+    const start = selectedSlot?.start;
+
+    const cachedReferral = referralIdForBooking
+      ? referralCache[referralIdForBooking]
+      : null;
+
+    // Key the booked context under the draft's id so that when the app polls
+    // GET /vaos/v2/unified_bookings/:appointmentId using draftAppointmentInfo.id
+    // (passed through from ReviewAndConfirm), we hit this cached record and
+    // return the user's selected slot + provider. Fall back to a generated id
+    // for callers (like some unit tests) that POST without first hitting
+    // /provider_slots.
+    const appointmentId = draft?.draftId || `mock-${Date.now()}`;
     draftAppointmentPollCount[appointmentId] = 1;
+
+    if (draft) {
+      bookedByAppointmentId[appointmentId] = {
+        provider: draft.provider,
+        start,
+        referralId: referralIdForBooking,
+        categoryOfCare: cachedReferral?.categoryOfCare || draft.categoryOfCare,
+        careType: draft.careType,
+        providerType: draft.providerType,
+      };
+    }
+
     return res.json(
       new MockUnifiedBookingResponse({
         appointmentId,
+        providerType: draft?.providerType || providerType,
+        start: start || undefined,
       }),
     );
   },

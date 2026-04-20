@@ -21,6 +21,14 @@ class MockReferralDraftAppointmentResponse {
       numberOfSlots: 3,
       startDate: null,
       currentDate: null,
+      // Optional pre-built provider object. When set, it replaces the default
+      // "Dr. Bones" provider entirely so the draft reflects the provider the
+      // user picked on ProviderSelection.
+      providerOverride: null,
+      // Optional pre-built drivetime block; falls back to a sensible default.
+      drivetimeOverride: null,
+      // Optional appointment id (used for the returned draft envelope).
+      appointmentId: null,
       ...options,
     };
   }
@@ -181,6 +189,9 @@ class MockReferralDraftAppointmentResponse {
       notFound,
       serverError,
       noSlotsError,
+      providerOverride,
+      drivetimeOverride,
+      appointmentId,
     } = this.options;
 
     // Return 404 error if notFound is true
@@ -207,10 +218,10 @@ class MockReferralDraftAppointmentResponse {
       },
     );
 
-    // Create provider
-    const provider = MockReferralDraftAppointmentResponse.createProvider();
-
-    // No modifications to provider - use as-is from createProvider()
+    // Create provider (accept an override so the draft reflects the provider
+    // the user selected on the previous page)
+    const provider =
+      providerOverride || MockReferralDraftAppointmentResponse.createProvider();
 
     // Generate slots unless noSlotsError is true
     let mockSlots;
@@ -228,29 +239,31 @@ class MockReferralDraftAppointmentResponse {
       }).data;
     }
 
+    const defaultDrivetime = {
+      origin: {
+        latitude: 40.7128,
+        longitude: -74.006,
+      },
+      destination: {
+        distanceInMiles: 313,
+        driveTimeInSecondsWithoutTraffic: 19096,
+        driveTimeInSecondsWithTraffic: 19561,
+        latitude: 44.475883,
+        longitude: -73.212074,
+      },
+    };
+
     // Return complete response matching the expected format
     return {
       data: {
-        id: `appointment-for-${referralNumber}`,
+        id: appointmentId || `appointment-for-${referralNumber}`,
         type: 'draft_appointment',
         attributes: {
           referralNumber,
           careType,
           provider,
           slots: mockSlots,
-          drivetime: {
-            origin: {
-              latitude: 40.7128,
-              longitude: -74.006,
-            },
-            destination: {
-              distanceInMiles: 313,
-              driveTimeInSecondsWithoutTraffic: 19096,
-              driveTimeInSecondsWithTraffic: 19561,
-              latitude: 44.475883,
-              longitude: -73.212074,
-            },
-          },
+          drivetime: drivetimeOverride || defaultDrivetime,
         },
       },
     };

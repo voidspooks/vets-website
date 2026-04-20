@@ -152,7 +152,7 @@ export const CompleteReferral = props => {
             timezone={attributes.provider.location.timezone}
             typeOfCare={currentReferral.categoryOfCare}
             isCC={isCC}
-            providerName={isCC ? currentReferral.provider.name : undefined}
+            providerName={isCC ? attributes.provider.name : undefined}
             organizationName={
               isCC ? attributes.provider.location.name : undefined
             }

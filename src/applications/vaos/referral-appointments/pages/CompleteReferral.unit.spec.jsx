@@ -147,7 +147,7 @@ describe('CompleteReferral', () => {
     expect(getByTestId('appointment-type')).to.have.text('Primary Care');
     expect(getByTestId('appointment-care-type')).to.have.text('Community care');
     expect(getByTestId('appointment-provider-name')).to.have.text(
-      'Dr. Moreen S. Rafa',
+      'Dr. Smith @ Acme Cardiology - Anywhere, USA',
     );
     expect(getByTestId('appointment-modality')).to.contain.text('In-person');
     expect(getByTestId('appointment-organization-name')).to.have.text(
