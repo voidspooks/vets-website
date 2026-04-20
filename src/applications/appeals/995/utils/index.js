@@ -1,70 +1,54 @@
-import { EVIDENCE_URLS } from '../constants';
+import {
+  EVIDENCE_VA_DETAILS_URL,
+  EVIDENCE_PRIVATE_PROMPT_URL,
+  EVIDENCE_PRIVATE_DETAILS_URL,
+} from '../constants';
+import {
+  hasOtherEvidence,
+  hasArrayBuilderPrivateEvidence,
+  hasArrayBuilderVAEvidence,
+} from './form-data-retrieval';
 
-// ------- REMOVE when new design toggle is removed
-export const redesignActive = formData => {
-  return formData?.scRedesign;
+export const redesignActive = formData => formData?.showArrayBuilder;
+
+// TODO: remove when decision_review_sc_redesign_nov2025 is retired
+// Map old saved returnUrls to their renamed equivalents. Old URLs were changed
+// to avoid collisions with array builder page routes. Without this, veterans
+// with in-progress forms saved at the old URLs would hit dead routes.
+const RETURN_URL_MIGRATIONS = {
+  '/supporting-evidence/va-medical-records': `/${EVIDENCE_VA_DETAILS_URL}`,
+  '/supporting-evidence/request-private-medical-records': `/${EVIDENCE_PRIVATE_PROMPT_URL}`,
+  '/supporting-evidence/private-medical-records': `/${EVIDENCE_PRIVATE_DETAILS_URL}`,
 };
-// ------- END REMOVE
 
 /**
  * Redirect to the user's last saved URL if it exists
  * @param {String} returnUrl - URL of last saved page
+ * @param {Object} formData - saved form data
  * @param {Object} router - React router
  */
-// ------- RESTORE when new design toggle is removed
-// export const onFormLoaded = () => {
-// const { returnUrl, router } = props;
-
-// if (returnUrl) {
-//   router?.push(returnUrl);
-// }
-// };
-// ------- END RESTORE
-
-// ------- REMOVE when new design toggle is removed
-export const onFormLoaded = ({ formData, returnUrl, router }) => {
-  const pagesOutsideRedesign = [
-    '/veteran-information',
-    '/housing-risk',
-    '/living-situation',
-    '/other-housing-risks',
-    '/point-of-contact',
-    '/contact-information',
-    '/primary-phone-number',
-    '/contestable-issues',
-    '/issue-summary',
-    '/opt-in',
-    '/notice-of-evidence-needed',
-    '/facility-types',
-    '/review-and-submit',
-  ];
-
-  // In this scenario, the user is returning to the form somewhere in the middle
-  // of the pages being redesigned. We need to push them to the beginning of the
-  // new pages so they can ensure their data is properly filled out in the new flow
-  //
-  // --> TODO: add further logic to ensure that users who have already started the
-  // new flow in a previous session aren't redirected again
-  //
-  // if (redesignActive(formData) && some new flow formData exists) {
-  //
-  // }
-
-  if (redesignActive(formData) && !pagesOutsideRedesign.includes(returnUrl)) {
-    router?.push(EVIDENCE_URLS.vaPrompt);
-  }
-
-  // --> TODO: In the event that someone has started the new flow, then saves their app and
-  // returns later but the feature_toggles call fails, they will need to start at
-  // the beginning of the evidence flow in order to make sure the form is filled out
-  // properly. Not an ideal scenario, but we should try to plan for it.
-  //
-  // if (!redesignActive(formData) && some new flow formData exists) {
-  // router?.push(EVIDENCE_VA_PROMPT_URL);
-  // }
-
+export const onFormLoaded = ({ returnUrl, formData, router }) => {
   if (returnUrl) {
-    router?.push(returnUrl);
+    // Only migrate URLs from forms saved before the redesign code was deployed.
+    // Old forms won't have showArrayBuilder in their saved data. New forms
+    // always have it (true or false), and their URLs are already correct.
+    const migratedUrl =
+      formData?.showArrayBuilder === undefined
+        ? RETURN_URL_MIGRATIONS[returnUrl]
+        : undefined;
+    router?.push(migratedUrl || returnUrl);
   }
 };
-// ------- END REMOVE
+
+/**
+ * We want to hide the evidence summary page if the redesign is active
+ * and the user has added VA or non-VA records, but does not upload
+ * evidence. In all other situations, this screen should show
+ * @param {*} formData
+ * @returns
+ */
+export const shouldHideEvidenceSummaryPage = formData =>
+  redesignActive(formData) &&
+  !hasOtherEvidence(formData) &&
+  (hasArrayBuilderVAEvidence(formData) ||
+    hasArrayBuilderPrivateEvidence(formData));

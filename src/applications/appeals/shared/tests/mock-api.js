@@ -31,16 +31,25 @@ const issues = {
         latestIssuesInChain: [
           {
             id: null,
-            approxDecisionDate: validDate,
+            approxDecisionDate: validDate(-2),
           },
         ],
         decisionIssueId: null,
         ratingDecisionReferenceId: null,
-        approxDecisionDate: validDate,
+        approxDecisionDate: validDate(-2),
         rampClaimId: null,
         titleOfActiveReview: null,
         sourceReviewType: null,
         timely: true,
+      },
+    },
+    {
+      type: 'legacyAppeal',
+      attributes: {
+        issues: [
+          { description: 'Legacy issue - tinnitus' },
+          { description: 'Legacy issue - hearing loss' },
+        ],
       },
     },
   ],
@@ -66,11 +75,18 @@ const itf = {
   },
 };
 
+const enableScRedesign = true;
+
 const responses = {
   'GET /v0/user': mockUser,
   'GET /v0/feature_toggles': {
     data: {
-      features: [{ name: 'placeholderToggle', value: false }],
+      features: [
+        {
+          name: 'decision_review_sc_redesign_nov2025',
+          value: enableScRedesign,
+        },
+      ],
     },
   },
   'OPTIONS /v0/maintenance_windows': 'OK',

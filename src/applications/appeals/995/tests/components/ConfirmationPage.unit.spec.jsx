@@ -8,6 +8,7 @@ import {
 } from '@department-of-veterans-affairs/platform-forms-system/ui';
 import ConfirmationPage from '../../components/ConfirmationPage';
 import comprehensiveTest from '../fixtures/data/pre-api-comprehensive-test.json';
+import comprehensiveTestNew from '../fixtures/data/pre-api-comprehensive-test-new.json';
 import noEvidenceTest from '../fixtures/data/pre-api-no-evidence-test.json';
 import { verifyHeader } from '../unit-test-helpers';
 import { title995 } from '../../content/title';
@@ -212,33 +213,7 @@ describe('ConfirmationPage', () => {
   });
 
   describe('when scRedesign is active', () => {
-    const redesignData = {
-      ...comprehensiveTest.data,
-      scRedesign: true,
-      vaEvidence: [
-        {
-          vaTreatmentLocation: 'Test VA Center',
-          treatmentBefore2005: 'N',
-          treatmentMonthYear: '2020-03',
-        },
-      ],
-      privateEvidence: [
-        {
-          privateTreatmentLocation: 'Test Private Clinic',
-          address: {
-            street: '100 Oak St',
-            street2: '',
-            city: 'Dallas',
-            state: 'TX',
-            country: 'USA',
-            postalCode: '75001',
-          },
-          issues: { Hypertension: true },
-          treatmentStart: '2020-01-01',
-          treatmentEnd: '2021-01-01',
-        },
-      ],
-    };
+    const redesignData = { ...comprehensiveTestNew.data };
 
     it('should render the proper content through the evidence sections', () => {
       const { container } = createConfirmationPage(redesignData);

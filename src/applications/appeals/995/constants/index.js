@@ -23,13 +23,14 @@ export const CONTACT_INFO_URL = 'contact-information';
 export const ADD_ISSUE_URL = 'add-issue';
 export const EVIDENCE_VA_PROMPT_URL =
   'supporting-evidence/request-va-medical-records';
-export const EVIDENCE_VA_DETAILS_URL = 'supporting-evidence/va-medical-records';
+export const EVIDENCE_VA_DETAILS_URL =
+  'supporting-evidence/va-medical-records-v0';
 export const EVIDENCE_PRIVATE_PROMPT_URL =
-  'supporting-evidence/request-private-medical-records';
+  'supporting-evidence/private-medical-records';
 export const EVIDENCE_PRIVATE_AUTHORIZATION_URL =
   'supporting-evidence/private-medical-records-authorization';
 export const EVIDENCE_PRIVATE_DETAILS_URL =
-  'supporting-evidence/private-medical-records';
+  'supporting-evidence/private-medical-records-v0';
 export const LIMITED_CONSENT_PROMPT_URL = 'supporting-evidence/add-limitation';
 export const LIMITED_CONSENT_DETAILS_URL = 'supporting-evidence/limitation';
 export const EVIDENCE_ADDITIONAL_URL =
@@ -39,7 +40,6 @@ export const EVIDENCE_UPLOAD_URL = 'supporting-evidence/upload-evidence';
 // This is for URLs specific to the redesign to avoid collision with existing URL variables
 export const EVIDENCE_URLS = {
   vaLocation: 'supporting-evidence/:index/va-medical-records-location',
-  vaIssues: 'supporting-evidence/:index/va-medical-records-condition',
   vaTreatmentDatePrompt: 'supporting-evidence/:index/va-medical-before-2005',
   vaTreatmentDateDetails:
     'supporting-evidence/:index/va-medical-before-2005-date',

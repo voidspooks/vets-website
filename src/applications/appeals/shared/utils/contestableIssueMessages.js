@@ -15,6 +15,7 @@ const getDecisionDate = issue => issue.approxDecisionDate;
  * @returns {string} Formatted list (e.g., "A", "A and B", "A, B, and C" or "A; B, C; D; and E")
  */
 export const formatIssueList = names => {
+  if (!names?.length) return '';
   if (names.length === 1) return names[0];
 
   const hasCommaInNames = names.some(name => name.includes(','));

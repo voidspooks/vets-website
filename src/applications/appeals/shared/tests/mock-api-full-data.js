@@ -10,7 +10,8 @@ const delay = require('mocker-api/lib/delay');
 const mockSipPut = require('./fixtures/mocks/put-progress-forms.json');
 const mockUser = require('./fixtures/mocks/user.json');
 
-const mockScMax = require('../../995/tests/fixtures/data/pre-api-comprehensive-test.json');
+const mockScLegacy = require('../../995/tests/fixtures/data/pre-api-comprehensive-test.json');
+const mockScRedesign = require('../../995/tests/fixtures/data/pre-api-comprehensive-test-new.json');
 const mockHlrMax = require('../../996/tests/fixtures/data/maximal-test-v2.json');
 const mockNodMax = require('../../10182/tests/fixtures/data/maximal-test.json');
 
@@ -69,11 +70,11 @@ const itf = {
   },
 };
 
-const createSip = data => ({
-  formData: data.data,
+const createSip = (data, extraFormData = {}) => ({
+  formData: { ...data.data, ...extraFormData },
   metadata: {
-    version: 0,
-    prefill: true,
+    version: 1,
+    prefill: false,
     returnUrl: '/veteran-information',
   },
 });
@@ -125,13 +126,32 @@ const userData = () => {
   };
 };
 
+const enableScRedesign = false;
+const ipfStartedOnScRedesign = false;
+
 const responses = {
   'GET /v0/user': userData(),
+  'GET /v0/feature_toggles': {
+    data: {
+      features: [
+        {
+          name: 'decision_review_sc_redesign_nov2025',
+          value: enableScRedesign,
+        },
+      ],
+    },
+  },
   'OPTIONS /v0/maintenance_windows': 'OK',
   'GET /v0/maintenance_windows': { data: [] },
   'GET /data/cms/vamc-ehr.json': {},
 
-  'GET /v0/in_progress_forms/20-0995': createSip(mockScMax),
+  'GET /v0/in_progress_forms/20-0995': createSip(
+    ipfStartedOnScRedesign ? mockScRedesign : mockScLegacy,
+    {
+      scRedesign: enableScRedesign,
+      showArrayBuilder: ipfStartedOnScRedesign,
+    },
+  ),
   'GET /v0/in_progress_forms/20-0996': createSip(mockHlrMax),
   'GET /v0/in_progress_forms/10182': createSip(mockNodMax),
 

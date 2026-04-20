@@ -1,62 +1,97 @@
 import { expect } from 'chai';
 import sinon from 'sinon-v20';
 import { onFormLoaded } from '../../utils';
-import { EVIDENCE_URLS } from '../../constants';
 
 describe('onFormLoaded', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  // ------- RESTORE when new design toggle is removed
-  // it('should direct to the correct returnUrl', () => {
-  //   const routerSpy = {
-  //     push: sinon.spy(),
-  //   };
-  //   onFormLoaded({ returnUrl: '/housing-risk', router: routerSpy });
-  //   expect(routerSpy.push.firstCall.args[0]).to.eq('/housing-risk');
-  // });
-  // ------- END RESTORE
-
-  // ------- REMOVE when new design toggle is removed
-  describe('feature toggle is ON', () => {
-    const formData = { scRedesign: true };
-
-    // --> TODO
-    describe('user has already saved previous new flow data', () => {});
-
-    describe('user has saved within the evidence flow', () => {
-      it('should redirect to the beginning of the new evidence flow', () => {
-        const routerSpy = { push: sinon.spy() };
-
-        onFormLoaded({
-          formData,
-          returnUrl: EVIDENCE_URLS.vaTreatmentDateDetails,
-          router: routerSpy,
-        });
-
-        expect(routerSpy.push.firstCall.args[0]).to.eq(EVIDENCE_URLS.vaPrompt);
-      });
-    });
+  it('should direct to the correct returnUrl', () => {
+    const routerSpy = { push: sinon.spy() };
+    onFormLoaded({ returnUrl: '/housing-risk', router: routerSpy });
+    expect(routerSpy.push.firstCall.args[0]).to.eq('/housing-risk');
   });
 
-  describe('feature toggle is OFF', () => {
-    // --> TODO
-    describe('user has saved within the new evidence flow', () => {});
+  it('should not push if returnUrl is undefined', () => {
+    const routerSpy = { push: sinon.spy() };
+    onFormLoaded({ returnUrl: undefined, router: routerSpy });
+    expect(routerSpy.push.called).to.be.false;
+  });
 
-    describe('user is on the old flow and/or does not have any new flow data', () => {
+  describe('pre-redesign saved forms (showArrayBuilder undefined)', () => {
+    const formData = {};
+
+    it('should migrate old VA details URL to the renamed path', () => {
       const routerSpy = { push: sinon.spy() };
-      const formData = { scRedesign: false };
-
-      it('should direct to the given returnUrl', () => {
-        onFormLoaded({
-          formData,
-          returnUrl: '/housing-risk',
-          router: routerSpy,
-        });
-        expect(routerSpy.push.firstCall.args[0]).to.eq('/housing-risk');
+      onFormLoaded({
+        returnUrl: '/supporting-evidence/va-medical-records',
+        formData,
+        router: routerSpy,
       });
+      expect(routerSpy.push.firstCall.args[0]).to.eq(
+        '/supporting-evidence/va-medical-records-v0',
+      );
+    });
+
+    it('should migrate old private prompt URL to the renamed path', () => {
+      const routerSpy = { push: sinon.spy() };
+      onFormLoaded({
+        returnUrl: '/supporting-evidence/request-private-medical-records',
+        formData,
+        router: routerSpy,
+      });
+      expect(routerSpy.push.firstCall.args[0]).to.eq(
+        '/supporting-evidence/private-medical-records',
+      );
+    });
+
+    it('should migrate old private details URL to the renamed path', () => {
+      const routerSpy = { push: sinon.spy() };
+      onFormLoaded({
+        returnUrl: '/supporting-evidence/private-medical-records',
+        formData,
+        router: routerSpy,
+      });
+      expect(routerSpy.push.firstCall.args[0]).to.eq(
+        '/supporting-evidence/private-medical-records-v0',
+      );
     });
   });
-  // ------- END REMOVE
+
+  describe('post-redesign saved forms (showArrayBuilder defined)', () => {
+    it('should not migrate URLs when showArrayBuilder is false', () => {
+      const routerSpy = { push: sinon.spy() };
+      onFormLoaded({
+        returnUrl: '/supporting-evidence/private-medical-records',
+        formData: { showArrayBuilder: false },
+        router: routerSpy,
+      });
+      expect(routerSpy.push.firstCall.args[0]).to.eq(
+        '/supporting-evidence/private-medical-records',
+      );
+    });
+
+    it('should not migrate URLs when showArrayBuilder is true', () => {
+      const routerSpy = { push: sinon.spy() };
+      onFormLoaded({
+        returnUrl: '/supporting-evidence/va-medical-records',
+        formData: { showArrayBuilder: true },
+        router: routerSpy,
+      });
+      expect(routerSpy.push.firstCall.args[0]).to.eq(
+        '/supporting-evidence/va-medical-records',
+      );
+    });
+
+    it('should pass through non-migrated URLs unchanged', () => {
+      const routerSpy = { push: sinon.spy() };
+      onFormLoaded({
+        returnUrl: '/housing-risk',
+        formData: { showArrayBuilder: false },
+        router: routerSpy,
+      });
+      expect(routerSpy.push.firstCall.args[0]).to.eq('/housing-risk');
+    });
+  });
 });

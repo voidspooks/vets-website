@@ -33,7 +33,7 @@ export const ConfirmationSummary = ({ name, downloadUrl }) => (
     <va-button
       class="print-this-page-button vads-u-margin-y--3"
       onClick={window.print}
-      text={`Print this page for your records `}
+      text="Print this page for your records"
     />
   </div>
 );

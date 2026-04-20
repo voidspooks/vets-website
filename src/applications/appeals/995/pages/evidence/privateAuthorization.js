@@ -4,6 +4,11 @@ export default {
   },
   schema: {
     type: 'object',
-    properties: {},
+    properties: {
+      privacyAgreementAccepted: {
+        type: 'boolean',
+        enum: [true],
+      },
+    },
   },
 };

@@ -15,10 +15,32 @@ import AuthorizationAlert, { alertTitle } from './AuthorizationAlert';
 import { AUTHORIZATION_LABEL } from '../../constants';
 import { customPageProps995 } from '../../../shared/props';
 import { PrivacyActStatementContent } from './PrivacyActStatementContent';
+import { redesignActive } from '../../utils';
 
 export const content = {
   title:
     'Authorize the release of private provider or VA Vet Center medical records to VA',
+};
+
+// The AuthorizationReview component is shown when the user is viewing the default review page
+export const AuthorizationReview = ({ data }) => {
+  const isScRedesign = redesignActive(data);
+
+  if (isScRedesign) {
+    return (
+      <div className="vads-u-text-align--left vads-u-border-bottom--1px vads-u-border-top--1px vads-u-border-color--base-light">
+        <h4 className="vads-u-color--base-darker">{content.title}</h4>
+        <p className="vads-u-border-top--1px vads-u-border-color--base-light vads-u-padding-top--2 vads-u-margin-bottom--0">
+          {AUTHORIZATION_LABEL}.
+        </p>
+        <p className="vads-u-margin-top--0">
+          <strong>Yes, I acknowledge and authorize</strong>
+        </p>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 const Authorization = ({

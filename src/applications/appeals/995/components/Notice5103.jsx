@@ -44,10 +44,12 @@ const Notice5103 = ({
 
   return (
     <>
-      <Header id="header">{content.header}</Header>
+      <Header className="vads-u-margin-top--4" id="header">
+        {content.header}
+      </Header>
       {content.description}
       <VaCheckbox
-        label={content.label}
+        label={`${content.label}.`}
         name="5103"
         error={hasError ? content.error : null}
         onVaChange={handlers.onChange}

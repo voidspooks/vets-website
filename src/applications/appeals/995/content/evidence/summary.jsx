@@ -66,18 +66,18 @@ export const content = {
     address: wrapError('Incomplete address'),
     attachmentId: wrapError('Missing document type'),
   },
-  missingEvidenceHeader: 'We noticed you didn’t add new evidence',
+  missingEvidenceHeader: 'You haven’t added new evidence',
   missingEvidenceText: (
     <>
       <p>
-        If you’re filing a claim based on new evidence, we encourage you to
-        submit the evidence with your claim. But if you don’t have the evidence
-        now, you can still file your claim. We’ll work with you to get the
-        evidence.
+        If you’re filing based on new evidence, we encourage you to submit it
+        with your claim. But if you don’t have it now, you can still file. We’ll
+        work with you to get the evidence.
       </p>
       <p>
-        <strong>Note:</strong> If you have a presumptive condition, you don’t
-        need to submit evidence to prove a service connection.
+        <strong>Note:</strong> Some conditions are presumed to be caused by your
+        service. But you may still need to provide evidence, such as proof of
+        diagnosis or exposure.
       </p>
     </>
   ),

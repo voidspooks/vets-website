@@ -29,7 +29,7 @@ const VeteranInformation = ({ formData }) => {
 
   return (
     <>
-      <h2 className="vads-u-margin-y--2">
+      <h2 className="vads-u-margin-y--2 vads-u-font-size--h3">
         Confirm the personal information we have on file for you.
       </h2>
       <va-card>

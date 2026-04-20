@@ -73,7 +73,7 @@ describe('Higher-Level Review keyboard only navigation', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(100);
       cy.tabToElement('[name="root_contestedIssues_0"]'); // Tinnitus
-      cy.realPress('Space');
+      cy.setCheckboxFromData('[name="root_contestedIssues_0"]', true);
       h.tabToContinue();
 
       // *** Area of disagreement for tinnitus

@@ -16,6 +16,8 @@ import { VaDetailsDisplay } from './VaDetailsDisplay';
 import { HAS_PRIVATE_LIMITATION } from '../../constants';
 import { customPageProps995 } from '../../../shared/props';
 import { focusFirstError } from '../../../shared/utils/focus';
+import { redesignActive } from '../../utils';
+import EvidenceSummaryUploadDisplay from './EvidenceSummaryUploadDisplay';
 
 const Summary = ({
   data,
@@ -32,6 +34,7 @@ const Summary = ({
   const [removeData, setRemoveData] = useState({});
   const [hasErrors, setHasErrors] = useState(false);
   const containerRef = useRef(null);
+  const isScRedesign = redesignActive(data);
 
   const { limitedConsent = '', privacyAgreementAccepted } = data;
   const vaEvidence = getVAEvidence(data);
@@ -171,20 +174,50 @@ const Summary = ({
             tabbable when hidden
           - Only render the alert content since the screenreader can still
             target the headers inside */}
-        <va-alert
-          id="no-evidence"
-          status="warning"
-          visible={visibleError}
-          class="vads-u-margin-top--4"
-        >
-          {visibleError && (
-            <>
-              <H slot="headline">{content.missingEvidenceHeader}</H>
-              {content.missingEvidenceText}
-            </>
-          )}
-        </va-alert>
-
+        {!isScRedesign && (
+          <va-alert
+            id="no-evidence"
+            status="warning"
+            visible={visibleError}
+            class="vads-u-margin-top--4"
+          >
+            {visibleError && (
+              <>
+                <H slot="headline">{content.missingEvidenceHeader}</H>
+                {content.missingEvidenceText}
+              </>
+            )}
+          </va-alert>
+        )}
+        {isScRedesign && (
+          <va-alert
+            id="no-evidence"
+            status="warning"
+            visible={otherEvidence?.length === 0}
+            class="vads-u-margin-top--4"
+          >
+            {otherEvidence?.length === 0 && (
+              <>
+                <H slot="headline">You haven’t added new evidence</H>
+                <p>
+                  If you’re filing based on new evidence, we encourage you to
+                  submit it with your claim. But if you don’t have it now, you
+                  can still file. We’ll work with you to get the evidence.
+                </p>
+                <p>
+                  <strong>Note</strong>: Some conditions are presumed to be
+                  caused by your service. But you may still need to provide
+                  evidence, such as proof of diagnosis or exposure.
+                </p>
+                <va-link
+                  external
+                  href="/disability/eligibility/#presumptive-conditions"
+                  text="Learn more about presumptive conditions"
+                />
+              </>
+            )}
+          </va-alert>
+        )}
         <VaModal
           clickToClose
           status="warning"
@@ -201,18 +234,23 @@ const Summary = ({
             {removeData?.name ? <strong>{` ${removeData.name}`}</strong> : null}
           </p>
         </VaModal>
-        <VaDetailsDisplay list={vaEvidence} {...props} />
-        <PrivateDetailsDisplay
-          list={privateEvidence}
-          limitedConsentResponse={data?.[HAS_PRIVATE_LIMITATION]}
-          limitedConsent={limitedConsent}
-          privacyAgreementAccepted={privacyAgreementAccepted}
-          {...props}
-        />
-        <EvidenceUploadContent list={otherEvidence} {...props} />
-
-        {content.addMoreLink()}
-
+        {!isScRedesign && (
+          <>
+            <VaDetailsDisplay list={vaEvidence} {...props} />
+            <PrivateDetailsDisplay
+              list={privateEvidence}
+              limitedConsentResponse={data?.[HAS_PRIVATE_LIMITATION]}
+              limitedConsent={limitedConsent}
+              privacyAgreementAccepted={privacyAgreementAccepted}
+              {...props}
+            />
+            <EvidenceUploadContent list={otherEvidence} {...props} />
+            {content.addMoreLink()}
+          </>
+        )}
+        {isScRedesign && (
+          <EvidenceSummaryUploadDisplay list={otherEvidence} {...props} />
+        )}
         <div className="form-nav-buttons vads-u-margin-top--4">
           {onReviewPage && (
             <va-button
