@@ -265,7 +265,7 @@ const MedicationsListCard = ({ rx }) => {
                   dispatch(setFilterOption(IN_PROGRESS_FILTER_KEY))
                 }
               >
-                Go to in-progress medications
+                Review prescription status
               </Link>
             </StatusAlertBanner>
           )}

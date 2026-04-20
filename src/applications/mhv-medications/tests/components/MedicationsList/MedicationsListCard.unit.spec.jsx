@@ -216,7 +216,7 @@ describe('Medication card component', () => {
         );
         expect(getByTestId('fill-in-progress-alert')).to.exist;
         expect(getByText(/Fill in progress\./)).to.exist;
-        const link = getByText('Go to in-progress medications');
+        const link = getByText('Review prescription status');
         expect(link).to.have.attribute('href', '/list');
       });
 
@@ -233,7 +233,7 @@ describe('Medication card component', () => {
         );
         expect(getByTestId('fill-in-progress-alert')).to.exist;
         expect(getByText(/Fill in progress\./)).to.exist;
-        const link = getByText('Go to in-progress medications');
+        const link = getByText('Review prescription status');
         expect(link).to.have.attribute('href', '/list');
       });
 
