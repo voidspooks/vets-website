@@ -10,6 +10,7 @@ import { PreSubmitInfoSelector } from '../containers/selectors/PreSubmitInfoSele
 import { GetFormHelp } from '../components/GetFormHelp';
 import manifest from '../manifest.json';
 import { customCOEsubmit } from './helpers';
+import { prefillTransformer } from './prefill-transformer';
 import { definitions } from './schemaImports';
 
 // chapter schema imports
@@ -64,6 +65,7 @@ const formConfig = {
   formId: '26-1880',
   version: 0,
   prefillEnabled: true,
+  prefillTransformer,
   footerContent: FormFooter,
   preSubmitInfo: { ...preSubmitInfo, CustomComponent: PreSubmitInfoSelector },
   getHelp: GetFormHelp,

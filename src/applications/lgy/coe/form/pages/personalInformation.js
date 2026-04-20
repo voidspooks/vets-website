@@ -13,7 +13,15 @@ export default {
   hideOnReview: false,
   schema: {
     type: 'object',
-    properties: {},
+    properties: {
+      veteranSsnLastFour: {
+        type: 'string',
+        pattern: '^[0-9]{4}$',
+      },
+      dateOfBirth: {
+        $ref: '#/definitions/date',
+      },
+    },
   },
   uiSchema: {},
 };
