@@ -28,6 +28,7 @@ import {
   showPaymentHistory,
   cdpAccessToggle,
   showVHAPaymentHistory,
+  removeNonBreakingSpaces,
 } from '../../utils/helpers';
 import OverviewPage from '../../containers/OverviewPage';
 
@@ -938,6 +939,14 @@ describe('Helper Functions', () => {
         : uniqBy(sortedStatements, 'pSFacilityNum');
 
       expect(statementsByUniqueFacility.length).to.equal(3);
+    });
+  });
+
+  describe('shouldRemoveNonBreakingSpaces', () => {
+    it('should remove nonbreaking spaces when desired', () => {
+      const input = 'This&nbsp;is&nbsp;a&nbsp;test';
+      const output = removeNonBreakingSpaces(input);
+      expect(output).to.equal('This is a test');
     });
   });
 });

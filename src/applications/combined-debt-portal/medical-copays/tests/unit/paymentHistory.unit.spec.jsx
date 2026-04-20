@@ -1,55 +1,18 @@
 import React from 'react';
-import {
-  cleanup,
-  render,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { cleanup, render, within } from '@testing-library/react';
 import { expect } from 'chai';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
-import {
-  mockLighthouseMedicalCopayStatement,
-  createLighthouseLineItems,
-} from '../fixtures/lighthouseMedicalCopayStatement';
-import StatementTable from '../../components/StatementTable';
 import { showVHAPaymentHistory } from '../../../combined/utils/helpers';
 import StatementCharges from '../../components/StatementCharges';
 import mockstatements from '../../../combined/utils/mocks/mockStatements.json';
-
-const createCharges = count => {
-  return Array.from({ length: count }, (_, i) => ({
-    pDTransDescOutput: `Charge ${i + 1}`,
-    pDDatePostedOutput: '10/01/2023',
-    pDRefNo: `REF${i + 1}`,
-    pDTransAmt: 10.0,
-  }));
-};
-
-const mockFormatCurrency = val => `$${val.toFixed(2)}`;
-
-// Helper to create a minimal Redux store
-const createMockStore = (featureToggleValue = false) => {
-  return createStore(() => ({
-    combinedPortal: {
-      mcp: {
-        shouldUseLighthouseCopays: featureToggleValue,
-      },
-    },
-    featureToggles: {
-      loading: false,
-      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: featureToggleValue,
-    },
-  }));
-};
 
 describe('Feature Toggle Data Confirmation', () => {
   afterEach(() => {
     cleanup();
   });
 
+  // Confirms the selector returns true — StatementTable rendering logic is covered
+  // in statementTable.unit.spec.jsx
   it('showVHAPaymentHistory is true', () => {
     const mockState = {
       featureToggles: {
@@ -57,171 +20,13 @@ describe('Feature Toggle Data Confirmation', () => {
       },
     };
 
-    const charges = createLighthouseLineItems(15);
-    const store = createMockStore(true);
-    const { container } = render(
-      <Provider store={store}>
-        <StatementTable
-          charges={charges}
-          formatCurrency={mockFormatCurrency}
-          selectedCopay={mockLighthouseMedicalCopayStatement}
-        />
-      </Provider>,
-    );
-
-    // Query the custom elements directly
-    const rows = container.querySelectorAll('va-table-row');
-
-    const firstRow = rows[1];
-
     const result = showVHAPaymentHistory(mockState);
     expect(result).to.be.true;
-
-    expect(firstRow).to.exist;
-    expect(
-      within(firstRow).getByTestId('statement-description'),
-    ).to.contain.text('Charge 1');
-    expect(within(firstRow).getByTestId('statement-reference')).to.have.text(
-      mockLighthouseMedicalCopayStatement.attributes.billNumber,
-    );
-    expect(
-      within(firstRow).getByTestId('statement-transaction-amount'),
-    ).to.have.text('$10.00');
-    expect(within(firstRow).getByTestId('statement-date')).to.have.text(
-      '10/01/2023',
-    );
-
-    expect(rows.length).to.equal(11);
-  });
-
-  it('navigates to page 2 and displays page 2 data', async () => {
-    const charges = createCharges(15);
-    const store = createMockStore(false);
-    const { container } = render(
-      <Provider store={store}>
-        <StatementTable
-          charges={charges}
-          formatCurrency={mockFormatCurrency}
-          selectedCopay={{}}
-        />
-      </Provider>,
-    );
-
-    const pagination = container.querySelector('va-pagination');
-
-    fireEvent.click(pagination, { detail: { page: 2 } });
-
-    waitFor(() => {
-      const rows = container.querySelectorAll('va-table-row');
-
-      expect(rows.length).to.equal(6); // 1 header row + 5 data rows
-    });
-  });
-
-  describe('StatementTable focus', () => {
-    const mockSelectedCopay = {
-      pHNewBalance: 25,
-      pHTotCredits: 15,
-      pHPrevBal: 30,
-      pSStatementDateOutput: '05/03/2024',
-      pSStatementVal: 'STMT-123',
-      statementStartDate: '2024-05-03',
-      statementEndDate: '2024-06-03',
-    };
-
-    it('renders va-table with table-title-summary set to the statement date range', () => {
-      const charges = createCharges(3);
-      const store = createMockStore(false);
-      const { container } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={charges}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={{ ...mockSelectedCopay }}
-          />
-        </Provider>,
-      );
-
-      const table = container.querySelector('va-table');
-      expect(table).to.exist;
-
-      expect(table.getAttribute('table-title')).to.include(
-        'This statement shows charges you received between May 3, 2024 and June 3, 2024',
-      );
-      // No pagination text since 3 items ≤ 10 per page
-      expect(table.getAttribute('table-title-summary')).to.equal('');
-    });
-
-    it('renders va-table with table-title-summary when statement dates are missing', () => {
-      const charges = createCharges(2);
-      const store = createMockStore(false);
-      const { container } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={charges}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={{
-              ...mockSelectedCopay,
-              statementStartDate: null,
-              statementEndDate: null,
-            }}
-          />
-        </Provider>,
-      );
-
-      const table = container.querySelector('va-table');
-      expect(table).to.exist;
-      expect(table.getAttribute('table-title')).to.equal(
-        'This statement shows your current charges.',
-      );
-      // No pagination text since 2 items ≤ 10 per page
-      expect(table.getAttribute('table-title-summary')).to.equal('');
-    });
-
-    it('after pagination click, the va-table component is the focus target', async () => {
-      const charges = createCharges(15);
-      const store = createMockStore(false);
-      const { container } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={charges}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={{ ...mockSelectedCopay }}
-          />
-        </Provider>,
-      );
-
-      const table = container.querySelector('va-table');
-      // Shows pagination text since 15 items > 10 per page
-      expect(table.getAttribute('table-title-summary')).to.equal(
-        'Showing 1-10 of 15 charges',
-      );
-
-      const pagination = container.querySelector('va-pagination');
-      pagination.dispatchEvent(
-        new CustomEvent('pageSelect', {
-          detail: { page: 2 },
-          bubbles: true,
-        }),
-      );
-
-      await waitFor(() => {
-        const updatedTable = container.querySelector('va-table');
-        expect(updatedTable.getAttribute('table-title-summary')).to.equal(
-          'Showing 11-15 of 15 charges',
-        );
-      });
-
-      // Focus logic targets va-table and sets tabindex="-1" on it; in jsdom
-      // custom elements may not receive document.activeElement, so we assert
-      // the correct component was targeted for focus.
-      const tableAfterUpdate = container.querySelector('va-table');
-      expect(tableAfterUpdate).to.exist;
-      expect(tableAfterUpdate.getAttribute('tabindex')).to.equal('-1');
-    });
   });
 
   // TODO: to be removed once toggle is fully enabled
+  // Confirms the selector returns false and StatementCharges renders correctly —
+  // full StatementCharges rendering is covered in statementCharges.unit.spec.jsx
   it('showVHAPaymentHistory is false', () => {
     const mockState = {
       featureToggles: {
@@ -233,7 +38,6 @@ describe('Feature Toggle Data Confirmation', () => {
       <StatementCharges copay={mockstatements[2]} />,
     );
 
-    // Query the custom elements directly
     const firstRow = container.querySelectorAll('va-table-row')[1];
 
     const result = showVHAPaymentHistory(mockState);

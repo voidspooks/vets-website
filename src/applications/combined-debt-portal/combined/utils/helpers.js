@@ -335,3 +335,7 @@ export const getSortedDate = (
     ? format(head(sortedHistory), 'MM/dd/yyyy')
     : '';
 };
+
+export const removeNonBreakingSpaces = (str = '') => {
+  return str.replace(/&nbsp;/g, ' ');
+};

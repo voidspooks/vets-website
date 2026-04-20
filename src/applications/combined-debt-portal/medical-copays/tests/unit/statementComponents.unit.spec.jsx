@@ -3,31 +3,10 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
-import {
-  mockLighthouseMedicalCopayStatement,
-  createLighthouseLineItems,
-} from '../fixtures/lighthouseMedicalCopayStatement';
 import AccountSummary from '../../components/AccountSummary';
 import StatementAddresses from '../../components/StatementAddresses';
 import StatementCharges from '../../components/StatementCharges';
-import StatementTable from '../../components/StatementTable';
 import DownloadStatement from '../../components/DownloadStatement';
-
-// Helper to create a minimal Redux store for components that use useSelector
-const createMockStore = (featureToggleValue = false) => {
-  return createStore(() => ({
-    combinedPortal: {
-      mcp: {
-        shouldUseLighthouseCopays: featureToggleValue,
-      },
-    },
-    featureToggles: {
-      loading: false,
-      [FEATURE_FLAG_NAMES.showVHAPaymentHistory]: featureToggleValue,
-    },
-  }));
-};
 
 describe('mcp statement view', () => {
   describe('statement account summary component', () => {
@@ -79,7 +58,6 @@ describe('mcp statement view', () => {
         pHZipCdeOutput: '33333',
       };
 
-      // Create store with full state including selectedStatement
       const store = createStore(() => ({
         featureToggles: {
           loading: false,
@@ -99,47 +77,29 @@ describe('mcp statement view', () => {
       );
       expect(addresses.getByTestId('statement-address-head')).to.exist;
       expect(addresses.getByTestId('sender-address-head')).to.exist;
-
-      expect(addresses.getByTestId('sender-facility-name')).to.exist;
       expect(addresses.getByTestId('sender-facility-name')).to.have.text(
         'Test Facility',
       );
-
-      expect(addresses.getByTestId('sender-address-one')).to.exist;
       expect(addresses.getByTestId('sender-address-one')).to.have.text(
         '123 Main St',
       );
-
-      expect(addresses.getByTestId('sender-address-two')).to.exist;
       expect(addresses.getByTestId('sender-address-two')).to.have.text('Apt 1');
-
-      expect(addresses.getByTestId('sender-address-three')).to.exist;
       expect(addresses.getByTestId('sender-address-three')).to.have.text(
         'Address 3',
       );
-
-      expect(addresses.getByTestId('sender-city-state-zip')).to.exist;
       expect(addresses.getByTestId('sender-city-state-zip')).to.have.text(
         'New York, NY 10001',
       );
-
       expect(addresses.getByTestId('recipient-address-head')).to.exist;
-      expect(addresses.getByTestId('recipient-address-one')).to.exist;
       expect(addresses.getByTestId('recipient-address-one')).to.have.text(
         '456 Alternate St',
       );
-
-      expect(addresses.getByTestId('recipient-address-two')).to.exist;
       expect(addresses.getByTestId('recipient-address-two')).to.have.text(
         'Apt 2',
       );
-
-      expect(addresses.getByTestId('recipient-address-three')).to.exist;
       expect(addresses.getByTestId('recipient-address-three')).to.have.text(
         'Test Patient Address 3',
       );
-
-      expect(addresses.getByTestId('recipient-city-state-zip')).to.exist;
       expect(addresses.getByTestId('recipient-city-state-zip')).to.have.text(
         'Tampa, FL 33333',
       );
@@ -164,120 +124,6 @@ describe('mcp statement view', () => {
     });
   });
 
-  describe('StatementTable component', () => {
-    const mockSelectedCopay = {
-      pHNewBalance: 25,
-      pHTotCredits: 15,
-      pHPrevBal: 30,
-      pSStatementDateOutput: '05/03/2024',
-      pSStatementVal: 'STMT-123',
-      statementStartDate: '2024-05-03',
-      statementEndDate: '2024-06-03',
-      details: [
-        {
-          pDTransDescOutput: 'Test Charge',
-          pDRefNo: '123-BILLREF',
-          pDTransAmt: 100,
-          pDDatePostedOutput: '05/15/2024',
-        },
-      ],
-    };
-
-    const mockFormatCurrency = amount => {
-      if (!amount) return '$0.00';
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-    };
-
-    it('should render statement table with date range when dates are provided', () => {
-      const store = createMockStore(false);
-      const { container } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={mockSelectedCopay.details}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={mockSelectedCopay}
-          />
-        </Provider>,
-      );
-
-      const table = container.querySelector('va-table');
-      expect(table).to.exist;
-      expect(table.getAttribute('table-title')).to.include(
-        'This statement shows charges you received between May 3, 2024 and June 3, 2024',
-      );
-    });
-
-    it('should render fallback text when statement dates are missing', () => {
-      const copayWithoutDates = {
-        ...mockSelectedCopay,
-        statementStartDate: null,
-        statementEndDate: null,
-      };
-
-      const store = createMockStore(false);
-      const { container } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={mockSelectedCopay.details}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={copayWithoutDates}
-          />
-        </Provider>,
-      );
-
-      const table = container.querySelector('va-table');
-      expect(table).to.exist;
-      expect(table.getAttribute('table-title')).to.equal(
-        'This statement shows your current charges.',
-      );
-    });
-
-    it('should NOT render Total Credits row', () => {
-      const store = createMockStore(false);
-      const { container } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={mockSelectedCopay.details}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={mockSelectedCopay}
-          />
-        </Provider>,
-      );
-
-      const tableRows = container.querySelectorAll('va-table-row');
-      const totalCreditsRow = Array.from(tableRows).find(row =>
-        row.textContent.includes('Total Credits'),
-      );
-      expect(totalCreditsRow).to.not.exist;
-    });
-
-    it('displays attributes.billNumber in reference column for Lighthouse data', () => {
-      const lineItems = createLighthouseLineItems(1);
-      lineItems[0].datePosted = '2024-05-15';
-      lineItems[0].description = 'VHA charge';
-      lineItems[0].priceComponents = [{ amount: 50.0 }];
-
-      const store = createMockStore(true);
-
-      const { getByText } = render(
-        <Provider store={store}>
-          <StatementTable
-            charges={lineItems}
-            formatCurrency={mockFormatCurrency}
-            selectedCopay={mockLighthouseMedicalCopayStatement}
-          />
-        </Provider>,
-      );
-
-      expect(
-        getByText(mockLighthouseMedicalCopayStatement.attributes.billNumber),
-      ).to.exist;
-    });
-  });
-
   describe('DownloadStatement component', () => {
     const mockProps = {
       statementId: '123',
@@ -287,8 +133,6 @@ describe('mcp statement view', () => {
 
     it('should render PDF link with proper spacing', () => {
       const { container } = render(<DownloadStatement {...mockProps} />);
-
-      // Check that va-link has the correct filetype attribute
       const vaLink = container.querySelector('va-link');
       expect(vaLink).to.exist;
       expect(vaLink.getAttribute('filetype')).to.equal('PDF');
@@ -296,7 +140,6 @@ describe('mcp statement view', () => {
 
     it('should render download link with correct attributes', () => {
       const { container } = render(<DownloadStatement {...mockProps} />);
-
       const vaLink = container.querySelector('va-link');
       expect(vaLink).to.exist;
       expect(vaLink.hasAttribute('download')).to.be.true;

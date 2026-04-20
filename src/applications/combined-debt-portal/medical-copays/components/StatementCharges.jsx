@@ -1,11 +1,21 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { subDays } from 'date-fns';
-import { formatDate } from '../../combined/utils/helpers';
+import {
+  formatDate,
+  removeNonBreakingSpaces,
+} from '../../combined/utils/helpers';
 import Pagination from '../../combined/components/Pagination';
 import usePagination from '../../combined/hooks/usePagination';
 
 const StatementCharges = ({ copay, showCurrentStatementHeader = false }) => {
+  const formatAmountSingleLine = amount => {
+    const cleanedAmount = removeNonBreakingSpaces(amount)
+      .replace('-', '')
+      .replace(/[^\d.-]/g, '');
+    return `$${cleanedAmount}`;
+  };
+
   const tableRef = useRef(null);
   const initialDate = new Date(copay.pSStatementDateOutput);
   const statementDate = formatDate(initialDate);
@@ -64,7 +74,7 @@ const StatementCharges = ({ copay, showCurrentStatementHeader = false }) => {
           {pagination.currentItems.map((charge, index) => (
             <va-table-row key={index}>
               <span data-testid="statement-charges-description">
-                {charge.pDTransDescOutput.replace(/&nbsp;/g, ' ')}
+                {removeNonBreakingSpaces(charge.pDTransDescOutput)}
               </span>
               <span
                 data-testid="statement-charges-reference"
@@ -76,11 +86,7 @@ const StatementCharges = ({ copay, showCurrentStatementHeader = false }) => {
                 data-testid="statement-charges-transaction-amount"
                 className="vads-u-width--fit"
               >
-                $
-                {charge.pDTransAmtOutput
-                  .replace('&nbsp', ' ')
-                  .replace('-', '')
-                  .replace(/[^\d.-]/g, '')}
+                {formatAmountSingleLine(charge.pDTransAmtOutput)}
               </span>
             </va-table-row>
           ))}

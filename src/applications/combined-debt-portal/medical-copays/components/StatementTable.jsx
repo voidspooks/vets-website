@@ -1,35 +1,23 @@
 import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   formatDate,
   formatISODateToMMDDYYYY,
-  selectUseLighthouseCopays,
 } from '../../combined/utils/helpers';
 import Pagination from '../../combined/components/Pagination';
 import usePagination from '../../combined/hooks/usePagination';
 
 const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
-  const shouldUseLighthouseCopays = useSelector(selectUseLighthouseCopays);
   const columns = ['Date', 'Description', 'Billing Reference', 'Amount'];
 
-  const normalizedCharges = shouldUseLighthouseCopays
-    ? charges.map(item => ({
-        date: item.datePosted,
-        description: item.description,
-        reference: selectedCopay?.attributes?.billNumber,
-        amount: item.priceComponents?.[0]?.amount ?? 0,
-        provider: item.providerName,
-        details: [],
-      }))
-    : charges.map(charge => ({
-        date: charge.pDDatePostedOutput,
-        description: charge.pDTransDescOutput,
-        reference: charge.pDRefNo,
-        amount: charge.pDTransAmt,
-        provider: charge.provider,
-        details: charge.details ?? [],
-      }));
+  const normalizedCharges = charges.map(item => ({
+    date: item.datePosted,
+    description: item.description,
+    reference: selectedCopay?.attributes?.billNumber,
+    amount: item.priceComponents?.[0]?.amount ?? 0,
+    provider: item.providerName,
+    details: [],
+  }));
 
   const filteredCharges = normalizedCharges.filter(
     charge =>
@@ -96,29 +84,11 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   );
 
   const getDate = charge => {
-    if (shouldUseLighthouseCopays) {
-      return formatISODateToMMDDYYYY(charge.date);
-    }
-
-    if (charge.date) {
-      return formatDate(charge.date);
-    }
-
-    if (charge.description?.toLowerCase().includes('interest/adm')) {
-      return selectedCopay?.pSStatementDateOutput;
-    }
-
-    return '—';
+    return formatISODateToMMDDYYYY(charge.date);
   };
 
   const getReference = charge => {
-    if (charge.reference) return charge.reference;
-
-    if (charge.description?.toLowerCase().includes('interest/adm')) {
-      return selectedCopay?.pSStatementVal;
-    }
-
-    return '—';
+    return charge.reference ?? '—';
   };
 
   return (
@@ -176,21 +146,20 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   );
 };
 
-/** Medical copays v1 `attributes` (Invoice / list item response). */
-const v1NullableString = PropTypes.oneOfType([
+const nullableString = PropTypes.oneOfType([
   PropTypes.string,
   PropTypes.oneOf([null]),
 ]);
 
-const medicalCopayV1Attributes = PropTypes.shape({
-  url: v1NullableString,
+const medicalCopayAttributes = PropTypes.shape({
+  url: nullableString,
   facility: PropTypes.string,
   facilityId: PropTypes.string,
   city: PropTypes.string,
   currentBalance: PropTypes.number,
   externalId: PropTypes.string,
   invoiceDate: PropTypes.string,
-  lastUpdatedAt: v1NullableString,
+  lastUpdatedAt: nullableString,
   latestBillingRef: PropTypes.string,
   previousBalance: PropTypes.number,
   previousUnpaidBalance: PropTypes.number,
@@ -202,27 +171,18 @@ StatementTable.propTypes = {
   formatCurrency: PropTypes.func.isRequired,
   charges: PropTypes.arrayOf(
     PropTypes.shape({
-      details: PropTypes.arrayOf(PropTypes.string),
-      pDDatePosted: PropTypes.string,
-      pDDatePostedOutput: PropTypes.string,
-      pDRefNo: PropTypes.string,
-      pDTransAmt: PropTypes.number,
-      pDTransAmtOutput: PropTypes.string,
-      pDTransDesc: PropTypes.string,
-      pDTransDescOutput: PropTypes.string,
-      prescribedBy: PropTypes.string,
+      date: PropTypes.string,
+      description: PropTypes.string,
+      amount: PropTypes.number,
       provider: PropTypes.string,
+      details: PropTypes.arrayOf(PropTypes.string),
       rxNumber: PropTypes.string,
       supplyInfo: PropTypes.string,
+      prescribedBy: PropTypes.string,
     }),
   ),
   selectedCopay: PropTypes.shape({
-    attributes: medicalCopayV1Attributes,
-    pHNewBalance: PropTypes.number,
-    pHPrevBal: PropTypes.number,
-    pHTotCredits: PropTypes.number,
-    pSStatementDateOutput: PropTypes.string,
-    pSStatementVal: PropTypes.string,
+    attributes: medicalCopayAttributes,
     statementEndDate: PropTypes.string,
     statementStartDate: PropTypes.string,
   }),
