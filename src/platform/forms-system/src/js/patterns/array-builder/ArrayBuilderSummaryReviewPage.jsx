@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { VaLinkAction } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useHeadingLevels } from 'platform/forms-system/src/js/web-component-patterns/titlePattern';
 
 const ArrayBuilderSummaryReviewPage = ({
@@ -7,6 +8,7 @@ const ArrayBuilderSummaryReviewPage = ({
   arrayBuilderOptions,
   arrayData,
   addAnotherItemButtonClick,
+  addAnotherItemPath,
   updatedItemData,
   Alerts,
   Cards,
@@ -78,19 +80,20 @@ const ArrayBuilderSummaryReviewPage = ({
       <Cards />
       {!hideAdd && (
         <div className="vads-u-margin-top--2">
-          <va-button
+          <VaLinkAction
             data-action="add"
+            href={addAnotherItemPath}
             text={arrayBuilderOptions.getText(
               'reviewAddButtonText',
               arrayData,
               customPageProps.data,
             )}
-            onClick={() =>
-              addAnotherItemButtonClick(customPageProps.chapterKey)
-            }
+            onClick={e => {
+              e.preventDefault();
+              addAnotherItemButtonClick(customPageProps.chapterKey);
+            }}
             name={`${arrayBuilderOptions.nounPlural}AddButton`}
-            primary
-            uswds
+            type="secondary"
           />
         </div>
       )}
@@ -105,6 +108,7 @@ ArrayBuilderSummaryReviewPage.propTypes = {
   Cards: PropTypes.func,
   Title: PropTypes.func,
   addAnotherItemButtonClick: PropTypes.func,
+  addAnotherItemPath: PropTypes.string,
   arrayBuilderOptions: PropTypes.object,
   arrayData: PropTypes.array,
   customPageProps: PropTypes.shape({

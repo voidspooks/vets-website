@@ -62,7 +62,7 @@ function addItemPage2() {
 }
 
 function addItemFromReviewPage() {
-  cy.get('va-button[name="employersAddButton"]').click();
+  cy.get('va-link-action[name="employersAddButton"]').click();
 }
 
 /**

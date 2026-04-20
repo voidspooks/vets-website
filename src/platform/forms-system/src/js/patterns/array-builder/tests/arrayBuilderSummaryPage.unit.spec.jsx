@@ -410,9 +410,11 @@ describe('ArrayBuilderSummaryPage', () => {
       maxItems: 5,
     });
 
-    const $addButton = container.querySelector('va-button[data-action="add"]');
-    expect($addButton).to.exist;
-    fireEvent.click($addButton);
+    const $addLink = container.querySelector(
+      'va-link-action[data-action="add"]',
+    );
+    expect($addLink).to.exist;
+    fireEvent.click($addLink);
     expect(goToPath.args[0][0]).to.eql('/first-item/1?add=true&review=true');
   });
 

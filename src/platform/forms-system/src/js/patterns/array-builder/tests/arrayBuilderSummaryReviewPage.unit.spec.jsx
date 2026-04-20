@@ -160,25 +160,29 @@ describe('ArrayBuilderSummaryReviewPage', () => {
   });
 
   context('buttons and subcomponents', () => {
-    it('should render add button when `hideAdd` prop is `false`', () => {
-      const buttonText = 'Add another employer';
-      const getText = createGetTextStub({ reviewAddButtonText: buttonText });
+    it('should render call to action link when `hideAdd` prop is `false`', () => {
+      const linkText = 'Add another employer';
+      const getText = createGetTextStub({ reviewAddButtonText: linkText });
 
       const { container } = renderComponent({
         hideAdd: false,
         arrayBuilderOptions: { getText },
       });
 
-      const addButton = container.querySelector('va-button[data-action="add"]');
-      expect(addButton).to.exist;
-      expect(addButton.getAttribute('text')).to.equal(buttonText);
-      expect(addButton.getAttribute('name')).to.equal('employersAddButton');
+      const addLink = container.querySelector(
+        'va-link-action[data-action="add"]',
+      );
+      expect(addLink).to.exist;
+      expect(addLink.getAttribute('text')).to.equal(linkText);
+      expect(addLink.getAttribute('name')).to.equal('employersAddButton');
     });
 
     it('should not render add button when `hideAdd` prop is `true`', () => {
       const { container } = renderComponent({ hideAdd: true });
-      const addButton = container.querySelector('va-button[data-action="add"]');
-      expect(addButton).to.not.exist;
+      const addLink = container.querySelector(
+        'va-link-action[data-action="add"]',
+      );
+      expect(addLink).to.not.exist;
     });
 
     it('should call `addAnotherItemButtonClick` when add button is clicked', () => {
@@ -192,8 +196,10 @@ describe('ArrayBuilderSummaryReviewPage', () => {
         arrayBuilderOptions: { getText },
       });
 
-      const addButton = container.querySelector('va-button[data-action="add"]');
-      fireEvent.click(addButton);
+      const addLink = container.querySelector(
+        'va-link-action[data-action="add"]',
+      );
+      fireEvent.click(addLink);
       sinon.assert.calledOnce(addAnotherItemButtonClick);
     });
 

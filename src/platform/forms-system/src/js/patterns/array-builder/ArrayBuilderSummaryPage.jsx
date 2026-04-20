@@ -312,23 +312,23 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
       [hasReviewError, showUpdatedAlert, showRemovedAlert],
     );
 
-    function addAnotherItemButtonClick(chapterKey = null) {
-      const index = arrayData ? arrayData.length : 0;
-      const path = createArrayBuilderItemAddPath({
-        path: getFirstItemPagePath(
-          props.data,
-          index,
-          arrayBuilderContextObject({
-            add: true,
-            review: isReviewPage,
-          }),
-        ),
-        index,
-        isReview: isReviewPage,
-        removedAllWarn: !arrayData?.length && required(props.data),
-      });
+    const addAnotherItemIndex = arrayData ? arrayData.length : 0;
+    const addAnotherItemPath = createArrayBuilderItemAddPath({
+      path: getFirstItemPagePath(
+        props.data,
+        addAnotherItemIndex,
+        arrayBuilderContextObject({
+          add: true,
+          review: isReviewPage,
+        }),
+      ),
+      index: addAnotherItemIndex,
+      isReview: isReviewPage,
+      removedAllWarn: !arrayData?.length && required(props.data),
+    });
 
-      props.goToPath(path, {
+    function addAnotherItemButtonClick(chapterKey = null) {
+      props.goToPath(addAnotherItemPath, {
         force: true,
         chapterKey,
       });
@@ -539,6 +539,7 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
           arrayBuilderOptions={arrayBuilderOptions}
           arrayData={arrayData}
           addAnotherItemButtonClick={addAnotherItemButtonClick}
+          addAnotherItemPath={addAnotherItemPath}
           updatedItemData={updatedItemData}
           Alerts={Alerts}
           Cards={Cards}
@@ -770,6 +771,7 @@ export default function ArrayBuilderSummaryPage(arrayBuilderOptions) {
     setData,
   };
 
+  CustomPage.displayName = 'ArrayBuilderSummaryPageCustom';
   return connect(
     mapStateToProps,
     mapDispatchToProps,

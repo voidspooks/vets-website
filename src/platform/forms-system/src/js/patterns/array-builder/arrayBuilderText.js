@@ -130,8 +130,7 @@ export const DEFAULT_ARRAY_BUILDER_TEXT = {
       : `Delete this ${props.nounSingular}?`;
   },
   deleteYes: props => `Yes, delete this ${props.nounSingular}`,
-
-  reviewAddButtonText: props => `Add another ${props.nounSingular}`,
+  reviewAddButtonText: ({ nounSingular }) => `Add ${nounSingular}`,
   summaryAddButtonText: props => `Add ${props.nounSingular}`,
   summaryAddLinkText: props => `Add ${props.nounSingular}`,
   summaryTitle: props => `Review your ${props.nounPlural}`,
