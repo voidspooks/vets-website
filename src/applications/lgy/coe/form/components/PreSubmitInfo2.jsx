@@ -10,15 +10,11 @@ import {
 const STATEMENT_OF_TRUTH = {
   body:
     'I confirm that the identifying information in this form is accurate and has been represented correctly.',
+  fullNamePath: 'fullName',
   useProfileFullName: true,
 };
 
-export const PreSubmitInfo2 = ({
-  formData,
-  showError,
-  user,
-  onSectionComplete,
-}) => {
+export const PreSubmitInfo2 = ({ formData, showError, onSectionComplete }) => {
   const [signature, setSignature] = useState('');
   const [certified, setCertified] = useState(false);
   const [signatureBlurred, setSignatureBlurred] = useState(false);
@@ -26,7 +22,6 @@ export const PreSubmitInfo2 = ({
   const expectedFullName = statementOfTruthFullName(
     formData,
     STATEMENT_OF_TRUTH,
-    user?.profile?.userFullName,
   );
 
   const signatureMismatch =
@@ -65,7 +60,5 @@ export const PreSubmitInfo2 = ({
 PreSubmitInfo2.propTypes = {
   formData: PropTypes.object,
   onSectionComplete: PropTypes.func,
-  preSubmitInfo: PropTypes.object,
   showError: PropTypes.bool,
-  user: PropTypes.object,
 };

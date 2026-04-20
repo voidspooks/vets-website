@@ -4,17 +4,12 @@ import sinon from 'sinon';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { PreSubmitInfo2 } from '../../../components/PreSubmitInfo2';
 
-const buildUser = (fullName = { first: 'John', last: 'Doe' }) => ({
-  profile: { userFullName: fullName },
-});
-
 describe('COE PreSubmitInfo2', () => {
   it('renders a va-statement-of-truth with the expected heading and input label', () => {
     const { container } = render(
       <PreSubmitInfo2
         formData={{}}
         showError={false}
-        user={buildUser()}
         onSectionComplete={() => {}}
       />,
     );
@@ -30,7 +25,6 @@ describe('COE PreSubmitInfo2', () => {
       <PreSubmitInfo2
         formData={{}}
         showError={false}
-        user={buildUser()}
         onSectionComplete={() => {}}
       />,
     );
@@ -44,7 +38,6 @@ describe('COE PreSubmitInfo2', () => {
       <PreSubmitInfo2
         formData={{}}
         showError={false}
-        user={buildUser()}
         onSectionComplete={() => {}}
       />,
     );
@@ -59,7 +52,6 @@ describe('COE PreSubmitInfo2', () => {
       <PreSubmitInfo2
         formData={{}}
         showError={false}
-        user={buildUser()}
         onSectionComplete={onSectionComplete}
       />,
     );
@@ -78,12 +70,7 @@ describe('COE PreSubmitInfo2', () => {
 
   it('shows a checkbox error when showError is true and the box is unchecked', async () => {
     const { container } = render(
-      <PreSubmitInfo2
-        formData={{}}
-        showError
-        user={buildUser()}
-        onSectionComplete={() => {}}
-      />,
+      <PreSubmitInfo2 formData={{}} showError onSectionComplete={() => {}} />,
     );
     await waitFor(() => {
       const sot = container.querySelector('va-statement-of-truth');
@@ -95,12 +82,7 @@ describe('COE PreSubmitInfo2', () => {
 
   it('clears the checkbox error after the box is checked', async () => {
     const { container } = render(
-      <PreSubmitInfo2
-        formData={{}}
-        showError
-        user={buildUser()}
-        onSectionComplete={() => {}}
-      />,
+      <PreSubmitInfo2 formData={{}} showError onSectionComplete={() => {}} />,
     );
     const sot = container.querySelector('va-statement-of-truth');
     fireEvent(
@@ -112,12 +94,11 @@ describe('COE PreSubmitInfo2', () => {
     });
   });
 
-  it('shows a signature mismatch error after blur when the signature does not match the profile name', async () => {
+  it('shows a signature mismatch error after blur when the signature does not match the expected name', async () => {
     const { container } = render(
       <PreSubmitInfo2
-        formData={{}}
+        formData={{ fullName: { first: 'John', last: 'Doe' } }}
         showError={false}
-        user={buildUser({ first: 'John', last: 'Doe' })}
         onSectionComplete={() => {}}
       />,
     );
@@ -143,7 +124,6 @@ describe('COE PreSubmitInfo2', () => {
       <PreSubmitInfo2
         formData={{}}
         showError={false}
-        user={buildUser()}
         onSectionComplete={() => {}}
       />,
     );
@@ -159,12 +139,11 @@ describe('COE PreSubmitInfo2', () => {
     expect(sot.getAttribute('input-error')).to.be.null;
   });
 
-  it('does not show a mismatch error when the signature matches the profile name (case/whitespace insensitive)', async () => {
+  it('does not show a mismatch error when the signature matches the expected name (case/whitespace insensitive)', async () => {
     const { container } = render(
       <PreSubmitInfo2
-        formData={{}}
+        formData={{ fullName: { first: 'John', last: 'Doe' } }}
         showError
-        user={buildUser({ first: 'John', last: 'Doe' })}
         onSectionComplete={() => {}}
       />,
     );
@@ -184,13 +163,11 @@ describe('COE PreSubmitInfo2', () => {
   it('shows a mismatch error when showError is true even if the input has not been blurred', async () => {
     const { container } = render(
       <PreSubmitInfo2
-        formData={{}}
+        formData={{ fullName: { first: 'John', last: 'Doe' } }}
         showError
-        user={buildUser()}
         onSectionComplete={() => {}}
       />,
     );
-    // empty signature mismatches profile name -> should surface the input error
     const sot = container.querySelector('va-statement-of-truth');
     await waitFor(() => {
       expect(sot.getAttribute('input-error')).to.include('John Doe');
@@ -202,7 +179,6 @@ describe('COE PreSubmitInfo2', () => {
       <PreSubmitInfo2
         formData={{}}
         showError={false}
-        user={buildUser()}
         onSectionComplete={() => {}}
       />,
     );
