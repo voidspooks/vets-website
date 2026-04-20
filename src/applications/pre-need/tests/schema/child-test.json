@@ -1,0 +1,88 @@
+{
+  "data": {
+    "application": {
+      "applicant": {
+        "applicantRelationshipToClaimant": "Self"
+      },
+      "veteran": {
+        "address": {
+          "street": "456 Oak Avenue",
+          "street2": "Apt 12",
+          "city": "Arlington",
+          "country": "USA",
+          "state": "VA",
+          "postalCode": "22201"
+        },
+        "phoneNumber": "5559876543",
+        "email": "veteran@example.com",
+        "view:hasServiceName": false,
+        "serviceRecords": [
+          {
+            "dateRange": {
+              "from": "1965-03-10",
+              "to": "1985-03-09"
+            },
+            "serviceBranch": "NN",
+            "dischargeType": "1",
+            "highestRank": "Commander"
+          }
+        ],
+        "currentName": {
+          "first": "Margaret",
+          "middle": "Anne",
+          "last": "Williams",
+          "suffix": "Jr."
+        },
+        "ssn": "188772244",
+        "dateOfBirth": "1945-02-15",
+        "placeOfBirth": "Boston, MA",
+        "gender": "Female",
+        "race": {
+          "isSpanishHispanicLatino": false,
+          "notSpanishHispanicLatino": true,
+          "isAmericanIndianOrAlaskanNative": false,
+          "isBlackOrAfricanAmerican": false,
+          "isNativeHawaiianOrOtherPacificIslander": false,
+          "isAsian": false,
+          "isWhite": true
+        },
+        "maritalStatus": "Widowed",
+        "militaryStatus": "V",
+        "militaryServiceNumber": "123789",
+        "vaClaimNumber": "456123789",
+        "isDeceased": "no"
+      },
+      "claimant": {
+        "address": {
+          "street": "456 Oak Avenue",
+          "street2": "Apt 12",
+          "city": "Arlington",
+          "country": "USA",
+          "state": "VA",
+          "postalCode": "22201"
+        },
+        "view:contactInfoDescription": {},
+        "phoneNumber": "5559876543",
+        "email": "child@example.com",
+        "desiredCemetery": {
+          "id": "915",
+          "widget": "autosuggest",
+          "label": "QUANTICO NATIONAL CEMETERY"
+        },
+        "view:desiredCemeteryNote": {},
+        "name": {
+          "first": "Sarah",
+          "middle": "Elizabeth",
+          "last": "Williams",
+          "suffix": "Sr."
+        },
+        "ssn": "299883366",
+        "dateOfBirth": "1975-11-30",
+        "relationshipToVet": "3"
+      },
+      "hasCurrentlyBuried": "2",
+      "preneedAttachments": []
+    },
+    "privacyAgreementAccepted": false
+  }
+}

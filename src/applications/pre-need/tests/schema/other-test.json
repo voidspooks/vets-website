@@ -1,0 +1,86 @@
+{
+  "data": {
+    "application": {
+      "applicant": {
+        "applicantRelationshipToClaimant": "Self"
+      },
+      "veteran": {
+        "address": {
+          "street": "789 Pine Street",
+          "city": "Alexandria",
+          "country": "USA",
+          "state": "VA",
+          "postalCode": "22301"
+        },
+        "phoneNumber": "5551112222",
+        "email": "vet@example.com",
+        "view:hasServiceName": false,
+        "serviceRecords": [
+          {
+            "dateRange": {
+              "from": "1990-04-01",
+              "to": "2010-03-31"
+            },
+            "serviceBranch": "XF",
+            "dischargeType": "1",
+            "highestRank": "Captain"
+          }
+        ],
+        "currentName": {
+          "first": "Michael",
+          "middle": "Thomas",
+          "last": "Rodriguez",
+          "suffix": "III"
+        },
+        "ssn": "377664488",
+        "dateOfBirth": "1970-07-04",
+        "placeOfBirth": "San Antonio, TX",
+        "gender": "Male",
+        "race": {
+          "isSpanishHispanicLatino": true,
+          "notSpanishHispanicLatino": false,
+          "isAmericanIndianOrAlaskanNative": false,
+          "isBlackOrAfricanAmerican": false,
+          "isNativeHawaiianOrOtherPacificIslander": false,
+          "isAsian": false,
+          "isWhite": false
+        },
+        "maritalStatus": "Single",
+        "militaryStatus": "V",
+        "militaryServiceNumber": "987456",
+        "vaClaimNumber": "321654987",
+        "isDeceased": "no"
+      },
+      "claimant": {
+        "address": {
+          "street": "789 Pine Street",
+          "city": "Alexandria",
+          "country": "USA",
+          "state": "VA",
+          "postalCode": "22301"
+        },
+        "view:contactInfoDescription": {},
+        "phoneNumber": "5551112222",
+        "email": "caregiver@example.com",
+        "desiredCemetery": {
+          "id": "915",
+          "widget": "autosuggest",
+          "label": "QUANTICO NATIONAL CEMETERY"
+        },
+        "view:desiredCemeteryNote": {},
+        "name": {
+          "first": "Patricia",
+          "middle": "Ann",
+          "last": "Chen",
+          "suffix": "Jr."
+        },
+        "ssn": "466995577",
+        "dateOfBirth": "1968-12-18",
+        "relationshipToVet": "4"
+      },
+      "hasCurrentlyBuried": "2",
+      "preneedAttachments": []
+    },
+    "privacyAgreementAccepted": false
+  }
+}

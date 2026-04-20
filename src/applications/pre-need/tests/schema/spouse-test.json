@@ -1,0 +1,89 @@
+{
+  "data": {
+    "application": {
+      "applicant": {
+        "applicantRelationshipToClaimant": "Self"
+      },
+      "veteran": {
+        "address": {
+          "street": "123 Main Street",
+          "street2": "Unit 5",
+          "city": "Springfield",
+          "country": "USA",
+          "state": "VA",
+          "postalCode": "22150"
+        },
+        "phoneNumber": "5551234567",
+        "email": "sponsor@example.com",
+        "view:hasServiceName": false,
+        "serviceRecords": [
+          {
+            "dateRange": {
+              "from": "1995-06-15",
+              "to": "2015-06-14"
+            },
+            "serviceBranch": "AR",
+            "dischargeType": "1",
+            "highestRank": "Major"
+          }
+        ],
+        "currentName": {
+          "first": "Robert",
+          "middle": "James",
+          "last": "Smith",
+          "suffix": "Sr."
+        },
+        "ssn": "266331212",
+        "dateOfBirth": "1975-05-10",
+        "placeOfBirth": "Richmond, VA",
+        "gender": "Male",
+        "race": {
+          "isSpanishHispanicLatino": false,
+          "notSpanishHispanicLatino": true,
+          "isAmericanIndianOrAlaskanNative": false,
+          "isBlackOrAfricanAmerican": false,
+          "isNativeHawaiianOrOtherPacificIslander": false,
+          "isAsian": false,
+          "isWhite": true
+        },
+        "maritalStatus": "Married",
+        "militaryStatus": "V",
+        "militaryServiceNumber": "654321",
+        "vaClaimNumber": "987654321",
+        "isDeceased": "no"
+      },
+      "claimant": {
+        "address": {
+          "street": "123 Main Street",
+          "street2": "Unit 5",
+          "city": "Springfield",
+          "country": "USA",
+          "state": "VA",
+          "postalCode": "22150"
+        },
+        "view:contactInfoDescription": {},
+        "phoneNumber": "5551234567",
+        "email": "spouse@example.com",
+        "desiredCemetery": {
+          "id": "915",
+          "widget": "autosuggest",
+          "label": "QUANTICO NATIONAL CEMETERY"
+        },
+        "view:desiredCemeteryNote": {},
+        "name": {
+          "first": "Jennifer",
+          "middle": "Lynn",
+          "last": "Smith",
+          "suffix": "Jr.",
+          "maiden": "Johnson"
+        },
+        "ssn": "355442233",
+        "dateOfBirth": "1977-08-22",
+        "relationshipToVet": "2"
+      },
+      "hasCurrentlyBuried": "2",
+      "preneedAttachments": []
+    },
+    "privacyAgreementAccepted": false
+  }
+}
