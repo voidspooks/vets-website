@@ -5,6 +5,10 @@
       {
         "name": "form214138",
         "value": true
+      },
+      {
+        "name": "form_21_4138_browser_monitoring_enabled",
+        "value": true
       }
     ]
   }

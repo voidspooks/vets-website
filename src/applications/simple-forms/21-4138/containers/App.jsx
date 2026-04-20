@@ -1,5 +1,4 @@
 import React from 'react';
-
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -7,11 +6,48 @@ import { toggleValues } from 'platform/site-wide/feature-toggles/selectors';
 import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import environment from 'platform/utilities/environment';
+import { useBrowserMonitoring } from 'platform/monitoring/Datadog';
 import formConfig from '../config/form';
 import { WIP } from '../../shared/components/WIP';
 import { workInProgressContent } from '../config/constants';
 
+const EXCLUDED_DOMAINS = [
+  'resource.digital.voice.va.gov',
+  'browser-intake-ddog-gov.com',
+  'google-analytics.com',
+  'eauth.va.gov',
+  'api.va.gov',
+];
+
+export const BROWSER_MONITORING_PROPS = {
+  toggleName: 'form214138BrowserMonitoringEnabled',
+  applicationId: '7fccf5de-fc36-44c4-9dd0-1687f521536e',
+  clientToken: 'pub371bb36afe0e4c66507112e4a03011f5',
+  site: 'ddog-gov.com',
+  service: 'simple-forms-21-4138',
+  env: environment.vspEnvironment(),
+  sessionSampleRate: 100,
+  sessionReplaySampleRate:
+    environment.vspEnvironment() === 'staging' ? 100 : 20,
+  version: '1.0.0',
+  trackUserInteractions: true,
+  trackFrustrations: true,
+  trackResources: true,
+  trackLongTasks: true,
+  defaultPrivacyLevel: 'mask-user-input',
+  beforeSend: ({ action, type, resource }) => {
+    // eslint-disable-next-line no-param-reassign
+    if (action?.type === 'click') action.target.name = 'Form item';
+    return !(
+      type === 'resource' &&
+      EXCLUDED_DOMAINS.some(domain => resource.url.includes(domain))
+    );
+  },
+};
+
 function App({ location, children, showForm, isLoading }) {
+  useBrowserMonitoring(BROWSER_MONITORING_PROPS);
+
   if (isLoading) {
     return (
       <va-loading-indicator

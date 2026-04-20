@@ -141,6 +141,7 @@ export function PreSubmitSection(props) {
     <>
       {statementOfTruth ? (
         <VaStatementOfTruth
+          data-dd-privacy="mask"
           heading={statementOfTruth.heading || 'Statement of truth'}
           inputLabel={statementOfTruth.textInputLabel || 'Your full name'}
           inputValue={form?.data.statementOfTruthSignature}

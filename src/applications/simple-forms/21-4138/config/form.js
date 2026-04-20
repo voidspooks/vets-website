@@ -1,3 +1,4 @@
+import React from 'react';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import footerContent from '~/platform/forms/components/FormFooter';
 import { minimalHeaderFormConfigOptions } from 'platform/forms-system/src/js/patterns/minimal-header';
@@ -452,8 +453,17 @@ const formConfig = {
   },
   preSubmitInfo: {
     statementOfTruth: {
-      body:
-        'I confirm that the identifying information in this form is accurate and has been represented correctly.',
+      body: () => (
+        <p>
+          <span
+            data-dd-privacy="mask"
+            data-dd-action-name="certification statement"
+          >
+            I confirm that the identifying information in this form is accurate
+            and has been represented correctly.
+          </span>
+        </p>
+      ),
       messageAriaDescribedby:
         'I confirm that the identifying information in this form is accurate and has been represented correctly.',
       fullNamePath: formData =>

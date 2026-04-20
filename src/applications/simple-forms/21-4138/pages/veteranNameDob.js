@@ -11,7 +11,7 @@ export const veteranNameDobPage = {
   uiSchema: {
     ...titleUI({ title: "Veteran's name and date of birth", headerLevel: 1 }),
     veteranFullName: fullNameNoSuffixUI(),
-    veteranDateOfBirth: dateOfBirthUI(),
+    veteranDateOfBirth: dateOfBirthUI({ dataDogHidden: true }),
   },
   schema: {
     type: 'object',
