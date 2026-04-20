@@ -1666,5 +1666,11 @@
   "src": "/compensation/claimexam.asp",
   "dest": "/resources/va-claim-exam/",
   "catchAll": true
+},
+{
+  "domain": "www.benefits.va.gov",
+  "src": "/GIBILL/Feedback.asp",
+  "dest": "/education/submit-school-feedback",
+  "catchAll": true
 }
 ]
