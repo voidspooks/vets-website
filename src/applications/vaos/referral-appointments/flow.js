@@ -176,6 +176,7 @@ export function getReferralUrlLabel(currentPage) {
       return 'Back to appointments';
     case 'reviewAndConfirm':
     case 'scheduleAppointment':
+    case 'providerSelection':
       return 'Back';
     default:
       if (!result) {

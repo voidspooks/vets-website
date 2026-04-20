@@ -23,6 +23,7 @@ export default function ReferralLayout({
   errorBody = '',
   errorAlertLinkNewTab = false,
   isVAAppointment = false,
+  backlink = null,
 }) {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -55,7 +56,22 @@ export default function ReferralLayout({
     <>
       <MhvSecondaryNav />
       <div className="vads-l-grid-container vads-u-padding-x--2p5 desktop-lg:vads-u-padding-x--0 vads-u-padding-bottom--2">
-        <ReferralBreadcrumbs />
+        {backlink ? (
+          <div className="vaos-hide-for-print mobile:vads-u-margin-bottom--0 mobile-lg:vads-u-margin-bottom--1 medium-screen:vads-u-margin-bottom--2">
+            <nav aria-label="backlink" className="vads-u-padding-y--2 ">
+              <va-link
+                back
+                aria-label="Back link"
+                data-testid="back-link"
+                text={backlink.text}
+                href={backlink.href}
+                onClick={backlink?.onClick}
+              />
+            </nav>
+          </div>
+        ) : (
+          <ReferralBreadcrumbs />
+        )}
         {location.pathname.endsWith('type-of-care') && (
           <DowntimeNotification
             appTitle="appointments tool"
@@ -101,6 +117,11 @@ export default function ReferralLayout({
 
 ReferralLayout.propTypes = {
   apiFailure: PropTypes.bool,
+  backlink: PropTypes.shape({
+    text: PropTypes.string.isRequired,
+    href: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+  }),
   children: PropTypes.node,
   errorAlertLinkNewTab: PropTypes.bool,
   errorBody: PropTypes.string,
