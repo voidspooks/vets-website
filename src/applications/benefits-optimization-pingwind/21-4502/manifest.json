@@ -1,6 +1,6 @@
 {
   "appName": "Apply for automobile or adaptive equipment",
-  "rootUrl": "/disability/eligibility/automobile-adaptive-equipment/apply-form-21-4502",
+  "rootUrl": "/forms/21-4502/apply-automobile-and-adaptive-equipment",
   "entryName": "21-4502",
   "entryFile": "./app-entry.jsx",
   "productId": "",
@@ -8,7 +8,10 @@
     "vagovprod": false,
     "layout": "page-react.html",
     "includeBreadcrumbs": false,
-    "minimalExcludePaths": ["/introduction", "/confirmation"],
+    "minimalExcludePaths": [
+      "/introduction",
+      "/confirmation"
+    ],
     "minimalFooter": true,
     "minimalHeader": {
       "title": "Application for Automobile or Other Conveyance and Adaptive Equipment (Under 38 U.S.C. 3901-3904)",

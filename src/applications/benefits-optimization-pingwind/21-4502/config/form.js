@@ -110,11 +110,15 @@ const formConfig = {
   ...minimalHeaderFormConfigOptions({
     breadcrumbList: [
       { href: '/', label: 'VA.gov home' },
-      { href: '/disability', label: 'Disability' },
-      { href: '/disability/eligibility', label: 'Eligibility' },
+      { href: '/forms', label: 'VA forms' },
       {
-        href: '/disability/eligibility/automobile-adaptive-equipment',
-        label: 'Automobile or adaptive equipment',
+        href: '/forms/21-4502',
+        label:
+          'Application for Automobile or Other Conveyance and Adaptive Equipment',
+      },
+      {
+        href: '/forms/21-4502/apply-automobile-and-adaptive-equipment',
+        label: 'Apply for automobile and adaptive equipment online',
       },
     ],
   }),
