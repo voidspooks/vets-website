@@ -6,6 +6,7 @@ import {
 
 const mockState = {
   featureToggles: {
+    ezrSpouseConfirmationFlowEnabled: true,
     ezrProvidersAndDependentsPrefillEnabled: true,
   },
 };

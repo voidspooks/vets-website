@@ -35,7 +35,7 @@ export const advanceToInsurancePolicies = testData => {
     hasServiceHistoryInfo: testData['view:hasPrefillServiceHistory'],
   });
 
-  goToNextPage('/household-information/marital-status-information');
+  goToNextPage('/household-information/marital-status');
   selectDropdownWebComponent(
     'view:maritalStatus_maritalStatus',
     'Never Married',

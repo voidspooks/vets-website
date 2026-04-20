@@ -29,6 +29,7 @@ const App = props => {
     isProdEnabled,
     isEmergencyContactsEnabled,
     isProvidersAndDependentsPrefillEnabled,
+    isSpouseConfirmationFlowEnabled,
     ezrServiceHistoryEnabled,
     ezrUpdatedUploadPatternEnabled,
   } = features;
@@ -70,6 +71,7 @@ const App = props => {
           'view:householdEnabled': !!canSubmitFinancialInfo,
           'view:isEmergencyContactsEnabled': !!isEmergencyContactsEnabled,
           'view:isProvidersAndDependentsPrefillEnabled': !!isProvidersAndDependentsPrefillEnabled,
+          'view:isSpouseConfirmationFlowEnabled': !!isSpouseConfirmationFlowEnabled,
           'view:ezrServiceHistoryEnabled': !!ezrServiceHistoryEnabled,
           'view:ezrUpdatedUploadPatternEnabled': !!ezrUpdatedUploadPatternEnabled,
         };
@@ -89,6 +91,7 @@ const App = props => {
       isEmergencyContactsEnabled,
       veteranFullName,
       isProvidersAndDependentsPrefillEnabled,
+      isSpouseConfirmationFlowEnabled,
     ],
   );
 
@@ -129,6 +132,8 @@ const mapStateToProps = state => ({
       state.featureToggles.ezrEmergencyContactsEnabled,
     isProvidersAndDependentsPrefillEnabled:
       state.featureToggles.ezrFormPrefillWithProvidersAndDependents,
+    isSpouseConfirmationFlowEnabled:
+      state.featureToggles.ezrSpouseConfirmationFlowEnabled,
     ezrServiceHistoryEnabled: state.featureToggles.ezrServiceHistoryEnabled,
     ezrUpdatedUploadPatternEnabled:
       state.featureToggles.ezrUpdatedUploadPatternEnabled,

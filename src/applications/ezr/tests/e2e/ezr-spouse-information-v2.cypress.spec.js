@@ -21,6 +21,11 @@ import { handleOptionalServiceHistoryPage } from './helpers/handleOptionalServic
 
 const { data: testData } = maxTestData;
 
+featureToggles.data.features.push({
+  name: 'ezrSpouseConfirmationFlowEnabled',
+  value: true,
+});
+
 const featureFlagObject = normalizeFeatureFlags(featureToggles.data.features);
 
 function setUserDataAndAdvanceToSpouseSection(user, prefillData) {
