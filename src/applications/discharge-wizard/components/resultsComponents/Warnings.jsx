@@ -10,18 +10,14 @@ const Warnings = ({ formResponses }) => {
     const prevAppType = formResponses[SHORT_NAME_MAP.PREV_APPLICATION_TYPE];
     const reason = formResponses[SHORT_NAME_MAP.REASON];
 
-    return (
-      <>
-        <AlertMessage
-          content={venueWarning}
-          isVisible={
-            prevAppType === RESPONSES.NOT_SURE &&
-            reason !== RESPONSES.REASON_DD215_UPDATE_TO_DD214
-          }
-          status="warning"
-        />
-      </>
-    );
+    if (
+      prevAppType === RESPONSES.NOT_SURE &&
+      reason !== RESPONSES.REASON_DD215_UPDATE_TO_DD214
+    ) {
+      return <p>{venueWarning}</p>;
+    }
+
+    return null;
   };
 
   const renderDischargeWarning = () => {

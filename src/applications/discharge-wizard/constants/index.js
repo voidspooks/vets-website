@@ -1,7 +1,7 @@
 export const DW_UPDATE_FIELD = 'discharge-wizard/UPDATE_FIELD';
 
 export const venueWarning =
-  "You answered that you weren't sure where you applied for an upgrade before. The instructions below are for Veterans who have never applied for a discharge upgrade, so your process may be different. For more reliable information on your discharge upgrade process, review your records to find out which board you sent your earlier application to, and complete the questions again.";
+  'Check your records before applying. You shared you applied for a discharge upgrade or correction in the past. But you aren’t sure where you applied. The instructions on this page are for Veterans who have never applied for a discharge upgrade. You may need to follow a different process if you already applied. We recommend you check your records to find out where you applied before. And then complete the questions again to get the most accurate instructions.';
 
 import { SHORT_NAME_MAP } from './question-data-map';
 

@@ -113,16 +113,23 @@ const CarefulConsiderationStatement = ({ formResponses, router }) => {
                   characterization.
                 </h2>
                 <p>
-                  Because you served honorably in one period of service, you can
-                  apply for VA benefits using that honorable characterization.
-                  You earned your benefits during the period in which you served
-                  honorably. The only exception is for service-connected
-                  disability compensation. If your disability began during your
-                  less than honorable period of service, you won’t be eligible
-                  to earn disability compensation unless you get that discharge
-                  upgraded. The instructions below this box tell you how to
-                  apply for an upgrade or correction to your final, less than
-                  honorable period of service.
+                  If the Defense Department or the{' '}
+                  {formResponses[SHORT_NAME_MAP.SERVICE_BRANCH]} determined you
+                  served honorably in 1 period of service, you may use that
+                  honorable characterization to establish eligibility for VA
+                  benefits, even if you later received a discharge that wasn’t
+                  honorable. You earned your benefits during the period in which
+                  you served honorably. Make sure you specifically mention your
+                  period of honorable service when applying for VA benefits.
+                </p>
+                <p>
+                  <strong>Note:</strong> The only exception is for
+                  service-connected disability compensation. You’re only
+                  eligible to earn disability compensation for service-connected
+                  disabilities you suffered during a period of honorable
+                  service. You can’t use an honorable discharge from 1 period of
+                  service to establish eligibility for a service-connected
+                  disability from a different period of service.
                 </p>
               </>
             }
@@ -179,10 +186,14 @@ const CarefulConsiderationStatement = ({ formResponses, router }) => {
     }
   };
 
+  const priorService = priorServiceStatement();
+
   return (
     <>
       {reasonStatement()}
-      <div className="vads-u-padding-bottom--2">{priorServiceStatement()}</div>
+      {priorService && (
+        <div className="vads-u-padding-bottom--2">{priorService}</div>
+      )}
     </>
   );
 };
