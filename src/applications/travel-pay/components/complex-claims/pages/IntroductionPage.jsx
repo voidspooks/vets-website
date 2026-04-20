@@ -20,7 +20,7 @@ import {
   selectAppointment,
   selectComplexClaim,
 } from '../../../redux/selectors';
-import { stripTZOffset, formatDateTime } from '../../../util/dates';
+import { stripTZOffset } from '../../../util/dates';
 import OutOfBoundsAppointmentAlert from '../../alerts/OutOfBoundsAppointmentAlert';
 import DegradationWarning from '../../DegradationWarning';
 
@@ -63,10 +63,6 @@ const IntroductionPage = () => {
       return;
     }
 
-    const [formattedDate, formattedTime] = formatDateTime(
-      appointment.localStartTime,
-    );
-
     // If claim already exists, the wrapper will handle redirecting the page based on the existing claim ID.
     // This can happen if the user starts the flow, then goes back to the intro page and clicks the button again.
     const existingClaimId =
@@ -80,12 +76,17 @@ const IntroductionPage = () => {
     }
 
     try {
+      const strippedTime = stripTZOffset(appointment.localStartTime);
+      const maxFacilityNameLength = 100 - strippedTime.length - 1;
+      const truncatedFacilityName = appointment.location.attributes.name.slice(
+        0,
+        maxFacilityNameLength,
+      );
+
       const createComplexClaimParams = isV4UpgradeEnabled
         ? {
-            appointmentName: `${formattedDate} appointment at ${formattedTime} - ${
-              appointment.location.attributes.name
-            }`,
-            appointmentDateTime: stripTZOffset(appointment.localStartTime),
+            appointmentName: `${truncatedFacilityName} ${strippedTime}`,
+            appointmentDateTime: strippedTime,
             facilityStationNumber: appointment.location.id,
             facilityName: appointment.location.attributes.name,
             appointmentType: appointment.isCompAndPen
@@ -94,7 +95,7 @@ const IntroductionPage = () => {
             isComplete: false,
           }
         : {
-            appointmentDateTime: stripTZOffset(appointment.localStartTime),
+            appointmentDateTime: strippedTime,
             facilityStationNumber: appointment.location.id,
             appointmentType: appointment.isCompAndPen
               ? 'CompensationAndPensionExamination'

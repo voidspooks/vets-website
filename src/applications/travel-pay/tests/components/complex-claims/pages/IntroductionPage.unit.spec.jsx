@@ -918,6 +918,98 @@ describe('Travel Pay – IntroductionPage', () => {
 
       createComplexClaimStub.restore();
     });
+
+    it('formats appointmentName as facility name + datetime', async () => {
+      const stateWithV4FF = buildState({ travelPayApptAddV4Upgrade: true });
+
+      const fakeClaimResult = { claimId: 'v4-claim-456' };
+      const createComplexClaimStub = sinon
+        .stub(actions, 'createComplexClaim')
+        .callsFake(params => {
+          // baseAppointment has name 'Test Facility' and localStartTime '2026-02-15T06:30:00.000-04:00'
+          // stripTZOffset returns '2026-02-15T06:30:00'
+          expect(params.appointmentName).to.equal(
+            'Test Facility 2026-02-15T06:30:00',
+          );
+          return () => Promise.resolve(fakeClaimResult);
+        });
+
+      const { container } = renderWithStoreAndRouter(
+        <MemoryRouter initialEntries={[initialRoute]}>
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId"
+              element={<IntroductionPage />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        {
+          initialState: stateWithV4FF,
+          reducers: reducer,
+        },
+      );
+
+      const startButton = $(
+        'va-link-action[text="Start your travel reimbursement claim"]',
+        container,
+      );
+      startButton.click();
+
+      await waitFor(() => {
+        sinon.assert.calledOnce(createComplexClaimStub);
+      });
+
+      createComplexClaimStub.restore();
+    });
+
+    it('truncates only the facility name to keep appointmentName under 100 characters', async () => {
+      const longFacilityName = 'A'.repeat(120);
+      const stateWithLongName = buildState({
+        travelPayApptAddV4Upgrade: true,
+      });
+      stateWithLongName.travelPay.appointment.data.location = {
+        id: '123',
+        attributes: { name: longFacilityName },
+      };
+
+      const fakeClaimResult = { claimId: 'v4-claim-789' };
+      const createComplexClaimStub = sinon
+        .stub(actions, 'createComplexClaim')
+        .callsFake(params => {
+          expect(params.appointmentName).to.have.lengthOf.at.most(100);
+          expect(params.appointmentName).to.have.lengthOf(100);
+          // The datetime portion should always be fully preserved
+          expect(params.appointmentName).to.match(/2026-02-15T06:30:00$/);
+          return () => Promise.resolve(fakeClaimResult);
+        });
+
+      const { container } = renderWithStoreAndRouter(
+        <MemoryRouter initialEntries={[initialRoute]}>
+          <Routes>
+            <Route
+              path="/file-new-claim/:apptId"
+              element={<IntroductionPage />}
+            />
+          </Routes>
+        </MemoryRouter>,
+        {
+          initialState: stateWithLongName,
+          reducers: reducer,
+        },
+      );
+
+      const startButton = $(
+        'va-link-action[text="Start your travel reimbursement claim"]',
+        container,
+      );
+      startButton.click();
+
+      await waitFor(() => {
+        sinon.assert.calledOnce(createComplexClaimStub);
+      });
+
+      createComplexClaimStub.restore();
+    });
   });
 
   context('when appointment is out of bounds', () => {
