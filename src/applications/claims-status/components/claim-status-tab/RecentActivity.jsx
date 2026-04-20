@@ -14,6 +14,7 @@ import {
   getPhaseItemText,
   getShowEightPhases,
 } from '../../utils/helpers';
+import { isChampvaProviderClaim } from '../../utils/claimStatusMeta';
 import * as TrackedItem from '../../utils/trackedItemContent';
 import TimezoneDiscrepancyMessage from '../TimezoneDiscrepancyMessage';
 
@@ -167,10 +168,46 @@ export default function RecentActivity({ claim }) {
         );
   };
 
+  const generateChampvaPhaseItems = () => {
+    const { status, claimDate, closeDate, claimStatusMeta } = claimAttributes;
+    const statusMap = claimStatusMeta?.whatWeAreDoing?.statusMap || {};
+    const items = [];
+
+    // Push decided entry first so that ties on date sort it above received
+    if (closeDate) {
+      const decidedEntry = statusMap[status];
+      if (decidedEntry) {
+        items.push({
+          id: 'champva_step_2',
+          type: 'phase_entered',
+          description: `Your application moved to ${decidedEntry.recentActivityTitle ||
+            decidedEntry.title}.`,
+          date: closeDate,
+        });
+      }
+    }
+
+    const receivedEntry = statusMap.pending;
+    if (receivedEntry && claimDate) {
+      items.push({
+        id: 'champva_step_1',
+        type: 'phase_entered',
+        description: `Your application moved to ${receivedEntry.recentActivityTitle ||
+          receivedEntry.title}.`,
+        date: claimDate,
+      });
+    }
+
+    return items;
+  };
+
   const getSortedItems = () => {
     // Get items from trackedItems and claimPhaseDates
     const trackedItems = generateTrackedItems();
-    const phaseItems = generatePhaseItems();
+    const phaseItems =
+      isChampvaProviderClaim(claim) && claimAttributes.claimStatusMeta?.overview
+        ? generateChampvaPhaseItems()
+        : generatePhaseItems();
     const items = [...trackedItems, ...phaseItems];
 
     return items.sort((item1, item2) => {

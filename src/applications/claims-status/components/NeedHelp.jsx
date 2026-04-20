@@ -10,6 +10,8 @@ export function NeedHelp({ claim, item }) {
   const hours =
     helpMeta?.hours || 'Monday through Friday, 8:00 a.m. to 9:00 p.m. ET.';
   const intro = helpMeta?.intro || 'Call us';
+  const inlineTty = helpMeta?.inlineTty || false;
+  const askVa = helpMeta?.askVa || null;
 
   const alias =
     item && item.supportAliases?.length > 0
@@ -38,9 +40,25 @@ export function NeedHelp({ claim, item }) {
     <va-need-help class="vads-u-margin-top--4">
       <div slot="content">
         <p>
-          {intro} at <va-telephone contact={phone} />. We're here {hours} If you
-          have hearing loss, call <va-telephone contact={tty} tty="true" />.
+          {inlineTty ? (
+            <>
+              {intro} at <va-telephone contact={phone} /> (
+              <va-telephone contact={tty} tty="true" />
+              ). We're here {hours}
+            </>
+          ) : (
+            <>
+              {intro} at <va-telephone contact={phone} />. We're here {hours} If
+              you have hearing loss, call{' '}
+              <va-telephone contact={tty} tty="true" />.
+            </>
+          )}
         </p>
+        {askVa && (
+          <p>
+            {askVa.text} <va-link href={askVa.linkUrl} text={askVa.linkText} />
+          </p>
+        )}
         {alias && (
           <p>
             We may refer to the{' '}

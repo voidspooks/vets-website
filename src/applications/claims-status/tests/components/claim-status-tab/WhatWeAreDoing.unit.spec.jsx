@@ -3,6 +3,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { expect } from 'chai';
+import { render } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom-v5-compat';
 import {
   getStatusDescription,
   getClaimStatusDescription,
@@ -1142,6 +1144,45 @@ describe('<WhatWeAreDoing>', () => {
           'Learn about your provider status',
         );
       });
+    });
+  });
+
+  context('?type param preservation on ../overview link', () => {
+    const renderWithTypeParam = (typeParam = null) => {
+      const initialEntry = typeParam ? `/status?type=${typeParam}` : '/status';
+      return render(
+        <Provider store={getStore()}>
+          <MemoryRouter initialEntries={[initialEntry]}>
+            <Routes>
+              <Route
+                path="/status"
+                element={
+                  <WhatWeAreDoing
+                    claimTypeCode="110LCMP7IDES"
+                    claimPhaseType="CLAIM_RECEIVED"
+                    phaseChangeDate="2023-02-08"
+                    status="CLAIM_RECEIVED"
+                  />
+                }
+              />
+            </Routes>
+          </MemoryRouter>
+        </Provider>,
+      );
+    };
+
+    it('appends ?type param to ../overview link when type is in URL', () => {
+      const { container } = renderWithTypeParam('ivc_champva');
+      const link = container.querySelector('a[href*="overview"]');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.include('?type=ivc_champva');
+    });
+
+    it('does not append ?type param to ../overview link when type is absent', () => {
+      const { container } = renderWithTypeParam();
+      const link = container.querySelector('a[href*="overview"]');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.not.include('?type');
     });
   });
 });

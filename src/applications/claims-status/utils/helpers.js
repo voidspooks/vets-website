@@ -18,6 +18,18 @@ import {
   veteransPensionClaimTypeCodes,
 } from '../constants';
 
+export const isSafeUrl = url => {
+  if (!url || typeof url !== 'string') return false;
+  if (url.startsWith('/') || url.startsWith('../')) return true;
+
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:';
+  } catch {
+    return false;
+  }
+};
+
 // Adding !! so that we convert this to a boolean
 export const claimAvailable = claim =>
   !!(claim && claim.attributes && Object.keys(claim.attributes).length !== 0);

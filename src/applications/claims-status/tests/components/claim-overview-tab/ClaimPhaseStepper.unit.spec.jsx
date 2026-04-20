@@ -1,7 +1,8 @@
 import React from 'react';
 import { expect } from 'chai';
 import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
-import { within } from '@testing-library/react';
+import { within, render } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom-v5-compat';
 
 import ClaimPhaseStepper from '../../../components/claim-overview-tab/ClaimPhaseStepper';
 import { renderWithRouter } from '../../utils';
@@ -323,5 +324,87 @@ describe('<ClaimPhaseStepper>', () => {
     getByText(
       'We’ll also send you a copy of your decision letter by mail. It should arrive within 10 business days, but it may take longer.',
     );
+  });
+  context('?type param preservation on relative links', () => {
+    const renderWithTypeParam = customSteps => {
+      return render(
+        <MemoryRouter initialEntries={['/?type=ivc_champva']}>
+          <Routes>
+            <Route
+              index
+              element={
+                <ClaimPhaseStepper
+                  claimDate={claimDate}
+                  currentClaimPhaseDate={currentClaimPhaseDate}
+                  currentPhase={1}
+                  customSteps={customSteps}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>,
+      );
+    };
+
+    it('appends ?type param to relative ../files link', () => {
+      const { container } = renderWithTypeParam([
+        {
+          phase: 1,
+          header: 'Step 1',
+          description: 'We received your application.',
+          linkText: 'Go to files',
+          linkUrl: '../files',
+        },
+      ]);
+      const link = container.querySelector('a.active-va-link');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.include('?type=ivc_champva');
+    });
+
+    it('appends ?type param to relative ../status link', () => {
+      const { container } = renderWithTypeParam([
+        {
+          phase: 1,
+          header: 'Step 1',
+          description: 'We received your application.',
+          linkText: 'Go to status',
+          linkUrl: '../status',
+        },
+      ]);
+      const link = container.querySelector('a.active-va-link');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.include('?type=ivc_champva');
+    });
+
+    it('does not append ?type param when no type param in URL', () => {
+      const { container } = render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route
+              index
+              element={
+                <ClaimPhaseStepper
+                  claimDate={claimDate}
+                  currentClaimPhaseDate={currentClaimPhaseDate}
+                  currentPhase={1}
+                  customSteps={[
+                    {
+                      phase: 1,
+                      header: 'Step 1',
+                      description: 'desc',
+                      linkText: 'Go to files',
+                      linkUrl: '../files',
+                    },
+                  ]}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>,
+      );
+      const link = container.querySelector('a.active-va-link');
+      expect(link).to.exist;
+      expect(link.getAttribute('href')).to.not.include('?type');
+    });
   });
 });

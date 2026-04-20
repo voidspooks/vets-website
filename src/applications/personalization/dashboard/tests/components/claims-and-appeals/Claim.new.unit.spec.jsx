@@ -268,4 +268,52 @@ describe('Claim', () => {
     fireEvent.click(link);
     expect(recordEventStub.called).to.be.true;
   });
+
+  context('CHAMPVA claims', () => {
+    it('uses listCard.title from claimStatusMeta for the heading', () => {
+      const claim = {
+        ...makeClaimObject({ provider: 'ivc_champva' }),
+        attributes: {
+          ...makeClaimObject({ provider: 'ivc_champva' }).attributes,
+          claimStatusMeta: {
+            listCard: { title: 'Application for CHAMPVA benefits' },
+          },
+        },
+      };
+
+      const { getByRole } = renderWithStoreAndRouter(<Claim claim={claim} />, {
+        initialState: {},
+      });
+
+      expect(
+        getByRole('heading', {
+          name: /Application for CHAMPVA benefits received/,
+        }),
+      ).to.exist;
+    });
+
+    it('hides decision letter message for ivc_champva provider', () => {
+      const claim = makeClaimObject({
+        provider: 'ivc_champva',
+        decisionLetterSent: true,
+      });
+
+      const { queryByText } = renderWithStoreAndRouter(
+        <Claim claim={claim} />,
+        { initialState: {} },
+      );
+
+      expect(queryByText(/We sent you a decision letter/)).to.not.exist;
+    });
+
+    it('shows decision letter message for standard claims', () => {
+      const claim = makeClaimObject({ decisionLetterSent: true });
+
+      const { getByText } = renderWithStoreAndRouter(<Claim claim={claim} />, {
+        initialState: {},
+      });
+
+      expect(getByText(/We sent you a decision letter/)).to.exist;
+    });
+  });
 });

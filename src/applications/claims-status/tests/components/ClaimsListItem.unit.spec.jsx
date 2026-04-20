@@ -91,6 +91,26 @@ describe('<ClaimsListItem>', () => {
         getByText('Closed');
         getByText('Step 8 of 8: Claim decided');
       });
+      it('should not show In Progress pill for CHAMPVA claims with vbms status', () => {
+        const claim = {
+          id: 1,
+          attributes: {
+            claimPhaseDates: {
+              phaseChangeDate: '2024-06-08',
+              phaseType: 'COMPLETE',
+            },
+            claimTypeCode: compensationClaimTypeCode,
+            status: 'vbms',
+          },
+        };
+
+        const { queryByText } = renderWithRouter(
+          <Provider store={getStore()}>
+            <ClaimsListItem claim={claim} />
+          </Provider>,
+        );
+        expect(queryByText('In Progress')).not.to.exist;
+      });
       it('should show the correct status when UNDER_REVIEW', () => {
         const claim = {
           id: 1,
@@ -965,6 +985,76 @@ describe('<ClaimsListItem>', () => {
         'href',
         '/track-claims/your-claims/123/status',
       );
+    });
+  });
+
+  context('CHAMPVA claims with claimStatusMeta', () => {
+    it('hides the decision letter message when decisionLetterLabel is not set', () => {
+      const claim = {
+        id: '456',
+        attributes: {
+          claimDate: '2024-06-15',
+          claimTypeCode: null,
+          decisionLetterSent: true,
+          documentsNeeded: false,
+          provider: 'ivc_champva',
+          status: 'vbms',
+          claimPhaseDates: { phaseChangeDate: '2025-06-18' },
+          claimStatusMeta: {
+            listCard: {
+              title: 'Application for CHAMPVA benefits',
+            },
+            whatWeAreDoing: {
+              statusMap: {
+                vbms: { title: 'Step 2 of 2: Application decided' },
+              },
+            },
+          },
+        },
+      };
+
+      const { queryByText } = renderWithRouter(
+        <Provider store={getStore(false, false)}>
+          <ClaimsListItem claim={claim} />
+        </Provider>,
+      );
+
+      expect(queryByText('You have a decision letter ready')).to.be.null;
+      expect(queryByText('We mailed you a decision letter')).to.be.null;
+    });
+
+    it('shows custom decisionLetterLabel when explicitly provided', () => {
+      const claim = {
+        id: '456',
+        attributes: {
+          claimDate: '2024-06-15',
+          claimTypeCode: null,
+          decisionLetterSent: true,
+          documentsNeeded: false,
+          provider: 'ivc_champva',
+          status: 'vbms',
+          claimPhaseDates: { phaseChangeDate: '2025-06-18' },
+          claimStatusMeta: {
+            listCard: {
+              title: 'Application for CHAMPVA benefits',
+              decisionLetterLabel: 'We mailed you a decision letter',
+            },
+            whatWeAreDoing: {
+              statusMap: {
+                vbms: { title: 'Step 2 of 2: Application decided' },
+              },
+            },
+          },
+        },
+      };
+
+      const { getByText } = renderWithRouter(
+        <Provider store={getStore(false, false)}>
+          <ClaimsListItem claim={claim} />
+        </Provider>,
+      );
+
+      expect(getByText('We mailed you a decision letter')).to.exist;
     });
   });
 });

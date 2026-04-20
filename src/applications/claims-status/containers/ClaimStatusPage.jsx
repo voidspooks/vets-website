@@ -11,6 +11,8 @@ import RecentActivity from '../components/claim-status-tab/RecentActivity';
 import NextSteps from '../components/claim-status-tab/NextSteps';
 import Payments from '../components/claim-status-tab/Payments';
 import ClosedClaimAlert from '../components/claim-status-tab/ClosedClaimAlert';
+import ChampvaClosedAlert from '../components/claim-status-tab/ChampvaClosedAlert';
+import ChampvaNextSteps from '../components/claim-status-tab/ChampvaNextSteps';
 
 import {
   claimAvailable,
@@ -18,7 +20,10 @@ import {
   setPageFocus,
   setTabDocumentTitle,
 } from '../utils/helpers';
-import { withClaimStatusMetaIfEnabled } from '../utils/claimStatusMeta';
+import {
+  withClaimStatusMetaIfEnabled,
+  isChampvaProviderClaim,
+} from '../utils/claimStatusMeta';
 import { setUpPage, isTab } from '../utils/page';
 
 class ClaimStatusPage extends React.Component {
@@ -63,8 +68,17 @@ class ClaimStatusPage extends React.Component {
       return null;
     }
 
-    const { closeDate, decisionLetterSent, status } = displayClaim.attributes;
+    const {
+      closeDate,
+      decisionLetterSent,
+      status,
+      claimStatusMeta,
+    } = displayClaim.attributes;
     const isOpen = isClaimOpen(status, closeDate);
+    const isChampvaClaim =
+      isChampvaProviderClaim(displayClaim) &&
+      cstChampvaCustomContentEnabled &&
+      !!claimStatusMeta?.closedAlert;
 
     return (
       <div className="claim-status">
@@ -76,12 +90,21 @@ class ClaimStatusPage extends React.Component {
           </>
         ) : (
           <>
-            <ClosedClaimAlert
-              closeDate={closeDate}
-              decisionLetterSent={decisionLetterSent}
-            />
-            <Payments />
-            <NextSteps />
+            {isChampvaClaim ? (
+              <>
+                <ChampvaClosedAlert claim={displayClaim} />
+                <ChampvaNextSteps claim={displayClaim} />
+              </>
+            ) : (
+              <>
+                <ClosedClaimAlert
+                  closeDate={closeDate}
+                  decisionLetterSent={decisionLetterSent}
+                />
+                <Payments />
+                <NextSteps />
+              </>
+            )}
           </>
         )}
         <RecentActivity claim={displayClaim} />

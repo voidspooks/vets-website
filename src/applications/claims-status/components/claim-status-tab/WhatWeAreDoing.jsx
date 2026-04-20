@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom-v5-compat';
+import { Link, useSearchParams } from 'react-router-dom-v5-compat';
 import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
 
 import {
@@ -37,6 +37,9 @@ export default function WhatWeAreDoing({
   const resolvedStatus = attributes.status || status;
 
   const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const typeQuery = typeParam ? `?type=${typeParam}` : '';
   const cstClaimPhasesEnabled = useToggleValue(TOGGLE_NAMES.cstClaimPhases);
   const showEightPhases = getShowEightPhases(
     resolvedClaimTypeCode,
@@ -59,6 +62,7 @@ export default function WhatWeAreDoing({
     ? configuredStep?.description ||
       getClaimPhaseTypeDescription(resolvedClaimPhaseType)
     : configuredStep?.description || getClaimStatusDescription(resolvedStatus);
+  const descriptionNote = configuredStep?.descriptionNote || null;
   const defaultLinkText = showEightPhases
     ? 'Learn more about this step'
     : 'Learn more about the review process';
@@ -80,6 +84,11 @@ export default function WhatWeAreDoing({
         >
           {description}
         </p>
+        {descriptionNote && (
+          <p className="vads-u-margin-top--0p5 vads-u-margin-bottom--0p5">
+            {descriptionNote}
+          </p>
+        )}
         {cstClaimPhasesEnabled && (
           <p data-cy="moved-to-date-text">
             {getPhaseChangeDateText(resolvedPhaseChangeDate)}
@@ -98,7 +107,7 @@ export default function WhatWeAreDoing({
         <Link
           aria-label={linkText}
           className="vads-u-margin-top--1 active-va-link"
-          to="../overview"
+          to={`../overview${typeQuery}`}
         >
           {linkText}
           <va-icon icon="chevron_right" size={3} aria-hidden="true" />

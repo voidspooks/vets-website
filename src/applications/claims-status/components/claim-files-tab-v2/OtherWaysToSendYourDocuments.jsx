@@ -13,7 +13,7 @@ import {
 } from '../../constants';
 
 const renderAddress = lines => (
-  <p className="va-address-block">
+  <p className="va-address-block vads-u-margin-left--0">
     {lines.map((line, index) => (
       <React.Fragment key={`${line}-${index}`}>
         {line}
@@ -42,10 +42,11 @@ const OtherWaysToSendYourDocuments = ({ claim }) => {
     filesMeta?.options?.option2 ||
     filesMeta?.options?.fax ||
     null;
+  const option3 = filesMeta?.options?.option3 || null;
   const confirmation = filesMeta?.confirmation || null;
   const hasCustomFilesMeta = !!filesMeta;
   const shouldShowCustomConfirmation = hasCustomFilesMeta
-    ? confirmation?.description
+    ? confirmation?.description || confirmation?.descriptionPrefix
     : false;
 
   return (
@@ -76,7 +77,30 @@ const OtherWaysToSendYourDocuments = ({ claim }) => {
         <h3>{option1?.title || 'Option 1: By mail'}</h3>
         {hasCustomFilesMeta ? (
           <>
-            {option1?.description && <p>{option1.description}</p>}
+            {option1?.description && (
+              <p className="vads-u-font-size--lg">{option1.description}</p>
+            )}
+            {option1?.linkText &&
+              option1?.linkUrl && (
+                <va-link-action
+                  href={option1.linkUrl}
+                  text={option1.linkText}
+                  type="primary"
+                  {...(option1?.linkExternal
+                    ? {
+                        'message-aria-describedby': 'Opens in a new tab',
+                        onClick: e => {
+                          e.preventDefault();
+                          window.open(
+                            option1.linkUrl,
+                            '_blank',
+                            'noopener,noreferrer',
+                          );
+                        },
+                      }
+                    : {})}
+                />
+              )}
             {option1?.addressLines?.length > 0 &&
               renderAddress(option1.addressLines)}
           </>
@@ -87,18 +111,51 @@ const OtherWaysToSendYourDocuments = ({ claim }) => {
       <div className="other-ways-in-person-section">
         <h3>{option2?.title || 'Option 2: In person'}</h3>
         {hasCustomFilesMeta ? (
-          option2?.description && <p>{option2.description}</p>
+          <>
+            {option2?.description && (
+              <p className="vads-u-font-size--lg">{option2.description}</p>
+            )}
+            {option2?.addressLines?.length > 0 &&
+              renderAddress(option2.addressLines)}
+          </>
         ) : (
           <InPersonDescription findVaLocations={LINKS.findVaLocations} />
         )}
       </div>
+      {option3 && (
+        <div className="other-ways-fax-section">
+          <h3>{option3.title}</h3>
+          {option3.description && (
+            <p className="vads-u-font-size--lg">{option3.description}</p>
+          )}
+          {option3.noteText && (
+            <p>
+              <strong>Note:</strong> {option3.noteText}
+            </p>
+          )}
+        </div>
+      )}
       <div className="other-ways-confirmation-section">
         <h3>
           {confirmation?.title ||
             'How to confirm we’ve received your documents'}
         </h3>
         {shouldShowCustomConfirmation ? (
-          <p>{confirmation.description}</p>
+          <>
+            {confirmation.descriptionPrefix ? (
+              <p>
+                {confirmation.descriptionPrefix}{' '}
+                <va-telephone contact={confirmation.phone} /> (
+                <va-telephone contact={confirmation.tty} tty="true" />
+                ).
+              </p>
+            ) : (
+              <p>{confirmation.description}</p>
+            )}
+            {confirmation.descriptionNote && (
+              <p>{confirmation.descriptionNote}</p>
+            )}
+          </>
         ) : (
           <ConfirmationDescription contactInfo={CONTACT_INFO} />
         )}

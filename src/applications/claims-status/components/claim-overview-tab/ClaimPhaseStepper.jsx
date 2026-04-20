@@ -1,20 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link, useSearchParams } from 'react-router-dom-v5-compat';
 
-import { buildDateFormatter, isPensionClaim } from '../../utils/helpers';
+import {
+  buildDateFormatter,
+  isPensionClaim,
+  isSafeUrl,
+} from '../../utils/helpers';
 import { getClaimPhases, getPensionClaimPhases } from '../../utils/claimPhase';
 
-const isSafeUrl = url => {
-  if (!url || typeof url !== 'string') return false;
-  if (url.startsWith('/')) return true;
-
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === 'https:' || parsed.protocol === 'http:';
-  } catch {
-    return false;
-  }
-};
+const isRelativeUrl = url =>
+  typeof url === 'string' && (url.startsWith('/') || url.startsWith('../'));
 
 export default function ClaimPhaseStepper({
   claimDate,
@@ -25,6 +21,10 @@ export default function ClaimPhaseStepper({
   customSteps,
   currentStepPrefix,
 }) {
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const typeQuery = typeParam ? `?type=${typeParam}` : '';
+
   const formattedClaimDate = buildDateFormatter()(claimDate);
   const formattedCurrentClaimPhaseDate = buildDateFormatter()(
     currentClaimPhaseDate || claimDate,
@@ -36,6 +36,7 @@ export default function ClaimPhaseStepper({
       phase: step.phase || index + 1,
       header: step.header,
       description: step.description,
+      descriptionDateTemplate: step.descriptionDateTemplate || null,
       details: step.details,
       linkText: step.linkText,
       linkUrl: step.linkUrl,
@@ -133,20 +134,36 @@ export default function ClaimPhaseStepper({
                   <span>Step may repeat if we need more information.</span>
                 </div>
               )}
-            <p className="vads-u-margin-y--0">{claimPhase.description}</p>
+            <p className="vads-u-margin-y--0">
+              {claimPhase.descriptionDateTemplate
+                ? claimPhase.descriptionDateTemplate.replace(
+                    '{date}',
+                    formattedClaimDate,
+                  )
+                : claimPhase.description}
+            </p>
             {claimPhase.details?.map((detail, detailIndex) => (
               <p key={detailIndex}>{detail}</p>
             ))}
             {claimPhase.linkText &&
               isSafeUrl(claimPhase.linkUrl) && (
                 <p>
-                  <a
-                    href={claimPhase.linkUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {claimPhase.linkText}
-                  </a>
+                  {isRelativeUrl(claimPhase.linkUrl) ? (
+                    <Link
+                      to={`${claimPhase.linkUrl}${typeQuery}`}
+                      className="active-va-link"
+                    >
+                      {claimPhase.linkText}
+                    </Link>
+                  ) : (
+                    <a
+                      href={claimPhase.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {claimPhase.linkText}
+                    </a>
+                  )}
                 </p>
               )}
           </va-accordion-item>

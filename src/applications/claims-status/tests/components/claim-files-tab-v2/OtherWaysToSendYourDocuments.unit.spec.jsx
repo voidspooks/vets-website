@@ -98,4 +98,149 @@ describe('<OtherWaysToSendYourDocuments>', () => {
       ).to.exist;
     });
   });
+
+  describe('Custom claimStatusMeta rendering', () => {
+    const buildClaim = filesMeta => ({
+      attributes: { claimStatusMeta: { files: filesMeta } },
+    });
+
+    describe('option1 link', () => {
+      it('renders an internal va-link-action when linkExternal is false', () => {
+        const claim = buildClaim({
+          options: {
+            option1: {
+              title: 'By mail',
+              linkText: 'Submit online',
+              linkUrl: 'https://va.gov/submit',
+              linkExternal: false,
+            },
+          },
+        });
+        const { container: c } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        const link = c.querySelector(
+          'va-link-action[href="https://va.gov/submit"]',
+        );
+        expect(link).to.exist;
+        expect(link.getAttribute('target')).to.be.null;
+        expect(link.getAttribute('rel')).to.be.null;
+      });
+
+      it('renders an external va-link-action with aria label and onClick when linkExternal is true', () => {
+        const claim = buildClaim({
+          options: {
+            option1: {
+              title: 'By mail',
+              linkText: 'Submit online',
+              linkUrl: 'https://va.gov/submit',
+              linkExternal: true,
+            },
+          },
+        });
+        const { container: c } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        const link = c.querySelector(
+          'va-link-action[href="https://va.gov/submit"]',
+        );
+        expect(link).to.exist;
+        expect(link.getAttribute('message-aria-describedby')).to.equal(
+          'Opens in a new tab',
+        );
+      });
+
+      it('does not render a link when linkText or linkUrl is missing', () => {
+        const claim = buildClaim({
+          options: { option1: { title: 'By mail', linkText: 'Submit' } },
+        });
+        const { container: c } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(c.querySelector('va-link-action')).to.not.exist;
+      });
+    });
+
+    describe('option3 fax block', () => {
+      it('renders when option3 is present', () => {
+        const claim = buildClaim({
+          options: {
+            option3: {
+              title: 'Option 3: By fax',
+              description: 'Fax your documents.',
+            },
+          },
+        });
+        const { getByText: gbt } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(gbt('Option 3: By fax')).to.exist;
+        expect(gbt('Fax your documents.')).to.exist;
+      });
+
+      it('renders option3 noteText when present', () => {
+        const claim = buildClaim({
+          options: {
+            option3: {
+              title: 'Option 3: By fax',
+              noteText: 'Only send copies, not originals.',
+            },
+          },
+        });
+        const { getByText: gbt } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(gbt('Only send copies, not originals.')).to.exist;
+      });
+
+      it('does not render the fax section when option3 is absent', () => {
+        const claim = buildClaim({
+          options: { option1: { title: 'By mail' } },
+        });
+        const { container: c } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(c.querySelector('.other-ways-fax-section')).to.not.exist;
+      });
+    });
+
+    describe('confirmation section with custom meta', () => {
+      it('renders confirmation.description instead of default text', () => {
+        const claim = buildClaim({
+          confirmation: { description: 'Call us to confirm receipt.' },
+        });
+        const { getByText: gbt, container: c } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(gbt('Call us to confirm receipt.')).to.exist;
+        expect(c.querySelector('va-telephone')).to.not.exist;
+      });
+
+      it('renders confirmation.descriptionNote when present', () => {
+        const claim = buildClaim({
+          confirmation: {
+            description: 'Call us to confirm receipt.',
+            descriptionNote: 'Response times may vary.',
+          },
+        });
+        const { getByText: gbt } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(gbt('Call us to confirm receipt.')).to.exist;
+        expect(gbt('Response times may vary.')).to.exist;
+      });
+
+      it('does not render descriptionNote when absent', () => {
+        const claim = buildClaim({
+          confirmation: { description: 'Call us to confirm receipt.' },
+        });
+        const { container: c } = render(
+          <OtherWaysToSendYourDocuments claim={claim} />,
+        );
+        expect(
+          c.querySelectorAll('.other-ways-confirmation-section p').length,
+        ).to.equal(1);
+      });
+    });
+  });
 });

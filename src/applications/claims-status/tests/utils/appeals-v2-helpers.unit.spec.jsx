@@ -1351,6 +1351,16 @@ describe('functions', () => {
       expect(isClosed(completedClaim)).to.be.true;
     });
 
+    it('should return true for claims with status vbms (CHAMPVA decided)', () => {
+      const vbmsClaim = {
+        type: 'claim',
+        attributes: {
+          status: 'vbms',
+        },
+      };
+      expect(isClosed(vbmsClaim)).to.be.true;
+    });
+
     it('should return false for claims with other statuses', () => {
       const activeClaim = {
         type: 'claim',

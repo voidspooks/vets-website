@@ -49,7 +49,11 @@ const ClaimLegacy = ({ claim }) => {
   const content = (
     <>
       <h3 className="vads-u-margin-top--0 dd-privacy-mask">
-        {capitalizeFirstLetter(getClaimType(claim))} claim received {dateRecd}
+        {claim.attributes.claimStatusMeta?.listCard?.title ||
+          `${capitalizeFirstLetter(getClaimType(claim))} claim`}{' '}
+        received:
+        <br />
+        {dateRecd}
       </h3>
       <div className="vads-u-display--flex">
         <va-icon
@@ -59,13 +63,16 @@ const ClaimLegacy = ({ claim }) => {
           class="vads-u-margin-right--1 vads-u-margin-top--0p5 vads-u-color--green"
         />
         <div>
-          <p className="vads-u-margin-y--0">{status}</p>
+          <p className="vads-u-margin-y--0">Status: {status}</p>
           {inProgress && claim.attributes.developmentLetterSent ? (
             <p className="vads-u-margin-y--0">
               We sent you a development letter
             </p>
           ) : null}
-          {claim.attributes.decisionLetterSent ? (
+          {claim.attributes.decisionLetterSent &&
+          !['ivc_champva', 'ivcchampvabenefitsclaimsprovider'].includes(
+            claim.attributes.provider,
+          ) ? (
             <p className="vads-u-margin-y--0">We sent you a decision letter</p>
           ) : null}
           {inProgress && claim.attributes.documentsNeeded ? (

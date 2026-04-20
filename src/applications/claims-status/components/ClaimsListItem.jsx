@@ -27,10 +27,13 @@ const getLastUpdated = (claim, listCardMeta = {}) => {
   return `${prefix} ${updatedOn}`;
 };
 
-const showPreDecisionCommunications = claim => {
-  const { decisionLetterSent, status } = claim.attributes;
+const isClaimComplete = claim =>
+  claim.attributes.status === 'COMPLETE' || claim.attributes.status === 'vbms';
 
-  return !decisionLetterSent && status !== 'COMPLETE';
+const showPreDecisionCommunications = claim => {
+  const { decisionLetterSent } = claim.attributes;
+
+  return !decisionLetterSent && !isClaimComplete(claim);
 };
 
 const CommunicationsItem = ({ children, icon }) => {
@@ -74,6 +77,7 @@ export default function ClaimsListItem({ claim }) {
     cstClaimPhasesEnabled,
   );
   const listCardMeta = claimStatusMeta?.listCard || {};
+  const { decisionLetterLabel } = listCardMeta;
   const stepContent = showEightPhases
     ? claimStatusMeta?.whatWeAreDoing?.phaseTypeMap?.[
         claimPhaseDates?.phaseType
@@ -117,11 +121,15 @@ export default function ClaimsListItem({ claim }) {
       subtitle={`${receivedLabel} ${formattedReceiptDate}`}
     >
       <ul className="communications">
-        {decisionLetterSent && (
-          <CommunicationsItem icon="mail">
-            You have a decision letter ready
-          </CommunicationsItem>
-        )}
+        {decisionLetterSent &&
+          (!['ivc_champva', 'ivcchampvabenefitsclaimsprovider'].includes(
+            claim.attributes?.provider,
+          ) ||
+            decisionLetterLabel) && (
+            <CommunicationsItem icon="mail">
+              {decisionLetterLabel || 'You have a decision letter ready'}
+            </CommunicationsItem>
+          )}
       </ul>
       <div className="card-status">
         {humanStatus && <p>{humanStatus}</p>}

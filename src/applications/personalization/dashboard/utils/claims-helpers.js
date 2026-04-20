@@ -8,7 +8,8 @@ export const claimsAvailability = {
 export function isClaimComplete(claim) {
   return (
     claim.attributes.decisionLetterSent ||
-    claim.attributes.status === 'COMPLETE'
+    claim.attributes.status === 'COMPLETE' ||
+    claim.attributes.status === 'vbms'
   );
 }
 
@@ -19,6 +20,9 @@ const claimStatusMap = {
     'Evidence gathering, review, and decision',
   PREPARATION_FOR_NOTIFICATION: 'Preparation for notification',
   COMPLETE: 'Closed',
+  pending: 'Application received',
+  vbms: 'Application decided',
+  error: 'Additional review needed',
 };
 
 export function getClaimStatusDescription(status) {

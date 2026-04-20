@@ -2068,7 +2068,9 @@ export function isClosed(item) {
   }
 
   // Benefits Claims API: check status string
-  return item.attributes.status === 'COMPLETE';
+  return (
+    item.attributes.status === 'COMPLETE' || item.attributes.status === 'vbms'
+  );
 }
 
 /**

@@ -45,7 +45,9 @@ const Claim = ({ claim }) => {
   const content = (
     <>
       <h3 className="vads-u-margin-top--0 dd-privacy-mask">
-        {capitalizeFirstLetter(getClaimType(claim))} claim received:
+        {claim.attributes.claimStatusMeta?.listCard?.title ||
+          `${capitalizeFirstLetter(getClaimType(claim))} claim`}{' '}
+        received:
         <br />
         {dateRecd}
       </h3>
@@ -63,7 +65,10 @@ const Claim = ({ claim }) => {
               We sent you a development letter
             </p>
           ) : null}
-          {claim.attributes.decisionLetterSent ? (
+          {claim.attributes.decisionLetterSent &&
+          !['ivc_champva', 'ivcchampvabenefitsclaimsprovider'].includes(
+            claim.attributes.provider,
+          ) ? (
             <p className="vads-u-margin-y--0">We sent you a decision letter</p>
           ) : null}
           {inProgress && claim.attributes.documentsNeeded ? (

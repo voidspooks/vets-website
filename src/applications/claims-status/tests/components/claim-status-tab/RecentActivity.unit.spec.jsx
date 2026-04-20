@@ -1771,4 +1771,104 @@ describe('<RecentActivity>', () => {
       getByText('We made a request outside the VA: “medical Records.”');
     });
   });
+
+  context('CHAMPVA claims with claimStatusMeta', () => {
+    const champvaStatusMap = {
+      pending: {
+        title: 'Step 1 of 2: Application received',
+        recentActivityTitle: 'Step 1: Application received',
+        description: 'We received your application.',
+      },
+      vbms: {
+        title: 'Step 2 of 2: Application decided',
+        recentActivityTitle: 'Step 2: Application decided',
+        description: 'We completed processing your application.',
+      },
+    };
+
+    const openChampvaClaim = {
+      attributes: {
+        provider: 'ivc_champva',
+        claimDate: '2024-10-17',
+        closeDate: null,
+        status: 'pending',
+        claimTypeCode: null,
+        trackedItems: [],
+        claimPhaseDates: {
+          phaseChangeDate: '2024-10-17',
+          phaseType: 'UNDER_REVIEW',
+        },
+        claimStatusMeta: {
+          whatWeAreDoing: { statusMap: champvaStatusMap },
+          overview: {
+            currentStepPrefix: 'Your application moved to this step on',
+            steps: [
+              { phase: 1, header: 'Step 1 of 2: Application received' },
+              { phase: 2, header: 'Step 2 of 2: Application decided' },
+            ],
+            currentStepByStatus: { pending: 1, vbms: 2, error: 2 },
+          },
+        },
+      },
+    };
+
+    const closedChampvaClaim = {
+      attributes: {
+        provider: 'ivc_champva',
+        claimDate: '2024-10-17',
+        closeDate: '2024-10-18',
+        status: 'vbms',
+        claimTypeCode: null,
+        trackedItems: [],
+        claimPhaseDates: {
+          phaseChangeDate: '2024-10-18',
+          phaseType: 'COMPLETE',
+        },
+        claimStatusMeta: {
+          whatWeAreDoing: { statusMap: champvaStatusMap },
+          overview: {
+            currentStepPrefix: 'Your application moved to this step on',
+            steps: [
+              { phase: 1, header: 'Step 1 of 2: Application received' },
+              { phase: 2, header: 'Step 2 of 2: Application decided' },
+            ],
+            currentStepByStatus: { pending: 1, vbms: 2, error: 2 },
+          },
+        },
+      },
+    };
+
+    it('shows step 1 received entry for an open CHAMPVA claim', () => {
+      const { getByText } = renderWithRouter(
+        <Provider store={getStore(false)}>
+          <RecentActivity claim={openChampvaClaim} />
+        </Provider>,
+      );
+
+      getByText('Your application moved to Step 1: Application received.');
+    });
+
+    it('does not show a decided entry for an open CHAMPVA claim', () => {
+      const { queryByText } = renderWithRouter(
+        <Provider store={getStore(false)}>
+          <RecentActivity claim={openChampvaClaim} />
+        </Provider>,
+      );
+
+      expect(
+        queryByText('Your application moved to Step 2: Application decided.'),
+      ).to.be.null;
+    });
+
+    it('shows both step entries for a closed CHAMPVA claim', () => {
+      const { getByText } = renderWithRouter(
+        <Provider store={getStore(false)}>
+          <RecentActivity claim={closedChampvaClaim} />
+        </Provider>,
+      );
+
+      getByText('Your application moved to Step 2: Application decided.');
+      getByText('Your application moved to Step 1: Application received.');
+    });
+  });
 });

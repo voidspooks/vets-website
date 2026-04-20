@@ -14,6 +14,38 @@ describe('<NeedHelp>', () => {
     expect($('va-need-help', container)).to.exist;
     expect($$('va-telephone', container).length).to.equal(2);
   });
+
+  it('should render CHAMPVA inline TTY and Ask VA link', () => {
+    const claim = {
+      attributes: {
+        claimStatusMeta: {
+          help: {
+            phone: '8007338387',
+            tty: '711',
+            inlineTty: true,
+            hours: 'Monday through Friday, 8:00 a.m. to 7:30 p.m. ET.',
+            intro:
+              'If you have questions about your CHAMPVA application, call us',
+            askVa: {
+              text: 'You can also use Ask VA to ask questions online.',
+              linkText: 'Go to Ask VA',
+              linkUrl: 'https://ask.va.gov/',
+            },
+          },
+        },
+      },
+    };
+    const { container } = render(<NeedHelp claim={claim} />);
+    expect($('va-need-help', container)).to.exist;
+    expect($$('va-telephone', container).length).to.equal(2);
+    expect(container.textContent).to.include(
+      'If you have questions about your CHAMPVA application, call us',
+    );
+    expect(container.textContent).to.include(
+      'You can also use Ask VA to ask questions online.',
+    );
+    expect($('va-link', container)).to.exist;
+  });
   it('should render updated UI', () => {
     const item = {
       closedDate: null,
