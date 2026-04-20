@@ -26,7 +26,11 @@ export default function ScheduleWithDifferentProvider({
 
   // if request eligibility endpoint returns an error, ELIGIBILITY_REASONS.error
   // AND one or more providers are returned
-  if (requestEligibilityError && hasProviders) {
+  if (
+    (requestEligibilityError && hasProviders) ||
+    overRequestLimit ||
+    !isEligibleForRequest
+  ) {
     return (
       <>
         <h2 className="vads-u-font-size--h3 vads-u-margin-bottom--0 vads-u-margin-top--2">
@@ -42,11 +46,6 @@ export default function ScheduleWithDifferentProvider({
         />
       </>
     );
-  }
-
-  // now under title text is handled in the no available providers info section
-  if (overRequestLimit || !isEligibleForRequest) {
-    return null;
   }
 
   return (
