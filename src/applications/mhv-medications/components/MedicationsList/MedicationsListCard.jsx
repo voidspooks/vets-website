@@ -162,12 +162,12 @@ const MedicationsListCard = ({ rx }) => {
   const renderNonVaCard = () => (
     <>
       <p
-        className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
+        className="rx-card-section-header"
         data-testid="non-va-medication-label"
       >
         Non-VA medication
       </p>
-      <p className="vads-u-margin-y--0" data-testid="non-VA-prescription">
+      <p className="rx-card-paragraph" data-testid="non-VA-prescription">
         {NON_VA_MEDICATION_MESSAGE}
       </p>
     </>
@@ -175,7 +175,7 @@ const MedicationsListCard = ({ rx }) => {
 
   const renderPendingCard = () => (
     <p
-      className="vads-u-margin-top--2 vads-u-margin-bottom--0"
+      className="rx-card-section-content"
       data-testid="pending-renewal-rx"
       id={`pending-med-content-${rx.prescriptionId}`}
     >
@@ -194,10 +194,7 @@ const MedicationsListCard = ({ rx }) => {
   );
 
   const renderTransferredCard = () => (
-    <p
-      className="vads-u-margin-top--1p5 vads-u-margin-bottom--0"
-      data-testid="transferred-content"
-    >
+    <p className="rx-card-section-content" data-testid="transferred-content">
       This is a previous record of your medication. If you need a refill, find
       the current medication in your medications list. If you don’t have a
       current one, contact your provider.
@@ -207,16 +204,10 @@ const MedicationsListCard = ({ rx }) => {
   const renderExpiredCard = () => (
     <>
       <LastFilledInfo {...rx} />
-      <p
-        className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
-        data-testid="expired-status"
-      >
+      <p className="rx-card-status" data-testid="expired-status">
         {rxStatus}
       </p>
-      <p
-        className="vads-u-margin-y--0"
-        data-testid="expired-no-renewal-content"
-      >
+      <p className="rx-card-paragraph" data-testid="expired-no-renewal-content">
         This prescription is too old to refill. If you need more, request a
         renewal.
       </p>
@@ -231,14 +222,14 @@ const MedicationsListCard = ({ rx }) => {
         <>
           <LastFilledInfo {...rx} />
           <p
-            className="vads-u-margin-top--1p5 vads-u-margin-bottom--0 vads-u-font-weight--bold"
+            className="rx-card-status"
             data-testid="rxStatus"
             data-dd-privacy="mask"
           >
             Expired
           </p>
           <p
-            className="vads-u-margin-top--0p5 vads-u-margin-bottom--0"
+            className="rx-card-expired-content"
             data-testid="expired-non-renewable"
             data-dd-privacy="mask"
           >
@@ -300,7 +291,7 @@ const MedicationsListCard = ({ rx }) => {
           rx.refillRemaining >= 0 &&
           !(isMedsImprovements && isUnknownStatus) && (
             <p
-              className="vads-u-margin-bottom--0"
+              className="rx-card-section-content"
               data-testid="rx-refill-remaining"
               data-dd-privacy="mask"
               id={`refill-remaining-${rx.prescriptionId}`}
@@ -319,10 +310,10 @@ const MedicationsListCard = ({ rx }) => {
           !isRecentlyRenewed &&
           (isActiveNoRefills || isExpiredRenewable) && (
             <div
-              className="vads-u-margin-top--1"
+              className="rx-card-section-content"
               data-testid="no-refills-left-alert"
             >
-              <p className="vads-u-margin-y--0">
+              <p className="rx-card-paragraph">
                 {isOracleHealth &&
                 rx.isRenewable &&
                 showSecureMessagingRenewalRequest
@@ -347,7 +338,7 @@ const MedicationsListCard = ({ rx }) => {
         {latestTrackingStatus &&
           !showMedImprovementCard && (
             <p
-              className="vads-u-margin-top--1p5 vads-u-padding-bottom--1p5 vads-u-border-bottom--1px vads-u-border-color--gray"
+              className="rx-card-shipped-info"
               data-testid="rx-card-details--shipped-on"
               data-dd-privacy="mask"
             >
@@ -369,11 +360,11 @@ const MedicationsListCard = ({ rx }) => {
           rxStatus !== 'Unknown' && (
             <p
               id={`status-${rx.prescriptionId}`}
-              className={`${
+              className={
                 isMedsImprovements && isDiscontinued
-                  ? 'vads-u-margin-top--1 vads-u-margin-bottom--0p5'
-                  : 'vads-u-margin-top--1p5'
-              } vads-u-font-weight--bold`}
+                  ? 'rx-card-status-discontinued'
+                  : 'rx-card-status'
+              }
               data-testid="rxStatus"
               data-dd-privacy="mask"
             >
@@ -399,16 +390,9 @@ const MedicationsListCard = ({ rx }) => {
               />
             );
 
-            if (isMedsImprovements && isOnHold) {
+            if (isMedsImprovements && (isOnHold || isUnknownStatus)) {
               return (
-                <div className="vads-u-margin-top--1p5">
-                  {extraDetailsContent}
-                </div>
-              );
-            }
-            if (isMedsImprovements && isUnknownStatus) {
-              return (
-                <div className="vads-u-margin-top--1">
+                <div className="rx-card-section-content">
                   {extraDetailsContent}
                 </div>
               );
@@ -499,7 +483,7 @@ const MedicationsListCard = ({ rx }) => {
               data-testid="rx-number"
               data-dd-privacy="mask"
               id={`prescription-number-${rx.prescriptionId}`}
-              className="vads-u-margin-top--0 vads-u-margin-bottom--0 vads-u-color--gray-dark"
+              className="rx-card-rx-number"
             >
               Rx #: {rx.prescriptionNumber || 'Not available'}
             </p>
