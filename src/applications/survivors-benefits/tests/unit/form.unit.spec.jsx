@@ -11,10 +11,14 @@ describe('Survivors Benefits Form config', () => {
     });
 
     it('adds forceDivWrapper to empty uiSchema pages', () => {
-      const { claimantType, additionalInformation } = formConfig.chapters;
+      const {
+        claimantInformation,
+        additionalInformation,
+      } = formConfig.chapters;
 
       expect(
-        claimantType.pages.claimantOther.uiSchema['ui:options'].forceDivWrapper,
+        claimantInformation.pages.claimantOther.uiSchema['ui:options']
+          .forceDivWrapper,
       ).to.be.true;
       expect(
         additionalInformation.pages.artifactReview.uiSchema['ui:options']
@@ -25,8 +29,8 @@ describe('Survivors Benefits Form config', () => {
 
   describe('Chapter 2: Claimant Information with different data sets', () => {
     it('should show claimantOther page when claimantRelationship is OTHER', () => {
-      const { claimantType } = formConfig.chapters;
-      const { pages } = claimantType;
+      const { claimantInformation } = formConfig.chapters;
+      const { pages } = claimantInformation;
       const { claimantOther } = pages;
 
       const relationshipOther = { claimantRelationship: 'OTHER' };

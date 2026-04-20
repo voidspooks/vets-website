@@ -159,28 +159,8 @@ const formConfig = {
   errorText: ErrorText,
   showReviewErrors: !environment.isProduction(),
   chapters: {
-    // Claimant type and incorrect form
-    claimantType: {
-      title: 'Claimant’s relationship',
-      pages: {
-        claimantRelationship: {
-          path: 'claimant-relationship',
-          title: 'Claimant’s relationship to the Veteran',
-          uiSchema: claimantRelationship.uiSchema,
-          schema: claimantRelationship.schema,
-        },
-        claimantOther: {
-          path: 'claimant-other',
-          title: 'Claimant’s relationship to the Veteran',
-          CustomPage: IncorrectForm,
-          CustomPageReview: null,
-          uiSchema: {},
-          schema: blankSchema,
-          depends: formData => formData.claimantRelationship === 'OTHER',
-        },
-      },
-    },
-    // Required Documents
+    // TODO: Update chapter numbers
+    // Chapter 0 - Required Documents
     requiredDocumentUpload: {
       title: "Veteran's DD214 and death certificate",
       hideOnReviewPage: true,
@@ -201,10 +181,49 @@ const formConfig = {
         },
       },
     },
-    // Claimant Information
+    // Chapter 1 - Veteran Information
+    veteranInformation: {
+      title: 'Veteran’s information',
+      pages: {
+        veteranName: {
+          title: 'Veteran’s name and date of birth',
+          path: 'veteran',
+          uiSchema: veteranName.uiSchema,
+          schema: veteranName.schema,
+        },
+        veteranIdentification: {
+          title: 'Veteran’s identification information',
+          path: 'veteran-identification',
+          uiSchema: veteranIdentification.uiSchema,
+          schema: veteranIdentification.schema,
+        },
+        veteranIdentificationAdditional: {
+          title: 'Additional Veteran information',
+          path: 'veteran-additional-information',
+          uiSchema: veteranAdditional.uiSchema,
+          schema: veteranAdditional.schema,
+        },
+      },
+    },
+    // Chapter 2 - Claimant Information
     claimantInformation: {
       title: "Claimant's information",
       pages: {
+        claimantRelationship: {
+          path: 'claimant-relationship',
+          title: 'Claimant’s relationship to the Veteran',
+          uiSchema: claimantRelationship.uiSchema,
+          schema: claimantRelationship.schema,
+        },
+        claimantOther: {
+          path: 'claimant-other',
+          title: 'Claimant’s relationship to the Veteran',
+          CustomPage: IncorrectForm,
+          CustomPageReview: null,
+          uiSchema: {},
+          schema: blankSchema,
+          depends: formData => formData.claimantRelationship === 'OTHER',
+        },
         claimantInformation: {
           path: 'claimant-information',
           title: 'Claimant’s name and date of birth',
@@ -243,31 +262,7 @@ const formConfig = {
         },
       },
     },
-    // Veteran Information
-    veteranInformation: {
-      title: 'Veteran’s information',
-      pages: {
-        veteranName: {
-          title: 'Veteran’s name and date of birth',
-          path: 'veteran',
-          uiSchema: veteranName.uiSchema,
-          schema: veteranName.schema,
-        },
-        veteranIdentification: {
-          title: 'Veteran’s identification information',
-          path: 'veteran-identification',
-          uiSchema: veteranIdentification.uiSchema,
-          schema: veteranIdentification.schema,
-        },
-        veteranIdentificationAdditional: {
-          title: 'Additional Veteran information',
-          path: 'veteran-additional-information',
-          uiSchema: veteranAdditional.uiSchema,
-          schema: veteranAdditional.schema,
-        },
-      },
-    },
-    // Military History
+    // Chapter 3 - Military History
     militaryHistory: {
       title: 'Veteran’s military history',
       pages: {
@@ -322,7 +317,7 @@ const formConfig = {
         },
       },
     },
-    // Household Information
+    // Chapter 4 - Household Information
     householdInformation: {
       title: 'Household information',
       pages: {
@@ -484,7 +479,7 @@ const formConfig = {
         },
       },
     },
-    // Claim Information
+    // Chapter 5 - Claim Information
     claimInformation: {
       title: 'Claim information',
       pages: {
@@ -505,7 +500,7 @@ const formConfig = {
         },
       },
     },
-    // Financial Information
+    // Chapter 6 - Financial Information
     financialInformation: {
       title: 'Financial information',
       pages: {
@@ -600,7 +595,7 @@ const formConfig = {
         ...medicalExpensesPages,
       },
     },
-    // Additional Information
+    // Chapter 7 - Additional Information
     additionalInformation: {
       title: 'Additional information',
       pages: {
