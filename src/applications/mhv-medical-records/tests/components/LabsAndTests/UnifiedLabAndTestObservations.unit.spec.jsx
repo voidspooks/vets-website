@@ -93,14 +93,14 @@ describe('UnifiedLabAndTestObservations Component', () => {
     expect(screen.getByText('Old format string comment')).to.exist;
   });
 
-  it('displays interpretation when present, mapped via interpretationMap', () => {
+  it('displays interpretation when present', () => {
     const resultsWithInterpretation = [
       {
         testCode: 'Glucose',
         value: { text: '250 mg/dL' },
         referenceRange: '70 - 110',
         status: 'final',
-        interpretation: 'H',
+        interpretation: 'High',
         comments: [],
       },
     ];
@@ -120,7 +120,7 @@ describe('UnifiedLabAndTestObservations Component', () => {
         value: { text: '7.0 meq/L' },
         referenceRange: '3.5 - 5.1',
         status: 'final',
-        interpretation: 'HH',
+        interpretation: 'Critical high',
         comments: [],
       },
     ];
@@ -139,6 +139,7 @@ describe('UnifiedLabAndTestObservations Component', () => {
         testCode: 'Sodium',
         value: { text: '140 mmol/L' },
         referenceRange: '136 - 145',
+        interpretation: null,
         status: 'final',
         comments: [],
       },
@@ -149,25 +150,5 @@ describe('UnifiedLabAndTestObservations Component', () => {
     );
 
     expect(screen.queryByText('Interpretation')).not.to.exist;
-  });
-
-  it('displays raw interpretation code when not found in interpretationMap', () => {
-    const resultsWithUnmappedCode = [
-      {
-        testCode: 'Custom Test',
-        value: { text: 'Positive' },
-        referenceRange: '',
-        status: 'final',
-        interpretation: 'UNKNOWN_CODE',
-        comments: [],
-      },
-    ];
-
-    const screen = render(
-      <UnifiedLabAndTestObservations results={resultsWithUnmappedCode} />,
-    );
-
-    expect(screen.getByText('Interpretation')).to.exist;
-    expect(screen.getByText('UNKNOWN_CODE')).to.exist;
   });
 });

@@ -29,7 +29,8 @@ const sample = [
       observations: [
         {
           testCode: 'GLUCOSE',
-          referenceRange: '70 - 110',
+          referenceRange: '70 - 110 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           sampleTested: 'SERUM',
           bodySite: 'Central Vein',
@@ -41,7 +42,8 @@ const sample = [
         },
         {
           testCode: 'UREA NITROGEN',
-          referenceRange: '7 - 18',
+          referenceRange: '7 - 18 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -51,7 +53,8 @@ const sample = [
         },
         {
           testCode: 'CREATININE',
-          referenceRange: '0.6 - 1.3',
+          referenceRange: '0.6 - 1.3 mg/dL',
+          interpretation: 'High',
           status: 'final',
           comments: '',
           value: {
@@ -61,7 +64,8 @@ const sample = [
         },
         {
           testCode: 'SODIUM',
-          referenceRange: '136 - 145',
+          referenceRange: '136 - 145 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments: '',
           value: {
@@ -71,7 +75,8 @@ const sample = [
         },
         {
           testCode: 'POTASSIUM',
-          referenceRange: '3.5 - 5.1',
+          referenceRange: '3.5 - 5.1 meq/L',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -81,7 +86,8 @@ const sample = [
         },
         {
           testCode: 'CHLORIDE',
-          referenceRange: '98 - 107',
+          referenceRange: '98 - 107 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments: '',
           value: {
@@ -92,7 +98,8 @@ const sample = [
         {
           testCode: 'CO2',
           valueQuantity: '2 meq/L',
-          referenceRange: '22 - 29',
+          referenceRange: '22 - 29 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments: '',
           value: {
@@ -118,7 +125,8 @@ const sample = [
       observations: [
         {
           testCode: 'GLUCOSE',
-          referenceRange: '70 - 110',
+          referenceRange: '70 - 110 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           sampleTested: 'SERUM',
           bodySite: 'Central Vein',
@@ -130,7 +138,8 @@ const sample = [
         },
         {
           testCode: 'UREA NITROGEN',
-          referenceRange: '7 - 18',
+          referenceRange: '7 - 18 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -166,6 +175,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 22.0 - 29.0 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -178,6 +188,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 98 - 107 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -190,6 +201,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 3.5 - 5.4 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -202,6 +214,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 136 - 145 mmol/L',
+          interpretation: 'High',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -214,6 +227,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 8.6 - 10.0 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -226,6 +240,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 0.5 - 1.0 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -238,6 +253,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 6 - 20 mg/dL',
+          interpretation: 'Low',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -250,6 +266,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 70 - 100 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -280,6 +297,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -292,6 +310,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -304,6 +323,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -316,6 +336,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -328,6 +349,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -358,6 +380,7 @@ const staging = [
             type: 'string',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -388,6 +411,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 0.27 - 4.2 uIU/mL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -418,6 +442,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -448,7 +473,8 @@ const staging = [
             text: '100 mg/dL',
             type: 'quantity',
           },
-          referenceRange: '<=150',
+          referenceRange: '<=150 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments:
             '<150 mg/dL normal range\n<200 mg/dL no lipid metabolism disorder\n>200 mg/dL yes lipid metabolism disorder\n',
@@ -461,7 +487,8 @@ const staging = [
             text: '62 mg/dL',
             type: 'quantity',
           },
-          referenceRange: '>=60',
+          referenceRange: '>=60 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -473,7 +500,8 @@ const staging = [
             text: '100 mg/dL',
             type: 'quantity',
           },
-          referenceRange: '<=200',
+          referenceRange: '<=200 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -501,6 +529,7 @@ const staging = [
           testCode: 'HEART_RATE',
           value: { text: '72 bpm', type: 'Quantity' },
           referenceRange: '60 - 100 bpm',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
         },
@@ -508,6 +537,7 @@ const staging = [
           testCode: 'PR_INTERVAL',
           value: { text: '160 ms', type: 'Quantity' },
           referenceRange: '120 - 200 ms',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
         },
@@ -533,6 +563,7 @@ const staging = [
           testCode: 'HEART_RATE',
           value: { text: '55 bpm', type: 'Quantity' },
           referenceRange: '60 - 100 bpm',
+          interpretation: 'Normal',
           status: 'final',
           comments: 'Mild bradycardia',
         },
@@ -579,6 +610,7 @@ const staging = [
           testCode: 'SARS-CoV-2 ANTIGEN',
           value: { text: 'Positive', type: 'codeable-concept' },
           referenceRange: '',
+          interpretation: 'Abnormal',
           status: 'final',
           comments: 'Performed using BinaxNOW COVID-19 Ag Card\n',
           bodySite: '',
@@ -608,6 +640,7 @@ const staging = [
           testCode: 'Hemoglobin A1c',
           value: { text: '5.4 %', type: 'quantity' },
           referenceRange: 'Normal Range: 4.0 - 5.6 %',
+          interpretation: 'Normal',
           status: 'final',
           comments:
             'Normal: < or = 5.6%\nPre-diabetes: 5.7-6.4%\nDiabetes Mellitus: > or = 6.5%\n\nValues obtained from A1C measurements can vary.\nFor typical A1C assays, a reported value of 7.0 could actually\nbe between 6.72 and 7.28 if measured by a reference method.\nA reported value of 9.0 could actually be between 8.72 and 9.27.\n\nRef: http://www.ngsp.org/CAPdata.asp\n',
@@ -638,6 +671,7 @@ const staging = [
           testCode: 'HCO3 (Art)',
           value: { text: '24 mmol/L', type: 'quantity' },
           referenceRange: 'Normal Range: 22 - 29 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -647,6 +681,7 @@ const staging = [
           testCode: 'pO2 (Art)',
           value: { text: '99 mmHg', type: 'quantity' },
           referenceRange: 'Normal Range: 75 - 100 mmHg',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -656,6 +691,7 @@ const staging = [
           testCode: 'pCO2 (Art)',
           value: { text: '37 mmHg', type: 'quantity' },
           referenceRange: 'Normal Range: 35 - 48 mmHg',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -665,6 +701,7 @@ const staging = [
           testCode: 'pH (Art)',
           value: { text: '7.33 pH', type: 'quantity' },
           referenceRange: 'Normal Range: 7.35 - 7.45 pH',
+          interpretation: 'Low',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -694,6 +731,7 @@ const staging = [
           testCode: 'Platelets',
           value: { text: '157 10*3/uL', type: 'quantity' },
           referenceRange: 'Normal Range: 130 - 400 10*3/uL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -703,6 +741,7 @@ const staging = [
           testCode: 'MCHC',
           value: { text: '33.5 g/dL', type: 'quantity' },
           referenceRange: 'Normal Range: 31.0 - 37.0 g/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -712,6 +751,7 @@ const staging = [
           testCode: 'MCH',
           value: { text: '27.0 pg', type: 'quantity' },
           referenceRange: 'Normal Range: 27.0 - 34.0 pg',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -721,6 +761,7 @@ const staging = [
           testCode: 'MCV',
           value: { text: '98.0 fL', type: 'quantity' },
           referenceRange: 'Normal Range: 82.0 - 99.0 fL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -730,6 +771,7 @@ const staging = [
           testCode: 'Hematocrit',
           value: { text: '42.0 %', type: 'quantity' },
           referenceRange: 'Normal Range: 40.0 - 51.0 %',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -739,6 +781,7 @@ const staging = [
           testCode: 'Hemoglobin',
           value: { text: '10.0 g/dL', type: 'quantity' },
           referenceRange: 'Normal Range: 13.0 - 17.0 g/dL',
+          interpretation: 'Low',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -748,6 +791,7 @@ const staging = [
           testCode: 'RBC',
           value: { text: '4.2 10*6/uL', type: 'quantity' },
           referenceRange: 'Normal Range: 4.2 - 5.7 10*6/uL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -757,6 +801,7 @@ const staging = [
           testCode: 'WBC',
           value: { text: '10.0 10*3/uL', type: 'quantity' },
           referenceRange: 'Normal Range: 4.0 - 11.0 10*3/uL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -786,6 +831,7 @@ const staging = [
           testCode: 'Mono Absolute',
           value: { text: '1.0 10*3/uL', type: 'quantity' },
           referenceRange: 'Normal Range: 0.2 - 1.0 10*3/uL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -795,6 +841,7 @@ const staging = [
           testCode: 'Lymph Absolute',
           value: { text: '1.0 10*3/uL', type: 'quantity' },
           referenceRange: 'Normal Range: 1.0 - 4.0 10*3/uL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -823,7 +870,8 @@ const staging = [
         {
           testCode: 'CRP',
           value: { text: '<5.0 mg/L', type: 'quantity' },
-          referenceRange: '<=5.0',
+          referenceRange: '<=5.0 mg/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -853,6 +901,7 @@ const staging = [
           testCode: 'Magnesium Lvl',
           value: { text: '2.1 mg/dL', type: 'quantity' },
           referenceRange: 'Normal Range: 1.6 - 2.6 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -882,6 +931,7 @@ const staging = [
           testCode: 'POC Glucose',
           value: { text: '112 mg/dL', type: 'quantity' },
           referenceRange: 'Normal Range: 70 - 99 mg/dL',
+          interpretation: 'High',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -911,6 +961,7 @@ const staging = [
           testCode: 'SARS-CoV-2 ANTIGEN',
           value: { text: 'Negative', type: 'codeable-concept' },
           referenceRange: 'Negative',
+          interpretation: 'Negative',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -920,6 +971,7 @@ const staging = [
           testCode: 'Flu B Rapid Ag',
           value: { text: 'Negative', type: 'codeable-concept' },
           referenceRange: 'Negative',
+          interpretation: 'Negative',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -929,6 +981,7 @@ const staging = [
           testCode: 'Flu A Rapid Ag',
           value: { text: 'Positive', type: 'codeable-concept' },
           referenceRange: 'Negative',
+          interpretation: 'Abnormal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -958,6 +1011,7 @@ const staging = [
           testCode: 'SARS-CoV-2 ANTIGEN',
           value: { text: 'Negative', type: 'codeable-concept' },
           referenceRange: 'Negative',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -987,6 +1041,7 @@ const staging = [
           testCode: 'SARS-CoV-2 ANTIGEN',
           value: { text: 'Positive', type: 'codeable-concept' },
           referenceRange: 'Negative',
+          interpretation: 'Abnormal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -1016,6 +1071,7 @@ const staging = [
           testCode: 'SARS-CoV-2 ANTIGEN',
           value: { text: 'Positive', type: 'codeable-concept' },
           referenceRange: 'Negative',
+          interpretation: 'Abnormal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -1045,6 +1101,7 @@ const staging = [
           testCode: 'URINE COLOR',
           value: { text: 'clear', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1055,6 +1112,7 @@ const staging = [
           testCode: 'APPEARANCE',
           value: { text: 'normal', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1065,6 +1123,7 @@ const staging = [
           testCode: 'SPECIFIC GRAVITY',
           value: { text: '1.005', type: 'quantity' },
           referenceRange: '1.005 - 1.03',
+          interpretation: 'Normal',
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1075,6 +1134,7 @@ const staging = [
           testCode: 'UROBILINOGEN',
           value: { text: '0.2 EU/DL', type: 'quantity' },
           referenceRange: '.1 - 1',
+          interpretation: 'Normal',
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1085,6 +1145,7 @@ const staging = [
           testCode: 'URINE BLOOD',
           value: { text: 'NEG', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1095,6 +1156,7 @@ const staging = [
           testCode: 'URINE BILIRUBIN',
           value: { text: 'NEG', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1105,6 +1167,7 @@ const staging = [
           testCode: 'URINE KETONES',
           value: { text: 'NEGATIVE', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1115,6 +1178,7 @@ const staging = [
           testCode: 'URINE GLUCOSE',
           value: { text: '100.0 MG/DL', type: 'quantity' },
           referenceRange: '',
+          interpretation: 'N/A',
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1125,6 +1189,7 @@ const staging = [
           testCode: 'URINE PROTEIN',
           value: { text: 'TRACE', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1135,6 +1200,7 @@ const staging = [
           testCode: 'URINE PH',
           value: { text: '4.7', type: 'quantity' },
           referenceRange: '5 - 8',
+          interpretation: 'Low',
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1145,6 +1211,7 @@ const staging = [
           testCode: 'NITRITE, URINE',
           value: { text: 'NEG', type: 'string' },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1155,6 +1222,7 @@ const staging = [
           testCode: 'LEUKOCYTE ESTERASE, URINE',
           value: { text: 'NEG', type: 'string' },
           referenceRange: 'NEG - POS',
+          interpretation: 'N/A',
           status: 'final',
           comments:
             'first comment for troubleshooting second comment for troubleshooting third comment for troubleshooting fourth comment for troubleshooting, entered separately fifth comment? Ordering Provider: Victoria A Borland Report Released Date/Time: May 13, 2025@20:34\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1444,7 +1512,8 @@ const staging = [
         {
           testCode: 'GLUCOSE',
           value: { text: '99.0 mg/dL', type: 'quantity' },
-          referenceRange: '70 - 110',
+          referenceRange: '70 - 110 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1454,7 +1523,8 @@ const staging = [
         {
           testCode: 'UREA NITROGEN',
           value: { text: '200.0 mg/dL', type: 'quantity' },
-          referenceRange: '7 - 18',
+          referenceRange: '7 - 18 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1464,7 +1534,8 @@ const staging = [
         {
           testCode: 'CREATININE',
           value: { text: '5.0 mg/dL', type: 'quantity' },
-          referenceRange: '0.6 - 1.3',
+          referenceRange: '0.6 - 1.3 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1474,7 +1545,8 @@ const staging = [
         {
           testCode: 'SODIUM',
           value: { text: '8.0 meq/L', type: 'quantity' },
-          referenceRange: '136 - 145',
+          referenceRange: '136 - 145 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1484,7 +1556,8 @@ const staging = [
         {
           testCode: 'POTASSIUM',
           value: { text: '24.0 meq/L', type: 'quantity' },
-          referenceRange: '3.5 - 5.1',
+          referenceRange: '3.5 - 5.1 meq/L',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1494,7 +1567,8 @@ const staging = [
         {
           testCode: 'CHLORIDE',
           value: { text: '2.0 meq/L', type: 'quantity' },
-          referenceRange: '98 - 107',
+          referenceRange: '98 - 107 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1504,7 +1578,8 @@ const staging = [
         {
           testCode: 'CO2',
           value: { text: '2.0 meq/L', type: 'quantity' },
-          referenceRange: '22 - 29',
+          referenceRange: '22 - 29 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments:
             '**TEST COMMENT** RESULTS CONTAIN CRITICAL HIGH AND LOW VALUES Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1534,7 +1609,8 @@ const staging = [
         {
           testCode: 'GLUCOSE',
           value: { text: '99.0 mg/dL', type: 'quantity' },
-          referenceRange: '70 - 110',
+          referenceRange: '70 - 110 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1544,7 +1620,8 @@ const staging = [
         {
           testCode: 'UREA NITROGEN',
           value: { text: '30.0 mg/dL', type: 'quantity' },
-          referenceRange: '7 - 18',
+          referenceRange: '7 - 18 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1554,7 +1631,8 @@ const staging = [
         {
           testCode: 'CREATININE',
           value: { text: '20.0 mg/dL', type: 'quantity' },
-          referenceRange: '0.6 - 1.3',
+          referenceRange: '0.6 - 1.3 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1564,7 +1642,8 @@ const staging = [
         {
           testCode: 'SODIUM',
           value: { text: '24.0 meq/L', type: 'quantity' },
-          referenceRange: '136 - 145',
+          referenceRange: '136 - 145 meq/L',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1574,7 +1653,8 @@ const staging = [
         {
           testCode: 'POTASSIUM',
           value: { text: '200.0 meq/L', type: 'quantity' },
-          referenceRange: '3.5 - 5.1',
+          referenceRange: '3.5 - 5.1 meq/L',
+          interpretation: 'Critical high',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1584,7 +1664,8 @@ const staging = [
         {
           testCode: 'CHLORIDE',
           value: { text: '10.0 meq/L', type: 'quantity' },
-          referenceRange: '98 - 107',
+          referenceRange: '98 - 107 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',
@@ -1594,7 +1675,8 @@ const staging = [
         {
           testCode: 'CO2',
           value: { text: '1.0 meq/L', type: 'quantity' },
-          referenceRange: '22 - 29',
+          referenceRange: '22 - 29 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments:
             'TEST COMMENT - RESULTS CONTAIN CRITICAL HIGH AND CRITICAL LOW VALU Ordering Provider: Marci P Mcguire Report Released Date/Time: Jan 26, 2025@15:37\r\n Performing Lab: CHYSHR TEST LAB\r\n                2360 E PERSHING BLVD CHEYENNE, FL 82001-5356',

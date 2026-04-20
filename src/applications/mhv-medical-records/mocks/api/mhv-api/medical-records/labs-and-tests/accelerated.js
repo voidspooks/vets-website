@@ -18,9 +18,9 @@ const sample = [
       observations: [
         {
           testCode: 'WBC',
-          referenceRange: '4.5 - 10.0',
+          referenceRange: '4.5 - 10.0 10^3/uL',
           status: 'final',
-          interpretation: 'H',
+          interpretation: 'High',
           sampleTested: 'WHOLE BLOOD',
           bodySite: 'Left Arm',
           comments: 'Within normal limits',
@@ -31,9 +31,9 @@ const sample = [
         },
         {
           testCode: 'RBC',
-          referenceRange: '4.6 - 5.5',
+          referenceRange: '4.6 - 5.5 10^6/uL',
           status: 'final',
-          interpretation: 'L',
+          interpretation: 'Low',
           comments: '',
           value: {
             text: '3.8 10^6/uL',
@@ -42,9 +42,9 @@ const sample = [
         },
         {
           testCode: 'Hemoglobin',
-          referenceRange: '11.5 - 16.0',
+          referenceRange: '11.5 - 16.0 g/dL',
           status: 'final',
-          interpretation: 'HH',
+          interpretation: 'Critical high',
           comments: '',
           value: {
             text: '18.5 g/dL',
@@ -53,9 +53,9 @@ const sample = [
         },
         {
           testCode: 'Hematocrit',
-          referenceRange: '34.0 - 47.0',
+          referenceRange: '34.0 - 47.0 %',
           status: 'final',
-          interpretation: 'N',
+          interpretation: 'Normal',
           comments: '',
           value: {
             text: '42.0 %',
@@ -99,16 +99,17 @@ const sample = [
       testCodeDisplay: 'Chemistry and hematology',
       dateCompleted: '2025-01-23T22:06:02Z',
       sampleTested: 'SERUM',
-      bodySite: 'Central Vien',
+      bodySite: 'Central Vein',
       location: 'CHYSHR TEST LAB',
       orderedBy: 'ZZGeorge Washington',
       observations: [
         {
           testCode: 'GLUCOSE',
-          referenceRange: '70 - 110',
+          referenceRange: '70 - 110 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           sampleTested: 'SERUM',
-          bodySite: 'Central Vien',
+          bodySite: 'Central Vein',
           comments: 'this is a comment',
           value: {
             text: '99 mg/dL',
@@ -117,7 +118,8 @@ const sample = [
         },
         {
           testCode: 'UREA NITROGEN',
-          referenceRange: '7 - 18',
+          referenceRange: '7 - 18 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -127,7 +129,8 @@ const sample = [
         },
         {
           testCode: 'CREATININE',
-          referenceRange: '0.6 - 1.3',
+          referenceRange: '0.6 - 1.3 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -137,7 +140,8 @@ const sample = [
         },
         {
           testCode: 'SODIUM',
-          referenceRange: '136 - 145',
+          referenceRange: '136 - 145 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments: '',
           value: {
@@ -147,7 +151,8 @@ const sample = [
         },
         {
           testCode: 'POTASSIUM',
-          referenceRange: '3.5 - 5.1',
+          referenceRange: '3.5 - 5.1 meq/L',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -157,7 +162,8 @@ const sample = [
         },
         {
           testCode: 'CHLORIDE',
-          referenceRange: '98 - 107',
+          referenceRange: '98 - 107 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments: '',
           value: {
@@ -168,7 +174,8 @@ const sample = [
         {
           testCode: 'CO2',
           valueQuantity: '2 meq/L',
-          referenceRange: '22 - 29',
+          referenceRange: '22 - 29 meq/L',
+          interpretation: 'Critical low',
           status: 'final',
           comments: '',
           value: {
@@ -188,16 +195,17 @@ const sample = [
       testCodeDisplay: 'Chemistry and hematology',
       dateCompleted: '2025-01-23T22:06:02Z',
       sampleTested: 'SERUM',
-      bodySite: 'Central Vien',
+      bodySite: 'Central Vein',
       location: 'CHYSHR TEST LAB',
       orderedBy: 'ZZGeorge Washington',
       observations: [
         {
           testCode: 'GLUCOSE',
           referenceRange: '70 - 110',
+          interpretation: 'Normal',
           status: 'final',
           sampleTested: 'SERUM',
-          bodySite: 'Central Vien',
+          bodySite: 'Central Vein',
           comments: 'this is a comment',
           value: {
             text: '99 mg/dL',
@@ -206,7 +214,8 @@ const sample = [
         },
         {
           testCode: 'UREA NITROGEN',
-          referenceRange: '7 - 18',
+          referenceRange: '7 - 18 mg/dL',
+          interpretation: 'Critical high',
           status: 'final',
           comments: '',
           value: {
@@ -238,7 +247,8 @@ const staging = [
       observations: [
         {
           testCode: 'Total Cholesterol',
-          referenceRange: '<=200',
+          referenceRange: '<=200 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           value: {
@@ -250,7 +260,8 @@ const staging = [
         },
         {
           testCode: 'HDL Cholesterol',
-          referenceRange: '>=60',
+          referenceRange: '>=60 mg/dL',
+          interpretation: 'High',
           status: 'final',
           comments: 'Good HDL level',
           value: {
@@ -262,7 +273,8 @@ const staging = [
         },
         {
           testCode: 'LDL Cholesterol',
-          referenceRange: '<=100',
+          referenceRange: '<=100 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           value: {
@@ -274,7 +286,8 @@ const staging = [
         },
         {
           testCode: 'Triglycerides',
-          referenceRange: '<=150',
+          referenceRange: '<=150 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           value: {
@@ -308,6 +321,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments:
             'Estimated Glomerular Filtration Rate (eGFR) calculated using the 2021 Chronic Kidney Disease-Epidemiology (CKD-EPI) Collaboration creatinine equation; units of measure are mL/min/1.73 m2.\nResults are only valid for adults (≥18 years) whose serum creatinine is in steady state.  eGFR calculations are not valid for patients with acute kidney injury and for patients on dialysis.  Creatinine-based estimates of kidney function may also be inaccurate in patients with reduced creatinine generation due to decreased muscle mass (e.g., malnutrition, severe hypoalbuminemia, sarcopenia, chronic neuromuscular disease, amputations, severe heart failure or liver disease) and in patients with increased creatinine generation due to increased muscle mass (e.g., muscle builders, anabolic steroids) or increased dietary intake.\nAs drug clearance is proportional to total GFR and not GFR indexed to body surface area (BSA), in individuals with a BSA substantially different than 1.73 m2, drug dosing should be based the reported eGFRvalue de-indexed from BSA by multiplying by the individuals BSA and dividing by 1.73.\n\nCKD is diagnosed based on abnormalities of kidney structure or function, present for >3 months, with implications for health and disease. CKD is classified and staged based on cause, eGFR and albuminuria (quantified as urine albumin to creatinine ratio). An eGFR >60 mL/min/1.73 m2 in the absence of increased urine albumin excretion or structural abnormalities does not represent CKD.\neGFR(mL/min/1.73 m2)CKD stageInterpretation≥90G1Normal60-89G2Mild decrease45-59G3AMild to moderate decrease30-44G3BModerate to severe decrease15-29G4Severe decrease<15G5Kidney failure\n',
@@ -338,6 +352,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -350,6 +365,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 4.4 - 6.4 %',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -379,6 +395,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -408,6 +425,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 22.0 - 29.0 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -420,6 +438,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 98 - 107 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -432,6 +451,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 3.5 - 5.4 mmol/L',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -444,6 +464,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 136 - 145 mmol/L',
+          interpretation: 'High',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -456,6 +477,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 8.6 - 10.0 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -468,6 +490,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 0.5 - 1.0 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -480,6 +503,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 6 - 20 mg/dL',
+          interpretation: 'Low',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -492,6 +516,7 @@ const staging = [
             type: 'quantity',
           },
           referenceRange: 'Normal Range: 70 - 100 mg/dL',
+          interpretation: 'Normal',
           status: 'final',
           comments: '',
           bodySite: '',
@@ -521,6 +546,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -533,6 +559,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -545,6 +572,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -557,6 +585,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -569,6 +598,7 @@ const staging = [
             type: 'codeable-concept',
           },
           referenceRange: '',
+          interpretation: null,
           status: 'final',
           comments: '',
           bodySite: '',
@@ -598,6 +628,7 @@ const staging = [
             type: 'string',
           },
           referenceRange: '',
+          interpretation: 'N/A',
           status: 'final',
           comments: '',
           bodySite: '',

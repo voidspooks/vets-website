@@ -14,7 +14,8 @@
       "observations": [
         {
           "testCode": "GLUCOSE",
-          "referenceRange": "70 - 110",
+          "referenceRange": "70 - 110 mg/dL",
+          "interpretation": "Normal",
           "status": "final",
           "sampleTested": "SERUM",
           "bodySite": "Central Vien",
@@ -39,7 +40,10 @@
       "bodySite": "Head",
       "location": "VA Portland HCS",
       "orderedBy": "Dr. Jane Smith",
-      "comments": ["Comparison: None available", "Technique: Non-contrast CT of the head"],
+      "comments": [
+        "Comparison: None available",
+        "Technique: Non-contrast CT of the head"
+      ],
       "source": "OH"
     }
   }

@@ -109,6 +109,7 @@ export const fhirResourceTypes = {
 
 /**
  * Interpretation code map based on https://terminology.hl7.org/3.1.0/CodeSystem-v3-ObservationInterpretation.html
+ * Used for legacy labs, SCDF (V2) labs map interpretation codes in vets-api
  */
 export const interpretationMap = {
   CAR: 'Carrier',
@@ -122,7 +123,7 @@ export const interpretationMap = {
   D: 'Significant change down',
   DET: 'Detected',
   E: 'Equivocal',
-  EX: 'outside threshold',
+  EX: 'Outside threshold',
   EXP: 'Expected',
   H: 'High',
   'H*': 'Critical high',
@@ -130,7 +131,7 @@ export const interpretationMap = {
   HU: 'Significantly high',
   'H>': 'Significantly high',
   HM: 'Hold for Medical Review',
-  HX: 'above high threshold',
+  HX: 'Above high threshold',
   I: 'Intermediate',
   IE: 'Insufficient evidence',
   IND: 'Indeterminate',
@@ -139,8 +140,8 @@ export const interpretationMap = {
   LL: 'Critical low',
   LU: 'Significantly low',
   'L<': 'Significantly low',
-  LX: 'below low threshold',
-  MS: 'moderately susceptible',
+  LX: 'Below low threshold',
+  MS: 'Moderately susceptible',
   N: 'Normal',
   NCL: 'No CLSI defined breakpoint',
   ND: 'Not detected',
@@ -159,7 +160,7 @@ export const interpretationMap = {
   TOX: 'Cytotoxic substance present',
   U: 'Significant change up',
   UNE: 'Unexpected',
-  VS: 'very susceptible',
+  VS: 'Very susceptible',
   W: 'Worse',
   WR: 'Weakly reactive',
 };

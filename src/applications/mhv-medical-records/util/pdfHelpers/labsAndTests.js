@@ -1,7 +1,6 @@
 import {
   LABS_AND_TESTS_DISPLAY_DISPLAY_MAP,
   OBSERVATION_DISPLAY_DISPLAY_MAP,
-  interpretationMap,
 } from '../constants';
 
 export const generateLabsIntro = record => {
@@ -64,10 +63,6 @@ export const generateGenericContent = record => {
       ],
       sectionSeparators: false,
       items: record.observations.map(item => {
-        const interpretationDisplay = item.interpretation
-          ? interpretationMap[item.interpretation] || item.interpretation
-          : null;
-
         return {
           header: item.testCode,
           items: [
@@ -76,11 +71,11 @@ export const generateGenericContent = record => {
               value: item.value?.text,
               inline: true,
             },
-            ...(interpretationDisplay
+            ...(item.interpretation
               ? [
                   {
                     title: OBSERVATION_DISPLAY_DISPLAY_MAP.interpretation,
-                    value: interpretationDisplay,
+                    value: item.interpretation,
                     inline: true,
                   },
                 ]
