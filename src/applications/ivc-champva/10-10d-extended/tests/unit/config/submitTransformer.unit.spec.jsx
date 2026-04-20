@@ -713,4 +713,206 @@ describe('10-10d-extended transform for submit', () => {
       expect(certification.date).to.match(/^\d{2}-\d{2}-\d{4}$/);
     });
   });
+
+  context('enhanced flow submission', () => {
+    const buildEnhancedFlowData = ({
+      submissionType = 'existing',
+      certifierRole = 'applicant',
+      contactEmail = 'contact@example.com',
+      applicantName = { first: 'Jane', last: 'Doe' },
+      applicantDob = '1990-01-01',
+      applicantMemberNumber = '411111111',
+      sponsorName = { first: 'John', last: 'Sponsor' },
+      sponsorDob = '1960-05-15',
+      sponsorSsn = '123456789',
+      statementOfTruthSignature = 'Jane Doe',
+      supportingDocs = [],
+    } = {}) => ({
+      'view:form1010dEnhancedFlowEnabled': true,
+      submissionType,
+      certifierRole,
+      contactEmail,
+      applicantName,
+      applicantDob,
+      applicantMemberNumber,
+      sponsorName,
+      sponsorDob,
+      sponsorSsn,
+      statementOfTruthSignature,
+      supportingDocs,
+    });
+
+    it('should use enhanced flow transformation for existing submissions', () => {
+      const testData = {
+        data: buildEnhancedFlowData({ submissionType: 'existing' }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed).to.have.property('submissionType', 'existing');
+      expect(transformed).to.have.property('primaryContactInfo');
+      expect(transformed).to.have.property('veteran');
+      expect(transformed).to.have.property('applicants');
+      expect(transformed).to.have.property('supportingDocs');
+      expect(transformed).to.not.have.property('healthInsurance');
+      expect(transformed).to.not.have.property('medicare');
+    });
+
+    it('should use enhanced flow transformation for enrollment submissions', () => {
+      const testData = {
+        data: buildEnhancedFlowData({ submissionType: 'enrollment' }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.submissionType).to.equal('enrollment');
+    });
+
+    it('should populate veteran data for existing submissions', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          submissionType: 'existing',
+          sponsorName: { first: 'John', last: 'Sponsor' },
+          sponsorDob: '1960-05-15',
+          sponsorSsn: '123456789',
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.veteran.fullName.first).to.equal('John');
+      expect(transformed.veteran.fullName.last).to.equal('Sponsor');
+      expect(transformed.veteran.ssnOrTin).to.equal('123456789');
+      expect(transformed.veteran.dateOfBirth).to.equal('05-15-1960');
+    });
+
+    it('should have empty veteran data for enrollment submissions', () => {
+      const testData = {
+        data: buildEnhancedFlowData({ submissionType: 'enrollment' }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.veteran.fullName).to.deep.equal({});
+      expect(transformed.veteran.ssnOrTin).to.equal('');
+      expect(transformed.veteran.dateOfBirth).to.equal('');
+    });
+
+    it('should set primary contact name to applicantName when certifierRole is applicant', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          certifierRole: 'applicant',
+          applicantName: { first: 'Jane', last: 'Applicant' },
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.primaryContactInfo.name.first).to.equal('Jane');
+      expect(transformed.primaryContactInfo.name.last).to.equal('Applicant');
+    });
+
+    it('should set primary contact name to sponsorName when certifierRole is sponsor and submissionType is existing', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          certifierRole: 'sponsor',
+          submissionType: 'existing',
+          sponsorName: { first: 'John', last: 'Sponsor' },
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.primaryContactInfo.name.first).to.equal('John');
+      expect(transformed.primaryContactInfo.name.last).to.equal('Sponsor');
+    });
+
+    it('should set primary contact name to undefined when certifierRole is sponsor and submissionType is enrollment', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          certifierRole: 'sponsor',
+          submissionType: 'enrollment',
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.primaryContactInfo.name).to.be.undefined;
+    });
+
+    it('should set primary contact name to undefined when certifierRole is other', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          certifierRole: 'other',
+          submissionType: 'existing',
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.primaryContactInfo.name).to.be.undefined;
+    });
+
+    it('should always include contactEmail in primaryContactInfo', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          contactEmail: 'test@example.com',
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.primaryContactInfo.email).to.equal('test@example.com');
+    });
+
+    it('should build applicants array with single applicant', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          submissionType: 'enrollment',
+          applicantName: { first: 'Jane', last: 'Doe' },
+          applicantDob: '1990-01-01',
+          applicantMemberNumber: 'MEM123456',
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.applicants).to.be.an('array');
+      expect(transformed.applicants).to.have.lengthOf(1);
+      expect(transformed.applicants[0].applicantName.first).to.equal('Jane');
+      expect(transformed.applicants[0].applicantName.last).to.equal('Doe');
+      expect(transformed.applicants[0].applicantDob).to.equal('1990-01-01');
+      expect(transformed.applicants[0].applicantMemberNumber).to.equal(
+        'MEM123456',
+      );
+    });
+
+    it('should include certifierRole in enhanced flow output', () => {
+      const testData = {
+        data: buildEnhancedFlowData({ certifierRole: 'sponsor' }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.certifierRole).to.equal('sponsor');
+    });
+
+    it('should include certification with date in enhanced flow output', () => {
+      const testData = {
+        data: buildEnhancedFlowData(),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.certification).to.have.property('date');
+      expect(transformed.certification.date).to.match(/^\d{2}-\d{2}-\d{4}$/);
+    });
+
+    it('should include statementOfTruthSignature in enhanced flow output', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          statementOfTruthSignature: 'Jane Doe',
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.statementOfTruthSignature).to.equal('Jane Doe');
+    });
+
+    it('should include formNumber in enhanced flow output', () => {
+      const testData = { data: buildEnhancedFlowData() };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.formNumber).to.equal(formConfig.formId);
+    });
+
+    it('should collect supporting documents in enhanced flow', () => {
+      const testData = {
+        data: buildEnhancedFlowData({
+          supportingDocs: [
+            {
+              confirmationCode: 'abc123',
+              name: 'document.pdf',
+            },
+          ],
+        }),
+      };
+      const transformed = JSON.parse(transformForSubmit(formConfig, testData));
+      expect(transformed.supportingDocs).to.be.an('array');
+    });
+  });
 });

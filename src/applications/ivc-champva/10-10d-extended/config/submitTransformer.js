@@ -8,7 +8,11 @@ import {
   getObjectsWithAttachmentId,
   toHash,
 } from '../../shared/utilities';
-import { concatStreets, getAgeInYears } from '../utils/helpers';
+import {
+  concatStreets,
+  getAgeInYears,
+  isNewSubmission,
+} from '../utils/helpers';
 
 const NON_APPLICANT_ROLE_PREFIX = Object.freeze({
   sponsor: 'sponsor',
@@ -259,6 +263,61 @@ const hydrateApplicantAddresses = (
   }));
 
 /**
+ * Builds simplified submission for existing/enrollment flows
+ * @param {Object} data - Transformed form data
+ * @param {Object} formConfig - Form configuration
+ * @returns {string} JSON string of simplified data
+ */
+const buildEnhancedFlowSubmission = (data, formConfig) => {
+  const {
+    certifierRole,
+    submissionType,
+    contactEmail,
+    applicantName,
+    applicantDob,
+    applicantMemberNumber,
+    sponsorName,
+    sponsorDob,
+    sponsorSsn,
+    statementOfTruthSignature,
+  } = data;
+
+  const isExisting = submissionType === 'existing';
+
+  let contactName;
+  if (certifierRole === 'applicant') {
+    contactName = applicantName;
+  } else if (certifierRole === 'sponsor' && isExisting) {
+    contactName = sponsorName;
+  }
+
+  return JSON.stringify({
+    certifierRole,
+    submissionType,
+    primaryContactInfo: {
+      name: contactName,
+      email: contactEmail,
+    },
+    veteran: {
+      fullName: isExisting ? sponsorName : {},
+      ssnOrTin: isExisting ? sponsorSsn : '',
+      dateOfBirth: isExisting ? formatDate(sponsorDob) : '',
+    },
+    applicants: [
+      {
+        applicantName,
+        applicantDob,
+        applicantMemberNumber,
+      },
+    ],
+    certification: { date: formatDate(getCurrentDate()) || '' },
+    supportingDocs: collectSupportingDocuments(data),
+    statementOfTruthSignature,
+    formNumber: formConfig.formId,
+  });
+};
+
+/**
  * Main transformer function that prepares form data for submission
  * @param {Object} formConfig - Form configuration
  * @param {Object} form - Form data
@@ -269,6 +328,11 @@ export default function transformForSubmit(formConfig, form) {
   const initialTransform = JSON.parse(
     formsSystemTransformForSubmit(formConfig, form),
   );
+
+  // Use simplified transformation for enhanced flow submissions
+  if (!isNewSubmission(originalData)) {
+    return buildEnhancedFlowSubmission(initialTransform, formConfig);
+  }
 
   // Rehydrate all addresses from original form data so shared-address selections
   // survive inactive-page filtering in formsSystemTransformForSubmit.
