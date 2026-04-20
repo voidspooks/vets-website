@@ -5,7 +5,6 @@ import { DowntimeNotification } from 'platform/monitoring/DowntimeNotification';
 import environment from 'platform/utilities/environment';
 import RoutedSavableApp from 'platform/forms/save-in-progress/RoutedSavableApp';
 import { useBrowserMonitoring } from 'platform/monitoring/Datadog';
-import { useDefaultFormData } from '../hooks/useDefaultFormData';
 import formConfig from '../config/form';
 
 const EXCLUDED_DOMAINS = [
@@ -45,7 +44,6 @@ const App = ({ location, children }) => {
     Boolean(state.featureToggles?.loading || state.user?.profile?.loading),
   );
 
-  useDefaultFormData();
   useBrowserMonitoring(BROWSER_MONITORING_PROPS);
 
   return isAppLoading ? (
