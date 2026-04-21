@@ -11,6 +11,7 @@ import {
 import summaryPage from './shared/summary';
 import { remainingSharedPages } from './shared';
 import conditionPage from './condition';
+import { sweepOrphanedTEConditions } from '../../utils/reconcile-toxic-exposure-conditions';
 
 const ratedIntroPage = {
   uiSchema: {
@@ -81,6 +82,16 @@ export const disabilityConditionsWorkflow = arrayBuilderPages(
       onNavForward: props => {
         const { formData, setFormData } = props;
         const { arrayPath } = arrayOptions;
+
+        // Defensive sweep before leaving the array-builder summary:
+        // any toxicExposure.conditions key whose condition was edited or
+        // deleted on an item page will not have been reconciled (V2 edit
+        // mode bypasses pageConfig.updateFormData), and would otherwise
+        // trip the "none + condition" validator on the TE conditions page.
+        const reconciled = sweepOrphanedTEConditions(formData);
+        if (reconciled !== formData) {
+          setFormData(reconciled);
+        }
 
         const items = formData?.[arrayPath] || [];
         const hasAnyItems = items.length > 0;

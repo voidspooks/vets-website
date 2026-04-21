@@ -4,6 +4,7 @@ import {
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { arrayOptions, createNewConditionName } from './utils';
 import { updateClaimTypeFromArray } from './claimType';
+import { reconcileToxicExposureConditions } from '../../../utils/reconcile-toxic-exposure-conditions';
 import ConfirmationNewAndRatedConditions from '../../../components/confirmationFields/ConfirmationNewAndRatedConditions';
 
 const isOrphanSecondary = (item, fullData = {}) => {
@@ -63,7 +64,17 @@ const summaryPage = {
     },
     required: ['view:hasConditions'],
   },
-  updateFormData: updateClaimTypeFromArray,
+  updateFormData: (oldData, newData) => {
+    const result = updateClaimTypeFromArray(oldData, newData);
+    const oldLen = (oldData?.newDisabilities || []).length;
+    const newLen = (result?.newDisabilities || []).length;
+    // Only reconcile TE on delete or rename, not on add — conditions
+    // may be mid-build and valid TE entries would be incorrectly swept
+    if (newLen <= oldLen) {
+      return reconcileToxicExposureConditions(oldData, result);
+    }
+    return result;
+  },
 };
 
 export default summaryPage;

@@ -25,6 +25,7 @@ import {
   increaseAndNewAlertRevised,
   newOnlyAlertRevised,
 } from '../content/addDisabilities';
+import { reconcileToxicExposureConditions } from '../utils/reconcile-toxic-exposure-conditions';
 
 const getNewDisabilitiesProps = schema => {
   const nd = schema?.definitions?.newDisabilities?.items;
@@ -226,18 +227,29 @@ export const updateFormData = (oldData, newData) => {
   // Sanity check
   if (!Array.isArray(oldArr) || !Array.isArray(newArr)) return newData;
 
-  // Disability was removed
+  // Disability was removed — reconcile TE to drop orphaned entries
   if (oldArr.length > newArr.length) {
     const deletedElement = deleted(oldArr, newArr);
-    return removeDisability(deletedElement, newData);
+    return reconcileToxicExposureConditions(
+      oldData,
+      removeDisability(deletedElement, newData),
+    );
   }
 
-  // Disability was modified
+  // Disability was modified — update facilities and POW references.
   const changedIndex = indexOfFirstChange(oldArr, newArr);
   if (oldArr.length === newArr.length && changedIndex !== undefined) {
-    // Update the disability name in treatedDisabilityNames and
-    // powDisabilities _if_ it exists already
-    return changeDisabilityName(oldData, newData, changedIndex);
+    const result = changeDisabilityName(oldData, newData, changedIndex);
+    // Only reconcile TE when editing a completed condition (one that has
+    // a cause already set). The V1 platform array field also triggers this
+    // path during mid-keystroke autocomplete edits for new conditions
+    // (e.g. typing "Hea" for "Hearing Loss"), and the partial text would
+    // produce sippableIds that don't match — sweeping valid TE entries.
+    const oldCondition = oldArr[changedIndex];
+    if (oldCondition?.cause) {
+      return reconcileToxicExposureConditions(oldData, result);
+    }
+    return result;
   }
 
   return newData;

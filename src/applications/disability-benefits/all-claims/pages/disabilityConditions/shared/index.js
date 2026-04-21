@@ -16,6 +16,7 @@ import {
   isNewCondition,
   isRatedDisability,
 } from './utils';
+import { sweepOrphanedTEConditions } from '../../../utils/reconcile-toxic-exposure-conditions';
 
 export const SummaryPage = pageBuilder => ({
   Summary: pageBuilder.summaryPage({
@@ -63,8 +64,20 @@ export const remainingSharedPages = (pageBuilder, helpers) => ({
     onNavForward: props => {
       const { formData, index, setFormData } = props;
 
-      if (!hasSideOfBody(formData, index)) {
-        clearSideOfBody(formData, Number(index), setFormData);
+      // Edit-mode submits route through FormPage.onSubmit, which never
+      // calls pageConfig.updateFormData — so a rename here would leave
+      // the prior sippableId stranded in toxicExposure.conditions and
+      // trip the "none + condition" validator on the TE conditions page.
+      // Sweep orphans here so the rename is reconciled even if the user
+      // jumps straight to the TE page via the side nav.
+      const reconciled = sweepOrphanedTEConditions(formData);
+      const next = reconciled !== formData ? reconciled : formData;
+      if (reconciled !== formData) {
+        setFormData(reconciled);
+      }
+
+      if (!hasSideOfBody(next, index)) {
+        clearSideOfBody(next, Number(index), setFormData);
       }
 
       return helpers.navForwardKeepUrlParams(props);

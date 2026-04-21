@@ -9,6 +9,7 @@ import mapServiceBranches from '../../migrations/07-map-service-branches';
 import reorderHousingIllnessRemoveFdc from '../../migrations/08-paper-sync';
 import addDisabilitiesRedirect from '../../migrations/09-addDisabilities-redirect';
 import addDisabilitiesRedirectAdd3 from '../../migrations/10-addDisabilities-redirect-add-3';
+import sweepOrphanedToxicExposureConditions from '../../migrations/11-sweep-orphaned-te-conditions';
 
 import formConfig from '../../config/form';
 import { MAX_HOUSING_STRING_LENGTH } from '../../constants';
@@ -367,6 +368,71 @@ describe('526 v2 migrations', () => {
       expect(migratedData.metadata.returnUrl).to.equal(
         '/new-disabilities/follow-up',
       );
+    });
+  });
+
+  describe('11-sweep-orphaned-te-conditions', () => {
+    it('removes orphaned toxicExposure.conditions keys', () => {
+      const savedData = {
+        formData: {
+          newDisabilities: [{ condition: 'Anemia, Bilateral' }],
+          toxicExposure: {
+            conditions: {
+              anemia: true,
+              anemiabilateral: true,
+              none: false,
+            },
+          },
+        },
+        metadata: { returnUrl: '/review-and-submit' },
+      };
+      const migrated = sweepOrphanedToxicExposureConditions(savedData);
+      expect(migrated.formData.toxicExposure.conditions).to.deep.equal({
+        anemiabilateral: true,
+        none: false,
+      });
+      expect(migrated.metadata).to.equal(savedData.metadata);
+    });
+
+    it('preserves the none key even when no conditions match', () => {
+      const savedData = {
+        formData: {
+          newDisabilities: [],
+          toxicExposure: {
+            conditions: {
+              anemia: true,
+              none: true,
+            },
+          },
+        },
+        metadata: {},
+      };
+      const migrated = sweepOrphanedToxicExposureConditions(savedData);
+      expect(migrated.formData.toxicExposure.conditions).to.deep.equal({
+        none: true,
+      });
+    });
+
+    it('is a no-op when no toxicExposure.conditions exist', () => {
+      const savedData = {
+        formData: { newDisabilities: [{ condition: 'Anemia' }] },
+        metadata: {},
+      };
+      const migrated = sweepOrphanedToxicExposureConditions(savedData);
+      expect(migrated.formData).to.equal(savedData.formData);
+    });
+
+    it('is a no-op when there are no orphans', () => {
+      const conditions = { anemia: true, none: false };
+      const savedData = {
+        formData: {
+          newDisabilities: [{ condition: 'Anemia' }],
+          toxicExposure: { conditions },
+        },
+        metadata: {},
+      };
+      const migrated = sweepOrphanedToxicExposureConditions(savedData);
+      expect(migrated.formData.toxicExposure.conditions).to.equal(conditions);
     });
   });
 });

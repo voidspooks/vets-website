@@ -572,7 +572,9 @@ describe('Add Disabilities Page', () => {
 
   describe('Update Form Data', () => {
     const generateInitialData = () => ({
-      newDisabilities: [{ condition: 'Something with-hyphens and ALLCAPS' }],
+      newDisabilities: [
+        { condition: 'Something with-hyphens and ALLCAPS', cause: 'NEW' },
+      ],
       vaTreatmentFacilities: [
         {
           treatedDisabilityNames: {
@@ -645,6 +647,73 @@ describe('Add Disabilities Page', () => {
       expect(result.vaTreatmentFacilities[0].treatedDisabilityNames).to.be
         .empty;
       expect(result['view:isPow'].powDisabilities).to.be.empty;
+    });
+
+    it('should remove a deleted disability from toxicExposure.conditions', () => {
+      const initialData = {
+        ...generateInitialData(),
+        toxicExposure: {
+          conditions: { somethingwithhyphensandallcaps: true, none: false },
+        },
+      };
+      const newData = {
+        ...initialData,
+        newDisabilities: [],
+      };
+      const result = updateFormData(initialData, newData);
+
+      expect(result.toxicExposure.conditions).to.deep.equal({ none: false });
+    });
+
+    it('should migrate the toxicExposure.conditions entry when a disability name is changed', () => {
+      const initialData = {
+        ...generateInitialData(),
+        toxicExposure: {
+          conditions: { somethingwithhyphensandallcaps: true, none: false },
+        },
+      };
+      const newData = set(
+        'newDisabilities[0].condition',
+        'Foo-with EXTRAz',
+        initialData,
+      );
+      const result = updateFormData(initialData, newData);
+
+      expect(result.toxicExposure.conditions.foowithextraz).to.be.true;
+      expect(result.toxicExposure.conditions.somethingwithhyphensandallcaps).to
+        .be.undefined;
+      expect(result.toxicExposure.conditions.none).to.be.false;
+    });
+
+    it('should preserve the none key in toxicExposure.conditions when all conditions are deleted', () => {
+      const initialData = {
+        ...generateInitialData(),
+        toxicExposure: {
+          conditions: { somethingwithhyphensandallcaps: true, none: true },
+        },
+      };
+      const newData = {
+        ...initialData,
+        newDisabilities: [],
+      };
+      const result = updateFormData(initialData, newData);
+
+      expect(result.toxicExposure.conditions).to.deep.equal({ none: true });
+    });
+
+    it('should preserve toxicExposure.conditions when no disabilities changed', () => {
+      const initialData = {
+        ...generateInitialData(),
+        toxicExposure: {
+          conditions: { somethingwithhyphensandallcaps: true, none: false },
+        },
+      };
+      const result = updateFormData(initialData, initialData);
+
+      expect(result.toxicExposure.conditions).to.deep.equal({
+        somethingwithhyphensandallcaps: true,
+        none: false,
+      });
     });
   });
 });
