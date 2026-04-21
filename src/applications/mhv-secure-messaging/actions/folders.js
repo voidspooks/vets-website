@@ -11,6 +11,42 @@ import * as Constants from '../util/constants';
 import { getFirstError } from '../util/serverErrors';
 import { sendDatadogError } from '../util/helpers';
 
+const CUSTOM_FOLDER_RETRY_ATTEMPTS = 2;
+const CUSTOM_FOLDER_RETRY_DELAY = 2000;
+
+const systemFolderFallback = {
+  [Constants.DefaultFolders.INBOX.id]: {
+    folderId: Constants.DefaultFolders.INBOX.id,
+    name: Constants.DefaultFolders.INBOX.header,
+    count: 0,
+    unreadCount: 0,
+    systemFolder: true,
+  },
+  [Constants.DefaultFolders.SENT.id]: {
+    folderId: Constants.DefaultFolders.SENT.id,
+    name: Constants.DefaultFolders.SENT.header,
+    count: 0,
+    unreadCount: 0,
+    systemFolder: true,
+  },
+  [Constants.DefaultFolders.DRAFTS.id]: {
+    folderId: Constants.DefaultFolders.DRAFTS.id,
+    name: Constants.DefaultFolders.DRAFTS.header,
+    count: 0,
+    unreadCount: 0,
+    systemFolder: true,
+  },
+  [Constants.DefaultFolders.DELETED.id]: {
+    folderId: Constants.DefaultFolders.DELETED.id,
+    name: Constants.DefaultFolders.DELETED.header,
+    count: 0,
+    unreadCount: 0,
+    systemFolder: true,
+  },
+};
+
+const isSystemFolder = id => id !== undefined && id <= 0;
+
 const handleErrors = err => async dispatch => {
   const newErr = getFirstError(err);
   dispatch({
@@ -45,38 +81,108 @@ export const getFolders = () => async dispatch => {
   }
 };
 
-export const retrieveFolder = folderId => async dispatch => {
-  await getFolder({ folderId })
-    .then(response => {
-      if (response.data) {
-        if (
-          response.data.attributes.folderId ===
-          Constants.DefaultFolders.DELETED.id
-        ) {
-          response.data.attributes.name =
-            Constants.DefaultFolders.DELETED.header;
+export const retrieveFolder = folderId => async (dispatch, getState) => {
+  if (folderId === undefined || folderId === null) return;
+
+  const dispatchFolderResponse = response => {
+    if (
+      response.data.attributes.folderId === Constants.DefaultFolders.DELETED.id
+    ) {
+      response.data.attributes.name = Constants.DefaultFolders.DELETED.header;
+    }
+    dispatch({
+      type: Actions.Folder.GET,
+      response,
+    });
+  };
+
+  const dispatchFallback = id => {
+    const { folderList } = getState().sm.folders;
+    const fromList = folderList?.find(f => Number(f.id) === Number(id));
+    const fallback = fromList
+      ? {
+          folderId: fromList.id,
+          name: fromList.name,
+          count: fromList.count,
+          unreadCount: fromList.unreadCount,
+          systemFolder: fromList.systemFolder,
         }
-        dispatch({
-          type: Actions.Folder.GET,
-          response,
-        });
-      }
-      if (response.errors) {
-        dispatch({
-          type: Actions.Folder.GET,
-          response: null,
-        });
-        dispatch(handleErrors(response));
-      }
-    })
-    .catch(error => {
-      sendDatadogError(error, 'action_folders_retrieveFolder');
+      : systemFolderFallback[id];
+    if (fallback) {
       dispatch({
         type: Actions.Folder.GET,
-        response: null,
+        response: { data: { attributes: { ...fallback } } },
       });
-      dispatch(handleErrors(error));
+    }
+  };
+
+  const attemptFetch = () => getFolder({ folderId });
+
+  try {
+    const response = await attemptFetch();
+    if (response.data) {
+      dispatchFolderResponse(response);
+      return;
+    }
+    if (response.errors) {
+      throw response;
+    }
+  } catch (error) {
+    sendDatadogError(error, 'action_folders_retrieveFolder');
+
+    if (isSystemFolder(folderId)) {
+      dispatchFallback(folderId);
+      return;
+    }
+
+    // Retry logic for custom folders
+    const retryFetch = async attemptsLeft => {
+      if (attemptsLeft <= 0) return null;
+      await new Promise(resolve =>
+        setTimeout(resolve, CUSTOM_FOLDER_RETRY_DELAY),
+      );
+      try {
+        const retryResponse = await attemptFetch();
+        if (retryResponse.data) return retryResponse;
+      } catch {
+        // continue to next retry
+      }
+      return retryFetch(attemptsLeft - 1);
+    };
+
+    const retryResponse = await retryFetch(CUSTOM_FOLDER_RETRY_ATTEMPTS);
+    if (retryResponse) {
+      dispatchFolderResponse(retryResponse);
+      return;
+    }
+
+    // Try folderList fallback before giving up
+    const { folderList } = getState().sm.folders;
+    const fromList = folderList?.find(f => Number(f.id) === Number(folderId));
+    if (fromList) {
+      dispatch({
+        type: Actions.Folder.GET,
+        response: {
+          data: {
+            attributes: {
+              folderId: fromList.id,
+              name: fromList.name,
+              count: fromList.count,
+              unreadCount: fromList.unreadCount,
+              systemFolder: fromList.systemFolder,
+            },
+          },
+        },
+      });
+      return;
+    }
+
+    dispatch({
+      type: Actions.Folder.GET,
+      response: null,
     });
+    dispatch(handleErrors(error));
+  }
 };
 
 export const clearFolder = () => async dispatch => {

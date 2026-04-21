@@ -140,7 +140,9 @@ const FolderThreadListView = () => {
 
   useEffect(
     () => {
-      dispatch(retrieveFolder(currentFolderId));
+      if (currentFolderId !== undefined) {
+        dispatch(retrieveFolder(currentFolderId));
+      }
 
       return () => {
         // clear out alerts if user navigates away from this component
@@ -334,31 +336,38 @@ const FolderThreadListView = () => {
     ],
   );
 
+  const renderFolderContent = () => {
+    if (folder === null) {
+      return <AlertBackgroundBox closeable />;
+    }
+    if (loadingFolder || folderId === undefined) {
+      return <LoadingIndicator />;
+    }
+    return (
+      <>
+        <FolderHeader
+          folder={folder}
+          threadCount={threadList?.length}
+          searchProps={{ searchResults, awaitingResults, keyword, query }}
+          showNoMessages={
+            !isLoading &&
+            !awaitingResults &&
+            threadList?.length === 0 &&
+            threadSort?.page === 1
+          }
+        />
+
+        {content}
+        <ManageFolderButtons folder={folder} />
+        <Footer />
+      </>
+    );
+  };
+
   return (
     <div className="vads-u-padding--0">
       <div className="main-content vads-u-display--flex vads-u-flex-direction--column">
-        {folder === null && <AlertBackgroundBox closeable />}
-        {loadingFolder || folderId === undefined ? (
-          <LoadingIndicator />
-        ) : (
-          <>
-            <FolderHeader
-              folder={folder}
-              threadCount={threadList?.length}
-              searchProps={{ searchResults, awaitingResults, keyword, query }}
-              showNoMessages={
-                !isLoading &&
-                !awaitingResults &&
-                threadList?.length === 0 &&
-                threadSort?.page === 1
-              }
-            />
-
-            {content}
-            <ManageFolderButtons folder={folder} />
-            <Footer />
-          </>
-        )}
+        {renderFolderContent()}
       </div>
     </div>
   );

@@ -175,12 +175,11 @@ const AlertBackgroundBox = props => {
   );
 
   useInterval(() => {
-    const shouldRetrieveFolders =
-      activeAlert?.response?.code === SERVICE_OUTAGE ||
-      folder?.folderId === undefined;
-
-    if (shouldRetrieveFolders) {
-      dispatch(retrieveFolder(folder?.folderId));
+    if (
+      activeAlert?.response?.code === SERVICE_OUTAGE &&
+      folder?.folderId !== undefined
+    ) {
+      dispatch(retrieveFolder(folder.folderId));
       dispatch(closeAlert());
     }
   }, 60000); // 1 minute

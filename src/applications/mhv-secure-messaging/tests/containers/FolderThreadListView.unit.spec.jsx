@@ -634,5 +634,40 @@ describe('Folder Thread List View container', () => {
       const { findByRole } = setup(loadedState, Paths.INBOX);
       expect(findByRole('heading', { level: 1 })).to.exist;
     });
+
+    it('does not render LoadingIndicator when folder is null (folder state cleared after API error)', async () => {
+      // When folder state is null (e.g., after a failed API call), the loading
+      // indicator should not render.
+      const errorState = {
+        ...initialState,
+        sm: {
+          ...initialState.sm,
+          folders: {
+            ...initialState.sm.folders,
+            folder: null,
+          },
+          threads: {
+            threadList: [],
+            isLoading: false,
+            refetchRequired: false,
+            threadSort: {
+              folderId: 0,
+              page: 1,
+              value: threadSortingOptions.SENT_DATE_DESCENDING.value,
+            },
+          },
+          recipients: {
+            noAssociations: false,
+            allTriageGroupsBlocked: false,
+          },
+          search: {
+            searchResults: undefined,
+            awaitingResults: false,
+          },
+        },
+      };
+      const { queryByTestId } = setup(errorState, Paths.INBOX);
+      expect(queryByTestId('loading-indicator')).to.not.exist;
+    });
   });
 });

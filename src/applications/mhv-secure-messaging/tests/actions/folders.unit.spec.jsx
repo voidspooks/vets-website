@@ -1,6 +1,7 @@
 import {
   mockApiRequest,
   mockFetch,
+  mockMultipleApiRequests,
 } from '@department-of-veterans-affairs/platform-testing/helpers';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -103,7 +104,7 @@ describe('folders actions', () => {
 
   it('should dispatch response on retrieveFolder action', async () => {
     mockApiRequest(folderInboxResponse);
-    const store = mockStore();
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
 
     await store.dispatch(retrieveFolder(0)).then(() => {
       expect(store.getActions()).to.deep.include({
@@ -113,21 +114,174 @@ describe('folders actions', () => {
     });
   });
 
-  it('should dispatch an error on unsuccessful retrieveFolder action', async () => {
-    mockApiRequest({ ...errorResponse, status: 503 });
-    const store = mockStore();
+  it('should not dispatch any actions when folderId is undefined', async () => {
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
+    await store.dispatch(retrieveFolder(undefined));
+    expect(store.getActions()).to.be.empty;
+  });
 
-    await store.dispatch(retrieveFolder(0)).then(() => {
-      expect(store.getActions()).to.deep.include({
-        type: Actions.Folder.GET,
-        response: null,
-      });
+  it('should not dispatch any actions when folderId is null', async () => {
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
+    await store.dispatch(retrieveFolder(null));
+    expect(store.getActions()).to.be.empty;
+  });
+
+  it('should use folderList data as fallback on unsuccessful retrieveFolder for system folder', async () => {
+    mockFetch({ ...errorResponse, status: 503 }, false);
+    const store = mockStore({
+      sm: {
+        folders: {
+          folderList: [
+            {
+              id: 0,
+              name: 'Inbox',
+              count: 42,
+              unreadCount: 7,
+              systemFolder: true,
+            },
+          ],
+        },
+      },
     });
+
+    await store.dispatch(retrieveFolder(0));
+    const actions = store.getActions();
+    const getAction = actions.find(a => a.type === Actions.Folder.GET);
+    expect(getAction).to.exist;
+    expect(getAction.response).to.not.be.null;
+    expect(getAction.response.data.attributes.folderId).to.equal(0);
+    expect(getAction.response.data.attributes.name).to.equal('Inbox');
+    expect(getAction.response.data.attributes.count).to.equal(42);
+    expect(getAction.response.data.attributes.unreadCount).to.equal(7);
+    expect(getAction.response.data.attributes.systemFolder).to.be.true;
+  });
+
+  it('should match folderList fallback when folderId is a string and list id is a number', async () => {
+    mockFetch({ ...errorResponse, status: 503 }, false);
+    const store = mockStore({
+      sm: {
+        folders: {
+          folderList: [
+            {
+              id: 0,
+              name: 'Inbox',
+              count: 10,
+              unreadCount: 3,
+              systemFolder: true,
+            },
+          ],
+        },
+      },
+    });
+
+    await store.dispatch(retrieveFolder('0'));
+    const actions = store.getActions();
+    const getAction = actions.find(a => a.type === Actions.Folder.GET);
+    expect(getAction).to.exist;
+    expect(getAction.response).to.not.be.null;
+    expect(getAction.response.data.attributes.folderId).to.equal(0);
+    expect(getAction.response.data.attributes.name).to.equal('Inbox');
+  });
+
+  it('should use hardcoded fallback when folderList is empty for system folder', async () => {
+    mockFetch({ ...errorResponse, status: 503 }, false);
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
+
+    await store.dispatch(retrieveFolder(0));
+    const actions = store.getActions();
+    const getAction = actions.find(a => a.type === Actions.Folder.GET);
+    expect(getAction).to.exist;
+    expect(getAction.response).to.not.be.null;
+    expect(getAction.response.data.attributes.folderId).to.equal(0);
+    expect(getAction.response.data.attributes.name).to.equal('Inbox');
+    expect(getAction.response.data.attributes.count).to.equal(0);
+    expect(getAction.response.data.attributes.systemFolder).to.be.true;
+  });
+
+  it('should dispatch null response after retries fail for custom folder not in folderList', async () => {
+    const origSetTimeout = global.setTimeout;
+    sinonSandbox.stub(global, 'setTimeout').callsFake((fn, delay, ...args) => {
+      return origSetTimeout(fn, 0, ...args);
+    });
+    mockFetch({ ...errorResponse, status: 503 }, false);
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
+
+    await store.dispatch(retrieveFolder(12345));
+    const actions = store.getActions();
+    const getAction = actions.find(a => a.type === Actions.Folder.GET);
+    expect(getAction).to.exist;
+    expect(getAction.response).to.be.null;
+  });
+
+  it('should use folderList fallback after retries fail for custom folder', async () => {
+    const origSetTimeout = global.setTimeout;
+    sinonSandbox.stub(global, 'setTimeout').callsFake((fn, delay, ...args) => {
+      return origSetTimeout(fn, 0, ...args);
+    });
+    mockFetch({ ...errorResponse, status: 503 }, false);
+    const store = mockStore({
+      sm: {
+        folders: {
+          folderList: [
+            {
+              id: 12345,
+              name: 'My Custom Folder',
+              count: 5,
+              unreadCount: 2,
+              systemFolder: false,
+            },
+          ],
+        },
+      },
+    });
+
+    await store.dispatch(retrieveFolder('12345'));
+    const actions = store.getActions();
+    const getAction = actions.find(a => a.type === Actions.Folder.GET);
+    expect(getAction).to.exist;
+    expect(getAction.response).to.not.be.null;
+    expect(getAction.response.data.attributes.folderId).to.equal(12345);
+    expect(getAction.response.data.attributes.name).to.equal(
+      'My Custom Folder',
+    );
+    expect(getAction.response.data.attributes.count).to.equal(5);
+  });
+
+  it('should retry and succeed for custom folder after initial failure', async () => {
+    const origSetTimeout = global.setTimeout;
+    sinonSandbox.stub(global, 'setTimeout').callsFake((fn, delay, ...args) => {
+      return origSetTimeout(fn, 0, ...args);
+    });
+    const customFolderResponse = {
+      data: {
+        attributes: {
+          folderId: 12345,
+          name: 'My Custom Folder',
+          count: 5,
+          unreadCount: 2,
+          systemFolder: false,
+        },
+      },
+    };
+    mockMultipleApiRequests([
+      { response: errorResponse, shouldResolve: false },
+      { response: customFolderResponse, shouldResolve: true },
+    ]);
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
+
+    await store.dispatch(retrieveFolder(12345));
+    const actions = store.getActions();
+    const getAction = actions.find(a => a.type === Actions.Folder.GET);
+    expect(getAction).to.exist;
+    expect(getAction.response.data.attributes.folderId).to.equal(12345);
+    expect(getAction.response.data.attributes.name).to.equal(
+      'My Custom Folder',
+    );
   });
 
   it('should dispatch response on retrieveFolder action for DELETED folder', async () => {
     mockApiRequest(folderDeletedResponse);
-    const store = mockStore();
+    const store = mockStore({ sm: { folders: { folderList: [] } } });
     expect(folderDeletedResponse.data.attributes.name).to.equal('Deleted');
     await store.dispatch(retrieveFolder(0)).then(() => {
       expect(store.getActions()).to.deep.include({

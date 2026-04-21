@@ -81,7 +81,7 @@ const ThreadDetails = props => {
 
   useEffect(
     () => {
-      if (!folder && drafts?.length > 0) {
+      if (!folder && drafts?.length > 0 && threadFolderId !== undefined) {
         dispatch(retrieveFolder(threadFolderId));
       }
     },
