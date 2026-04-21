@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [Continuous Integration]
     types: [completed]
-    branches: [main]
+    branches: [main, production-bypass]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -117,7 +117,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
 
     steps:
       - name: Checkout
