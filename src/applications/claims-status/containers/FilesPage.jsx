@@ -149,9 +149,10 @@ class FilesPage extends React.Component {
               }
             >
               <Toggler.Enabled>
-                {getFilesNeeded(trackedItems).length > 0 && (
-                  <ReviewRequestsAlert />
-                )}
+                {isOpen &&
+                  getFilesNeeded(trackedItems).length > 0 && (
+                    <ReviewRequestsAlert />
+                  )}
               </Toggler.Enabled>
             </Toggler>
             <AdditionalEvidencePage additionalEvidenceTitle="Upload additional evidence" />

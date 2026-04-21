@@ -470,6 +470,84 @@ describe('<FilesPage>', () => {
     });
   });
 
+  context('ReviewRequestsAlert (cstAlertImprovementsEvidenceRequests)', () => {
+    const neededFromYouItem = {
+      id: 1,
+      status: 'NEEDED_FROM_YOU',
+      displayName: 'DD214',
+      suspenseDate: '2050-01-01',
+    };
+    const openAttributes = {
+      ...baseClaim.attributes,
+      closeDate: null,
+      status: 'INITIAL_REVIEW',
+      trackedItems: [neededFromYouItem],
+    };
+    const closedAttributes = {
+      ...baseClaim.attributes,
+      closeDate: '2023-01-31',
+      status: 'COMPLETE',
+      claimPhaseDates: {
+        currentPhaseBack: false,
+        phaseChangeDate: '2023-01-31',
+        latestPhaseType: 'COMPLETE',
+        previousPhases: { phase7CompleteDate: '2023-02-08' },
+      },
+      trackedItems: [neededFromYouItem],
+    };
+
+    it('should not render the alert on a closed claim that still has NEEDED_FROM_YOU items', () => {
+      const claim = { ...baseClaim, attributes: closedAttributes };
+
+      const { queryByText } = renderWithRouter(
+        <Provider
+          store={getStore({
+            // eslint-disable-next-line camelcase
+            cst_alert_improvements_evidence_requests: true,
+          })}
+        >
+          <FilesPage {...props} claim={claim} />
+        </Provider>,
+      );
+
+      expect(queryByText('Review your requests')).to.not.exist;
+    });
+
+    it('should render the alert on an open claim with NEEDED_FROM_YOU items', () => {
+      const claim = { ...baseClaim, attributes: openAttributes };
+
+      const { queryByText } = renderWithRouter(
+        <Provider
+          store={getStore({
+            // eslint-disable-next-line camelcase
+            cst_alert_improvements_evidence_requests: true,
+          })}
+        >
+          <FilesPage {...props} claim={claim} />
+        </Provider>,
+      );
+
+      expect(queryByText('Review your requests')).to.exist;
+    });
+
+    it('should not render the alert when the feature flag is off, even with NEEDED_FROM_YOU items', () => {
+      const claim = { ...baseClaim, attributes: openAttributes };
+
+      const { queryByText } = renderWithRouter(
+        <Provider
+          store={getStore({
+            // eslint-disable-next-line camelcase
+            cst_alert_improvements_evidence_requests: false,
+          })}
+        >
+          <FilesPage {...props} claim={claim} />
+        </Provider>,
+      );
+
+      expect(queryByText('Review your requests')).to.not.exist;
+    });
+  });
+
   describe('files page content', () => {
     it('should render OtherWaysToSendYourDocuments and new components', () => {
       const { getByTestId, getByText } = renderWithRouter(
