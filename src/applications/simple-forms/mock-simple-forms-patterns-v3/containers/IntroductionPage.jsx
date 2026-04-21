@@ -377,7 +377,9 @@ const PatternTable = ({ patterns }) => (
 
 const childContent = (
   <>
-    <h2>Purpose and usage of sample form</h2>
+    <h2 id="purpose-and-usage-of-sample-form">
+      Purpose and usage of sample form
+    </h2>
     <p>
       This form showcases simple patterns in action, highlighting their
       implications on form pages. It is not a starting template for creating
@@ -392,10 +394,10 @@ const childContent = (
       .
     </p>
 
-    <h2>Field patterns</h2>
+    <h2 id="field-patterns">Field patterns</h2>
     <PatternTable patterns={fieldPatterns} />
 
-    <h2>Form patterns</h2>
+    <h2 id="form-patterns">Form patterns</h2>
     <PatternTable patterns={compositePatterns} />
   </>
 );
