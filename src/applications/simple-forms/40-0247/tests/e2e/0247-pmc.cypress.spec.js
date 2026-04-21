@@ -19,17 +19,12 @@ formConfig.useCustomScrollAndFocus = false;
 const v3StepHeaderSelector =
   'va-segmented-progress-bar[heading-text][header-level="2"]';
 const awaitFocusSelectorThenTest = () => {
-  // handle other scroll/focus interferences besides customScrollAndFocus
   return ({ afterHook }) => {
     cy.injectAxeThenAxeCheck();
     afterHook(() => {
       cy.get(v3StepHeaderSelector)
         .should('be.visible')
         .then(() => {
-          // callback to prevent scroll/focus interferences, but
-          // even now field-disabled errors still occur, so must wait a bit.
-          // eslint-disable-next-line cypress/no-unnecessary-waiting
-          cy.wait(1000);
           cy.fillPage();
           cy.axeCheck();
           cy.findByText(/continue/i, { selector: 'button' }).click();
@@ -38,10 +33,11 @@ const awaitFocusSelectorThenTest = () => {
   };
 };
 
+// Use actual paths from formConfig to avoid mismatches
 const pagePaths = [
   'veteran-personal-information',
-  'veteran-identification-information',
-  'veteran-supporting-documentation',
+  'identification-information',
+  'supporting-documentation',
   'request-type',
   'applicant-personal-information',
   'applicant-address',
@@ -60,14 +56,20 @@ const pageTestConfigs = pagePaths.reduce((obj, pagePath) => {
 
 const testConfig = createTestConfig(
   {
-    // automate all v3-web-component page-flows except
-    // where addressUIs are used
     useWebComponentFields: true,
     dataPrefix: 'data',
 
     dataDir: path.join(__dirname, 'fixtures', 'data'),
 
-    dataSets: ['test-data'],
+    // Test all workflow variations:
+    // 1. SSN + first request + additional certs
+    // 2. SSN + first request + no additional certs
+    // 3. VA file number + replacement request + additional certs
+    dataSets: [
+      'test-data',
+      'test-data-no-additional-certs',
+      'test-data-va-file-number',
+    ],
 
     pageHooks: {
       introduction: ({ afterHook }) => {
@@ -79,6 +81,7 @@ const testConfig = createTestConfig(
       },
       ...pageTestConfigs,
       'applicant-address': ({ afterHook }) => {
+        cy.injectAxeThenAxeCheck();
         afterHook(() => {
           cy.get('@testData').then(data => {
             cy.get(v3StepHeaderSelector)
@@ -87,10 +90,6 @@ const testConfig = createTestConfig(
                 cy.get('[name="root_applicantAddress_state"]')
                   .should('not.have.attr', 'disabled')
                   .then(() => {
-                    // callback to avoid field-disabled errors, but
-                    // even now we must wait a bit!
-                    // eslint-disable-next-line cypress/no-unnecessary-waiting
-                    cy.wait(1000);
                     cy.fillAddressWebComponentPattern(
                       'applicantAddress',
                       data.applicantAddress,
@@ -104,6 +103,7 @@ const testConfig = createTestConfig(
         });
       },
       'additional-certificates-request': ({ afterHook }) => {
+        cy.injectAxeThenAxeCheck();
         afterHook(() => {
           cy.get('@testData').then(data => {
             const { additionalAddress, additionalCopies } = data;
@@ -114,10 +114,6 @@ const testConfig = createTestConfig(
                 cy.get('input[name="root_additionalAddress_state"]')
                   .should('not.be.disabled')
                   .then(() => {
-                    // callback to avoid field-disabled errors, but
-                    // even now we must wait a bit!
-                    // eslint-disable-next-line cypress/no-unnecessary-waiting
-                    cy.wait(1000);
                     cy.fillAddressWebComponentPattern(
                       'additionalAddress',
                       additionalAddress,
@@ -147,7 +143,7 @@ const testConfig = createTestConfig(
       cy.intercept(formConfig.submitUrl, mockSubmit);
       cy.config('includeShadowDom', true);
     },
-    skip: Cypress.env('CI'),
+    skip: false,
   },
   manifest,
   formConfig,

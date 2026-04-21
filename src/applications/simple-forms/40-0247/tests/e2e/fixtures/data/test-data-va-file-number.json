@@ -1,0 +1,34 @@
+{
+  "data": {
+    "veteranFullName": {
+      "first": "Robert",
+      "last": "Smith"
+    },
+    "veteranDateOfBirth": "1940-11-30",
+    "veteranDateOfDeath": "2018-07-04",
+    "veteranId": { "vaFileNumber": "123456789" },
+    "isFirstRequest": false,
+    "applicantFullName": {
+      "first": "Susan",
+      "last": "Smith"
+    },
+    "applicantAddress": {
+      "country": "USA",
+      "street": "789 Elm St",
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "73301"
+    },
+    "applicantPhone": "5125559876",
+    "certificates": "5",
+    "additionalCertificates": true,
+    "additionalAddress": {
+      "country": "USA",
+      "street": "321 Pine Rd",
+      "city": "Dallas",
+      "state": "TX",
+      "postalCode": "75201"
+    },
+    "additionalCopies": "10"
+  }
+}

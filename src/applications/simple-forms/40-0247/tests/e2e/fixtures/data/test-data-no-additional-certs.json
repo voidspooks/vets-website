@@ -1,0 +1,27 @@
+{
+  "data": {
+    "veteranFullName": {
+      "first": "Jane",
+      "last": "Doe"
+    },
+    "veteranDateOfBirth": "1950-06-15",
+    "veteranDateOfDeath": "2020-03-20",
+    "veteranId": { "ssn": "123456788" },
+    "isFirstRequest": true,
+    "applicantFullName": {
+      "first": "Mary",
+      "last": "Doe"
+    },
+    "applicantAddress": {
+      "country": "USA",
+      "street": "456 Oak Ave",
+      "city": "Springfield",
+      "state": "IL",
+      "postalCode": "62701"
+    },
+    "applicantPhone": "2175551234",
+    "applicantEmail": "mary.doe@example.com",
+    "certificates": "1",
+    "additionalCertificates": false
+  }
+}
