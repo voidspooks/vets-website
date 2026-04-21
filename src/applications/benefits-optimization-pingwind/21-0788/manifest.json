@@ -1,0 +1,18 @@
+{
+  "appName": "Request apportionment of beneficiary's award",
+  "rootUrl": "/supporting-forms-for-claims/request-apportionment-form-21-0788",
+  "entryName": "21-0788",
+  "entryFile": "./app-entry.jsx",
+  "productId": "",
+  "template": {
+    "vagovprod": false,
+    "layout": "page-react.html",
+    "includeBreadcrumbs": false,
+    "minimalExcludePaths": ["/introduction", "/confirmation"],
+    "minimalFooter": true,
+    "minimalHeader": {
+      "title": "Information Regarding Apportionment of Beneficiary's Award",
+      "subtitle": "(VA Form 21-0788)"
+    }
+  }
+}
