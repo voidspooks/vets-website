@@ -417,7 +417,7 @@ const ClaimantOverviewPage = () => {
                       style={{ marginTop: '20px' }}
                     >
                       {claimant?.intentToFile?.length > 1 && (
-                        <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--5">
+                        <h4 className="vads-u-margin-top--0 vads-u-margin-bottom--2p5">
                           {ITF_SECTION_TITLES[itf.benefitType] ||
                             itf.benefitType}
                         </h4>
