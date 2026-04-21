@@ -4,7 +4,7 @@ import { fireEvent, render } from '@testing-library/react';
 import { addHours, addMinutes } from 'date-fns';
 import sinon from 'sinon';
 
-import DowntimeApproaching from '../components/DowntimeApproaching';
+import { DowntimeApproaching } from '../components/DowntimeApproaching';
 
 describe('<DowntimeApproaching>', () => {
   const dt = new Date('2025-06-25T16:00:00-00:00');

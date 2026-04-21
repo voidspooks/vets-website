@@ -1,6 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -55,9 +57,6 @@ describe('Profile', () => {
       isInMVI: true,
       isBlocked: false,
       isSchedulingPreferencesPilotEligible: false,
-      isDowntimeWarningDismissed: false,
-      dismissDowntimeWarning: sinon.spy(),
-      initializeDowntimeWarnings: sinon.spy(),
       user: {},
       location: {
         pathname: '/profile/personal-information',
@@ -269,11 +268,19 @@ describe('Profile', () => {
 
   describe('handleDowntimeApproaching', () => {
     it('should render DowntimeApproaching when status is downtimeApproaching', () => {
-      defaultProps.isDowntimeWarningDismissed = false;
-      defaultProps.dismissDowntimeWarning = sinon.spy();
-      defaultProps.initializeDowntimeWarnings = sinon.spy();
-
-      const wrapper = shallow(<Profile {...defaultProps} />);
+      const store = configureStore([])({
+        scheduledDowntime: {
+          globalDowntime: null,
+          isReady: true,
+          isPending: false,
+          serviceMap: {},
+          dismissedDowntimeWarnings: [],
+        },
+      });
+      const wrapper = shallow(<Profile {...defaultProps} />, {
+        wrappingComponent: Provider,
+        wrappingComponentProps: { store },
+      });
       const instance = wrapper.instance();
 
       const downtime = {
@@ -284,17 +291,27 @@ describe('Profile', () => {
       const children = <div>Child content</div>;
       const result = instance.handleDowntimeApproaching(downtime, children);
 
-      expect(result.type.name).to.equal('DowntimeApproaching');
+      expect(result.type.type.displayName).to.equal(
+        'Connect(DowntimeApproaching)',
+      );
       expect(result.props.appTitle).to.equal('profile');
       wrapper.unmount();
     });
 
     it('should return children when status is not downtimeApproaching', () => {
-      defaultProps.isDowntimeWarningDismissed = false;
-      defaultProps.dismissDowntimeWarning = sinon.spy();
-      defaultProps.initializeDowntimeWarnings = sinon.spy();
-
-      const wrapper = shallow(<Profile {...defaultProps} />);
+      const store = configureStore([])({
+        scheduledDowntime: {
+          globalDowntime: null,
+          isReady: true,
+          isPending: false,
+          serviceMap: {},
+          dismissedDowntimeWarnings: [],
+        },
+      });
+      const wrapper = shallow(<Profile {...defaultProps} />, {
+        wrappingComponent: Provider,
+        wrappingComponentProps: { store },
+      });
       const instance = wrapper.instance();
 
       const downtime = {
@@ -410,7 +427,6 @@ describe('mapStateToProps', () => {
       'shouldShowHealthCareSettingsPage',
       'shouldFetchSchedulingPreferences',
       'shouldFetchTotalDisabilityRating',
-      'isDowntimeWarningDismissed',
       'isBlocked',
       'isSchedulingPreferencesPilotEligible',
       'togglesLoaded',

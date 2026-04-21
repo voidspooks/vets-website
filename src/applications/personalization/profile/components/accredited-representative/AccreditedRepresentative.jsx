@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
-
+import {
+  DowntimeNotification,
+  externalServices,
+  externalServiceStatus,
+} from '~/platform/monitoring/DowntimeNotification';
+import DowntimeApproaching from '~/platform/monitoring/DowntimeNotification/components/DowntimeApproaching';
 import { connect, useStore } from 'react-redux';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
 import { useRepresentativeStatus } from 'platform/user/widgets/representative-status/hooks/useRepresentativeStatus';
@@ -79,12 +84,26 @@ const AccreditedRepresentative = ({ isLOA3 }) => {
     );
   };
 
+  const renderDowntimeError = (downtimeProps, childrenToRender) => {
+    const { status } = downtimeProps;
+    if (status === externalServiceStatus.downtimeApproaching) {
+      return <DowntimeApproaching {...downtimeProps} />;
+    }
+
+    if (status === externalServiceStatus.down) {
+      return <UnknownRep DynamicHeader={DynamicHeader} />;
+    }
+
+    return childrenToRender;
+  };
+
   const content = () => {
     if (isLoading) {
       return (
         <va-loading-indicator
           label="Loading"
           message="Loading your information..."
+          data-testid="loading-rep-status"
         />
       );
     }
@@ -109,7 +128,13 @@ const AccreditedRepresentative = ({ isLOA3 }) => {
       >
         Accredited representative or VSO
       </h1>
-      {content()}
+      <DowntimeNotification
+        appTitle="Representative Status"
+        dependencies={[externalServices.lighthouseBenefitsClaims]}
+        render={renderDowntimeError}
+      >
+        {content()}
+      </DowntimeNotification>
     </>
   );
 };

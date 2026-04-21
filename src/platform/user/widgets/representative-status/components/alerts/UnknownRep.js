@@ -18,10 +18,10 @@ export function UnknownRep({ DynamicHeader }) {
         We can’t check if you have an accredited representative.
       </DynamicHeader>
       <React.Fragment key=".1">
-        <p>We’re sorry. Our system isn’t working right now. Try again later.</p>
+        <p>We’re sorry. There’s a problem with our system. Check back later.</p>
 
         <p className="vads-u-margin-y--0">
-          If it still doesn’t work, call us at{' '}
+          If there’s still a problem, call us at{' '}
           <va-telephone contact={CONTACTS.VA_BENEFITS} /> to check if you have
           an accredited representative.
         </p>

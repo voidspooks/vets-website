@@ -23,10 +23,6 @@ import DowntimeNotification, {
   externalServiceStatus,
 } from '~/platform/monitoring/DowntimeNotification';
 import DowntimeApproaching from '~/platform/monitoring/DowntimeNotification/components/DowntimeApproaching';
-import {
-  initializeDowntimeWarnings,
-  dismissDowntimeWarning,
-} from '~/platform/monitoring/DowntimeNotification/actions';
 
 import {
   RequiredLoginView,
@@ -147,9 +143,6 @@ class Profile extends Component {
         <DowntimeApproaching
           {...downtime}
           appTitle="profile"
-          isDowntimeWarningDismissed={this.props.isDowntimeWarningDismissed}
-          dismissDowntimeWarning={this.props.dismissDowntimeWarning}
-          initializeDowntimeWarnings={this.props.initializeDowntimeWarnings}
           messaging={{
             title:
               'Some parts of the profile will be down for maintenance soon',
@@ -280,16 +273,13 @@ class Profile extends Component {
 
 Profile.propTypes = {
   connectDrupalSourceOfTruthCerner: PropTypes.func.isRequired,
-  dismissDowntimeWarning: PropTypes.func.isRequired,
   fetchDirectDeposit: PropTypes.func.isRequired,
   fetchFullName: PropTypes.func.isRequired,
   fetchMilitaryInformation: PropTypes.func.isRequired,
   fetchPersonalInformation: PropTypes.func.isRequired,
   fetchSchedulingPreferences: PropTypes.func.isRequired,
   fetchTotalDisabilityRating: PropTypes.func.isRequired,
-  initializeDowntimeWarnings: PropTypes.func.isRequired,
   isBlocked: PropTypes.bool.isRequired,
-  isDowntimeWarningDismissed: PropTypes.bool.isRequired,
   isInMVI: PropTypes.bool.isRequired,
   isLOA3: PropTypes.bool.isRequired,
   isSchedulingPreferencesPilotEligible: PropTypes.bool.isRequired,
@@ -399,9 +389,6 @@ const mapStateToProps = state => {
     shouldShowHealthCareSettingsPage,
     shouldFetchSchedulingPreferences,
     shouldFetchTotalDisabilityRating,
-    isDowntimeWarningDismissed: state.scheduledDowntime?.dismissedDowntimeWarnings?.includes(
-      'profile',
-    ),
     isBlocked,
     isSchedulingPreferencesPilotEligible,
     togglesLoaded,
@@ -416,8 +403,6 @@ const mapDispatchToProps = {
   fetchSchedulingPreferences: fetchSchedulingPreferencesAction,
   fetchDirectDeposit: fetchDirectDepositAction,
   fetchTotalDisabilityRating: fetchTotalDisabilityRatingAction,
-  initializeDowntimeWarnings,
-  dismissDowntimeWarning,
   connectDrupalSourceOfTruthCerner: () =>
     dispatchConnectDrupalSourceOfTruthCerner,
 };

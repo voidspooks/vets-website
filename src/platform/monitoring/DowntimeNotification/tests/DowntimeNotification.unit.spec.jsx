@@ -1,11 +1,13 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import { render, waitFor } from '@testing-library/react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { addDays, addHours } from 'date-fns';
 import { createServiceMap } from '../util/helpers';
 import { externalServices, externalServiceStatus } from '../index';
-import {
+import DowntimeNotificationRedux, {
   DowntimeNotification,
   mapStateToProps,
 } from '../containers/DowntimeNotification';
@@ -15,7 +17,6 @@ const innerText = 'This is the inner text';
 const defaultProps = {
   appTitle: 'Test App',
   dependencies: [],
-  getGlobalDowntime: () => {},
   getScheduledDowntime: () => {},
   shouldSendRequest: true,
 };
@@ -116,23 +117,27 @@ describe('<DowntimeNotification/>', () => {
   describe('Approaching downtime', () => {
     it('should render downtime approaching modal and children', () => {
       const dt = new Date('2025-06-25T16:00:00-00:00');
-      const dismissDowntimeWarning = sinon.stub();
-      const initializeDowntimeWarnings = sinon.stub();
+      const store = configureStore([])({
+        scheduledDowntime: {
+          globalDowntime: null,
+          isReady: true,
+          isPending: false,
+          serviceMap: {},
+          dismissedDowntimeWarnings: [],
+        },
+      });
       const { getByText } = render(
-        <DowntimeNotification
-          {...defaultProps}
-          dependencies={[externalServices.mhv]}
-          isReady
-          startTime={dt}
-          endTime={addHours(dt, 2)}
-          status={externalServiceStatus.downtimeApproaching}
-          appTitle="Test App"
-          isDowntimeWarningDismissed={false}
-          dismissDowntimeWarning={dismissDowntimeWarning}
-          initializeDowntimeWarnings={initializeDowntimeWarnings}
-        >
-          <span>{innerText}</span>
-        </DowntimeNotification>,
+        <Provider store={store}>
+          <DowntimeNotificationRedux
+            dependencies={[externalServices.mhv]}
+            startTime={dt}
+            endTime={addHours(dt, 2)}
+            status={externalServiceStatus.downtimeApproaching}
+            appTitle="Test App"
+          >
+            <span>{innerText}</span>
+          </DowntimeNotificationRedux>
+        </Provider>,
       );
       expect(getByText(innerText)).to.exist;
       expect(

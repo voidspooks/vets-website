@@ -1,9 +1,8 @@
 import React from 'react';
+import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { renderWithStoreAndRouter } from '~/platform/testing/unit/react-testing-library-helpers';
-import { expect } from 'chai';
-import { $ } from 'platform/forms-system/src/js/utilities/ui';
 import * as useRepresentativeStatus from 'platform/user/widgets/representative-status/hooks/useRepresentativeStatus';
 import { CSP_IDS } from '~/platform/user/authentication/constants';
 import mockRepresentativeData from '../../../mock-representative-data.json';
@@ -53,8 +52,8 @@ describe('AccreditedRepresentative', () => {
     afterEach(() => {
       repStatus.restore();
     });
-    it('should render loading', () => {
-      const { container } = renderWithStoreAndRouter(
+    it('should render loading', async () => {
+      const { getByText, findByTestId } = renderWithStoreAndRouter(
         <AccreditedRepresentative />,
         {
           initialState: {
@@ -62,14 +61,8 @@ describe('AccreditedRepresentative', () => {
           },
         },
       );
-      expect($('h1', container).textContent).to.eq(
-        'Accredited representative or VSO',
-      );
-      const loadingIndicator = $('va-loading-indicator', container);
-      expect(loadingIndicator).to.exist;
-      expect(loadingIndicator.getAttribute('message')).to.contain(
-        'Loading your information...',
-      );
+      await findByTestId('loading-rep-status');
+      expect(getByText('Accredited representative or VSO'));
     });
   });
 
@@ -90,20 +83,21 @@ describe('AccreditedRepresentative', () => {
       repStatus.restore();
     });
     it('should render CurrentRep', async () => {
-      const { container, getByTestId } = renderWithStoreAndRouter(
-        <AccreditedRepresentative />,
-        {
-          initialState: {
-            ...getState(),
-          },
+      const {
+        getByText,
+        getAllByRole,
+        findByTestId,
+      } = renderWithStoreAndRouter(<AccreditedRepresentative />, {
+        initialState: {
+          ...getState(),
         },
-      );
-      expect($('h1', container).textContent).to.eq(
+      });
+      await findByTestId('current-rep');
+      expect(getAllByRole('heading')[0]).to.have.text(
         'Accredited representative or VSO',
       );
-      const vaCard = $('va-card', container);
-      expect(vaCard).to.exist;
-      getByTestId('current-rep');
+      expect(getByText('Your current Veteran Service Organization (VSO)')).to
+        .exist;
     });
   });
 
@@ -124,19 +118,22 @@ describe('AccreditedRepresentative', () => {
       repStatus.restore();
     });
     it('should render NoRep', async () => {
-      const { container, getByTestId, getByText } = renderWithStoreAndRouter(
-        <AccreditedRepresentative />,
-        {
-          initialState: {
-            ...getState(),
-          },
+      const {
+        getAllByRole,
+        findByTestId,
+        getByText,
+      } = renderWithStoreAndRouter(<AccreditedRepresentative />, {
+        initialState: {
+          ...getState(),
         },
-      );
-      expect($('h1', container).textContent).to.eq(
+      });
+
+      await findByTestId('no-rep');
+      expect(getAllByRole('heading')[0]).to.have.text(
         'Accredited representative or VSO',
       );
-      getByTestId('no-rep');
-      getByText('You don’t have an accredited representative.');
+      expect(getByText('You don’t have an accredited representative.')).to
+        .exist;
     });
   });
 
@@ -157,19 +154,22 @@ describe('AccreditedRepresentative', () => {
       repStatus.restore();
     });
     it('should render NoRep', async () => {
-      const { container, getByTestId, getByText } = renderWithStoreAndRouter(
-        <AccreditedRepresentative />,
-        {
-          initialState: {
-            ...getState({ isLOA3: 3 }),
-          },
+      const {
+        getAllByRole,
+        findByTestId,
+        getByText,
+      } = renderWithStoreAndRouter(<AccreditedRepresentative />, {
+        initialState: {
+          ...getState({ isLOA3: 3 }),
         },
-      );
-      expect($('h1', container).textContent).to.eq(
+      });
+
+      await findByTestId('no-rep');
+      expect(getAllByRole('heading')[0]).to.have.text(
         'Accredited representative or VSO',
       );
-      getByTestId('no-rep');
-      getByText('You don’t have an accredited representative.');
+      expect(getByText('You don’t have an accredited representative.')).to
+        .exist;
     });
   });
 
@@ -192,19 +192,22 @@ describe('AccreditedRepresentative', () => {
         repStatus.restore();
       });
       it('should render UnknownRep', async () => {
-        const { container, getByTestId, getByText } = renderWithStoreAndRouter(
-          <AccreditedRepresentative />,
-          {
-            initialState: {
-              ...getState(),
-            },
+        const {
+          getAllByRole,
+          findByTestId,
+          getByText,
+        } = renderWithStoreAndRouter(<AccreditedRepresentative />, {
+          initialState: {
+            ...getState(),
           },
-        );
-        expect($('h1', container).textContent).to.eq(
+        });
+        await findByTestId('unknown-rep');
+        expect(getAllByRole('heading')[0]).to.have.text(
           'Accredited representative or VSO',
         );
-        getByTestId('unknown-rep');
-        getByText('We can’t check if you have an accredited representative.');
+        expect(
+          getByText('We can’t check if you have an accredited representative.'),
+        ).to.exist;
       });
     },
   );

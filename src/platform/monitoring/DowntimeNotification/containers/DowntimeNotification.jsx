@@ -8,8 +8,6 @@ import { formatDowntime } from 'platform/utilities/date';
 import {
   getGlobalDowntime,
   getScheduledDowntime as getScheduledDowntimeFunc,
-  initializeDowntimeWarnings,
-  dismissDowntimeWarning,
 } from '../actions';
 
 import Down from '../components/Down';
@@ -122,10 +120,8 @@ DowntimeNotification.propTypes = {
   dependencies: PropTypes.arrayOf(
     PropTypes.oneOf(Object.values(externalServices)),
   ).isRequired,
-  dismissDowntimeWarning: PropTypes.func.isRequired,
   getGlobalDowntime: PropTypes.func.isRequired,
   getScheduledDowntime: PropTypes.func.isRequired,
-  initializeDowntimeWarnings: PropTypes.func.isRequired,
   children: PropTypes.node,
   content: PropTypes.node,
   customText: PropTypes.object,
@@ -144,7 +140,6 @@ DowntimeNotification.propTypes = {
 // exported for unit tests
 export const mapStateToProps = (state, ownProps) => {
   const {
-    dismissedDowntimeWarnings,
     globalDowntime,
     isPending,
     isReady,
@@ -152,9 +147,6 @@ export const mapStateToProps = (state, ownProps) => {
   } = state.scheduledDowntime;
 
   const shouldSendRequest = !isReady && !isPending;
-  const isDowntimeWarningDismissed = dismissedDowntimeWarnings.includes(
-    ownProps.appTitle,
-  );
 
   const downtime = isReady
     ? getSoonestDowntime(serviceMap, ownProps.dependencies || [])
@@ -162,7 +154,6 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     globalDowntime,
-    isDowntimeWarningDismissed,
     isPending,
     isReady,
     shouldSendRequest,
@@ -173,8 +164,6 @@ export const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = {
   getGlobalDowntime,
   getScheduledDowntime: getScheduledDowntimeFunc,
-  initializeDowntimeWarnings,
-  dismissDowntimeWarning,
 };
 
 export { DowntimeNotification };

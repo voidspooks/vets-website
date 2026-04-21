@@ -2,8 +2,13 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import { VaModal } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
+import { connect } from 'react-redux';
 import externalServiceStatus from '../config/externalServiceStatus';
 import DowntimeNotificationWrapper from './Wrapper';
+import {
+  dismissDowntimeWarning as dismissDowntimeWarningAction,
+  initializeDowntimeWarnings as initializeDowntimeWarningsAction,
+} from '../actions';
 
 const DowntimeApproaching = ({
   startTime,
@@ -71,4 +76,19 @@ DowntimeApproaching.propTypes = {
   }),
 };
 
-export default DowntimeApproaching;
+export const mapStateToProps = (state, ownProps) => ({
+  isDowntimeWarningDismissed: state.scheduledDowntime.dismissedDowntimeWarnings.includes(
+    ownProps.appTitle,
+  ),
+});
+
+const mapDispatchToProps = {
+  initializeDowntimeWarnings: initializeDowntimeWarningsAction,
+  dismissDowntimeWarning: dismissDowntimeWarningAction,
+};
+
+export { DowntimeApproaching };
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(DowntimeApproaching);

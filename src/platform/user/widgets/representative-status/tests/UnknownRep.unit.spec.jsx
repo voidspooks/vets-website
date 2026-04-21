@@ -49,8 +49,8 @@ describe('UnknownRep component', () => {
     const paragraphs = wrapper.find('p');
     const firstParagraphText = paragraphs.at(0).text();
     expect(firstParagraphText.indexOf('sorry') > -1).to.be.true;
-    expect(firstParagraphText.indexOf('system isn') > -1).to.be.true;
-    expect(firstParagraphText.indexOf('Try again later') > -1).to.be.true;
+    expect(firstParagraphText.indexOf('There’s a problem') > -1).to.be.true;
+    expect(firstParagraphText.indexOf('Check back later') > -1).to.be.true;
     wrapper.unmount();
   });
 
