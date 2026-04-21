@@ -21,6 +21,7 @@ export default function CreateAccountLink({
   children,
   externalApplication,
   clientId = 'vaweb',
+  className = '',
 }) {
   const [href, setHref] = useState('');
 
@@ -45,7 +46,7 @@ export default function CreateAccountLink({
   return (
     <a
       href={href}
-      className="vads-c-action-link--blue"
+      className={`vads-c-action-link--blue${className ? ` ${className}` : ''}`}
       data-testid={policy}
       onClick={() => signupHandler(policy, useOAuth)}
     >
@@ -57,6 +58,7 @@ export default function CreateAccountLink({
 
 CreateAccountLink.propTypes = {
   children: PropTypes.node,
+  className: PropTypes.string,
   clientId: PropTypes.string,
   externalApplication: PropTypes.string,
   policy: PropTypes.string,

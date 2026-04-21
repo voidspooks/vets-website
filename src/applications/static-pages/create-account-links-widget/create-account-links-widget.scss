@@ -1,0 +1,12 @@
+@import "~@department-of-veterans-affairs/css-library/dist/tokens/scss/variables";
+
+.create-account-link {
+  &::before {
+    height: 24px !important;
+    width: 24px !important;
+    background-size: 14px 14px !important;
+    top: 8px !important;
+  }
+
+  padding: 8px 0 8px 32px !important;
+}

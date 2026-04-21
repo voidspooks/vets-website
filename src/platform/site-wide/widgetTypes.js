@@ -8,6 +8,7 @@ export default {
   BURIAL_HOW_DO_I_APPLY_WIDGET: 'burial-how-do-i-apply-widget',
   BTSSS_LOGIN: 'btsss-login',
   CHAPTER_31_CTA: 'chapter-31-cta',
+  CREATE_ACCOUNT_LINKS: 'create-account-links-widget',
   CHAPTER_31_WIZARD: 'chapter-31-Wizard',
   CHAPTER_36_CTA: 'chapter-36-cta',
   COE_ACCESS: 'coe_access',
