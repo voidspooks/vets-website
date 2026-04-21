@@ -65,9 +65,11 @@ const UnifiedRadiologyDetails = props => {
     state => state.user?.profile?.isCernerPatient,
   );
 
-  const { hasLoadedThumbnails, hasImageError } = useThumbnailPolling(
-    record?.imagingStudyId,
-  );
+  const {
+    hasLoadedThumbnails,
+    hasLoadedDicom,
+    hasImageError,
+  } = useThumbnailPolling(record?.imagingStudyId, record?.imageCount);
 
   const emptyField = 'None noted';
 
@@ -163,22 +165,27 @@ const UnifiedRadiologyDetails = props => {
   );
 
   const renderImagesLink = () => {
-    if (scdfImageThumbnails?.length > 0) {
+    const thumbCount = scdfImageThumbnails?.length || 0;
+    if (hasLoadedThumbnails) {
+      const linkText =
+        thumbCount > 0 ? (
+          <>
+            View
+            {thumbCount > 1 ? ' all' : ''} {thumbCount}{' '}
+            {thumbCount === 1 ? 'image' : 'images'}
+          </>
+        ) : (
+          'View images'
+        );
+      const actionName = thumbCount > 0 ? 'View all images' : 'View images';
       return (
         <p className="vads-u-margin-bottom--0">
           <Link
             to={`/labs-and-tests/${labId}/images`}
             data-testid="radiology-view-all-images"
-            onClick={() => {
-              sendDataDogAction('View all images');
-            }}
+            onClick={() => sendDataDogAction(actionName)}
           >
-            <strong>
-              View
-              {scdfImageThumbnails.length > 1 ? ' all' : ''}{' '}
-              {scdfImageThumbnails.length}{' '}
-              {scdfImageThumbnails.length === 1 ? 'image' : 'images'}
-            </strong>
+            <strong>{linkText}</strong>
           </Link>
         </p>
       );
@@ -211,34 +218,6 @@ const UnifiedRadiologyDetails = props => {
           label={LABS_AND_TESTS_DISPLAY_LABELS.DATE}
           labelClass="vads-font-weight-regular"
         />
-
-        {hasLoadedThumbnails && (
-          <va-alert
-            status="success"
-            visible
-            class="vads-u-margin-top--4 no-print"
-            role="alert"
-            data-testid="alert-images-ready"
-          >
-            <h2 className="vads-u-font-size--lg no-print" slot="headline">
-              Images ready
-            </h2>
-            <p className="vads-u-margin-bottom--0">
-              <Link
-                to={`/labs-and-tests/${labId}/images`}
-                data-testid="images-ready-view-link"
-                data-dd-privacy="mask"
-                data-dd-action-name="[images ready alert - view images]"
-                onClick={() => sendDataDogAction('View all images')}
-              >
-                <strong>
-                  View all {scdfImageThumbnails.length}{' '}
-                  {scdfImageThumbnails.length === 1 ? 'image' : 'images'}
-                </strong>
-              </Link>
-            </p>
-          </va-alert>
-        )}
 
         {downloadStarted && <DownloadSuccessAlert />}
 
@@ -301,7 +280,7 @@ const UnifiedRadiologyDetails = props => {
           </HeaderSection>
         </div>
 
-        {record.imageCount > 0 && (
+        {(record.imageCount > 0 || hasLoadedDicom) && (
           <>
             <div className="test-results-container">
               <HeaderSection header="Images" className="test-results-header">

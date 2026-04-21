@@ -253,7 +253,7 @@ export const getImagingStudyDicomZip = id => async dispatch => {
       id,
     });
   } catch (error) {
-    dispatch(addAlert(Constants.ALERT_TYPE_ERROR, error));
+    dispatch(addAlert(Constants.ALERT_TYPE_IMAGE_DICOM_ERROR, error));
     sendDatadogError(error, 'actions_labsAndTests_getImagingStudyDicomZip');
   }
 };

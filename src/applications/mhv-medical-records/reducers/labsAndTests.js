@@ -72,6 +72,10 @@ const initialState = {
    */
   scdfDicom: undefined,
   /**
+   * The imaging study ID that scdfImageThumbnails and scdfDicom belong to
+   */
+  scdfImageStudyId: undefined,
+  /**
    * The selected date range for displaying labs and tests
    * */
   dateRange: buildInitialDateRange(DEFAULT_DATE_RANGE),
@@ -596,8 +600,14 @@ export const labsAndTestsReducer = (state = initialState, action) => {
       return {
         ...state,
         labsAndTestsDetails: undefined,
+      };
+    }
+    case Actions.LabsAndTests.CLEAR_IMAGING_CACHE: {
+      return {
+        ...state,
         scdfImageThumbnails: undefined,
         scdfDicom: undefined,
+        scdfImageStudyId: undefined,
       };
     }
     case Actions.LabsAndTests.SET_WARNINGS: {
@@ -657,6 +667,7 @@ export const labsAndTestsReducer = (state = initialState, action) => {
       return {
         ...state,
         scdfImageThumbnails: thumbnails,
+        scdfImageStudyId: action.id,
       };
     }
     case Actions.LabsAndTests.GET_IMAGING_STUDY_DICOM: {
@@ -672,6 +683,7 @@ export const labsAndTestsReducer = (state = initialState, action) => {
       return {
         ...state,
         scdfDicom: dicomUrl,
+        scdfImageStudyId: action.id,
       };
     }
     default:

@@ -6,7 +6,10 @@ import { createMemoryHistory } from 'history-v4';
 import { renderWithStoreAndRouter } from '@department-of-veterans-affairs/platform-testing/react-testing-library-helpers';
 import reducer from '../../reducers';
 import ScdfRadiologyImagesList from '../../containers/ScdfRadiologyImagesList';
-import { ALERT_TYPE_IMAGE_THUMBNAIL_ERROR } from '../../util/constants';
+import {
+  ALERT_TYPE_IMAGE_THUMBNAIL_ERROR,
+  ALERT_TYPE_IMAGE_DICOM_ERROR,
+} from '../../util/constants';
 
 const radiologyDetails = {
   name: 'ABDOMEN 2 + PA & LAT CHEST',
@@ -28,6 +31,7 @@ const initialState = {
       labsAndTestsList: [radiologyDetails],
       scdfImageThumbnails: thumbnailUrls,
       scdfDicom: 'https://example.com/dicom.zip',
+      scdfImageStudyId: 'study-abc-123',
     },
     alerts: {
       alertList: [],
@@ -146,12 +150,15 @@ describe('ScdfRadiologyImagesList container', () => {
   });
 
   it('uses singular "image" when there is only 1 thumbnail', () => {
+    const singleImageRecord = { ...radiologyDetails, imageCount: 1 };
     const singleImageState = {
       ...initialState,
       mr: {
         ...initialState.mr,
         labsAndTests: {
           ...initialState.mr.labsAndTests,
+          labsAndTestsDetails: singleImageRecord,
+          labsAndTestsList: [singleImageRecord],
           scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
         },
       },
@@ -227,5 +234,45 @@ describe('ScdfRadiologyImagesList container', () => {
     const screen = setup(errorState);
     expect(screen.getByTestId('image-request-error-alert')).to.exist;
     expect(screen.queryByTestId('loading-indicator')).to.not.exist;
+  });
+
+  it('shows DICOM loading indicator when DICOM is not yet loaded', () => {
+    const dicomLoadingState = {
+      ...initialState,
+      mr: {
+        ...initialState.mr,
+        labsAndTests: {
+          ...initialState.mr.labsAndTests,
+          scdfDicom: null,
+        },
+      },
+    };
+    const screen = setup(dicomLoadingState);
+    expect(screen.getByTestId('loading-dicom-indicator')).to.exist;
+  });
+
+  it('shows DICOM error alert when DICOM fetch fails', () => {
+    const dicomErrorState = {
+      ...initialState,
+      mr: {
+        ...initialState.mr,
+        labsAndTests: {
+          ...initialState.mr.labsAndTests,
+          scdfDicom: null,
+        },
+        alerts: {
+          alertList: [
+            {
+              type: ALERT_TYPE_IMAGE_DICOM_ERROR,
+              isActive: true,
+              datestamp: Date.now(),
+            },
+          ],
+        },
+      },
+    };
+    const screen = setup(dicomErrorState);
+    expect(screen.getByTestId('dicom-request-error-alert')).to.exist;
+    expect(screen.queryByTestId('loading-dicom-indicator')).to.not.exist;
   });
 });

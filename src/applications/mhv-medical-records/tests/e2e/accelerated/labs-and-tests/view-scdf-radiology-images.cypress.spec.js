@@ -43,13 +43,6 @@ describe('Medical Records - SCDF Radiology Images List', () => {
     cy.wait('@imagingStudies');
     cy.wait('@imagingThumbnails');
 
-    // Verify the "Images ready" alert appears on the detail page
-    cy.get('[data-testid="alert-images-ready"]').should('be.visible');
-    cy.get('[data-testid="images-ready-view-link"]').should(
-      'contain.text',
-      '3 images',
-    );
-
     LabsAndTests.clickViewAllImages();
 
     LabsAndTests.verifyImagesPageHeading({

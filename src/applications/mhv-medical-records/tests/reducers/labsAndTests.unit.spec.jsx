@@ -1395,7 +1395,7 @@ describe('labsAndTestsReducer - SCDF imaging studies', () => {
 });
 
 describe('labsAndTestsReducer CLEAR_DETAIL', () => {
-  it('resets scdfImageThumbnails and scdfDicom', () => {
+  it('resets labsAndTestsDetails but preserves imaging cache', () => {
     const prevState = {
       labsAndTestsDetails: { id: 'test-1' },
       scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
@@ -1405,12 +1405,54 @@ describe('labsAndTestsReducer CLEAR_DETAIL', () => {
       type: Actions.LabsAndTests.CLEAR_DETAIL,
     });
     expect(state.labsAndTestsDetails).to.be.undefined;
+    expect(state.scdfImageThumbnails).to.deep.equal([
+      'https://example.com/thumb1.jpg',
+    ]);
+    expect(state.scdfDicom).to.equal('https://example.com/dicom.zip');
+  });
+});
+
+describe('labsAndTestsReducer CLEAR_IMAGING_CACHE', () => {
+  it('resets scdfImageThumbnails, scdfDicom, and scdfImageStudyId', () => {
+    const prevState = {
+      scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
+      scdfDicom: 'https://example.com/dicom.zip',
+      scdfImageStudyId: 'study-123',
+      labsAndTestsDetails: { id: 'test-1' },
+    };
+    const state = labsAndTestsReducer(prevState, {
+      type: Actions.LabsAndTests.CLEAR_IMAGING_CACHE,
+    });
     expect(state.scdfImageThumbnails).to.be.undefined;
     expect(state.scdfDicom).to.be.undefined;
+    expect(state.scdfImageStudyId).to.be.undefined;
+    expect(state.labsAndTestsDetails).to.deep.equal({ id: 'test-1' });
   });
 });
 
 describe('labsAndTestsReducer GET_IMAGING_STUDY_THUMBNAILS', () => {
+  it('sets scdfImageStudyId from action.id', () => {
+    const state = labsAndTestsReducer(undefined, {
+      type: Actions.LabsAndTests.GET_IMAGING_STUDY_THUMBNAILS,
+      id: 'study-xyz',
+      response: [
+        {
+          attributes: {
+            series: [
+              {
+                number: 1,
+                instances: [
+                  { number: 1, thumbnailUrl: 'https://example.com/thumb.jpg' },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    });
+    expect(state.scdfImageStudyId).to.equal('study-xyz');
+  });
+
   it('extracts and sorts thumbnails from series/instances', () => {
     const state = labsAndTestsReducer(undefined, {
       type: Actions.LabsAndTests.GET_IMAGING_STUDY_THUMBNAILS,
@@ -1490,6 +1532,17 @@ describe('labsAndTestsReducer GET_IMAGING_STUDY_THUMBNAILS', () => {
 });
 
 describe('labsAndTestsReducer GET_IMAGING_STUDY_DICOM', () => {
+  it('sets scdfImageStudyId from action.id', () => {
+    const state = labsAndTestsReducer(undefined, {
+      type: Actions.LabsAndTests.GET_IMAGING_STUDY_DICOM,
+      id: 'study-xyz',
+      response: [
+        { attributes: { dicomZipUrl: 'https://example.com/dicom.zip' } },
+      ],
+    });
+    expect(state.scdfImageStudyId).to.equal('study-xyz');
+  });
+
   it('extracts the first dicomZipUrl from response', () => {
     const state = labsAndTestsReducer(undefined, {
       type: Actions.LabsAndTests.GET_IMAGING_STUDY_DICOM,

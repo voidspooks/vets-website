@@ -54,6 +54,7 @@ const setup = (stateOverrides = {}, recordOverrides = {}) => {
         labsAndTestsDetails: { ...record, ...recordOverrides },
         scdfImageThumbnails: undefined,
         scdfDicom: undefined,
+        scdfImageStudyId: 'study-abc-123',
         ...stateOverrides.labsAndTests,
       },
       images: {
@@ -129,26 +130,6 @@ describe('UnifiedRadiologyDetails component', () => {
   });
 
   describe('Images section', () => {
-    it('shows "Images ready" alert when thumbnails are loaded', () => {
-      const screen = setup({
-        labsAndTests: {
-          scdfImageThumbnails: [
-            'https://example.com/thumb1.jpg',
-            'https://example.com/thumb2.jpg',
-            'https://example.com/thumb3.jpg',
-          ],
-        },
-      });
-      expect(screen.getByTestId('alert-images-ready')).to.exist;
-      const link = screen.getByTestId('images-ready-view-link');
-      expect(link.textContent).to.include('3 images');
-    });
-
-    it('does not show "Images ready" alert when thumbnails are not loaded', () => {
-      const screen = setup();
-      expect(screen.queryByTestId('alert-images-ready')).to.not.exist;
-    });
-
     it('shows Images section when imageCount > 0', () => {
       const screen = setup({
         labsAndTests: {
@@ -159,10 +140,38 @@ describe('UnifiedRadiologyDetails component', () => {
       expect(imagesHeader).to.exist;
     });
 
-    it('does not show Images section when imageCount is 0', () => {
+    it('does not show Images section when imageCount is 0 and DICOM not loaded', () => {
       const screen = setup({}, { imageCount: 0 });
       const imagesHeader = screen.queryByText('Images', { selector: 'h2' });
       expect(imagesHeader).to.not.exist;
+    });
+
+    it('shows Images section when imageCount is 0 but DICOM is loaded', () => {
+      const screen = setup(
+        {
+          labsAndTests: {
+            scdfDicom: 'https://example.com/dicom.zip',
+          },
+        },
+        { imageCount: 0 },
+      );
+      const imagesHeader = screen.getByText('Images', { selector: 'h2' });
+      expect(imagesHeader).to.exist;
+    });
+
+    it('shows "View images" link when DICOM loaded but no thumbnails', () => {
+      const screen = setup(
+        {
+          labsAndTests: {
+            scdfDicom: 'https://example.com/dicom.zip',
+            scdfImageThumbnails: [],
+          },
+        },
+        { imageCount: 0 },
+      );
+      const link = screen.getByTestId('radiology-view-all-images');
+      expect(link.textContent).to.include('View images');
+      expect(link.textContent).to.not.match(/\d/);
     });
 
     it('shows loading spinner while thumbnails are loading', () => {
@@ -186,11 +195,14 @@ describe('UnifiedRadiologyDetails component', () => {
     });
 
     it('shows "View 1 image" without "all" for single thumbnail', () => {
-      const screen = setup({
-        labsAndTests: {
-          scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
+      const screen = setup(
+        {
+          labsAndTests: {
+            scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
+          },
         },
-      });
+        { imageCount: 1 },
+      );
       const link = screen.getByTestId('radiology-view-all-images');
       expect(link).to.exist;
       expect(link.textContent).to.include('View 1 image');
@@ -222,7 +234,11 @@ describe('UnifiedRadiologyDetails component', () => {
           },
         ],
         labsAndTests: {
-          scdfImageThumbnails: ['https://example.com/thumb1.jpg'],
+          scdfImageThumbnails: [
+            'https://example.com/thumb1.jpg',
+            'https://example.com/thumb2.jpg',
+            'https://example.com/thumb3.jpg',
+          ],
         },
       });
       await waitFor(() => {

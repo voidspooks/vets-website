@@ -38,9 +38,12 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
   const imagingStudyId = isDetailsLoaded
     ? labAndTestDetails?.imagingStudyId
     : null;
-  const { hasLoadedThumbnails, hasImageError } = useThumbnailPolling(
-    imagingStudyId,
-  );
+  const {
+    hasLoadedThumbnails,
+    hasLoadedDicom,
+    hasImageError,
+    hasDicomError,
+  } = useThumbnailPolling(imagingStudyId, labAndTestDetails?.imageCount);
 
   // Convert thumbnail URL strings into { index, thumbnailUrl } objects for ImageGallery.
   const imageList = useMemo(
@@ -68,8 +71,9 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
       }
       updatePageTitle(pageTitles.LAB_AND_TEST_RESULTS_IMAGES_PAGE_TITLE);
 
-      // Clear detail + thumbnails/DICOM on unmount or labId change so stale
-      // data from a previous record is never shown.
+      // Clear detail record on unmount so stale data from a previous record
+      // is never shown. Thumbnails/DICOM are managed by useThumbnailPolling
+      // which handles cache invalidation based on study ID.
       return () => {
         dispatch(clearLabsAndTestDetails());
       };
@@ -119,6 +123,7 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
 
   const renderImageGallery = () => {
     if (hasLoadedThumbnails) {
+      if (imageList.length === 0) return null;
       return (
         <ImageGallery
           imageList={imageList}
@@ -181,7 +186,30 @@ const ScdfRadiologyImagesList = ({ isTesting }) => {
           saves a copy of your files to the computer you’re using.
         </li>
       </ul>
-      {scdfDicom && (
+      {hasDicomError && (
+        <va-alert
+          status="error"
+          visible
+          data-testid="dicom-request-error-alert"
+        >
+          <h3 slot="headline">We couldn’t load your DICOM files</h3>
+          <p>Try again later.</p>
+          <p>
+            If it still doesn’t work, call us at{' '}
+            <va-telephone contact="8773270022" /> (
+            <va-telephone tty contact="711" />
+            ). We’re here Monday through Friday, 8:00 a.m. to 8:00 p.m. ET.
+          </p>
+        </va-alert>
+      )}
+      {!hasLoadedDicom &&
+        !hasDicomError && (
+          <va-loading-indicator
+            message="Loading DICOM files..."
+            data-testid="loading-dicom-indicator"
+          />
+        )}
+      {hasLoadedDicom && (
         <>
           <va-banner
             id="download-banner"
