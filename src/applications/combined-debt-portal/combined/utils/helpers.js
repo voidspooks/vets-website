@@ -63,12 +63,28 @@ export const selectCopayDetailFetchError = state =>
  * - January 1, 2021
  */
 export const formatDate = date => {
-  const newDate =
-    typeof date === 'string' ? new Date(date.replace(/-/g, '/')) : date;
+  // Handle N/A from formatISODateToMMDDYYYY
+  if (date === 'N/A') return 'N/A';
+
+  let newDate;
+
+  if (typeof date === 'string') {
+    // Handle ISO strings with 'Z' timezone
+    if (date.includes('T') && date.includes('Z')) {
+      newDate = new Date(date);
+    } else {
+      // Handle date strings with dashes (YYYY-MM-DD format)
+      newDate = new Date(date.replace(/-/g, '/'));
+    }
+  } else {
+    newDate = date;
+  }
+
   return isValid(newDate) ? format(new Date(newDate), 'MMMM d, y') : '';
 };
 
 export const formatISODateToMMDDYYYY = isoString => {
+  if (!isoString) return 'N/A';
   const date = new Date(isoString);
 
   const day = String(date.getUTCDate()).padStart(2, '0');

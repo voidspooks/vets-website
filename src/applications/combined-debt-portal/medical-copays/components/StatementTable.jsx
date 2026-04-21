@@ -1,9 +1,6 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-  formatDate,
-  formatISODateToMMDDYYYY,
-} from '../../combined/utils/helpers';
+import { formatDate } from '../../combined/utils/helpers';
 import Pagination from '../../combined/components/Pagination';
 import usePagination from '../../combined/hooks/usePagination';
 
@@ -84,7 +81,7 @@ const StatementTable = ({ charges, formatCurrency, selectedCopay }) => {
   );
 
   const getDate = charge => {
-    return formatISODateToMMDDYYYY(charge.date);
+    return charge.date ? formatDate(charge.date) : '—';
   };
 
   const getReference = charge => {

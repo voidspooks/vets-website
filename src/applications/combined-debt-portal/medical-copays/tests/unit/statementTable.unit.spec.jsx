@@ -113,6 +113,6 @@ describe('StatementTable component', () => {
     );
 
     const dateCells = getAllByTestId('statement-date');
-    expect(dateCells[0]).to.have.text('05/15/2024');
+    expect(dateCells[0]).to.have.text('May 15, 2024');
   });
 });

@@ -281,7 +281,7 @@ const DetailCopayPage = ({ match }) => {
               <dt>Payment due:</dt>
               <dd className="vads-u-margin-left--1 vads-u-font-weight--bold">
                 {shouldUseLighthouseCopays
-                  ? selectedCopay.attributes?.paymentDueDate
+                  ? formatDate(selectedCopay.attributes?.paymentDueDate)
                   : formatDate(getPaymentDueDate())}
               </dd>
             </div>
