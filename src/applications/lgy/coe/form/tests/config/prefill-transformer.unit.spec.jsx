@@ -1,14 +1,21 @@
 import { expect } from 'chai';
+import { TOGGLE_NAMES } from 'platform/utilities/feature-toggles';
 import { prefillTransformer } from '../../config/prefill-transformer';
 import { TOGGLE_KEY } from '../../constants';
 
 describe('COE prefill transformer', () => {
   const pages = { testPage: 'Page 1' };
   const metadata = { version: 0, prefill: true };
-  const toggleOn = { [`view:${TOGGLE_KEY}`]: true };
+  const toggleSnakeKey = TOGGLE_NAMES[TOGGLE_KEY];
+  const stateWithToggleOn = {
+    featureToggles: { [toggleSnakeKey]: true },
+  };
+  const stateWithToggleOff = {
+    featureToggles: { [toggleSnakeKey]: false },
+  };
 
   it('returns pages and metadata unchanged', () => {
-    const result = prefillTransformer(pages, toggleOn, metadata);
+    const result = prefillTransformer(pages, {}, metadata, stateWithToggleOn);
 
     expect(result.pages).to.equal(pages);
     expect(result.metadata).to.equal(metadata);
@@ -23,6 +30,7 @@ describe('COE prefill transformer', () => {
       pages,
       formData,
       metadata,
+      stateWithToggleOff,
     );
 
     expect(transformed).to.equal(formData);
@@ -31,7 +39,6 @@ describe('COE prefill transformer', () => {
 
   it('extracts veteranSsnLastFour from nonPrefill when the toggle is on', () => {
     const formData = {
-      ...toggleOn,
       nonPrefill: { veteranSsnLastFour: '6789' },
     };
 
@@ -39,6 +46,7 @@ describe('COE prefill transformer', () => {
       pages,
       formData,
       metadata,
+      stateWithToggleOn,
     );
 
     expect(transformed.veteranSsnLastFour).to.equal('6789');
@@ -47,20 +55,22 @@ describe('COE prefill transformer', () => {
   it('defaults veteranSsnLastFour to an empty string when nonPrefill is missing', () => {
     const { formData: transformed } = prefillTransformer(
       pages,
-      toggleOn,
+      {},
       metadata,
+      stateWithToggleOn,
     );
 
     expect(transformed.veteranSsnLastFour).to.equal('');
   });
 
   it('defaults veteranSsnLastFour to an empty string when not present in nonPrefill', () => {
-    const formData = { ...toggleOn, nonPrefill: {} };
+    const formData = { nonPrefill: {} };
 
     const { formData: transformed } = prefillTransformer(
       pages,
       formData,
       metadata,
+      stateWithToggleOn,
     );
 
     expect(transformed.veteranSsnLastFour).to.equal('');
@@ -68,7 +78,6 @@ describe('COE prefill transformer', () => {
 
   it('preserves other top-level formData fields when the toggle is on', () => {
     const formData = {
-      ...toggleOn,
       fullName: { first: 'Mae', middle: '', last: 'Rivera' },
       dateOfBirth: '1931-06-07',
       nonPrefill: { veteranSsnLastFour: '6789' },
@@ -78,6 +87,7 @@ describe('COE prefill transformer', () => {
       pages,
       formData,
       metadata,
+      stateWithToggleOn,
     );
 
     expect(transformed.fullName).to.deep.equal(formData.fullName);
