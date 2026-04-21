@@ -245,7 +245,28 @@ Paths are relative to `formData` — do not include `formData` in the path.
 })
 ```
 
-### Step 5: Add Route Protection
+### Step 5: Add the vapService Reducer
+
+`profileContactInfoPages` depends on the `vapService` Redux state to manage inline editing and VA Profile synchronization. If the form's reducers do not include `vapService`, the contact info pages will fail at runtime.
+
+In the form's `reducers/index.js` (or wherever reducers are defined), import and include the `vapService` reducer:
+
+```js
+import { createSaveInProgressFormReducer } from 'platform/forms/save-in-progress/reducers';
+import vapService from '@@vap-svc/reducers';
+import formConfig from '../config/form';
+
+export default {
+  form: createSaveInProgressFormReducer(formConfig),
+  vapService,
+};
+```
+
+If the form already has a reducers file, add the `vapService` import and include it in the exported object alongside the existing reducers. Do not remove any existing reducers. If `vapService` is already present, skip this step.
+
+This step is required when adding Contact Information pages. If only adding Personal Information, the `vapService` reducer is not strictly necessary — but adding it proactively prevents breakage if contact info pages are added later.
+
+### Step 6: Add Route Protection
 
 Route protection ensures veterans follow the intended form flow and can't skip ahead via URL manipulation. It also handles page refreshes by redirecting to the introduction page (since Redux state is cleared on refresh).
 
@@ -290,7 +311,7 @@ export default connect(mapStateToProps)(App);
 
 If `App.jsx` already has a basic `RoutedSavableApp` wrapper, add the route protection logic around it. If it already has route protection, verify it checks for save-in-progress data (not just login status).
 
-### Step 6: Set Up Local Testing
+### Step 7: Set Up Local Testing
 
 Create mock data files so the form can be tested locally without a running vets-api.
 
@@ -351,6 +372,7 @@ Once all steps are done, tell the user:
 > - Prefill enabled in formConfig
 > - A prefillTransformer that extracts SSN, VA file number, and full name
 > - Personal Information and Contact Information prefill pages
+> - The vapService reducer for VA Profile synchronization
 > - Route protection in App.jsx
 > - Mock data for local testing
 >
@@ -524,6 +546,7 @@ Once all backend steps are done, summarize what was created:
 The `mock-form-prefill` app at `src/applications/simple-forms/mock-form-prefill/` is a complete working reference. When in doubt about any implementation detail, read the relevant files from that app:
 - `config/form.js` — formConfig with prefill enabled
 - `config/prefill-transformer.js` — simple prefillTransformer
+- `reducers/index.js` — vapService reducer setup
 - `containers/App.jsx` — route protection
 - `containers/IntroductionPage.jsx` — SaveInProgressIntro usage
 - `tests/fixtures/mocks/` — mock data for local testing

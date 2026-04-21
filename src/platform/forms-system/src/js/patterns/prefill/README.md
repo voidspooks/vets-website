@@ -28,6 +28,7 @@ Prefill data comes from two backend sources:
   - [Pass prefillEnabled to SaveInProgressIntro](#pass-prefillenabled-to-saveinprogressintro)
   - [Create a Prefill Transformer](#create-a-prefill-transformer)
   - [Import and Add Prefill Pages](#import-and-add-prefill-pages)
+  - [Add the vapService Reducer](#add-the-vapservice-reducer)
   - [Add Route Protection](#add-route-protection)
   - [Set Up Local Testing](#set-up-local-testing)
   - [Components](#components)
@@ -135,6 +136,29 @@ const formConfig = {
   },
 };
 ```
+
+### Add the vapService Reducer
+
+`profileContactInfoPages` depends on the `vapService` Redux state to manage inline editing and VA Profile synchronization. If the form's reducers do not include `vapService`, the contact info pages will fail at runtime.
+
+In the form's `reducers/index.js` (or wherever reducers are defined), import and include the `vapService` reducer:
+
+```js
+import { createSaveInProgressFormReducer } from 'platform/forms/save-in-progress/reducers';
+import vapService from '@@vap-svc/reducers';
+import formConfig from '../config/form';
+
+export default {
+  form: createSaveInProgressFormReducer(formConfig),
+  vapService,
+};
+```
+
+If the form already has a reducers file, add the `vapService` import and include it in the exported object alongside the existing reducers. If `vapService` is already present, skip this step.
+
+This step is required when adding Contact Information pages. If you are only adding Personal Information, the `vapService` reducer is not strictly necessary — but adding it proactively prevents breakage if contact info pages are added later.
+
+See the [mock-form-prefill reducers](../../../../../applications/simple-forms/mock-form-prefill/reducers/index.js) for a complete example.
 
 ### Add Route Protection
 
