@@ -5,8 +5,8 @@ import {
 import { titleWithRoleUI } from '../../utils/titles';
 import content from '../../locales/en/content.json';
 
-const TITLE_TEXT = content['signer--benefit-status-title'];
-const INPUT_LABEL = content['signer--benefit-status-label'];
+const TITLE_TEXT = content['certifier--benefit-status-title'];
+const INPUT_LABEL = content['certifier--benefit-status-label'];
 
 export default {
   uiSchema: {

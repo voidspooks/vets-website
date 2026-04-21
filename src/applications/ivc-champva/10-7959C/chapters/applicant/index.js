@@ -5,33 +5,33 @@ import identityInformation from './identityInformation';
 import mailingAddress from './mailingAddress';
 import personalInformation from './personalInformation';
 
-export const beneficiaryPages = {
-  beneficiaryName: {
+export const applicantPages = {
+  applicantName: {
     path: 'applicant-info',
     title: 'Beneficiary’s name',
     ...personalInformation,
   },
-  beneficiaryIdentityInfo: {
+  applicantIdentityInfo: {
     path: 'applicant-identification-info',
     title: 'Beneficiary’s identification information',
     ...identityInformation,
   },
-  beneficiaryAddress: {
+  applicantAddress: {
     path: 'applicant-mailing-address',
     title: 'Beneficiary’s mailing address',
     ...mailingAddress,
   },
-  beneficiaryContactInfo: {
+  applicantContactInfo: {
     path: 'applicant-contact-info',
     title: 'Beneficiary’s contact information',
     ...contactInformation,
   },
-  beneficiaryBirthSex: {
+  applicantBirthSex: {
     path: 'applicant-gender',
     title: 'Beneficiary’s sex listed at birth',
     ...birthSex,
   },
-  beneficiaryAge: {
+  applicantAge: {
     path: 'applicant-age',
     title: 'Beneficiary’s age',
     ...ageOver65,

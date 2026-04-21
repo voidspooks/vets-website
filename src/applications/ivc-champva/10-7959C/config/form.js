@@ -1,7 +1,6 @@
 import { minimalHeaderFormConfigOptions } from 'platform/forms-system/src/js/patterns/minimal-header';
 import environment from 'platform/utilities/environment';
 import { externalServices } from 'platform/monitoring/DowntimeNotification';
-import get from 'platform/utilities/data/get';
 import manifest from '../manifest.json';
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
@@ -11,20 +10,9 @@ import prefillTransformer from './prefillTransformer';
 import transformForSubmit from './submitTransformer';
 import SubmissionError from '../../shared/components/SubmissionError';
 import migrations from './migrations';
-import { blankSchema } from '../definitions';
+import { chapters } from '../chapters';
 
-import { beneficiaryPages } from '../chapters/applicantInformation';
-import { medicarePages } from '../chapters/medicare';
-import { healthInsurancePages } from '../chapters/healthInsurance';
-
-import benefitStatus from '../chapters/signerInformation/benefitStatus';
-import certifierEmail from '../chapters/signerInformation/certifierEmail';
-import certifierRole from '../chapters/signerInformation/certifierRole';
-import NotEnrolledPage from '../components/FormPages/NotEnrolledPage';
-
-// import mockdata from '../tests/e2e/fixtures/data/test-data.json';
-
-/** @type {PageSchema} */
+/** @type {FormConfig} */
 const formConfig = {
   rootUrl: manifest.rootUrl,
   urlPrefix: '/',
@@ -101,50 +89,7 @@ const formConfig = {
     wrapping: true,
   }),
   defaultDefinitions: {},
-  chapters: {
-    formSignature: {
-      title: 'Signer information',
-      pages: {
-        formSignature: {
-          // initialData: mockdata.data,
-          path: 'form-signature',
-          title: 'Signer role',
-          ...certifierRole,
-        },
-        ohiScreen: {
-          path: 'champva-screen',
-          title: 'Beneficiary’s CHAMPVA benefit status',
-          ...benefitStatus,
-        },
-        benefitApp: {
-          path: 'benefit-application',
-          title: 'Apply for Benefits',
-          depends: formData => !get('view:champvaBenefitStatus', formData),
-          CustomPage: NotEnrolledPage,
-          CustomPageReview: null,
-          uiSchema: {},
-          schema: blankSchema,
-        },
-        signerEmail: {
-          path: 'signer-email',
-          title: 'Signer’s email address',
-          ...certifierEmail,
-        },
-      },
-    },
-    beneficiaryInformation: {
-      title: 'Beneficiary information',
-      pages: beneficiaryPages,
-    },
-    medicareInformation: {
-      title: 'Medicare information',
-      pages: medicarePages,
-    },
-    healthcareInformation: {
-      title: 'Health insurance information',
-      pages: healthInsurancePages,
-    },
-  },
+  chapters,
 };
 
 export default formConfig;
