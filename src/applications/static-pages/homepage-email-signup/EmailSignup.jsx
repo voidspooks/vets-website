@@ -113,7 +113,7 @@ const EmailSignup = () => {
           form-heading-level="2"
           inputmode="email"
           label="Email address"
-          onBlur={setInputErrorState}
+          maxlength={130}
           onInput={onInput}
           onKeyDown={event => {
             if (event.key === 'Enter') {
