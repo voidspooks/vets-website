@@ -184,7 +184,7 @@ describe('arrayBuilderPages required parameters and props tests', () => {
   it('should throw an error if incorrect review path', () => {
     try {
       arrayBuilderPages(
-        { ...validOptionsRequiredFlow, reviewPath: '/review' },
+        { ...validOptionsOptionalFlow, reviewPath: '/review' },
         validPages,
       );
       expect('Expected path to fail validation and be caught').to.be.false;
@@ -224,6 +224,7 @@ describe('arrayBuilderPages required parameters and props tests', () => {
     };
     try {
       arrayBuilderPages(options, pageBuilder => ({
+        introPage: pageBuilder.introPage(validIntroPage),
         summaryPage: pageBuilder.summaryPage({
           title: 'Employment history',
           path: 'employers-summary',
@@ -368,7 +369,7 @@ describe('arrayBuilderPages required parameters and props tests', () => {
 
   it('should throw an error if specific pageOptions are not provided', () => {
     try {
-      arrayBuilderPages(validOptionsRequiredFlow, pageBuilder => ({
+      arrayBuilderPages(validOptionsOptionalFlow, pageBuilder => ({
         summaryPage: pageBuilder.summaryPage({
           title: 'Employment history',
           uiSchema: {
@@ -602,6 +603,50 @@ describe('arrayBuilderPages required parameters and props tests', () => {
     }
   });
 
+  it('should warn when required is a function and intro pages do not have depends', () => {
+    const warnStub = sinon.stub(console, 'warn');
+    arrayBuilderPages(
+      {
+        ...validOptionsRequiredFlow,
+        required: formData => formData.needsEmployers,
+      },
+      pageBuilder => ({
+        introPage: pageBuilder.introPage(validIntroPage), // no depends!
+        summaryPage: pageBuilder.summaryPage(validSummaryPage),
+        pageA: pageBuilder.itemPage(validPageA),
+        pageB: pageBuilder.itemPage(validPageB),
+      }),
+    );
+    expect(warnStub.calledOnce).to.be.true;
+    expect(warnStub.args[0][0]).to.include(
+      'When `arrayBuilderOptions` `required` is a function for arrayPath "employers", all `pageBuilder.introPage` pages must include a `depends` function to conditionally display the intro page',
+    );
+    warnStub.restore();
+  });
+
+  it('should pass when required is a function and all intro pages have depends', () => {
+    try {
+      arrayBuilderPages(
+        {
+          ...validOptionsRequiredFlow,
+          required: formData => formData.needsEmployers,
+        },
+        pageBuilder => ({
+          introPage: pageBuilder.introPage({
+            ...validIntroPage,
+            depends: formData => formData.needsEmployers,
+          }),
+          summaryPage: pageBuilder.summaryPage(validSummaryPage),
+          pageA: pageBuilder.itemPage(validPageA),
+          pageB: pageBuilder.itemPage(validPageB),
+        }),
+      );
+      expect(true).to.be.true;
+    } catch (e) {
+      expect(e.message).to.eq('Did not expect error');
+    }
+  });
+
   it('should throw error if required is not passed', () => {
     try {
       arrayBuilderPages(validOptionsOptionalFlow, validPages);
@@ -613,7 +658,7 @@ describe('arrayBuilderPages required parameters and props tests', () => {
 
   it('should pass if everything is provided correctly', () => {
     try {
-      arrayBuilderPages(validOptionsRequiredFlow, validPages);
+      arrayBuilderPages(validOptionsRequiredFlow, validPagesWithIntro);
     } catch (e) {
       expect(e.message).to.eq('Did not expect error');
     }
@@ -661,7 +706,10 @@ describe('arrayBuilderPages required parameters and props tests', () => {
 
   it('should navigate forward correctly on the summary page', () => {
     const goPath = sinon.spy();
-    const pages = arrayBuilderPages(validOptionsRequiredFlow, validPages);
+    const pages = arrayBuilderPages(
+      validOptionsRequiredFlow,
+      validPagesWithIntro,
+    );
 
     let mockFormData = {
       hasEmployment: true,
@@ -701,7 +749,10 @@ describe('arrayBuilderPages required parameters and props tests', () => {
 
   it('should navigate forward correctly on the last item page', () => {
     const goPath = sinon.spy();
-    const pages = arrayBuilderPages(validOptionsRequiredFlow, validPages);
+    const pages = arrayBuilderPages(
+      validOptionsRequiredFlow,
+      validPagesWithIntro,
+    );
 
     const { pageB } = pages;
     pageB.onNavForward({
@@ -756,7 +807,7 @@ describe('arrayBuilderPages maxItems (function vs number)', () => {
         return 5;
       });
 
-    const pages = arrayBuilderPages(options, validPages);
+    const pages = arrayBuilderPages(options, validPagesWithIntro);
     const { pageA } = pages;
 
     // Assert: schema omits static maxItems (because it’s a function)
@@ -787,7 +838,7 @@ describe('arrayBuilderPages maxItems (function vs number)', () => {
       maxItems: 7,
     };
 
-    const pages = arrayBuilderPages(options, validPages);
+    const pages = arrayBuilderPages(options, validPagesWithIntro);
     const { pageA } = pages;
 
     // Static schema includes maxItems
@@ -807,7 +858,7 @@ describe('arrayBuilderPages maxItems (function vs number)', () => {
 
     maxItemsFnStub = sinon.stub(helpers, 'maxItemsFn').returns(NaN);
 
-    const pages = arrayBuilderPages(options, validPages);
+    const pages = arrayBuilderPages(options, validPagesWithIntro);
     const { pageA } = pages;
 
     // No static maxItems when function
