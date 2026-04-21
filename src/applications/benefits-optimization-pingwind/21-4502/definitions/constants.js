@@ -32,6 +32,7 @@ export const veteranFields = {
   veteranServiceNumber: 'veteranServiceNumber',
   address: 'address',
   plannedAddress: 'plannedAddress',
+  plannedAddressNotApplicable: 'plannedAddressNotApplicable',
   homePhone: 'homePhone',
   alternatePhone: 'alternatePhone',
   email: 'email',
@@ -224,6 +225,11 @@ export const FORM_21_4502 = {
   },
   PLANNED_ADDRESS: {
     TITLE: 'What is your planned address after release from active duty?',
+    PAGE_DESCRIPTION:
+      'Enter your address in the fields provided. If this does not apply to you, select “Not applicable.”',
+    NOT_APPLICABLE: 'Not applicable',
+    ERROR_REQUIRED:
+      'To continue, enter your planned address after release from active duty or select “Not applicable”',
     ERROR_STREET_REQUIRED: 'Enter the service member’s planned street address',
     STREET2: 'Apartment or unit number (optional)',
   },
@@ -338,7 +344,7 @@ export const FORM_21_4502 = {
     CHAPTER_VETERAN_ID: 'Section I: Basic information',
     CHAPTER_CONTACT: 'Section I: Contact information',
     CHAPTER_ADDRESS: 'Section I: Mailing address',
-    CHAPTER_SERVICE_STATUS: 'Section I: Current service status',
+    CHAPTER_SERVICE_STATUS: "Section I: Service member's planned address",
     CHAPTER_APPLICATION: 'Section II: Application and service information',
     CHAPTER_QUALIFYING: 'Section II: Qualifying disabilities',
     CHAPTER_SERVICE_RECORD: 'Section II: Service record',

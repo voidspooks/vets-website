@@ -2,8 +2,10 @@ import get from 'platform/utilities/data/get';
 import {
   addressUI,
   addressSchema,
+  checkboxSchema,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import VaCheckboxField from 'platform/forms-system/src/js/web-component-fields/VaCheckboxField';
 import {
   veteranFields,
   POSTAL_CODE_ERROR_MESSAGES,
@@ -11,6 +13,46 @@ import {
 } from '../definitions/constants';
 
 const { ADDRESS: A, PLANNED_ADDRESS: PA } = FORM_21_4502;
+
+const hasPlannedAddressInput = formData => {
+  const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
+
+  return ['country', 'street', 'street2', 'city', 'state', 'postalCode'].some(
+    field => {
+      const value = plannedAddressData[field];
+      return typeof value === 'string' && value.trim() !== '';
+    },
+  );
+};
+
+const hasRequiredPlannedAddressTrigger = formData => {
+  const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
+
+  return (
+    plannedAddressData.isMilitary === true || hasPlannedAddressInput(formData)
+  );
+};
+
+const isPlannedAddressFieldRequired = fieldName => formData => {
+  const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
+
+  if (!hasRequiredPlannedAddressTrigger(formData)) {
+    return false;
+  }
+
+  if (fieldName === 'country') {
+    return plannedAddressData.isMilitary !== true;
+  }
+
+  if (fieldName === 'state') {
+    return (
+      plannedAddressData.isMilitary === true ||
+      ['USA', 'CAN', 'MEX'].includes(plannedAddressData.country)
+    );
+  }
+
+  return true;
+};
 
 const plannedAddressUISchema = addressUI({
   labels: {
@@ -21,7 +63,13 @@ const plannedAddressUISchema = addressUI({
     postalCode: A.POSTAL_CODE,
   },
   omit: ['street3'],
-  required: true,
+  required: {
+    country: isPlannedAddressFieldRequired('country'),
+    street: isPlannedAddressFieldRequired('street'),
+    city: isPlannedAddressFieldRequired('city'),
+    state: isPlannedAddressFieldRequired('state'),
+    postalCode: isPlannedAddressFieldRequired('postalCode'),
+  },
 });
 
 plannedAddressUISchema.street = {
@@ -73,8 +121,25 @@ if (originalPostalReplaceSchema) {
 export default {
   uiSchema: {
     'ui:options': { preserveHiddenData: true },
-    ...titleUI(PA.TITLE),
+    ...titleUI(PA.TITLE, PA.PAGE_DESCRIPTION),
     [veteranFields.parentObject]: {
+      [veteranFields.plannedAddressNotApplicable]: {
+        'ui:title': PA.NOT_APPLICABLE,
+        'ui:webComponentField': VaCheckboxField,
+        'ui:options': {
+          hideEmptyValueInReview: true,
+          validateRequired: false,
+        },
+        'ui:validations': [
+          (errors, value, formData) => {
+            if (value === true || hasRequiredPlannedAddressTrigger(formData)) {
+              return;
+            }
+
+            errors.addError(PA.ERROR_REQUIRED);
+          },
+        ],
+      },
       [veteranFields.plannedAddress]: {
         ...plannedAddressUISchema,
       },
@@ -86,9 +151,9 @@ export default {
       [veteranFields.parentObject]: {
         type: 'object',
         properties: {
+          [veteranFields.plannedAddressNotApplicable]: checkboxSchema,
           [veteranFields.plannedAddress]: addressSchema({
             omit: ['street3'],
-            required: true,
           }),
         },
       },

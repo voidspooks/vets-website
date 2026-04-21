@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import formConfig from '../../../config/form';
+import { FORM_21_4502 } from '../../../definitions/constants';
 
 describe('21-4502 form config', () => {
   it('is an object with formId, rootUrl, transformForSubmit, and prefillTransformer', () => {
@@ -79,6 +80,15 @@ describe('21-4502 form config', () => {
           .applicationInformationPage;
       expect(appPage).to.have.property('schema');
       expect(appPage).to.have.property('uiSchema');
+    });
+
+    it('uses the updated planned address step label', () => {
+      expect(formConfig.chapters.serviceStatusChapter.title).to.equal(
+        FORM_21_4502.FORM_CONFIG.CHAPTER_SERVICE_STATUS,
+      );
+      expect(formConfig.chapters.serviceStatusChapter.title).to.equal(
+        "Section I: Service member's planned address",
+      );
     });
 
     it('does not seed choice fields with null initial values', () => {
