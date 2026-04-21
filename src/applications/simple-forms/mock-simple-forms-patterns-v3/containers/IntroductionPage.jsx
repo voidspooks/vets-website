@@ -399,6 +399,16 @@ const childContent = (
 
     <h2 id="form-patterns">Form patterns</h2>
     <PatternTable patterns={compositePatterns} />
+
+    <h2 id="other-pages">Other pages</h2>
+    <ul>
+      <li>
+        <Link to="/review-and-submit">Review page</Link>
+      </li>
+      <li>
+        <Link to="/confirmation">Confirmation page</Link>
+      </li>
+    </ul>
   </>
 );
 
