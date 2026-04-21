@@ -21,7 +21,6 @@ import contactInfo from '../pages/contactInfo';
 import address from '../pages/address';
 import plannedAddress from '../pages/plannedAddress';
 import applicationInformation from '../pages/applicationInformation';
-import { qualifyingDisabilitiesPage as qualifyingDisabilitiesPageConfig } from '../pages/qualifyingDisabilities';
 import currentServiceStatus from '../pages/currentServiceStatus';
 import veteranStatusInformation from '../pages/veteranStatusInformation';
 import veteranDisabilityCompensation from '../pages/veteranDisabilityCompensation';
@@ -195,17 +194,6 @@ const formConfig = {
           title: FORM_21_4502.FORM_CONFIG.PAGE_APPLICATION_INFO,
           uiSchema: applicationInformation.uiSchema,
           schema: applicationInformation.schema,
-        },
-      },
-    },
-    qualifyingDisabilitiesChapter: {
-      title: FORM_21_4502.FORM_CONFIG.CHAPTER_QUALIFYING,
-      pages: {
-        qualifyingDisabilitiesPage: {
-          path: 'qualifying-disabilities',
-          title: FORM_21_4502.FORM_CONFIG.PAGE_QUALIFYING,
-          uiSchema: qualifyingDisabilitiesPageConfig.uiSchema,
-          schema: qualifyingDisabilitiesPageConfig.schema,
         },
       },
     },

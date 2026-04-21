@@ -72,22 +72,6 @@ export const CONVEYANCE_TYPES = {
   other: 'Other (Specify)',
 };
 
-export const QUALIFYING_DISABILITIES = {
-  lossOfFeet: 'Loss or permanent loss of use of one or both feet',
-  lossOfHands: 'Loss or permanent loss of use of one or both hands',
-  visionCentral:
-    'Permanent impairment of vision in both eyes - central visual acuity of 20/200 or less in the better eye with corrective glasses',
-  visionPeripheral:
-    'Permanent impairment of vision in both eyes - peripheral visual field contracted to 20 degrees or less in the better eye',
-  severeBurnInjury:
-    'Severe burn injury: deep partial thickness or full thickness burns resulting in scar formation that cause contractures and limit motion of one or more extremities or the trunk and preclude effective operation of an automobile',
-  als: 'Amyotrophic lateral sclerosis (ALS)',
-};
-
-export const qualifyingDisabilitiesFields = {
-  parentObject: 'qualifyingDisabilities',
-};
-
 export const BRANCH_OF_SERVICE = {
   army: 'Army',
   navy: 'Navy',
@@ -319,13 +303,6 @@ export const FORM_21_4502 = {
     PASSENGER_ALERT:
       'Additional information for passengers will be provided by VBA.',
   },
-  QUALIFYING_DISABILITIES: {
-    TITLE: 'Your Service-Connected Disabilities',
-    QUESTION:
-      'Which of the qualifying service-connected disabilities do you have? (Select all that apply)',
-    ERROR:
-      'Select at least one qualifying service-connected disability to continue',
-  },
   CERTIFICATION: {
     TITLE: 'Application Certification Statements, Legal Information',
     PAGE_DESCRIPTION:
@@ -374,7 +351,6 @@ export const FORM_21_4502 = {
     PAGE_ADDRESS: 'Current Mailing Address',
     PAGE_PLANNED_ADDRESS: "Section I: Service member's planned address",
     PAGE_APPLICATION_INFO: 'Branch of service',
-    PAGE_QUALIFYING: 'Your Service-Connected Disabilities',
     PAGE_CURRENT_SERVICE: 'Your Current Service Status',
     PAGE_VETERAN_STATUS: 'Your Release From Active Duty',
     PAGE_DISABILITY: 'Your Disability Compensation Information',
