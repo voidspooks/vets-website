@@ -88,18 +88,21 @@ dl.review {
     column-gap: 0.9375rem;
     > dd {
       font-weight: bold;
+      // overflow-wrap only; avoid word-break, which splits normal words mid-character
       overflow-wrap: break-word;
-      word-break: break-word;
       min-width: 0;
-      @media (min-width: $xsmall-screen) {
+      @media (min-width: $small-screen) {
         text-align: right;
+        // Reserve space for the value so short answers (e.g. "Spouse", "Widowed")
+        // don't get squeezed into a column narrower than the word itself
+        min-width: 100px;
       }
     }
     > dt > p {
       margin-top: 0;
       margin-bottom: 0;
     }
-    @media (min-width: $xsmall-screen) {
+    @media (min-width: $small-screen) {
       flex-direction: row;
     }
   }
@@ -119,7 +122,6 @@ dl.review-auto-margin {
       font-weight: bold;
       text-align: right;
       overflow-wrap: break-word;
-      word-break: break-word;
       min-width: 0;
     }
     > dt > p {
