@@ -28,7 +28,7 @@ describe('<IntentToFileCard>', () => {
     const screen = render(
       <IntentToFileCard itf={buildItf({ type: 'pension' })} />,
     );
-    screen.getByText('Veteran’s Pension');
+    screen.getByText('Veterans Pension');
   });
 
   it('renders the correct type label for survivor (DIC)', () => {

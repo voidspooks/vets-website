@@ -1323,3 +1323,9 @@ va-icon.phase-current {
     margin-left: 0 !important;
   }
 }
+
+.remove-bullets {
+  list-style: none;
+  padding-left: 0;
+  overflow-wrap: break-word;
+}

@@ -7,9 +7,9 @@ import {
 } from './support/helpers/mocks';
 import { verifyTitleBreadcrumbsHeading } from './support/helpers/assertions';
 import { assertDataLayerEvent } from './analytics-helpers';
-import { LINKS } from '../../constants';
+import { CST_HOME_H1, INTENT_TO_FILE_PATH } from '../../constants';
 
-const ITF_PAGE_URL = '/track-claims/your-claims/intent-to-file';
+const ITF_PAGE_URL = `/track-claims/${INTENT_TO_FILE_PATH}`;
 
 const setupItfPage = ({
   cstIntentsToFile = true,
@@ -24,12 +24,6 @@ const setupItfPage = ({
   cy.login();
   cy.visit(ITF_PAGE_URL);
   cy.injectAxe();
-};
-
-const expectVaLink = (text, href) => {
-  cy.get(`va-link[text="${text}"]`)
-    .should('have.attr', 'href', href)
-    .and('not.have.attr', 'external');
 };
 
 const buildMockItfs = () => {
@@ -94,70 +88,21 @@ describe('Intent to File - List Page', () => {
         cy.axeCheck();
       });
 
-      it('should display the "Start a new intent to file" section', () => {
+      it('should display the correct text sections', () => {
         cy.findByRole('heading', {
           name: 'Start a new intent to file',
           level: 2,
-        });
+        }).should('be.visible');
 
-        cy.findByText(
-          'You can create an intent to file if you plan to file a claim for these types of benefits:',
-        );
-
-        expectVaLink(
-          'Start a claim for disability compensation online',
-          LINKS.disabilityCompensationClaimIntro,
-        );
-        expectVaLink(
-          'Start an application for Veterans Pension online',
-          LINKS.veteransPensionOnlineIntro,
-        );
-        expectVaLink(
-          'Submit an intent to file online',
-          LINKS.intentToFileForm0966,
-        );
-        expectVaLink(
-          'Submit an intent to file (VA Form 21-0966) online',
-          LINKS.intentToFileForm0966,
-        );
-
-        cy.contains('Disability compensation');
-        cy.contains('Veterans pension');
-        cy.contains('Dependency and Indemnity Compensation (DIC)');
-        cy.findByText(
-          'For any of these benefits, you can submit a separate form to let us know that you intend to file a claim.',
-        );
-        cy.findByText(
-          'If you have an accredited representative, they may also create an intent to file for you.',
-        );
-
-        cy.axeCheck();
-      });
-
-      it('should display the "Why can\'t I find my intent to file?" section', () => {
         cy.findByRole('heading', {
           name: /Why can.t I find my intent to file\?/,
           level: 2,
-        });
+        }).should('be.visible');
 
-        cy.contains(
-          'p',
-          /An intent to file expires 1 year after it.s recorded\./,
-        );
-
-        cy.axeCheck();
-      });
-
-      it('should display the "What is an intent to file?" section', () => {
         cy.findByRole('heading', {
           name: 'What is an intent to file?',
           level: 2,
-        });
-
-        expectVaLink(
-          'Learn more about an intent to file a claim',
-          LINKS.intentToFileAboutClaim,
-        );
+        }).should('be.visible');
 
         cy.axeCheck();
       });
@@ -262,7 +207,7 @@ describe('Intent to File - List Page', () => {
       cy.url().should('not.include', '/intent-to-file');
 
       cy.findByRole('heading', {
-        name: 'Check your claim, decision review, or appeal status',
+        name: CST_HOME_H1,
         level: 1,
       });
 

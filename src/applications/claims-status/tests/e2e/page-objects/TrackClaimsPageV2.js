@@ -4,7 +4,7 @@ import Timeouts from 'platform/testing/e2e/timeouts';
 import featureToggleClaimDetailV2Enabled from '../fixtures/mocks/lighthouse/feature-toggle-claim-detail-v2-enabled.json';
 import featureToggleClaimPhasesEnabled from '../fixtures/mocks/lighthouse/feature-toggle-claim-phases-enabled.json';
 // END lighthouse_migration
-import { SUBMIT_TEXT } from '../../../constants';
+import { CST_HOME_H1, SUBMIT_TEXT } from '../../../constants';
 
 /* eslint-disable class-methods-use-this */
 class TrackClaimsPageV2 {
@@ -49,10 +49,7 @@ class TrackClaimsPageV2 {
     cy.login();
 
     cy.visit('/track-claims');
-    cy.title().should(
-      'eq',
-      'Check your claim, decision review, or appeal status | Veterans Affairs',
-    );
+    cy.title().should('eq', `${CST_HOME_H1} | Veterans Affairs`);
 
     if (claimsList.data.length) {
       cy.get('.claim-list-item', { timeout: Timeouts.slow }).should(
@@ -77,7 +74,7 @@ class TrackClaimsPageV2 {
     );
     cy.get('va-breadcrumbs > :nth-child(2) a[aria-current="page"]').should(
       'contain',
-      'Check your claims and appeals',
+      CST_HOME_H1,
     );
   }
 
@@ -89,10 +86,7 @@ class TrackClaimsPageV2 {
   }
 
   checkClaimsContent() {
-    cy.get('.claims-container-title').should(
-      'contain',
-      'Check your claim, decision review, or appeal status',
-    );
+    cy.get('.claims-container-title').should('contain', CST_HOME_H1);
     cy.get('.claim-list-item-header')
       .first()
       .should('contain', `Claim for disability compensation`);
@@ -745,7 +739,7 @@ class TrackClaimsPageV2 {
     );
     cy.get('.usa-breadcrumb__list > li:nth-child(2) a').should(
       'contain',
-      'Check your claims and appeals',
+      CST_HOME_H1,
     );
     if (previousPageFiles) {
       cy.get('.usa-breadcrumb__list > li:nth-child(3) a').should(

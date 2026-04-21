@@ -4,6 +4,7 @@ import {
   mockFeatureToggles,
   mockStemEndpoint,
 } from '../../support/helpers/mocks';
+import { CST_HOME_H1 } from '../../../../constants';
 
 describe('Loading', () => {
   beforeEach(() => {
@@ -67,7 +68,7 @@ describe('Loading', () => {
 
     cy.findByTestId('required-login-view-loader').should('not.exist');
     cy.findByRole('heading', {
-      name: 'Check your claim, decision review, or appeal status',
+      name: CST_HOME_H1,
     });
 
     cy.axeCheck();
@@ -92,7 +93,7 @@ describe('Loading', () => {
 
     cy.findByTestId('downtime-notification-loader').should('not.exist');
     cy.findByRole('heading', {
-      name: 'Check your claim, decision review, or appeal status',
+      name: CST_HOME_H1,
     });
 
     cy.axeCheck();
@@ -119,7 +120,7 @@ describe('Loading', () => {
 
     cy.findByTestId('feature-flags-loader').should('not.exist');
     cy.findByRole('heading', {
-      name: 'Check your claim, decision review, or appeal status',
+      name: CST_HOME_H1,
     });
 
     cy.axeCheck();

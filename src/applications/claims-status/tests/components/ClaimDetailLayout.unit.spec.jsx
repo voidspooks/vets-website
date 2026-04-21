@@ -8,6 +8,7 @@ import { $ } from '@department-of-veterans-affairs/platform-forms-system/ui';
 
 import ClaimDetailLayout from '../../components/ClaimDetailLayout';
 import { renderWithRouter } from '../utils';
+import { CST_BREADCRUMB_BASE } from '../../constants';
 
 const getStore = (featureToggles = {}, notifications = {}) =>
   createStore(() => ({
@@ -220,12 +221,7 @@ describe('<ClaimDetailLayout>', () => {
       );
 
       expect($('va-breadcrumbs', container).breadcrumbList).to.eql([
-        { href: '/', label: 'VA.gov home' },
-        {
-          href: '/your-claims',
-          label: 'Check your claims and appeals',
-          isRouterLink: true,
-        },
+        ...CST_BREADCRUMB_BASE,
         {
           href: '../status',
           label: 'Status of your request to add or remove a dependent',
@@ -233,6 +229,7 @@ describe('<ClaimDetailLayout>', () => {
         },
       ]);
     });
+
     it('should render a default breadcrumb if the claim fails to load', () => {
       const { container } = renderWithRouter(
         <Provider store={getStore()}>
@@ -240,12 +237,7 @@ describe('<ClaimDetailLayout>', () => {
         </Provider>,
       );
       expect($('va-breadcrumbs', container).breadcrumbList).to.eql([
-        { href: '/', label: 'VA.gov home' },
-        {
-          href: '/your-claims',
-          label: 'Check your claims and appeals',
-          isRouterLink: true,
-        },
+        ...CST_BREADCRUMB_BASE,
         {
           href: '../status',
           label: 'Status of your claim',

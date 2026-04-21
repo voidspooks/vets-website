@@ -20,6 +20,8 @@ import Standard5103NoticePage from './containers/Standard5103NoticePage';
 import DocumentRedirectPage from './containers/DocumentRedirectPage';
 import FilesWeCouldntReceive from './components/FilesWeCouldntReceive';
 
+import { INTENT_TO_FILE_PATH } from './constants';
+
 const routes = (
   <Routes>
     <Route path="/" element={<ClaimsStatusApp />}>
@@ -65,7 +67,7 @@ const routes = (
         <Route path="overview" element={<OverviewPage />} />
         <Route path="status" element={<ClaimStatusPage />} />
       </Route>
-      <Route path="your-claims/intent-to-file" element={<IntentToFilePage />} />
+      <Route path={INTENT_TO_FILE_PATH} element={<IntentToFilePage />} />
       <Route path="your-claim-letters" element={<YourClaimLetters />} />
       <Route
         path="your-claim-letters/link"

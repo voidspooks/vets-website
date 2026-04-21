@@ -26,7 +26,7 @@ import NoClaims from '../components/NoClaims';
 import StemClaimListItem from '../components/StemClaimListItem';
 import TravelClaimsSection from '../components/TravelClaimsSection';
 
-import { FILTER_VALUES, ITEMS_PER_PAGE } from '../constants';
+import { CST_HOME_H1, FILTER_VALUES, ITEMS_PER_PAGE } from '../constants';
 
 import { getBackendServices } from '../selectors';
 
@@ -62,7 +62,7 @@ class YourClaimsPageV2 extends React.Component {
   }
 
   componentDidMount() {
-    setDocumentTitle('Check your claim, decision review, or appeal status');
+    setDocumentTitle(CST_HOME_H1);
 
     const {
       canAccessAppeals,
@@ -280,9 +280,7 @@ class YourClaimsPageV2 extends React.Component {
             <div className="breadcrumbs-loading-container">
               <ClaimsBreadcrumbs />
             </div>
-            <h1 className="claims-container-title">
-              Check your claim, decision review, or appeal status
-            </h1>
+            <h1 className="claims-container-title">{CST_HOME_H1}</h1>
             <div className="on-this-page-loading-container">
               <va-on-this-page />
             </div>

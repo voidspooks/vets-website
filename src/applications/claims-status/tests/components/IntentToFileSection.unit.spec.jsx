@@ -7,6 +7,7 @@ import { render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom-v5-compat';
 import IntentToFileSection from '../../components/IntentToFileSection';
 import { renderWithRouter } from '../utils';
+import { INTENT_TO_FILE_PATH } from '../../constants';
 
 const getStore = (cstIntentsToFileEnabled = false) =>
   createStore(() => ({
@@ -43,7 +44,7 @@ describe('<IntentToFileSection>', () => {
       expect(vaLink).to.exist;
       expect(vaLink).to.have.attr(
         'href',
-        '/track-claims/your-claims/intent-to-file',
+        `/track-claims/${INTENT_TO_FILE_PATH}`,
       );
       expect(vaLink).to.have.attr(
         'text',
@@ -62,7 +63,7 @@ describe('<IntentToFileSection>', () => {
             <Routes>
               <Route path="/" element={<IntentToFileSection />} />
               <Route
-                path="/your-claims/intent-to-file"
+                path={`/${INTENT_TO_FILE_PATH}`}
                 element={<div data-testid="itf-route">ITF</div>}
               />
             </Routes>

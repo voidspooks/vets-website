@@ -1,6 +1,9 @@
+import { CST_HOME_H1 } from '../../../../constants';
+
 /**
  * Asserts page title, breadcrumbs, and heading for claims-status pages.
- * Automatically includes "VA.gov home" as first breadcrumb and "Check your claims and appeals" as second.
+ * Automatically includes "VA.gov home" as first breadcrumb and "Check your
+ * claim, decision review, or appeal status" as second.
  *
  * @param {Object} options - Assertion options
  * @param {string} options.title - Expected document title
@@ -11,8 +14,7 @@
 export const verifyTitleBreadcrumbsHeading = ({
   title,
   secondBreadcrumb = {
-    // TODO: Create issue for: Each breadcrumb segment should use the full page title
-    name: 'Check your claims and appeals',
+    name: CST_HOME_H1,
     href: '/your-claims',
   },
   thirdBreadcrumb,

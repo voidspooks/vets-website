@@ -30,11 +30,14 @@ export const DATE_FORMATS = {
   LONG_DATE: 'MMMM d, yyyy',
 };
 
+export const CST_HOME_H1 =
+  'Check your claim, decision review, or appeal status';
+
 export const CST_BREADCRUMB_BASE = [
   { href: '/', label: 'VA.gov home' },
   {
     href: '/your-claims',
-    label: 'Check your claims and appeals',
+    label: CST_HOME_H1,
     isRouterLink: true,
   },
 ];
@@ -245,12 +248,17 @@ export const ANCHOR_LINKS = {
   filesWeCouldntReceive: 'files-we-couldnt-receive',
 };
 
+export const INTENT_TO_FILE_PATH = 'your-claims/your-intents-to-file';
+
 export const LINKS = {
   findVaLocations: '/find-locations',
   disabilityCompensationClaimIntro:
-    '/disability/file-disability-claim-form-21-526ez/introduction',
+    '/disability/file-disability-claim-form-21-526ez',
+  supplementalClaimIntro:
+    '/decision-reviews/supplemental-claim/file-supplemental-claim-form-20-0995',
   veteransPensionOnlineIntro:
-    '/pension/apply-for-veteran-pension-form-21p-527ez/introduction',
-  intentToFileForm0966: '/forms/21-0966/',
+    '/pension/apply-for-veteran-pension-form-21p-527ez',
+  intentToFileForm0966:
+    '/supporting-forms-for-claims/intent-to-file-form-21-0966',
   intentToFileAboutClaim: '/resources/your-intent-to-file-a-va-claim/',
 };

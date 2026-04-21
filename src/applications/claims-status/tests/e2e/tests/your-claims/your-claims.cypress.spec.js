@@ -8,6 +8,7 @@ import {
   verifyNeedHelp,
   verifyTitleBreadcrumbsHeading,
 } from '../../support/helpers/assertions';
+import { CST_HOME_H1, INTENT_TO_FILE_PATH } from '../../../../constants';
 
 describe('Your claims', () => {
   beforeEach(() => {
@@ -23,14 +24,13 @@ describe('Your claims', () => {
 
   it('should have correct title, breadcrumbs, and heading', () => {
     verifyTitleBreadcrumbsHeading({
-      title:
-        'Check your claim, decision review, or appeal status | Veterans Affairs',
+      title: `${CST_HOME_H1} | Veterans Affairs`,
       secondBreadcrumb: {
-        name: 'Check your claims and appeals',
+        name: CST_HOME_H1,
         href: '#content',
       },
       heading: {
-        name: 'Check your claim, decision review, or appeal status',
+        name: CST_HOME_H1,
         level: 1,
       },
     });
@@ -192,11 +192,7 @@ describe('Your claims', () => {
 
       it('should display the intents to file link with correct href', () => {
         cy.get('.intent-to-file-section va-link')
-          .should(
-            'have.attr',
-            'href',
-            '/track-claims/your-claims/intent-to-file',
-          )
+          .should('have.attr', 'href', `/track-claims/${INTENT_TO_FILE_PATH}`)
           .and(
             'have.attr',
             'text',

@@ -2,8 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { VaLink } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { useFeatureToggle } from '~/platform/utilities/feature-toggles';
-
-const INTENT_TO_FILE_PATH = '/your-claims/intent-to-file';
+import { INTENT_TO_FILE_PATH } from '../constants';
 
 export default function IntentToFileSection() {
   const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
@@ -16,16 +15,17 @@ export default function IntentToFileSection() {
 
   const handleIntentToFileLinkClick = e => {
     e.preventDefault();
-    navigate(INTENT_TO_FILE_PATH);
+    navigate(`/${INTENT_TO_FILE_PATH}`);
   };
 
   return (
     <div className="intent-to-file-section vads-u-margin-top--4 vads-u-margin-bottom--4">
       <h2 id="your-intents-to-file">Your intents to file</h2>
+      <va-tag-status status="info" text="New page" />
       <VaLink
         active
-        className="active-va-link vads-u-margin-top--0"
-        href={`/track-claims${INTENT_TO_FILE_PATH}`}
+        className="active-va-link vads-u-margin-top--1p5"
+        href={`/track-claims/${INTENT_TO_FILE_PATH}`}
         text="Review your intents to file or learn how to start one"
         onClick={handleIntentToFileLinkClick}
       />

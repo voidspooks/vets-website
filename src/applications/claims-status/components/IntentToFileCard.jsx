@@ -16,7 +16,7 @@ const formatShortDate = buildDateFormatter('MM/dd/yyyy');
 
 const TYPE_LABELS = {
   compensation: 'Disability compensation',
-  pension: 'Veteran’s Pension',
+  pension: 'Veterans Pension',
   survivor: 'Dependency and Indemnity Compensation (DIC)',
 };
 
@@ -24,7 +24,13 @@ const getTypeLabel = type => TYPE_LABELS[type] || type;
 
 const getBodyText = (type, expirationDate, expiring) => {
   const formattedDate = formatDate(expirationDate);
-  const typeLabel = getTypeLabel(type).toLowerCase();
+  let typeLabel = getTypeLabel(type);
+
+  // For body copy only, we need to lowercase 'Disability compensation'
+  // and maintain capitalization on the other two types
+  if (type === 'compensation') {
+    typeLabel = getTypeLabel(type).toLowerCase();
+  }
 
   if (expiring) {
     return `This intent to file will expire on ${formattedDate}. If you haven’t submitted a ${typeLabel} claim yet, you can do that now.`;
@@ -50,14 +56,17 @@ const IntentToFileCard = ({ itf }) => {
           />
         </div>
       )}
-      <h3 className="vads-u-margin-y--0">{typeLabel}</h3>
-      <p className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+      <h3 className="vads-u-margin-top--0 vads-u-margin-bottom--1">
+        {typeLabel}
+      </h3>
+      <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">
         Intent to file recorded on {recordedDate}
       </p>
-      <p className="vads-u-margin-top--0 vads-u-margin-bottom--1">{bodyText}</p>
+      <p className="vads-u-margin-top--0 vads-u-margin-bottom--2">{bodyText}</p>
       <VaLink
         active
         href="/track-claims/your-claims"
+        label={`Check if you have an in-progress claim for your ${typeLabel.toLowerCase()}`}
         text="Check if you have an in-progress claim"
       />
     </VaCard>

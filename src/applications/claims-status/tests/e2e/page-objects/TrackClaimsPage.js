@@ -1,6 +1,7 @@
 // START lighthouse_migration
 import featureToggleDisabled from '../fixtures/mocks/lighthouse/feature-toggle-disabled.json';
 // END lighthouse_migration
+import { CST_HOME_H1 } from '../../../constants';
 
 const Timeouts = require('platform/testing/e2e/timeouts.js');
 
@@ -24,10 +25,7 @@ class TrackClaimsPage {
     cy.login();
 
     cy.visit('/track-claims');
-    cy.title().should(
-      'eq',
-      'Check your claim, decision review, or appeal status | Veterans Affairs',
-    );
+    cy.title().should('eq', `${CST_HOME_H1} | Veterans Affairs`);
 
     if (claimsList.data.length) {
       cy.get('.claim-list-item', { timeout: Timeouts.slow }).should(
@@ -52,7 +50,7 @@ class TrackClaimsPage {
     );
     cy.get('va-breadcrumbs > :nth-child(2) a[aria-current="page"]').should(
       'contain',
-      'Check your claims and appeals',
+      CST_HOME_H1,
     );
   }
 
@@ -64,10 +62,7 @@ class TrackClaimsPage {
   }
 
   checkClaimsContent() {
-    cy.get('.claims-container-title').should(
-      'contain',
-      'Check your claim, decision review, or appeal status',
-    );
+    cy.get('.claims-container-title').should('contain', CST_HOME_H1);
     cy.get('.claim-list-item-header')
       .first()
       .should('contain', `Claim for compensation`);
@@ -307,7 +302,7 @@ class TrackClaimsPage {
     );
     cy.get('.usa-breadcrumb__list > li:nth-child(2) a').should(
       'contain',
-      'Check your claims and appeals',
+      CST_HOME_H1,
     );
     cy.get('.usa-breadcrumb__list > li:nth-child(3) a').should(
       'contain',
