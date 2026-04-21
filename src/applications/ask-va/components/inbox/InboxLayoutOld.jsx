@@ -59,7 +59,7 @@ export default function InboxLayoutOld({
   }
 
   return (
-    <div id="inbox-old">
+    <div id="inbox-old" data-dd-privacy="hidden">
       <h2 className="vads-u-margin--0">Your questions</h2>
       <div className="filter-container">
         <div className="search-container">

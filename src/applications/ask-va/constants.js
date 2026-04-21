@@ -688,7 +688,7 @@ export const dataDog = {
   defaultPrivacyLevel: 'mask-user-input',
   loggedIn: undefined,
   replaySampleRateNonProd: 100, // Non Production Sample %
-  replaySampleRateProd: 20, // Production Sample %
+  replaySampleRateProd: 0, // Production Sample %
   site: 'ddog-gov.com',
   service: 'ask-va',
   toggleName: 'askVADatadogRum', // Feature toggle implemented by Platform

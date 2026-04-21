@@ -296,7 +296,10 @@ const ResponseInboxPage = ({ router }) => {
     <div className="row vads-u-padding-x--1">
       <EnvironmentBanner />
       <BreadCrumbs currentLocation={window.location.pathname} />
-      <div className="usa-width-two-thirds medium-8 columns vads-u-padding--0">
+      <div
+        className="usa-width-two-thirds medium-8 columns vads-u-padding--0"
+        data-dd-privacy="hidden"
+      >
         <h1 className="vads-u-margin-bottom--2p5">
           {RESPONSE_PAGE.QUESTION_DETAILS}
         </h1>

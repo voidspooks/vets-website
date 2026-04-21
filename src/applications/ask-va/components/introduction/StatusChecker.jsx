@@ -148,7 +148,7 @@ export default function StatusChecker() {
   };
 
   return (
-    <div className="vads-u-margin-top--6">
+    <div className="vads-u-margin-top--6" data-dd-privacy="hidden">
       <h2 className="vads-u-margin-top--0">
         Check the status of your question
       </h2>

@@ -152,7 +152,7 @@ export default function InboxLayoutNew({
   }
 
   return (
-    <div id="inbox">
+    <div id="inbox" data-dd-privacy="hidden">
       <div id="filters-column">
         <VaSearchFilter
           header={filtersHeader}
