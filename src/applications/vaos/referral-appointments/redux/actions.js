@@ -13,6 +13,7 @@ export const SET_SELECTED_SLOT_START_TIME = 'SET_SELECTED_SLOT_START_TIME';
 export const SET_SELECTED_PROVIDER_ID = 'SET_SELECTED_PROVIDER_ID';
 export const SET_INIT_REFERRAL_FLOW = 'SET_INIT_REFERRAL_FLOW';
 export const SET_PROVIDER_SLOTS_PARAMS = 'SET_PROVIDER_SLOTS_PARAMS';
+export const SET_SELECTED_PROVIDER_SNAPSHOT = 'SET_SELECTED_PROVIDER_SNAPSHOT';
 
 export function setFormCurrentPage(currentPage) {
   return {
@@ -67,6 +68,13 @@ export function setProviderSlotsParams(params) {
   return {
     type: SET_PROVIDER_SLOTS_PARAMS,
     payload: params,
+  };
+}
+
+export function setSelectedProviderSnapshot(snapshot) {
+  return {
+    type: SET_SELECTED_PROVIDER_SNAPSHOT,
+    payload: snapshot,
   };
 }
 

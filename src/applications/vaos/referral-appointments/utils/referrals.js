@@ -13,6 +13,9 @@ const errorUUIDs = [
 ];
 
 const ALLOWED_CATEGORIES_OF_CARE = ['primary care'];
+const PROVIDER_TYPE_VA = 'va';
+const PROVIDER_TYPE_COMMUNITY_CARE = 'community_care';
+const PROVIDER_TYPE_EPS = 'eps';
 
 /**
  * Creates a referral list object relative to a start date.
@@ -237,24 +240,44 @@ function firstSelfSchedulableAppointmentTypeId(appointmentTypes) {
 }
 
 /**
+ * GET /vaos/v2/providers returns `eps` (PROVIDER_TYPE_EPS) for EPS/community rows
+ * (VAOS::V2::Unified::EpsProvider). Redux and getProviderSlots still use
+ * PROVIDER_TYPE_COMMUNITY_CARE internally; vaosApi maps that to provider_type=eps on the wire.
+ *
+ * @param {string|null|undefined} providerType Raw providerType from API or mocks
+ * @returns {string|null}
+ */
+function normalizeProviderTypeForSlots(providerType) {
+  if (providerType == null || providerType === '') {
+    return null;
+  }
+  if (
+    providerType === PROVIDER_TYPE_EPS ||
+    providerType === PROVIDER_TYPE_COMMUNITY_CARE
+  ) {
+    return PROVIDER_TYPE_COMMUNITY_CARE;
+  }
+  return providerType;
+}
+
+/**
  * Builds query params for GET /vaos/v2/provider_slots after provider selection.
  *
  * @param {Object} provider Unified provider row ({ id, providerType, ...attributes })
  * @returns {Object|null}
  */
 function buildProviderSlotsQueryParams(provider) {
-  if (!provider?.providerType) {
+  const providerType = normalizeProviderTypeForSlots(provider?.providerType);
+  if (!providerType) {
     return null;
   }
 
-  const { providerType } = provider;
-
-  if (providerType === 'va') {
+  if (providerType === PROVIDER_TYPE_VA) {
     if (!provider.id || !provider.locationId) {
       return null;
     }
     const payload = {
-      providerType: 'va',
+      providerType: PROVIDER_TYPE_VA,
       clinicId: String(provider.id),
       locationId: String(provider.locationId),
     };
@@ -264,7 +287,7 @@ function buildProviderSlotsQueryParams(provider) {
     return payload;
   }
 
-  if (providerType === 'community_care') {
+  if (providerType === PROVIDER_TYPE_COMMUNITY_CARE) {
     const providerServiceId = provider.providerServiceId || provider.id;
     const appointmentTypeId = firstSelfSchedulableAppointmentTypeId(
       provider.appointmentTypes,
@@ -273,7 +296,7 @@ function buildProviderSlotsQueryParams(provider) {
       return null;
     }
     const payload = {
-      providerType: 'community_care',
+      providerType: PROVIDER_TYPE_COMMUNITY_CARE,
       providerServiceId: String(providerServiceId),
       appointmentTypeId: String(appointmentTypeId),
     };
@@ -284,6 +307,100 @@ function buildProviderSlotsQueryParams(provider) {
   }
 
   return null;
+}
+
+/**
+ * Picks serializable fields from the provider-selection row for merging into provider_slots.
+ *
+ * @param {Object} provider Unified provider list row
+ * @returns {Object|null}
+ */
+function pickProviderSnapshotForSlotsMerge(provider) {
+  const providerType = normalizeProviderTypeForSlots(provider?.providerType);
+  if (!providerType) {
+    return null;
+  }
+
+  const base = {
+    providerType,
+    name: provider.name ?? null,
+    facilityName: provider.facilityName ?? null,
+    phone: provider.phone ?? null,
+    tty: provider.tty ?? null,
+    visitMode: provider.visitMode ?? null,
+    address: provider.address ?? null,
+    timezone: provider.timezone ?? null,
+  };
+
+  if (providerType === PROVIDER_TYPE_VA) {
+    if (provider.id == null || provider.locationId == null) {
+      return null;
+    }
+    return {
+      ...base,
+      id: String(provider.id),
+      locationId: String(provider.locationId),
+      serviceType:
+        provider.serviceType != null ? String(provider.serviceType) : null,
+    };
+  }
+
+  if (providerType === PROVIDER_TYPE_COMMUNITY_CARE) {
+    const providerServiceId = provider.providerServiceId || provider.id;
+    const appointmentTypeId = firstSelfSchedulableAppointmentTypeId(
+      provider.appointmentTypes,
+    );
+    if (!providerServiceId || !appointmentTypeId) {
+      return null;
+    }
+    return {
+      ...base,
+      id: provider.id != null ? String(provider.id) : null,
+      providerServiceId: String(providerServiceId),
+      appointmentTypeId: String(appointmentTypeId),
+      networkId: provider.networkId != null ? String(provider.networkId) : null,
+    };
+  }
+
+  return null;
+}
+
+/**
+ * True when a stored snapshot matches the active provider_slots query params.
+ *
+ * @param {Object|null} snapshot
+ * @param {Object|null} params Redux providerSlotsParams
+ * @returns {boolean}
+ */
+function snapshotMatchesProviderSlotsParams(snapshot, params) {
+  if (!snapshot || !params?.providerType) {
+    return false;
+  }
+  if (
+    normalizeProviderTypeForSlots(snapshot.providerType) !==
+    normalizeProviderTypeForSlots(params.providerType)
+  ) {
+    return false;
+  }
+  if (params.providerType === PROVIDER_TYPE_VA) {
+    const sidMatch = String(snapshot.id) === String(params.clinicId);
+    const locMatch = String(snapshot.locationId) === String(params.locationId);
+    const svcMatch =
+      String(snapshot.serviceType || '') ===
+      String(params.clinicalService || '');
+    return sidMatch && locMatch && svcMatch;
+  }
+  if (params.providerType === PROVIDER_TYPE_COMMUNITY_CARE) {
+    const psid = snapshot.providerServiceId || snapshot.id;
+    const sidMatch = String(psid) === String(params.providerServiceId);
+    const aptMatch =
+      String(snapshot.appointmentTypeId || '') ===
+      String(params.appointmentTypeId || '');
+    const netMatch =
+      String(snapshot.networkId || '') === String(params.networkId || '');
+    return sidMatch && aptMatch && netMatch;
+  }
+  return false;
 }
 
 /**
@@ -326,8 +443,13 @@ module.exports = {
   createReferrals,
   getReferralSlotKey,
   getReferralProviderKey,
+  pickProviderSnapshotForSlotsMerge,
+  snapshotMatchesProviderSlotsParams,
   buildProviderSlotsQueryParams,
   filterReferrals,
   expiredUUIDBase,
   getAddressString,
+  PROVIDER_TYPE_VA,
+  PROVIDER_TYPE_COMMUNITY_CARE,
+  PROVIDER_TYPE_EPS,
 };

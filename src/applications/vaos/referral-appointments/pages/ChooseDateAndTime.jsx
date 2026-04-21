@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -11,18 +11,25 @@ import { fetchFutureAppointments } from '../../appointment-list/redux/actions';
 import { useGetProviderSlotsQuery } from '../../redux/api/vaosApi';
 import { FETCH_STATUS } from '../../utils/constants';
 import DateAndTimeContent from '../components/DateAndTimeContent';
-import { getReferralProviderKey } from '../utils/referrals';
-import { getProviderSlotsParams } from '../redux/selectors';
+import {
+  getReferralProviderKey,
+  snapshotMatchesProviderSlotsParams,
+} from '../utils/referrals';
+import { mergeProviderSlotsWithSnapshot } from '../utils/provider';
+import {
+  getProviderSlotsParams,
+  getSelectedProviderSnapshot,
+} from '../redux/selectors';
 import { routeToCCPage } from '../flow';
 
 export const ChooseDateAndTime = props => {
-  const { attributes: currentReferral } = props.currentReferral;
-  const isVAAppointment = currentReferral.careType === 'VA';
+  const currentReferral = props.currentReferral?.attributes;
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const providerSlotsParams = useSelector(getProviderSlotsParams);
+  const selectedProviderSnapshot = useSelector(getSelectedProviderSnapshot);
   const providerId =
     urlParams.get('providerId') ||
     (providerSlotsParams?.providerType === 'va'
@@ -42,9 +49,44 @@ export const ChooseDateAndTime = props => {
     { skip: !providerSlotsParams?.providerType },
   );
 
+  const mergedProviderSlotsInfo = useMemo(
+    () => {
+      if (!providerSlotsInfo || !providerSlotsParams?.providerType) {
+        return providerSlotsInfo;
+      }
+      if (
+        !selectedProviderSnapshot ||
+        !snapshotMatchesProviderSlotsParams(
+          selectedProviderSnapshot,
+          providerSlotsParams,
+        )
+      ) {
+        return providerSlotsInfo;
+      }
+      return mergeProviderSlotsWithSnapshot(
+        providerSlotsInfo,
+        selectedProviderSnapshot,
+        providerSlotsParams,
+      );
+    },
+    [providerSlotsInfo, providerSlotsParams, selectedProviderSnapshot],
+  );
+
+  const slotsProviderType =
+    mergedProviderSlotsInfo?.attributes?.provider?.attributes?.providerType ??
+    providerSlotsParams?.providerType;
+  const isVAAppointment = slotsProviderType === 'va';
+
   const { futureStatus, appointmentsByMonth } = useSelector(
     state => getUpcomingAppointmentListInfo(state),
     shallowEqual,
+  );
+  const appointmentsByMonthForCalendar = useMemo(
+    () =>
+      appointmentsByMonth != null && !Array.isArray(appointmentsByMonth)
+        ? appointmentsByMonth
+        : {},
+    [appointmentsByMonth],
   );
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -127,9 +169,9 @@ export const ChooseDateAndTime = props => {
       isVAAppointment={isVAAppointment}
     >
       <DateAndTimeContent
-        draftAppointmentInfo={providerSlotsInfo}
+        draftAppointmentInfo={mergedProviderSlotsInfo}
         currentReferral={currentReferral}
-        appointmentsByMonth={appointmentsByMonth}
+        appointmentsByMonth={appointmentsByMonthForCalendar}
       />
     </ReferralLayout>
   );

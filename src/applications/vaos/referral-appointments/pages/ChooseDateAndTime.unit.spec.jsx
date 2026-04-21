@@ -253,7 +253,7 @@ describe('VAOS ChooseDateAndTime component', () => {
     );
     const urlString = capturedUrl.toString();
     expect(urlString).to.include('referral_id=UUID');
-    expect(urlString).to.include('provider_type=community_care');
+    expect(urlString).to.include('provider_type=eps');
     expect(urlString).to.include('provider_service_id=9mN718pH');
     expect(urlString).to.include('appointment_type_id=ov');
     sandbox.assert.calledOnce(fetchAppointmentsModule.fetchAppointments);

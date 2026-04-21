@@ -94,7 +94,10 @@ export const vaosApi = createApi({
         try {
           const query = new URLSearchParams();
           query.set('referral_id', referralId);
-          query.set('provider_type', providerType);
+          // GET /vaos/v2/provider_slots expects provider_type "va" or "eps" (not "community_care").
+          const apiProviderType =
+            providerType === 'community_care' ? 'eps' : providerType;
+          query.set('provider_type', apiProviderType);
           if (providerType === 'va') {
             query.set('clinic_id', clinicId);
             query.set('location_id', locationId);
@@ -108,7 +111,10 @@ export const vaosApi = createApi({
               query.set('network_id', networkId);
             }
           }
-          return await apiRequestWithUrl(`/vaos/v2/provider_slots?${query}`);
+          const body = await apiRequestWithUrl(
+            `/vaos/v2/provider_slots?${query}`,
+          );
+          return { data: body.data };
         } catch (error) {
           captureError(error, false, 'fetch provider slots');
           return {

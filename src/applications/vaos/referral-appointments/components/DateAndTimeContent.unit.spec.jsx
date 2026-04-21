@@ -244,7 +244,7 @@ describe('VAOS Component: DateAndTimeContent', () => {
       },
     );
 
-    expect(screen.getByText(/Scheduling with Dr\. Bones clinic at/)).to.exist;
+    expect(screen.getByText(/Scheduling with Dr\. Bones.*clinic at/)).to.exist;
   });
 
   it('should not display "clinic" in header for CC appointments', () => {
@@ -259,13 +259,14 @@ describe('VAOS Component: DateAndTimeContent', () => {
       },
     );
 
-    expect(screen.getByText(/Scheduling with Dr\. Bones at/)).to.exist;
+    expect(screen.getByText(/Scheduling with Dr\. Bones.*at Meridian Health/))
+      .to.exist;
   });
 
   it('should display provider timezone when it differs from referral timezone', async () => {
     // Create draft appointment info with Pacific timezone provider
     const pacificTimezoneDraftAppointmentInfo = createDraftAppointmentInfo();
-    pacificTimezoneDraftAppointmentInfo.attributes.provider.location.timezone =
+    pacificTimezoneDraftAppointmentInfo.attributes.provider.attributes.timezone =
       'America/Los_Angeles';
     pacificTimezoneDraftAppointmentInfo.attributes.slots = transformSlotsForCommunityCare(
       slots,

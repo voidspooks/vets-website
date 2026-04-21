@@ -5,6 +5,7 @@ import {
   SET_SELECTED_SLOT_START_TIME,
   SET_INIT_REFERRAL_FLOW,
   SET_PROVIDER_SLOTS_PARAMS,
+  SET_SELECTED_PROVIDER_SNAPSHOT,
 } from './actions';
 
 describe('ccAppointmentReducer', () => {
@@ -33,6 +34,15 @@ describe('ccAppointmentReducer', () => {
     expect(state.providerSlotsParams).to.deep.equal(params);
   });
 
+  it('should handle SET_SELECTED_PROVIDER_SNAPSHOT', () => {
+    const snap = { providerType: 'va', id: '1', locationId: '983' };
+    const state = reducer(undefined, {
+      type: SET_SELECTED_PROVIDER_SNAPSHOT,
+      payload: snap,
+    });
+    expect(state.selectedProviderSnapshot).to.deep.equal(snap);
+  });
+
   it('should handle SET_INIT_REFERRAL_FLOW and reset part of the state', () => {
     const modifiedState = {
       ...reducer(undefined, {}),
@@ -42,6 +52,7 @@ describe('ccAppointmentReducer', () => {
       referralAppointmentInfo: { foo: 'bar' },
       selectedSlotStartTime: 'something',
       providerSlotsParams: { providerType: 'va', clinicId: '1' },
+      selectedProviderSnapshot: { providerType: 'va', id: '9' },
     };
 
     const state = reducer(modifiedState, { type: SET_INIT_REFERRAL_FLOW });
@@ -52,5 +63,6 @@ describe('ccAppointmentReducer', () => {
     expect(state.referralAppointmentInfo).to.deep.equal({});
     expect(state.selectedSlotStartTime).to.equal('');
     expect(state.providerSlotsParams).to.be.null;
+    expect(state.selectedProviderSnapshot).to.be.null;
   });
 });

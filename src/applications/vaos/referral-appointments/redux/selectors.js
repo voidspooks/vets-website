@@ -4,6 +4,8 @@ export const getSelectedSlotStartTime = state =>
 export const getSelectedProviderId = state => state.referral.selectedProviderId;
 export const getProviderSlotsParams = state =>
   state.referral.providerSlotsParams;
+export const getSelectedProviderSnapshot = state =>
+  state.referral.selectedProviderSnapshot;
 
 export function getProviderInfo(state) {
   return {

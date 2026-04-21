@@ -72,4 +72,85 @@ describe('VAOS referral generator', () => {
       ).to.equal('222 Richmond Avenue, BATAVIA, 14020');
     });
   });
+
+  describe('buildProviderSlotsQueryParams (unified provider types)', () => {
+    const appointmentTypes = [
+      { id: 'apt-1', isSelfSchedulable: false },
+      { id: 'apt-self', isSelfSchedulable: true },
+    ];
+
+    it('builds community_care params when API returns providerType eps', () => {
+      const params = referralUtil.buildProviderSlotsQueryParams({
+        id: 'svc-123',
+        providerType: referralUtil.PROVIDER_TYPE_EPS,
+        providerServiceId: 'svc-123',
+        appointmentTypes,
+        networkId: 'net-1',
+      });
+      expect(params).to.deep.equal({
+        providerType: referralUtil.PROVIDER_TYPE_COMMUNITY_CARE,
+        providerServiceId: 'svc-123',
+        appointmentTypeId: 'apt-self',
+        networkId: 'net-1',
+      });
+    });
+
+    it('still builds params for legacy community_care providerType', () => {
+      const params = referralUtil.buildProviderSlotsQueryParams({
+        id: 'svc-456',
+        providerType: referralUtil.PROVIDER_TYPE_COMMUNITY_CARE,
+        appointmentTypes,
+      });
+      expect(params.providerType).to.equal(
+        referralUtil.PROVIDER_TYPE_COMMUNITY_CARE,
+      );
+      expect(params.providerServiceId).to.equal('svc-456');
+      expect(params.appointmentTypeId).to.equal('apt-self');
+    });
+
+    it('returns null for eps row without a self-schedulable appointment type', () => {
+      const params = referralUtil.buildProviderSlotsQueryParams({
+        id: 'svc-123',
+        providerType: referralUtil.PROVIDER_TYPE_EPS,
+        appointmentTypes: [{ id: 'apt-1', isSelfSchedulable: false }],
+      });
+      expect(params).to.be.null;
+    });
+  });
+
+  describe('pickProviderSnapshotForSlotsMerge', () => {
+    const appointmentTypes = [{ id: 'apt-1', isSelfSchedulable: true }];
+
+    it('normalizes eps to community_care in the snapshot', () => {
+      const snap = referralUtil.pickProviderSnapshotForSlotsMerge({
+        id: '8is2_VVQ',
+        name: 'Dr. Example',
+        providerType: referralUtil.PROVIDER_TYPE_EPS,
+        providerServiceId: '8is2_VVQ',
+        appointmentTypes,
+        networkId: 'nw',
+      });
+      expect(snap.providerType).to.equal(
+        referralUtil.PROVIDER_TYPE_COMMUNITY_CARE,
+      );
+      expect(snap.appointmentTypeId).to.equal('apt-1');
+    });
+  });
+
+  describe('snapshotMatchesProviderSlotsParams', () => {
+    it('matches when snapshot used eps and params use community_care', () => {
+      const snapshot = {
+        providerType: referralUtil.PROVIDER_TYPE_EPS,
+        providerServiceId: 'a',
+        appointmentTypeId: 't1',
+      };
+      const params = {
+        providerType: referralUtil.PROVIDER_TYPE_COMMUNITY_CARE,
+        providerServiceId: 'a',
+        appointmentTypeId: 't1',
+      };
+      expect(referralUtil.snapshotMatchesProviderSlotsParams(snapshot, params))
+        .to.be.true;
+    });
+  });
 });

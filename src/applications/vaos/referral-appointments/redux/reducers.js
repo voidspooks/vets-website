@@ -3,6 +3,7 @@ import {
   SET_INIT_REFERRAL_FLOW,
   SET_PROVIDER_SLOTS_PARAMS,
   SET_SELECTED_PROVIDER_ID,
+  SET_SELECTED_PROVIDER_SNAPSHOT,
   SET_SELECTED_SLOT_START_TIME,
 } from './actions';
 import { FETCH_STATUS } from '../../utils/constants';
@@ -15,6 +16,7 @@ const initialState = {
   referralDetails: [],
   selectedSlotStartTime: '',
   selectedProviderId: null,
+  selectedProviderSnapshot: null,
   providerSlotsParams: null,
   referralsFetchStatus: FETCH_STATUS.notStarted,
   referralFetchStatus: FETCH_STATUS.notStarted,
@@ -42,6 +44,11 @@ function ccAppointmentReducer(state = initialState, action) {
         ...state,
         providerSlotsParams: action.payload,
       };
+    case SET_SELECTED_PROVIDER_SNAPSHOT:
+      return {
+        ...state,
+        selectedProviderSnapshot: action.payload,
+      };
     case SET_INIT_REFERRAL_FLOW:
       return {
         ...state,
@@ -56,6 +63,7 @@ function ccAppointmentReducer(state = initialState, action) {
         referralFetchStatus: FETCH_STATUS.notStarted,
         selectedSlotStartTime: '',
         selectedProviderId: null,
+        selectedProviderSnapshot: null,
         providerSlotsParams: null,
       };
     default:

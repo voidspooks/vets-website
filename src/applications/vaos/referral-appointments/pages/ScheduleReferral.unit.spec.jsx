@@ -14,6 +14,9 @@ import {
 } from '../utils/referrals';
 
 describe('VAOS Component: ScheduleReferral', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
   afterEach(() => {
     sessionStorage.clear();
   });
@@ -73,9 +76,13 @@ describe('VAOS Component: ScheduleReferral', () => {
         selectedSlot: '0',
       },
     };
-    renderWithStoreAndRouter(<ScheduleReferral currentReferral={referral} />, {
-      initialState,
-    });
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      {
+        initialState,
+      },
+    );
+    await screen.findByTestId('referral-details');
     await waitFor(() => {
       expect(sessionStorage.getItem(selectedSlotKey)).to.be.null;
       expect(sessionStorage.getItem(selectedProviderKey)).to.be.null;

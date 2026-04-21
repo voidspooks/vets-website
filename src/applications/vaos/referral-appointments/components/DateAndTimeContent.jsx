@@ -10,7 +10,7 @@ import {
   selectCurrentPage,
   getSelectedSlotStartTime,
 } from '../redux/selectors';
-import { getSlotByDate } from '../utils/provider';
+import { getSlotByDate, normalizeSlotsProvider } from '../utils/provider';
 import { getTimezoneDescByTimeZoneString } from '../../utils/timezone';
 import { getReferralSlotKey } from '../utils/referrals';
 import { scrollAndFocus } from '../../utils/scrollAndFocus';
@@ -24,13 +24,20 @@ export const DateAndTimeContent = props => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { provider, careType } = draftAppointmentInfo.attributes;
-  const isVAAppointment = careType === 'VA';
-  const providerName = provider.individualProviders?.[0]?.name;
-  const organizationName = provider.providerOrganization?.name;
-  const locationName = provider.location?.name;
-  const providerPhone = provider.phone;
-  const providerTty = provider.tty;
+  const { careType } = draftAppointmentInfo.attributes;
+  const rawProvider = draftAppointmentInfo.attributes.provider;
+  const displayProvider =
+    rawProvider?.type === 'unified_provider'
+      ? normalizeSlotsProvider(rawProvider)
+      : rawProvider;
+
+  const isVAAppointment =
+    displayProvider?.providerType === 'va' || careType === 'VA';
+  const providerName = displayProvider?.individualProviders?.[0]?.name;
+  const organizationName = displayProvider?.providerOrganization?.name;
+  const locationName = displayProvider?.location?.name;
+  const providerPhone = displayProvider?.phone;
+  const providerTty = displayProvider?.tty;
 
   const isStationIdValid = getIsInPilotReferralStation(currentReferral);
 
@@ -42,7 +49,8 @@ export const DateAndTimeContent = props => {
   const [error, setError] = useState('');
 
   const providerTimeZone =
-    draftAppointmentInfo.attributes.provider.location?.timezone ||
+    displayProvider?.location?.timezone ||
+    draftAppointmentInfo.attributes.provider?.attributes?.timezone ||
     Intl.DateTimeFormat().resolvedOptions().timeZone;
   const timezoneDescription = getTimezoneDescByTimeZoneString(providerTimeZone);
   const selectedSlotKey = getReferralSlotKey(currentReferral.uuid);

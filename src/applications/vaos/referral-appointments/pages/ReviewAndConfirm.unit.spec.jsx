@@ -18,7 +18,10 @@ import {
 } from '../../tests/mocks/setup';
 import { createReferralById, getReferralSlotKey } from '../utils/referrals';
 import { FETCH_STATUS } from '../../utils/constants';
-import { createDraftAppointmentInfo } from '../utils/provider';
+import {
+  createDraftAppointmentInfo,
+  normalizeSlotsProvider,
+} from '../utils/provider';
 import * as flow from '../flow';
 import { vaosApi } from '../../redux/api/vaosApi';
 import {
@@ -431,13 +434,12 @@ describe('VAOS Component: ReviewAndConfirm', () => {
 
     expect(screen.getByRole('heading', { name: 'Details' })).to.exist;
     expect(screen.getByText('Community care')).to.exist;
-    expect(screen.getByText(draftAppointmentInfo.attributes.provider.name)).to
+    const ccProviderDisplay = normalizeSlotsProvider(
+      draftAppointmentInfo.attributes.provider,
+    );
+    expect(screen.getByText(ccProviderDisplay.name)).to.exist;
+    expect(screen.getByText(ccProviderDisplay.providerOrganization.name)).to
       .exist;
-    expect(
-      screen.getByText(
-        draftAppointmentInfo.attributes.provider.providerOrganization.name,
-      ),
-    ).to.exist;
     expect(screen.getByText('Phone')).to.exist;
     expect(screen.getByTestId('edit-details-link')).to.exist;
     expect(screen.getByTestId('continue-button')).to.have.attr(

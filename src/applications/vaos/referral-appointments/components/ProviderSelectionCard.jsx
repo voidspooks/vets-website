@@ -9,12 +9,14 @@ import {
   getReferralProviderKey,
   getReferralSlotKey,
   buildProviderSlotsQueryParams,
+  pickProviderSnapshotForSlotsMerge,
 } from '../utils/referrals';
 import {
   setProviderSlotsParams,
+  setSelectedProviderSnapshot,
   setSelectedSlotStartTime,
 } from '../redux/actions';
-import { selectCurrentPage, getSelectedProviderId } from '../redux/selectors';
+import { getSelectedProviderId } from '../redux/selectors';
 import ListItem from '../../components/ListItem';
 import AppointmentRow from '../../components/AppointmentRow';
 import AppointmentColumn from '../../components/AppointmentColumn';
@@ -22,7 +24,6 @@ import { GA_PREFIX, DATE_FORMATS } from '../../utils/constants';
 
 export default function ProviderSelectionCard({ provider, index, referralId }) {
   const first = index === 0;
-  const currentPage = useSelector(selectCurrentPage);
   const selectedProviderId = useSelector(getSelectedProviderId);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -47,14 +48,20 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
     const slotsParams = buildProviderSlotsQueryParams(provider);
     if (slotsParams) {
       dispatch(setProviderSlotsParams(slotsParams));
+      const snapshot = pickProviderSnapshotForSlotsMerge(provider);
+      if (snapshot) {
+        dispatch(setSelectedProviderSnapshot(snapshot));
+      }
     }
     sessionStorage.setItem(
       getReferralProviderKey(referralId),
       String(provider.id),
     );
+    // This card only exists on provider selection; do not use Redux currentPage
+    // here—it can still be `scheduleReferral` before ProviderSelection's effect runs.
     routeToNextReferralPage(
       history,
-      currentPage,
+      'providerSelection',
       referralId,
       null,
       provider?.id,
@@ -70,6 +77,7 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
   const careTypeMap = {
     va: 'VA care',
     [communityCareProviderType]: 'Community care',
+    eps: 'Community care',
     CC: 'Community care',
     'COMMUNITY CARE': 'Community care',
     VA: 'VA care',

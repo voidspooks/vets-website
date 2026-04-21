@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
@@ -7,6 +7,7 @@ import {
   getSelectedSlotStartTime,
   getSelectedProviderId,
   getProviderSlotsParams,
+  getSelectedProviderSnapshot,
 } from '../redux/selectors';
 import {
   setFormCurrentPage,
@@ -26,8 +27,16 @@ import {
   routeToNextReferralPage,
 } from '../flow';
 
-import { getReferralSlotKey, getReferralProviderKey } from '../utils/referrals';
-import { getSlotByDate } from '../utils/provider';
+import {
+  getReferralSlotKey,
+  getReferralProviderKey,
+  snapshotMatchesProviderSlotsParams,
+} from '../utils/referrals';
+import {
+  getSlotByDate,
+  normalizeSlotsProviderIfUnified,
+  mergeProviderSlotsWithSnapshot,
+} from '../utils/provider';
 import { stripDST } from '../../utils/timezone';
 import FindCommunityCareOfficeLink from '../components/FindCCFacilityLink';
 import { titleCase } from '../../utils/formatters';
@@ -43,6 +52,7 @@ const ReviewAndConfirm = props => {
     getReferralProviderKey(currentReferral.uuid),
   );
   const providerSlotsParams = useSelector(getProviderSlotsParams);
+  const selectedProviderSnapshot = useSelector(getSelectedProviderSnapshot);
   const providerId =
     selectedProviderId ||
     savedProviderId ||
@@ -70,21 +80,50 @@ const ReviewAndConfirm = props => {
     { skip: !providerSlotsParams?.providerType },
   );
 
-  const schedulingCareType =
-    draftAppointmentInfo?.attributes?.careType ?? currentReferral.careType;
-  const isCommunityCare = schedulingCareType !== 'VA';
+  const mergedDraftAppointmentInfo = useMemo(
+    () => {
+      if (!draftAppointmentInfo || !providerSlotsParams?.providerType) {
+        return draftAppointmentInfo;
+      }
+      if (
+        !selectedProviderSnapshot ||
+        !snapshotMatchesProviderSlotsParams(
+          selectedProviderSnapshot,
+          providerSlotsParams,
+        )
+      ) {
+        return draftAppointmentInfo;
+      }
+      return mergeProviderSlotsWithSnapshot(
+        draftAppointmentInfo,
+        selectedProviderSnapshot,
+        providerSlotsParams,
+      );
+    },
+    [draftAppointmentInfo, providerSlotsParams, selectedProviderSnapshot],
+  );
+
+  const providerRaw = mergedDraftAppointmentInfo?.attributes?.provider;
+  const providerForReview = providerRaw
+    ? normalizeSlotsProviderIfUnified(providerRaw)
+    : null;
+
+  const slotsProviderType =
+    mergedDraftAppointmentInfo?.attributes?.provider?.attributes
+      ?.providerType ?? providerSlotsParams?.providerType;
+  const isCommunityCare = slotsProviderType !== 'va';
 
   const slotDetails = getSlotByDate(
-    draftAppointmentInfo?.attributes?.slots,
+    mergedDraftAppointmentInfo?.attributes?.slots,
     selectedSlot || savedSelectedSlot,
   );
 
   const providerTimezone =
-    draftAppointmentInfo?.attributes?.provider?.location?.timezone ||
+    providerForReview?.location?.timezone ||
     Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const { text: modalityText, icon: modalityIcon } = getModalityDisplay(
-    draftAppointmentInfo?.attributes?.provider?.visitMode,
+    providerForReview?.visitMode,
   );
 
   const [postReferralAppointment] = usePostReferralAppointmentMutation();
@@ -129,7 +168,7 @@ const ReviewAndConfirm = props => {
     () => {
       if (!selectedSlot && savedSelectedSlot && isDraftSuccess) {
         const savedSlot = getSlotByDate(
-          draftAppointmentInfo?.attributes?.slots,
+          mergedDraftAppointmentInfo?.attributes?.slots,
           savedSelectedSlot,
         );
         if (!savedSlot) {
@@ -142,7 +181,7 @@ const ReviewAndConfirm = props => {
     [
       dispatch,
       savedSelectedSlot,
-      draftAppointmentInfo,
+      mergedDraftAppointmentInfo,
       history,
       selectedSlot,
       isDraftSuccess,
@@ -163,11 +202,13 @@ const ReviewAndConfirm = props => {
     setCreateLoading(true);
     setCreateFailed(false);
 
-    const { provider } = draftAppointmentInfo.attributes;
+    const provider = normalizeSlotsProviderIfUnified(
+      mergedDraftAppointmentInfo.attributes.provider,
+    );
     const bookingPayload = isCommunityCare
       ? {
-          providerType: 'community_care',
-          appointmentId: draftAppointmentInfo.id,
+          providerType: 'eps',
+          appointmentId: mergedDraftAppointmentInfo.id,
           referralNumber: currentReferral.referralNumber,
           slotId: slotDetails.id,
           networkId: provider.networkIds[0],
@@ -188,7 +229,7 @@ const ReviewAndConfirm = props => {
         history,
         'reviewAndConfirm',
         currentReferral.uuid,
-        draftAppointmentInfo.id,
+        mergedDraftAppointmentInfo.id,
         null,
         providerType,
       );
@@ -227,7 +268,7 @@ const ReviewAndConfirm = props => {
     >
       <div>
         <hr className="vads-u-margin-y--2" />
-        {draftAppointmentInfo?.attributes && (
+        {mergedDraftAppointmentInfo?.attributes && (
           <>
             <div className="vads-l-grid-container vads-u-padding--0">
               <div className="vads-l-row">
@@ -305,16 +346,14 @@ const ReviewAndConfirm = props => {
                 <>
                   Community care
                   <br />
-                  <span data-dd-privacy="mask">
-                    {draftAppointmentInfo.attributes.provider.name}
-                  </span>
+                  <span data-dd-privacy="mask">{providerForReview?.name}</span>
                 </>
               ) : (
                 <>
                   VA care
                   <br />
                   <span data-dd-privacy="mask">
-                    Clinic: {draftAppointmentInfo.attributes.provider.name}
+                    Clinic: {providerForReview?.name}
                   </span>
                 </>
               )}
@@ -329,15 +368,12 @@ const ReviewAndConfirm = props => {
             <p className="vads-u-margin--0">
               <span data-dd-privacy="mask">
                 {isCommunityCare
-                  ? draftAppointmentInfo.attributes.provider
-                      .providerOrganization.name
-                  : draftAppointmentInfo.attributes.provider.location.name}
+                  ? providerForReview?.providerOrganization?.name
+                  : providerForReview?.location?.name}
               </span>
             </p>
             <ProviderAddress
-              address={
-                draftAppointmentInfo.attributes.provider.location.address
-              }
+              address={providerForReview?.location?.address || ''}
             />
             <hr className="vads-u-margin-y--2" />
             <div className="vads-u-margin-top--4">
@@ -399,14 +435,10 @@ const ReviewAndConfirm = props => {
                 className="vads-u-margin-top--0 vads-u-margin-bottom--0"
                 data-testid="va-facility-info"
               >
-                <strong>
-                  {draftAppointmentInfo?.attributes?.provider?.location?.name}
-                </strong>
+                <strong>{providerForReview?.location?.name}</strong>
                 <br />
                 <strong>Main phone:</strong>{' '}
-                <va-telephone
-                  contact={draftAppointmentInfo?.attributes?.provider?.phone}
-                />
+                <va-telephone contact={providerForReview?.phone} />
                 <br />
                 <va-telephone contact="711" tty />
               </p>
