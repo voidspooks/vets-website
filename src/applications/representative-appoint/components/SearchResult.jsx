@@ -181,6 +181,7 @@ const SearchResult = ({
               data-testid={`rep-select-${id}`}
               text={`Select ${representativeName}`}
               secondary
+              disable-analytics
               onClick={() => handleSelectRepresentative(representative.data)}
             />
           )}

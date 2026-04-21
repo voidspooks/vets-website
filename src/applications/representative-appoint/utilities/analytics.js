@@ -4,24 +4,21 @@ export const recordAppointedRepSearchResultSelection = selectedRepResult => {
   if (!selectedRepResult) return;
 
   const entityType = selectedRepResult.type;
-  let aarPathway = 'unknown';
+
+  let buttonClickLabel = 'Selected unknown result';
+  let version = 'unknown';
 
   if (entityType === 'organization') {
-    aarPathway = 'org-first';
+    buttonClickLabel = `Selected ${selectedRepResult.attributes.name}`;
+    version = 'org';
   } else if (entityType === 'representative') {
-    aarPathway = 'rep-first';
+    buttonClickLabel = `Selected ${selectedRepResult.attributes.fullName}`;
+    version = 'rep';
   }
 
   recordEvent({
     event: 'cta-button-click',
-    'button-label': 'Select accredited representative search result',
-    'aar-pathway': aarPathway,
-    'entity-type': entityType,
-    'entity-id': selectedRepResult.id,
-    'individual-type': selectedRepResult.attributes?.individualType || null,
-    'can-accept-digital-poa-requests':
-      selectedRepResult.attributes?.canAcceptDigitalPoaRequests ?? null,
-    'reps-can-accept-any-request':
-      selectedRepResult.attributes?.repsCanAcceptAnyRequest ?? null,
+    'button-click-label': buttonClickLabel,
+    version,
   });
 };
