@@ -6,7 +6,8 @@ import manifest from '../manifest.json';
 import IntroductionPage from '../containers/IntroductionPage';
 import ConfirmationPage from '../containers/ConfirmationPage';
 import getHelp from '../../shared/components/GetFormHelp';
-import transformForSubmit from '../../shared/config/submit-transformer';
+import transformForSubmit from './submit-transformer';
+import prefillTransformer from './prefill-transformer';
 import { TITLE, SUBTITLE, FORM_ID } from '../definitions/constants';
 
 import mailingAddress from '../pages/mailingAddress';
@@ -27,6 +28,8 @@ const formConfig = {
   introduction: IntroductionPage,
   confirmation: ConfirmationPage,
   formId: FORM_ID,
+  prefillEnabled: true,
+  prefillTransformer,
   transformForSubmit,
   preSubmitInfo: {
     statementOfTruth: {
@@ -44,7 +47,6 @@ const formConfig = {
   },
   saveInProgress: {},
   version: 0,
-  prefillEnabled: true,
   hideUnauthedStartLink: true,
   savedFormMessages: {
     notFound: 'Please start over to apply for annual clothing allowance.',
