@@ -22,7 +22,9 @@
         "user-profile",
         "vet360"
       ],
-      "account": { "accountUuid": "c049d895-ecdf-40a4-ac0f-7947a06ea0c2" },
+      "account": {
+        "accountUuid": "c049d895-ecdf-40a4-ac0f-7947a06ea0c2"
+      },
       "profile": {
         "email": "vets.gov.user+36@gmail.com",
         "firstName": "Mike",
@@ -32,10 +34,17 @@
         "gender": "M",
         "zip": "94608",
         "lastSignedIn": "2020-07-21T00:04:51.589Z",
-        "loa": { "current": 3, "highest": 3 },
+        "loa": {
+          "current": 3,
+          "highest": 3
+        },
         "multifactor": true,
         "verified": true,
-        "signIn": { "serviceName": "idme", "accountType": "N/A", "ssoe": true },
+        "signIn": {
+          "serviceName": "idme",
+          "accountType": "N/A",
+          "ssoe": true
+        },
         "authnContext": "http://idmanagement.gov/ns/assurance/loa/3",
         "claims": {
           "appeals": true
@@ -46,8 +55,16 @@
         "birthDate": "20011028",
         "familyName": "Wazowski",
         "gender": "M",
-        "givenNames": ["Michael", ""],
-        "facilities": [{ "facilityId": "983", "isCerner": false }],
+        "givenNames": [
+          "Michael",
+          ""
+        ],
+        "facilities": [
+          {
+            "facilityId": "983",
+            "isCerner": false
+          }
+        ],
         "vaPatient": true,
         "mhvAccountState": "NONE"
       },
@@ -141,5 +158,7 @@
       }
     }
   },
-  "meta": { "errors": null }
+  "meta": {
+    "errors": null
+  }
 }

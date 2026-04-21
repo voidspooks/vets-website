@@ -71,6 +71,7 @@ export const ContactInfoBase = ({
   contactInfoPageKey,
   disableMockContactInfo = false,
   contactSectionHeadingLevel,
+  mainHeaderLevel,
   contactPath,
   ...rest
 }) => {
@@ -288,9 +289,16 @@ export const ContactInfoBase = ({
 
   const isMinimalHeader = isMinimalHeaderPath();
 
-  let MainHeader = 'h3';
+  const baseHeaderLevel = parseInt(
+    (mainHeaderLevel || 'h3').replace('h', ''),
+    10,
+  );
+  // Calculates the appropriate header level for subheadings based on the main header level and an offset, ensuring it does not exceed h6.
+  const offsetLevel = offset => Math.min(baseHeaderLevel + offset, 6);
+
+  let MainHeader = mainHeaderLevel || 'h3';
   if (onReviewPage) {
-    MainHeader = 'h4';
+    MainHeader = `h${offsetLevel(1)}`;
   } else if (isMinimalHeader) {
     MainHeader = 'h1';
   }
@@ -305,9 +313,9 @@ export const ContactInfoBase = ({
     if (isMinimalHeader) {
       headerLevel = '2';
     } else if (onReviewPage) {
-      headerLevel = '5';
+      headerLevel = `${offsetLevel(2)}`;
     } else {
-      headerLevel = '4';
+      headerLevel = `${offsetLevel(1)}`;
     }
   }
 
@@ -726,6 +734,7 @@ ContactInfoBase.propTypes = {
   contactInfoPageKey: contactInfoPropTypes.contactInfoPageKey,
   contactPath: PropTypes.string,
   contactSectionHeadingLevel: PropTypes.string,
+  mainHeaderLevel: PropTypes.string,
   content: contactInfoPropTypes.content, // content passed in from profileContactInfoPage
   contentAfterButtons: PropTypes.element,
   contentBeforeButtons: PropTypes.element,

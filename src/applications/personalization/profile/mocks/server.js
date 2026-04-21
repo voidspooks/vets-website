@@ -131,6 +131,7 @@ const responses = {
             vrePrefillName: true,
             mhvEmailConfirmation: true,
             cveVeteranStatusNewService: true,
+            veteranOnboardingPrefillPattern: true,
           }),
         ),
       secondsOfDelay,

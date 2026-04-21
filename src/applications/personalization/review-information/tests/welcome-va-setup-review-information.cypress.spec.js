@@ -110,7 +110,12 @@ describe('Welcome to My VA Review Contact Information form', () => {
 
   context('when signed in and profileInternationalPhoneNumbers is ON', () => {
     beforeEach(() => {
-      cypressSetup({ internationalPhonesEnabled: true });
+      cypressSetup({
+        extraFeatureToggles: [
+          { name: 'profile_international_phone_numbers', value: true },
+          { name: 'profileInternationalPhoneNumbers', value: true },
+        ],
+      });
       cy.login(mockUser);
       cy.visit(formURL);
       cy.wait(['@mockUser', '@features', '@mockVamc']);

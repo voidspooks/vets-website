@@ -15,6 +15,11 @@ The form runs at this location:
 http://localhost:3001/my-va/welcome-va-setup/contact-information
 ```
 
+Run a mock API for the app to interact with:
+```
+yarn mock-api --responses src/applications/personalization/review-information/tests/fixtures/mocks/local-mock-responses.js
+```
+
 ## Testing
 
 The Profile application contains a suite of mock responses useful for setting up testing scenarios. To run a mock API utilizing those responses use this command:

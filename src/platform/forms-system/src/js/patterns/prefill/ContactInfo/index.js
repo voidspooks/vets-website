@@ -40,6 +40,7 @@ import { createContactInfoConfirmationField } from './ContactInfoConfirmationFie
  * @param {Function} [options.depends] - depends callback function; return true to make the main confirmation page visible
  * @param {boolean} [options.disableMockContactInfo] - disable mock contact info data for testing
  * @param {number} [options.editContactInfoHeadingLevel] - heading level for edit contact info pages
+ * @param {string} [options.mainHeaderLevel] - heading level for the main page header (e.g. 'h2')
  * @param {string} [options.emailKey] - email key value set in ContactInfoKeys
  * @param {Object} [options.emailSchema] - Email schema object for email string
  * @param {string} [options.homePhoneKey] - home phone key value set in ContactInfoKeys
@@ -80,6 +81,7 @@ const profileContactInfoPages = ({
   disableMockContactInfo = true,
   contactSectionHeadingLevel = null,
   editContactInfoHeadingLevel = null,
+  mainHeaderLevel = null,
   prefillPatternEnabled = true,
   showProfileAlert = true,
 } = {}) => {
@@ -237,6 +239,7 @@ const profileContactInfoPages = ({
       disableMockContactInfo={disableMockContactInfo}
       contactSectionHeadingLevel={contactSectionHeadingLevel}
       editContactInfoHeadingLevel={editContactInfoHeadingLevel}
+      mainHeaderLevel={mainHeaderLevel}
       prefillPatternEnabled={prefillPatternEnabled}
     />
   );
@@ -284,7 +287,7 @@ const profileContactInfoPages = ({
       scrollAndFocusTarget: () => {
         if (!getReturnState()) {
           scrollTo('topContentElement');
-          focusElement('h3');
+          focusElement(`#${contactInfoPageKey}Header`);
         }
       },
     },

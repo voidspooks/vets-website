@@ -5,12 +5,11 @@ import mockVamc from './fixtures/mocks/vamc-ehr.json';
 import mockStatus from './fixtures/mocks/profile-status.json';
 import mockUserUpdate from './fixtures/mocks/user-update.json';
 import mockProfilePhone from './fixtures/mocks/profile-phone.json';
-// TODO: Implement update for email address and mailing address
-// import mockProfileEmail from './fixtures/mocks/profile-email.json';
-// import mockProfileAddress from './fixtures/mocks/profile-address.json';
-// import mockProfileAddressValidation from './fixtures/mocks/profile-address-validation.json';
+import mockProfileEmail from './fixtures/mocks/profile-email.json';
+import mockProfileAddress from './fixtures/mocks/profile-address.json';
+import mockProfileAddressValidation from './fixtures/mocks/profile-address-validation.json';
 
-export const cypressSetup = ({ internationalPhonesEnabled = false } = {}) => {
+export const cypressSetup = ({ extraFeatureToggles = [] } = {}) => {
   Cypress.config({ scrollBehavior: 'nearest' });
 
   cy.intercept('/v0/in_progress_forms/WELCOME_VA_SETUP_REVIEW_INFORMATION', {
@@ -18,35 +17,14 @@ export const cypressSetup = ({ internationalPhonesEnabled = false } = {}) => {
     body: mockPrefill,
   });
 
-  if (internationalPhonesEnabled) {
-    cy.intercept('GET', '/v0/feature_toggles*', {
-      data: {
-        type: 'feature_toggles',
-        features: [
-          {
-            name: 'veteran_onboarding_prefill_pattern',
-            value: false,
-          },
-          {
-            name: 'veteranOnboardingPrefillPattern',
-            value: false,
-          },
-          {
-            name: 'profile_international_phone_numbers',
-            value: true,
-          },
-          {
-            name: 'profileInternationalPhoneNumbers',
-            value: true,
-          },
-        ],
-      },
-    }).as('features');
-  } else {
-    cy.intercept('GET', '/v0/feature_toggles*', mockFeatureToggles).as(
-      'features',
-    );
-  }
+  const toggleResponse = {
+    ...mockFeatureToggles,
+    data: {
+      ...mockFeatureToggles.data,
+      features: [...mockFeatureToggles.data.features, ...extraFeatureToggles],
+    },
+  };
+  cy.intercept('GET', '/v0/feature_toggles*', toggleResponse).as('features');
 
   cy.intercept('GET', '/v0/maintenance_windows', []).as('maintenanceWindows');
   cy.intercept('GET', '/data/cms/vamc-ehr.json', mockVamc).as('mockVamc');
@@ -60,18 +38,18 @@ export const cypressSetup = ({ internationalPhonesEnabled = false } = {}) => {
   cy.intercept('PUT', '/v0/profile/telephones', mockProfilePhone).as(
     'telephones',
   );
-  // TODO: Implement update for email address and mailing address
-  // cy.intercept('PUT', '/v0/profile/email_addresses', mockProfileEmail).as(
-  //   'emailAddresses',
-  // );
-  // cy.intercept('POST', '/v0/profile/email_addresses', mockProfileEmail).as(
-  //   'emailAddresses',
-  // );
-
-  // cy.intercept('PUT', '/v0/profile/addresses', mockProfileAddress);
-  // cy.intercept(
-  //   'POST',
-  //   '/v0/profile/address_validation',
-  //   mockProfileAddressValidation,
-  // ).as('getAddressValidation');
+  cy.intercept('PUT', '/v0/profile/email_addresses', mockProfileEmail).as(
+    'emailAddresses',
+  );
+  cy.intercept('POST', '/v0/profile/email_addresses', mockProfileEmail).as(
+    'emailAddressesPost',
+  );
+  cy.intercept('PUT', '/v0/profile/addresses', mockProfileAddress).as(
+    'addresses',
+  );
+  cy.intercept(
+    'POST',
+    '/v0/profile/address_validation',
+    mockProfileAddressValidation,
+  ).as('getAddressValidation');
 };

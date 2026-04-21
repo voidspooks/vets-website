@@ -82,6 +82,7 @@ const prefillContactInfoPage = profileContactInfoPages({
   content: prefillContent,
   contactSectionHeadingLevel: 'h2',
   editContactInfoHeadingLevel: 'h2',
+  mainHeaderLevel: 'h2',
   contentBeforeButtons: WelcomeVAContactAdditionalInfo,
   prefillPatternEnabled: false,
   depends: isPrefillOn,

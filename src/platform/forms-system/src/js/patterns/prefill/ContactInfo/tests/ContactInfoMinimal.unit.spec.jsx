@@ -9,6 +9,7 @@ import {
 } from 'platform/forms-system/src/js/utilities/data/profile';
 import { TOGGLE_NAMES } from 'platform/utilities/feature-toggles';
 import { renderWithStoreAndRouter } from 'platform/testing/unit/react-testing-library-helpers';
+import { $ } from 'platform/forms-system/src/js/utilities/ui';
 import ContactInfo from '../ContactInfo';
 
 const getData = ({
@@ -226,6 +227,45 @@ describe('<ContactInfo>', () => {
         },
       );
       expect(container).to.exist;
+    });
+  });
+
+  describe('mainHeaderLevel prop', () => {
+    const renderWithHeaderLevel = (mainHeaderLevel, onReviewPage = false) => {
+      const props = getData({ onReviewPage });
+      return renderWithStoreAndRouter(
+        <ContactInfo {...props} mainHeaderLevel={mainHeaderLevel} />,
+        {
+          initialState: defaultInitialState,
+          reducers: { vapService },
+          path: '/contact-information',
+        },
+      );
+    };
+
+    it('should default to h3 when mainHeaderLevel is not provided', () => {
+      const { container } = renderWithHeaderLevel(undefined);
+      expect($('#confirmContactInfoHeader', container).tagName).to.equal('H3');
+    });
+
+    it('should use the provided mainHeaderLevel', () => {
+      const { container } = renderWithHeaderLevel('h2');
+      expect($('#confirmContactInfoHeader', container).tagName).to.equal('H2');
+    });
+
+    it('should use mainHeaderLevel + 1 on the review page', () => {
+      const { container } = renderWithHeaderLevel('h2', true);
+      expect($('#confirmContactInfoHeader', container).tagName).to.equal('H3');
+    });
+
+    it('should default to h4 on the review page when mainHeaderLevel is not set', () => {
+      const { container } = renderWithHeaderLevel(undefined, true);
+      expect($('#confirmContactInfoHeader', container).tagName).to.equal('H4');
+    });
+
+    it('should clamp to h6 when mainHeaderLevel is h6 on the review page', () => {
+      const { container } = renderWithHeaderLevel('h6', true);
+      expect($('#confirmContactInfoHeader', container).tagName).to.equal('H6');
     });
   });
 });

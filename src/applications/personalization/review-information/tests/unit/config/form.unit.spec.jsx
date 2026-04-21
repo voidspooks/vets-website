@@ -1,4 +1,7 @@
 import { expect } from 'chai';
+import React from 'react';
+import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import formConfig from '../../../config/form';
 
 describe('formConfig', () => {
@@ -77,6 +80,103 @@ describe('formConfig', () => {
       expect(actualLocation).to.include('/my-va/');
 
       global.window.location = originalLocation;
+    });
+
+    it('renders CustomPage without crashing', () => {
+      const mockStore = {
+        getState: () => ({
+          user: {
+            login: { currentlyLoggedIn: true },
+            profile: { vapContactInfo: {} },
+          },
+          form: { data: {} },
+        }),
+        subscribe: () => {},
+        dispatch: () => {},
+      };
+      const { CustomPage } = contactInfoPage;
+      const { container } = render(
+        <Provider store={mockStore}>
+          <CustomPage data={{}} setFormData={() => {}} />
+        </Provider>,
+      );
+      expect(container).to.exist;
+    });
+
+    describe('depends', () => {
+      it('returns true when veteranOnboardingPrefillPattern is false', () => {
+        expect(
+          contactInfoPage.depends({ veteranOnboardingPrefillPattern: false }),
+        ).to.be.true;
+      });
+
+      it('returns true when veteranOnboardingPrefillPattern is undefined', () => {
+        expect(contactInfoPage.depends({})).to.be.true;
+      });
+
+      it('returns false when veteranOnboardingPrefillPattern is true', () => {
+        expect(
+          contactInfoPage.depends({ veteranOnboardingPrefillPattern: true }),
+        ).to.be.false;
+      });
+    });
+  });
+
+  describe('prefill contact information page', () => {
+    const prefillPage = formConfig.chapters.infoPage.pages.prefillContactInfo;
+
+    it('exists', () => {
+      expect(prefillPage).to.exist;
+      expect(prefillPage).to.be.an('object');
+    });
+
+    it('depends returns true when veteranOnboardingPrefillPattern is true', () => {
+      expect(prefillPage.depends({ veteranOnboardingPrefillPattern: true })).to
+        .be.true;
+    });
+
+    it('depends returns false when veteranOnboardingPrefillPattern is false', () => {
+      expect(prefillPage.depends({ veteranOnboardingPrefillPattern: false })).to
+        .be.false;
+    });
+
+    it('onNavBack redirects to the My VA page', () => {
+      const originalLocation = window.location;
+
+      prefillPage.onNavBack();
+
+      const actualLocation =
+        typeof window.location === 'string'
+          ? window.location
+          : window.location.href;
+
+      expect(actualLocation).to.include('/my-va/');
+
+      global.window.location = originalLocation;
+    });
+
+    it('onNavForward redirects to the My VA page', () => {
+      const originalLocation = window.location;
+
+      prefillPage.onNavForward();
+
+      const actualLocation =
+        typeof window.location === 'string'
+          ? window.location
+          : window.location.href;
+
+      expect(actualLocation).to.include('/my-va/');
+
+      global.window.location = originalLocation;
+    });
+  });
+
+  describe('introduction', () => {
+    it('renders an empty fragment', () => {
+      // we are not using an introduction page
+      const Introduction = formConfig.introduction;
+      const { container } = render(<Introduction />);
+      expect(container.innerHTML).to.equal('');
     });
   });
 

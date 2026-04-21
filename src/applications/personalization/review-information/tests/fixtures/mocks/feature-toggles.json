@@ -5,10 +5,6 @@
       {
         "name": "veteran_onboarding_prefill_pattern",
         "value": false
-      },
-      {
-        "name": "veteranOnboardingPrefillPattern",
-        "value": false
       }
     ]
   }
