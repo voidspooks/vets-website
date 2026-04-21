@@ -243,12 +243,6 @@ export const FORM_21_4502 = {
     ERROR_STREET_REQUIRED: 'Enter the service member’s planned street address',
     STREET2: 'Apartment or unit number (optional)',
   },
-  SERVICE_STATUS: {
-    TITLE: 'Are you a Veteran or a service member?',
-    QUESTION: 'Are you a Veteran or a service member?',
-    LABELS: { N: 'I am a Veteran', Y: 'I am a service member' },
-    ERROR: 'Please select your current service status',
-  },
   APPLICATION_INFORMATION: {
     TITLE: 'Section II: Application Information',
     PAGE_DESCRIPTION:
@@ -424,7 +418,6 @@ export const FORM_21_4502 = {
     PAGE_PERSONAL_INFO: 'Section I: Veteran or Service Member ID Information',
     PAGE_CONTACT: 'Phone Number and Email Address',
     PAGE_ADDRESS: 'Current Mailing Address',
-    PAGE_SERVICE_STATUS: 'Are you a Veteran or a service member?',
     PAGE_PLANNED_ADDRESS: "Section I: Service member's planned address",
     PAGE_APPLICATION_INFO: 'Branch of service',
     PAGE_QUALIFYING: 'Your Service-Connected Disabilities',

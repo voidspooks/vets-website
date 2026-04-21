@@ -20,7 +20,6 @@ import EligibilityFormPage from '../pages/eligibility';
 import personalInfoBasic from '../pages/personalInfoBasic';
 import contactInfo from '../pages/contactInfo';
 import address from '../pages/address';
-import serviceStatus from '../pages/serviceStatus';
 import plannedAddress from '../pages/plannedAddress';
 import applicationInformation from '../pages/applicationInformation';
 import { qualifyingDisabilitiesPage as qualifyingDisabilitiesPageConfig } from '../pages/qualifyingDisabilities';
@@ -195,19 +194,11 @@ const formConfig = {
     serviceStatusChapter: {
       title: FORM_21_4502.FORM_CONFIG.CHAPTER_SERVICE_STATUS,
       pages: {
-        serviceStatusPage: {
-          path: 'service-status',
-          title: FORM_21_4502.FORM_CONFIG.PAGE_SERVICE_STATUS,
-          uiSchema: serviceStatus.uiSchema,
-          schema: serviceStatus.schema,
-        },
         plannedAddressPage: {
           path: 'planned-address',
           title: FORM_21_4502.FORM_CONFIG.PAGE_PLANNED_ADDRESS,
           uiSchema: plannedAddress.uiSchema,
           schema: plannedAddress.schema,
-          depends: formData =>
-            formData?.applicationInfo?.activeDutyStatus === true,
         },
       },
     },

@@ -94,9 +94,6 @@ describe('21-4502 form config', () => {
       const { chapters } = formConfig;
 
       expect(
-        chapters.serviceStatusChapter.pages.serviceStatusPage,
-      ).to.not.have.property('initialData');
-      expect(
         chapters.applicationAndServiceInformationChapter.pages
           .applicationInformationPage,
       ).to.not.have.property('initialData');
