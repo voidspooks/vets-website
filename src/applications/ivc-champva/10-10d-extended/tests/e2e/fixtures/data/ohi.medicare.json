@@ -49,6 +49,7 @@
       }
     ],
     "view:hasHealthInsurance": false,
+    "view:certifierApplicantIndex": "0",
     "statementOfTruthSignature": "Certifier Jones"
   }
 }

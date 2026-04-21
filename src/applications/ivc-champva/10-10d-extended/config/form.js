@@ -11,6 +11,7 @@ import content from '../locales/en/content.json';
 import migrations from './migrations';
 import transformForSubmit from './submitTransformer';
 import { chapters } from '../chapters';
+import { getCertifierNamePath } from '../utils/helpers';
 
 /** @type {FormConfig}  */
 const formConfig = {
@@ -24,9 +25,7 @@ const formConfig = {
         'I confirm that the identifying information in this form is accurate and has been represented correctly.',
       messageAriaDescribedby:
         'I confirm that the identifying information in this form is accurate and has been represented correctly.',
-      fullNamePath: ({ certifierRole } = {}) =>
-        ({ other: 'certifierName', sponsor: 'sponsorName' }[certifierRole] ??
-        'applicants.0.applicantName'),
+      fullNamePath: getCertifierNamePath,
     },
   },
   trackingPrefix: '10-10d-extended-',

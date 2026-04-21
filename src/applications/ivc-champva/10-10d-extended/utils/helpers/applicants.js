@@ -133,3 +133,7 @@ export const requireBirthCertificate = (formData, index) => {
 
 // Applicant-specific state predicates
 export const applicantHasRemarried = applicantBoolean('applicantRemarried');
+
+export const hasMultipleApplicants = formData => {
+  return (formData?.applicants ?? []).length > 1;
+};

@@ -11,10 +11,7 @@ const INPUT_LABEL = content['applicants--birth-certificate-label'];
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, { arrayBuilder: true }),
     ...descriptionUI(FileUploadDescription),
     applicantBirthCertOrSocialSecCard: attachmentUI({
       label: INPUT_LABEL,

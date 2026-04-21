@@ -15,10 +15,7 @@ const INPUT_LABEL = content['applicants--marriage-date-label'];
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, { arrayBuilder: true }),
     dateOfMarriageToSponsor: currentOrPastDateUI(INPUT_LABEL),
     'view:addtlInfo': { ...descriptionUI(MarriageDateDescription) },
     'ui:validations': [validateMarriageAfterDob],

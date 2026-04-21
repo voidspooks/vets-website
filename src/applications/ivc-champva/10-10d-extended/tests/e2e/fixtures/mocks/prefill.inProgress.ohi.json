@@ -43,8 +43,7 @@
           "applicantRelationshipToSponsor": {
             "relationshipToVeteran": "spouse"
           },
-          "dateOfMarriageToSponsor": "2019-01-01",
-          "view:certifierRole": "applicant"
+          "dateOfMarriageToSponsor": "2019-01-01"
         },
         {
           "applicantName": {

@@ -2,7 +2,6 @@ import {
   dateOfBirthSchema,
   dateOfBirthUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import FirstApplicantPageDescription from '../../components/FormDescriptions/FirstApplicantPageDescription';
 import {
   fullNameMiddleInitialSchema,
   fullNameMiddleInitialUI,
@@ -11,15 +10,11 @@ import content from '../../locales/en/content.json';
 import { titleWithRoleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['applicants--personal-info-title'];
-
-const PAGE_TITLE = titleWithRoleUI(TITLE_TEXT, FirstApplicantPageDescription, {
-  roleKey: 'view:certifierRole',
-  arrayBuilder: true,
-});
+const DESC_TEXT = content['applicants--personal-info-description'];
 
 export default {
   uiSchema: {
-    ...PAGE_TITLE,
+    ...titleWithRoleUI(TITLE_TEXT, DESC_TEXT, { arrayBuilder: true }),
     applicantName: fullNameMiddleInitialUI,
     applicantDob: dateOfBirthUI(),
   },

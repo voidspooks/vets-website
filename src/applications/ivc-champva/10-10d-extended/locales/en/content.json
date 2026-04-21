@@ -59,6 +59,7 @@
   "button--update-page": "Update page",
   "certifier--address-title": "Your address",
   "certifier--address-label": "Do you have the same mailing address as one previously entered in this application?",
+  "certifier--applicant-selection-label": "Which applicant are you?",
   "certifier--chapter-title": "Your information",
   "certifier--contact-info-title": "Your contact information",
   "certifier--contact-info-description": "We’ll use this information to contact you if we have more questions.",

@@ -1,5 +1,5 @@
 import content from '../locales/en/content.json';
-import { isNewSubmission, not, roleIsOther, whenAll } from '../utils/helpers';
+import { isNewSubmission, not } from '../utils/helpers';
 import { applicantPages } from './applicant';
 import { applicationStatusPages } from './applicationStatus';
 import { certifierPages } from './certifier';
@@ -41,6 +41,6 @@ export const chapters = {
   certifierInformation: {
     title: content['certifier--chapter-title'],
     pages: certifierPages,
-    depends: whenAll(isNewSubmission, roleIsOther),
+    depends: isNewSubmission,
   },
 };

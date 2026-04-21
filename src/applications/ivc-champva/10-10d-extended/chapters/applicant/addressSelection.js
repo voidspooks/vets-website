@@ -8,10 +8,7 @@ const INPUT_LABEL = content['applicants--address-label'];
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, { arrayBuilder: true }),
     'view:applicantSharedAddress': addressSelectionUI({
       title: INPUT_LABEL,
       destinationKey: 'applicantAddress',

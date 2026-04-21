@@ -19,10 +19,7 @@ const SCHEMA_LABELS = Object.fromEntries(
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, null, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, null, { arrayBuilder: true }),
     applicantGender: {
       gender: radioUI({
         title: INPUT_LABEL,

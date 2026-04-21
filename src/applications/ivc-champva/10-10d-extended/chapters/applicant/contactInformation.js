@@ -15,10 +15,7 @@ const setRequired = ({ certifierRole }, index) =>
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, { arrayBuilder: true }),
     applicantPhone: phoneUI(),
     applicantEmailAddress: emailUI({ required: setRequired }),
   },

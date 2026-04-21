@@ -11,10 +11,7 @@ const CHECKBOX_LABEL = content['mailing-address--checkbox-label'];
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, DESC_TEXT, { arrayBuilder: true }),
     applicantAddress: addressUI({
       labels: { militaryCheckbox: CHECKBOX_LABEL },
     }),

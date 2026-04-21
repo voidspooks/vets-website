@@ -10,10 +10,7 @@ const TITLE_TEXT = content['applicants--identification-info-title'];
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, null, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, null, { arrayBuilder: true }),
     applicantSsn: {
       ...ssnUI(),
       'ui:options': { useAllFormData: true },

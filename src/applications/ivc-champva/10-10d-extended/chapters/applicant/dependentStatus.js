@@ -20,10 +20,7 @@ const SCHEMA_ENUM = Object.keys(SCHEMA_LABELS);
 
 export default {
   uiSchema: {
-    ...titleWithNameUI(TITLE_TEXT, null, {
-      roleKey: 'view:certifierRole',
-      arrayBuilder: true,
-    }),
+    ...titleWithNameUI(TITLE_TEXT, null, { arrayBuilder: true }),
     applicantDependentStatus: {
       status: radioUI({
         title: INPUT_LABEL,
