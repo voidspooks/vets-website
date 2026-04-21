@@ -91,6 +91,29 @@ describe('Accredited Representative Portal - Claimant Overview', () => {
     cy.contains('Disability compensation (VA Form 21-526EZ)').should('exist');
   });
 
+  it('shows pending request banner when claimant is represented and has a pending POA request', () => {
+    /* eslint-disable camelcase */
+    setUpClaimantOverview({
+      featureToggles,
+      claimantOverviewResponse: {
+        data: {
+          ...baseClaimantResponse.data,
+          is_representative: true,
+          poa_requests: [
+            {
+              id: 'pending-request-123',
+              resolution: null,
+            },
+          ],
+        },
+      },
+    });
+    /* eslint-enable camelcase */
+
+    cy.injectAxeThenAxeCheck();
+    cy.contains('There is a pending representation request').should('exist');
+  });
+
   it('shows no ITF message when user has established POA for a claimant without an established ITF', () => {
     setUpClaimantOverview({
       featureToggles,

@@ -128,7 +128,7 @@ const mapClaimantOverview = raw => ({
   email: raw?.email,
   address: raw?.address || null,
   representativeName: raw?.representative_name || null,
-  representative: raw?.representative,
+  representative: raw?.representative ?? raw?.is_representative,
   intentToFile: normalizeItfArray(raw?.itf),
   poaRequests: raw?.poa_requests,
 });
