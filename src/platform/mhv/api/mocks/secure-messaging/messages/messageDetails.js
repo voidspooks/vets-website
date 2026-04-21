@@ -55,6 +55,12 @@ const messageDetails = {
         toDate: null,
         hasAttachments: false,
         attachments: [],
+        migratedToOracleHealth: true,
+        triageGroup: {
+          triageTeamId: 2343333,
+          name: 'DETROIT: Dermatology, Bishop, Walter, Md',
+          stationNumber: '553',
+        },
       },
       links: {
         self: 'http://127.0.0.1:3001/my_health/v1/messaging/messages/3550426',
@@ -1657,6 +1663,12 @@ const messageDetails = {
         toDate: null,
         hasAttachments: false,
         attachments: [],
+        migratedToOracleHealth: true,
+        triageGroup: {
+          triageTeamId: 2343333,
+          name: 'DETROIT: Dermatology, Bishop, Walter, Md',
+          stationNumber: '553',
+        },
       },
       links: {
         self: 'http://127.0.0.1:3001/my_health/v1/messaging/messages/3550426',

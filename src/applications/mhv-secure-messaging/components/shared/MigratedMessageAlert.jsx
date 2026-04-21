@@ -46,13 +46,13 @@ const MigratedMessageAlert = () => {
 
   if (userMessagePostMigration) {
     return (
-      <va-alert-expandable
+      <va-alert
         status="warning"
-        trigger="You can’t send a message in this conversation"
         data-testid="migrated-message-alert"
         data-dd-privacy="mask"
-        data-dd-action-name="Migrated Message Alert Expandable"
+        data-dd-action-name="Migrated Message Alert"
       >
+        <h2 slot="headline">You can’t send a message in this conversation</h2>
         <div className="vads-u-padding-bottom--1">
           <p className="vads-u-margin-bottom--1p5">
             We’ve updated this care team’s name.
@@ -74,7 +74,7 @@ const MigratedMessageAlert = () => {
             text="Start a new message"
           />
         </div>
-      </va-alert-expandable>
+      </va-alert>
     );
   }
   return null;

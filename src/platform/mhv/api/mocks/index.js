@@ -172,6 +172,20 @@ const responses = {
   'PUT /my_health/v1/messaging/folders/:index': folders.renameFolder,
   'DELETE /my_health/v1/messaging/folders/:index': folders.deleteFolder,
   'GET /my_health/v1/messaging/allrecipients': recipients.recipients,
+  'GET /my_health/v1/messaging/recipients/crosswalk': {
+    data: [
+      {
+        id: '1',
+        type: 'crosswalk_entry',
+        attributes: {
+          vistaTriageGroupId: 2343333,
+          vistaTriageGroupName: 'DETROIT: Dermatology, Bishop, Walter, Md',
+          ohTriageGroupId: 9990001,
+          ohTriageGroupName: 'OH DETROIT: Dermatology, Bishop, Walter, Md',
+        },
+      },
+    ],
+  },
   'GET /my_health/v1/messaging/folders/:index/messages':
     threads.paginatedThreads,
   'GET /my_health/v1/messaging/folders/:index/threads':
