@@ -7,10 +7,14 @@ import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring
 import { routeToNextReferralPage } from '../flow';
 import {
   getReferralProviderKey,
+  getReferralSlotKey,
   buildProviderSlotsQueryParams,
 } from '../utils/referrals';
-import { setProviderSlotsParams } from '../redux/actions';
-import { selectCurrentPage } from '../redux/selectors';
+import {
+  setProviderSlotsParams,
+  setSelectedSlotStartTime,
+} from '../redux/actions';
+import { selectCurrentPage, getSelectedProviderId } from '../redux/selectors';
 import ListItem from '../../components/ListItem';
 import AppointmentRow from '../../components/AppointmentRow';
 import AppointmentColumn from '../../components/AppointmentColumn';
@@ -19,6 +23,7 @@ import { GA_PREFIX, DATE_FORMATS } from '../../utils/constants';
 export default function ProviderSelectionCard({ provider, index, referralId }) {
   const first = index === 0;
   const currentPage = useSelector(selectCurrentPage);
+  const selectedProviderId = useSelector(getSelectedProviderId);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -27,6 +32,18 @@ export default function ProviderSelectionCard({ provider, index, referralId }) {
     recordEvent({
       event: `${GA_PREFIX}-provider-selection-pressed`,
     });
+    // If the user is changing providers (e.g. returned here via the "Edit" link
+    // on ReviewAndConfirm), drop any previously selected slot so stale slot
+    // data from the prior provider doesn't bleed into the new provider's flow.
+    const prevProviderId =
+      sessionStorage.getItem(getReferralProviderKey(referralId)) ||
+      selectedProviderId;
+    const providerChanged =
+      prevProviderId && String(prevProviderId) !== String(provider.id);
+    if (providerChanged) {
+      dispatch(setSelectedSlotStartTime(''));
+      sessionStorage.removeItem(getReferralSlotKey(referralId));
+    }
     const slotsParams = buildProviderSlotsQueryParams(provider);
     if (slotsParams) {
       dispatch(setProviderSlotsParams(slotsParams));

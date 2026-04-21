@@ -389,4 +389,27 @@ describe('VAOS Component: ScheduleReferral', () => {
     expect(hasAppointmentsContent).to.exist;
     expect(screen.queryByTestId('already-scheduled-alert')).to.be.null;
   });
+  it('should replace history with /referrals-requests when the back link is clicked', async () => {
+    const referral = createReferralById(referralDate, 'back-link');
+    const screen = renderWithStoreAndRouter(
+      <ScheduleReferral currentReferral={referral} />,
+      { path: '/schedule-referral?id=back-link' },
+    );
+
+    const backLink = await screen.findByTestId('back-link');
+    expect(backLink).to.have.attribute(
+      'text',
+      'Back to referrals and requests',
+    );
+    expect(backLink).to.have.attribute('href', '/referrals-requests');
+
+    screen.history.replace.resetHistory();
+    backLink.click();
+
+    const replaceCalls = screen.history.replace.args.map(args => args[0]);
+    const matched = replaceCalls.some(
+      url => typeof url === 'string' && url.includes('/referrals-requests'),
+    );
+    expect(matched).to.be.true;
+  });
 });

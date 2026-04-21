@@ -103,7 +103,11 @@ export function routeToPageInFlow(
   }
 
   if (nextPage?.url) {
-    history.push(nextPage.url);
+    if (action === 'previous') {
+      history.replace(nextPage.url);
+    } else {
+      history.push(nextPage.url);
+    }
   } else if (nextPage) {
     throw new Error(`Tried to route to a page without a url: ${nextPage}`);
   } else {
@@ -167,6 +171,55 @@ export function routeToCCPage(history, page, referralId = null) {
  * @returns {string} the label string
  */
 
+/**
+ * Given the page you are currently on, return the text for a back link
+ * that points at that page's `previous` entry in the flow.
+ *
+ * @export
+ * @param {string} fromPage - the current page key in the referral flow
+ * @returns {string} a "Back to ..." string, or 'Back' if no previous label exists
+ */
+export function getReferralBackLinkText(fromPage) {
+  const _flow = getPageFlow();
+  const previousKey = _flow[fromPage]?.previous;
+  const previousLabel = _flow[previousKey]?.label;
+  if (!previousLabel) {
+    return 'Back';
+  }
+  return `Back to ${previousLabel.toLowerCase()}`;
+}
+
+export function getReferralPageKeyFromPathname(pathname) {
+  if (!pathname) {
+    return null;
+  }
+  if (pathname.includes('/schedule-referral/complete/')) {
+    return 'complete';
+  }
+  if (pathname.includes('/schedule-referral/review')) {
+    return 'reviewAndConfirm';
+  }
+  if (pathname.includes('/schedule-referral/date-time')) {
+    return 'scheduleAppointment';
+  }
+  if (pathname.includes('/schedule-referral/provider-selection')) {
+    return 'providerSelection';
+  }
+  if (pathname.includes('/schedule-referral')) {
+    return 'scheduleReferral';
+  }
+  if (
+    pathname === '/referrals-requests' ||
+    pathname.startsWith('/referrals-requests/')
+  ) {
+    return 'referralsAndRequests';
+  }
+  if (pathname === '/') {
+    return 'appointments';
+  }
+  return null;
+}
+
 export function getReferralUrlLabel(currentPage) {
   const _flow = getPageFlow();
   const result = _flow[currentPage];
@@ -174,6 +227,8 @@ export function getReferralUrlLabel(currentPage) {
   switch (currentPage) {
     case 'complete':
       return 'Back to appointments';
+    case 'scheduleReferral':
+      return 'Back to referrals and requests';
     case 'reviewAndConfirm':
     case 'scheduleAppointment':
     case 'providerSelection':

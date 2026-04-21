@@ -65,18 +65,7 @@ export default function ScheduleReferral(props) {
     stationIdValid;
 
   return (
-    <ReferralLayout
-      hasEyebrow
-      heading={`Referral for ${categoryOfCare}`}
-      backlink={{
-        text: 'Back to referrals and requests',
-        href: '/referrals-requests',
-        onClick: e => {
-          e.preventDefault();
-          history.goBack();
-        },
-      }}
-    >
+    <ReferralLayout hasEyebrow heading={`Referral for ${categoryOfCare}`}>
       <div>
         {!hasVeteranAddress && (
           <va-alert

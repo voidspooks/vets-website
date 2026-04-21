@@ -64,6 +64,10 @@ export default function ReferralAppointments() {
         hasEyebrow
         heading="Something went wrong on our end"
         errorBody="Something went wrong on our end. Please try again later. If you need help, call your facility's community care office."
+        backlink={{
+          text: 'Back to appointments',
+          href: '/my-health/appointments',
+        }}
       />
     );
   }

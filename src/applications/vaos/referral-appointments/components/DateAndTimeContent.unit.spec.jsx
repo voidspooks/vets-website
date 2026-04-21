@@ -143,6 +143,31 @@ describe('VAOS Component: DateAndTimeContent', () => {
     // Routes to next page if selection exists
     expect(await screen.history.push.called).to.be.true;
   });
+  it('should replace history with the provider selection page when Back is clicked', async () => {
+    const screen = renderWithStoreAndRouter(
+      <DateAndTimeContent
+        currentReferral={referral}
+        draftAppointmentInfo={draftAppointmentInfo}
+        appointmentsByMonth={appointmentsByMonth}
+      />,
+      {
+        initialState,
+      },
+    );
+
+    const backButton = await screen.findByRole('button', { name: /Back/i });
+    screen.history.replace.resetHistory();
+    fireEvent.click(backButton);
+
+    const replaceCalls = screen.history.replace.args.map(args => args[0]);
+    const matched = replaceCalls.some(
+      url =>
+        typeof url === 'string' &&
+        url.includes('/schedule-referral/provider-selection') &&
+        url.includes(`id=${referral.uuid}`),
+    );
+    expect(matched).to.be.true;
+  });
   it('should show error if no slots available', async () => {
     const screen = renderWithStoreAndRouter(
       <DateAndTimeContent

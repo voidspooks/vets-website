@@ -1,28 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { selectCurrentPage } from '../redux/selectors';
-import { getReferralUrlLabel, routeToPreviousReferralPage } from '../flow';
+import {
+  getReferralPageKeyFromPathname,
+  getReferralUrlLabel,
+  routeToPreviousReferralPage,
+} from '../flow';
 import Breadcrumbs from '../../components/Breadcrumbs';
+
+function getBackLinkHref(currentPage) {
+  if (currentPage === 'complete') {
+    return '/my-health/appointments';
+  }
+  if (currentPage === 'scheduleReferral') {
+    return '/referrals-requests';
+  }
+  return '#';
+}
 
 export default function ReferralBreadcrumbs() {
   const location = useLocation();
   const history = useHistory();
-  const currentPage = useSelector(selectCurrentPage);
-
-  const [breadcrumb, setBreadcrumb] = useState(
-    getReferralUrlLabel(currentPage),
-  );
-
-  useEffect(
-    () => {
-      setBreadcrumb(() => getReferralUrlLabel(currentPage));
-    },
-    [location, currentPage],
-  );
+  const currentPage = getReferralPageKeyFromPathname(location.pathname);
+  const breadcrumb = getReferralUrlLabel(currentPage);
 
   const isBackLink = breadcrumb?.startsWith('Back');
+
+  // When the user jumps straight to provider selection from the referrals list
+  // (PendingReferralCard's "Schedule an appointment" link attaches
+  // `referrer=referrals-requests`), back should return them to the list rather
+  // than the intermediate referral details page.
+  const params = new URLSearchParams(location.search);
+  const skipToReferralsList =
+    currentPage === 'providerSelection' &&
+    params.get('referrer') === 'referrals-requests';
+
+  const backHref = skipToReferralsList
+    ? '/referrals-requests'
+    : getBackLinkHref(currentPage);
+
+  const handleBackClick = e => {
+    e.preventDefault();
+    if (skipToReferralsList) {
+      history.replace('/referrals-requests');
+      return;
+    }
+    const searchParams = new URLSearchParams(history.location.search);
+    const id = searchParams.get('id');
+    routeToPreviousReferralPage(history, currentPage, id);
+  };
 
   return isBackLink ? (
     <div className="vaos-hide-for-print mobile:vads-u-margin-bottom--0 mobile-lg:vads-u-margin-bottom--1 medium-screen:vads-u-margin-bottom--2">
@@ -32,13 +58,8 @@ export default function ReferralBreadcrumbs() {
           aria-label="Back link"
           data-testid="back-link"
           text={breadcrumb}
-          href={currentPage === 'complete' ? '/my-health/appointments' : '#'}
-          onClick={e => {
-            e.preventDefault();
-            const params = new URLSearchParams(history.location.search);
-            const id = params.get('id');
-            routeToPreviousReferralPage(history, currentPage, id);
-          }}
+          href={backHref}
+          onClick={handleBackClick}
         />
       </nav>
     </div>

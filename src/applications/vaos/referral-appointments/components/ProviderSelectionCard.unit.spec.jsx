@@ -1,8 +1,13 @@
 import React from 'react';
 import { expect } from 'chai';
+import { fireEvent } from '@testing-library/dom';
 import ProviderSelectionCard from './ProviderSelectionCard';
 import { mockProviderDetails } from '../utils/mocks';
-import { renderWithStoreAndRouter } from '../../tests/mocks/setup';
+import {
+  createTestStore,
+  renderWithStoreAndRouter,
+} from '../../tests/mocks/setup';
+import { getReferralProviderKey, getReferralSlotKey } from '../utils/referrals';
 
 describe('VAOS Component: ProviderSelectionCard', () => {
   const initialState = {
@@ -143,5 +148,112 @@ describe('VAOS Component: ProviderSelectionCard', () => {
     const link = screen.container.querySelector('va-link');
     expect(link).to.exist;
     expect(link.getAttribute('text')).to.equal('Review available appointments');
+  });
+
+  describe('when clicking a provider', () => {
+    afterEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('should clear a previously selected slot when switching to a different provider', () => {
+      const referralId = 'ref-1';
+      const prevProviderId = 'prov-previous';
+      const slotKey = getReferralSlotKey(referralId);
+      const providerKey = getReferralProviderKey(referralId);
+      const staleSlot = '2026-04-01T09:00:00Z';
+
+      sessionStorage.setItem(providerKey, prevProviderId);
+      sessionStorage.setItem(slotKey, staleSlot);
+
+      const store = createTestStore({
+        featureToggles: {
+          vaOnlineSchedulingCCDirectScheduling: true,
+        },
+        referral: {
+          selectedProviderId: prevProviderId,
+          selectedSlotStartTime: staleSlot,
+          currentPage: 'providerSelection',
+        },
+      });
+
+      const screen = renderWithStoreAndRouter(
+        <ProviderSelectionCard {...defaultProps} />,
+        { store },
+      );
+
+      const link = screen.container.querySelector('va-link');
+      fireEvent.click(link);
+
+      expect(sessionStorage.getItem(slotKey)).to.be.null;
+      expect(store.getState().referral.selectedSlotStartTime).to.equal('');
+      expect(sessionStorage.getItem(providerKey)).to.equal(
+        String(mockProviderDetails.id),
+      );
+    });
+
+    it('should not clear the selected slot when re-selecting the same provider', () => {
+      const referralId = 'ref-1';
+      const slotKey = getReferralSlotKey(referralId);
+      const providerKey = getReferralProviderKey(referralId);
+      const existingSlot = '2026-04-01T09:00:00Z';
+
+      sessionStorage.setItem(providerKey, String(mockProviderDetails.id));
+      sessionStorage.setItem(slotKey, existingSlot);
+
+      const store = createTestStore({
+        featureToggles: {
+          vaOnlineSchedulingCCDirectScheduling: true,
+        },
+        referral: {
+          selectedProviderId: String(mockProviderDetails.id),
+          selectedSlotStartTime: existingSlot,
+          currentPage: 'providerSelection',
+        },
+      });
+
+      const screen = renderWithStoreAndRouter(
+        <ProviderSelectionCard {...defaultProps} />,
+        { store },
+      );
+
+      const link = screen.container.querySelector('va-link');
+      fireEvent.click(link);
+
+      expect(sessionStorage.getItem(slotKey)).to.equal(existingSlot);
+      expect(store.getState().referral.selectedSlotStartTime).to.equal(
+        existingSlot,
+      );
+    });
+
+    it('should not touch slot state when no prior provider is stored', () => {
+      const referralId = 'ref-1';
+      const slotKey = getReferralSlotKey(referralId);
+      const providerKey = getReferralProviderKey(referralId);
+
+      const store = createTestStore({
+        featureToggles: {
+          vaOnlineSchedulingCCDirectScheduling: true,
+        },
+        referral: {
+          selectedProviderId: null,
+          selectedSlotStartTime: '',
+          currentPage: 'providerSelection',
+        },
+      });
+
+      const screen = renderWithStoreAndRouter(
+        <ProviderSelectionCard {...defaultProps} />,
+        { store },
+      );
+
+      const link = screen.container.querySelector('va-link');
+      fireEvent.click(link);
+
+      expect(sessionStorage.getItem(slotKey)).to.be.null;
+      expect(store.getState().referral.selectedSlotStartTime).to.equal('');
+      expect(sessionStorage.getItem(providerKey)).to.equal(
+        String(mockProviderDetails.id),
+      );
+    });
   });
 });

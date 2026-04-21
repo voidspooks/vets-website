@@ -284,6 +284,14 @@ const ReviewAndConfirm = props => {
                     label="Edit details"
                     text="Edit"
                     data-testid="edit-details-link"
+                    onClick={e => {
+                      e.preventDefault();
+                      routeToCCPage(
+                        history,
+                        'providerSelection',
+                        currentReferral.uuid,
+                      );
+                    }}
                   />
                 </div>
               </div>
@@ -334,6 +342,7 @@ const ReviewAndConfirm = props => {
             <hr className="vads-u-margin-y--2" />
             <div className="vads-u-margin-top--4">
               <va-button
+                data-testid="back-button"
                 label="Back"
                 text="Back"
                 secondary

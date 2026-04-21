@@ -501,6 +501,84 @@ describe('VAOS Component: ReviewAndConfirm', () => {
     expect(screen.getByTestId('address-block')).to.exist;
   });
 
+  it('should replace history with the date-time page when inline Back is clicked', async () => {
+    const store = createTestStore(initialFullState);
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+        path: testPath,
+      },
+    );
+
+    const backButton = await screen.findByTestId('back-button');
+    screen.history.replace.resetHistory();
+    await userEvent.click(backButton);
+
+    const replaceCalls = screen.history.replace.args.map(args => args[0]);
+    const matched = replaceCalls.some(
+      url =>
+        typeof url === 'string' &&
+        url.includes('/schedule-referral/date-time') &&
+        url.includes('id=UUID'),
+    );
+    expect(matched).to.be.true;
+  });
+
+  it('should replace history with the date-time page when "Edit date and time" is clicked', async () => {
+    const store = createTestStore(initialFullState);
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+        path: testPath,
+      },
+    );
+
+    const editLink = await screen.findByTestId('edit-when-information-link');
+    screen.history.replace.resetHistory();
+    editLink.click();
+
+    const replaceCalls = screen.history.replace.args.map(args => args[0]);
+    const matched = replaceCalls.some(
+      url =>
+        typeof url === 'string' &&
+        url.includes('/schedule-referral/date-time') &&
+        url.includes('id=UUID'),
+    );
+    expect(matched).to.be.true;
+  });
+
+  it('should push history to the provider-selection page when "Edit details" is clicked', async () => {
+    const store = createTestStore(initialFullState);
+    const screen = renderWithStoreAndRouter(
+      <ReviewAndConfirm
+        currentReferral={createReferralById('2024-09-09', 'UUID')}
+      />,
+      {
+        store,
+        path: testPath,
+      },
+    );
+
+    const editLink = await screen.findByTestId('edit-details-link');
+    screen.history.push.resetHistory();
+    editLink.click();
+
+    const pushCalls = screen.history.push.args.map(args => args[0]);
+    const matched = pushCalls.some(
+      url =>
+        typeof url === 'string' &&
+        url.includes('/schedule-referral/provider-selection') &&
+        url.includes('id=UUID'),
+    );
+    expect(matched).to.be.true;
+  });
+
   describe('VA appointment flow', () => {
     const vaProviderId = 'va-provider-1';
     const vaProviderSlotsQueryArgs = {
