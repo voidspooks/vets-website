@@ -559,6 +559,73 @@ describe('SendRxRenewalMessage Component', () => {
 
       locationStub.restore();
     });
+
+    it('uses /medications/list redirect path when MMI flag is on', async () => {
+      const locationStub = sinon.stub(window, 'location');
+      locationStub.value({ href: '' });
+
+      const screen = setup(
+        mockRx,
+        { isOracleHealth: true },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: true,
+          },
+        },
+      );
+
+      fireEvent.click(screen.getByTestId('send-renewal-request-message-link'));
+
+      await waitFor(() => {
+        const modal = screen.container.querySelector('va-modal');
+        expect(modal?.getAttribute('visible')).to.equal('true');
+      });
+
+      const modal = screen.container.querySelector('va-modal');
+      modal.__events.primaryButtonClick();
+
+      const redirectParam = decodeURIComponent(window.location.href);
+      expect(redirectParam).to.include(
+        '/my-health/medications/list?page=1&rxRenewalMessageSuccess=true',
+      );
+
+      locationStub.restore();
+    });
+
+    it('uses /medications redirect path when MMI flag is off', async () => {
+      const locationStub = sinon.stub(window, 'location');
+      locationStub.value({ href: '' });
+
+      const screen = setup(
+        mockRx,
+        { isOracleHealth: true },
+        {
+          featureToggles: {
+            [FEATURE_FLAG_NAMES.mhvSecureMessagingMedicationsRenewalRequest]: true,
+            [FEATURE_FLAG_NAMES.mhvMedicationsManagementImprovements]: false,
+          },
+        },
+      );
+
+      fireEvent.click(screen.getByTestId('send-renewal-request-message-link'));
+
+      await waitFor(() => {
+        const modal = screen.container.querySelector('va-modal');
+        expect(modal?.getAttribute('visible')).to.equal('true');
+      });
+
+      const modal = screen.container.querySelector('va-modal');
+      modal.__events.primaryButtonClick();
+
+      const redirectParam = decodeURIComponent(window.location.href);
+      expect(redirectParam).to.include(
+        '/my-health/medications?page=1&rxRenewalMessageSuccess=true',
+      );
+      expect(redirectParam).to.not.include('/medications/list');
+
+      locationStub.restore();
+    });
   });
 
   describe('Edge cases', () => {

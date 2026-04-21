@@ -6,7 +6,10 @@ import { useSelector } from 'react-redux';
 import { recordEvent } from '@department-of-veterans-affairs/platform-monitoring/exports';
 import { datadogRum } from '@datadog/browser-rum';
 import { dataDogActionNames } from '../../util/dataDogConstants';
-import { selectSecureMessagingMedicationsRenewalRequestFlag } from '../../util/selectors';
+import {
+  selectSecureMessagingMedicationsRenewalRequestFlag,
+  selectMedicationsManagementImprovementsFlag,
+} from '../../util/selectors';
 import { isExpiredWithin120Days } from '../../util/helpers';
 
 const SendRxRenewalMessage = ({
@@ -20,9 +23,16 @@ const SendRxRenewalMessage = ({
   const showSecureMessagingRenewalRequest = useSelector(
     selectSecureMessagingMedicationsRenewalRequestFlag,
   );
+  const showMedsImprovements = useSelector(
+    selectMedicationsManagementImprovementsFlag,
+  );
+
+  const redirectPath = showMedsImprovements
+    ? '/my-health/medications/list?page=1&rxRenewalMessageSuccess=true'
+    : '/my-health/medications?page=1&rxRenewalMessageSuccess=true';
   const params = new URLSearchParams({
     prescriptionId: rx.prescriptionId,
-    redirectPath: '/my-health/medications?page=1&rxRenewalMessageSuccess=true',
+    redirectPath,
   });
   if (rx.stationNumber) {
     params.set('station_number', rx.stationNumber);
