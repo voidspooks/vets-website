@@ -31,8 +31,11 @@ describe('22-0976 program information details page', () => {
     ).to.exist;
     expect(container.querySelector('va-text-input[label="Entry requirements"]'))
       .to.exist;
-    expect(container.querySelector('va-text-input[label="Credit hours"]')).to
-      .exist;
+    expect(
+      container.querySelector(
+        'va-text-input[label="Total number of credit hours"]',
+      ),
+    ).to.exist;
   });
 
   it('shows errors when required fields are empty', async () => {

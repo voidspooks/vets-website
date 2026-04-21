@@ -2,7 +2,7 @@ import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 import { DefinitionTester } from 'platform/testing/unit/schemaform-utils';
-import page from '../../pages/medicalGraduatingClassDetails';
+import page, { getYear } from '../../pages/medicalGraduatingClassDetails';
 
 const renderPage = (formData = {}) =>
   render(
@@ -60,5 +60,25 @@ describe('22-0976 medical graudating class details page', () => {
     expect(dateInput.getAttribute('error')).to.equal(
       'The dates of both graduating classes cannot be the same.',
     );
+  });
+  describe('getYear', () => {
+    it('returns null for empty or unsupported values', () => {
+      expect(getYear(undefined)).to.equal(null);
+      expect(getYear('')).to.equal(null);
+      expect(getYear(2020)).to.equal(null);
+      expect(getYear({})).to.equal(null);
+    });
+
+    it('returns the calendar year for Date values', () => {
+      expect(getYear(new Date('2023-06-01'))).to.equal(2023);
+    });
+
+    it('returns null for an invalid Date', () => {
+      expect(getYear(new Date('invalid'))).to.equal(null);
+    });
+
+    it('parses the year from ISO date strings', () => {
+      expect(getYear('2024-01-15')).to.equal(2024);
+    });
   });
 });

@@ -4,7 +4,7 @@ import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
 
 export default {
   uiSchema: {
-    ...titleUI('What you’ll need to have prepared for your program'),
+    ...titleUI('What you’ll need to have prepared for your program(s)'),
     'view:programIntro': {
       'ui:description': (
         <div>
@@ -21,9 +21,10 @@ export default {
           </ul>
 
           <p>
-            If the program is a medical program you’ll need to have recent
-            program graduate information available in addition to accreditation
-            information.
+            <strong>Note: </strong>
+            If you have medical school programs, you will need the accrediting
+            authority name, length of clinical/classroom instruction, and
+            graduation details for the last two classes.
           </p>
           <va-alert status="info" visible>
             <h2
@@ -34,10 +35,9 @@ export default {
               Important information about your application
             </h2>
             <p>
-              To get approval for a foreign program, your institution must
-              submit at least one program for approval. You can still finish and
-              submit your application, and we’ll let you know if your
-              institution is eligible after we review it.
+              Your institution must submit at least one program for approval.
+              We’ll let you know if your program(s) is eligible after we review
+              your application package.
             </p>
           </va-alert>
         </div>

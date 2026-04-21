@@ -16,7 +16,30 @@ const validateDifferentDates = (errors, fieldData, formData) => {
     errors.addError('The dates of both graduating classes cannot be the same.');
   }
 };
+export const getYear = value => {
+  if (!value) return null;
+  if (value instanceof Date) {
+    const year = value.getFullYear();
+    return Number.isNaN(year) ? null : year;
+  }
+  if (typeof value === 'string') {
+    const year = parseInt(value.split('-')[0], 10);
+    return Number.isNaN(year) ? null : year;
+  }
+  return null;
+};
 
+export const pastTwoCalendarYearsFromCurrentYear = (errors, fieldData) => {
+  const year = getYear(fieldData);
+  if (year === null) return;
+
+  const currentYear = new Date().getFullYear();
+  if (year < currentYear - 2) {
+    errors.addError(
+      'The date of the graduating class must be within the past 2 calendar years.',
+    );
+  }
+};
 /** @type {PageSchema} */
 export default {
   uiSchema: {
@@ -33,6 +56,7 @@ export default {
       'ui:validations': [
         validateCurrentOrPastMemorableDate,
         validateDifferentDates,
+        pastTwoCalendarYearsFromCurrentYear,
       ],
       'ui:errorMessages': {
         required: 'You must enter a date',
@@ -60,6 +84,7 @@ export default {
       }),
       'ui:validations': [
         validateCurrentOrPastMemorableDate,
+        pastTwoCalendarYearsFromCurrentYear,
         validateDifferentDates,
       ],
       'ui:errorMessages': {

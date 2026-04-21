@@ -50,7 +50,7 @@ export default {
     },
     creditHours: {
       ...numberUI({
-        title: 'Credit hours',
+        title: 'Total number of credit hours',
         min: 0,
         max: 10000,
         errorMessages: {
