@@ -11,6 +11,7 @@ export const VA_FORM_IDS = Object.freeze({
   FORM_10_7959C: '10-7959C',
   FORM_10_7959F_1: '10-7959F-1',
   FORM_10_7959F_2: '10-7959F-2',
+  FORM_10_8678: '10-8678',
   FORM_10182: '10182',
   FORM_1330M: '40-1330M',
   FORM_1330M2: '40-1330M2',
@@ -30,6 +31,7 @@ export const VA_FORM_IDS = Object.freeze({
   FORM_21_4140: '21-4140',
   FORM_21_4142: '21-4142',
   FORM_21_4192_UPLOAD: '21-4192-UPLOAD',
+  FORM_21_4502: '21-4502',
   FORM_21_509_UPLOAD: '21-509-UPLOAD',
   FORM_21_526EZ: '21-526EZ',
   FORM_21_686C_UPLOAD: '21-686C-UPLOAD',
@@ -169,6 +171,7 @@ export const getAllFormLinks = getAppUrlImpl => {
     [VA_FORM_IDS.FORM_10_7959C]: `${tryGetAppUrl('10-7959C')}/`,
     [VA_FORM_IDS.FORM_10_7959F_1]: `${tryGetAppUrl('10-7959f-1-FMP')}/`,
     [VA_FORM_IDS.FORM_10_7959F_2]: `${tryGetAppUrl('fmp-cover-sheet')}/`,
+    [VA_FORM_IDS.FORM_10_8678]: `${tryGetAppUrl('10-8678')}/`,
     [VA_FORM_IDS.FORM_10182]: `${tryGetAppUrl('10182-board-appeal')}/`,
     [VA_FORM_IDS.FORM_20_0995]: `${tryGetAppUrl('995-supplemental-claim')}/`,
     [VA_FORM_IDS.FORM_20_0996]: `${tryGetAppUrl('0996-higher-level-review')}/`,
@@ -227,6 +230,7 @@ export const getAllFormLinks = getAppUrlImpl => {
     [VA_FORM_IDS.FORM_21_4140]: `${tryGetAppUrl(
       '21-4140-income-verification',
     )}/`,
+    [VA_FORM_IDS.FORM_21_4502]: `${tryGetAppUrl('21-4502')}/`,
     [VA_FORM_IDS.FORM_21_2680]: `${tryGetAppUrl(
       '21-2680-house-bound-status',
     )}/`,
@@ -411,6 +415,13 @@ export const MY_VA_SIP_FORMS = [
     trackingPrefix: 'fmp-cover-sheet-',
   },
   {
+    id: VA_FORM_IDS.FORM_10_8678,
+    benefit: 'annual clothing allowance',
+    title: 'Apply for annual clothing allowance online',
+    description: 'Application For Annual Clothing Allowance (VA Form 10-8678)',
+    trackingPrefix: 'clothing-allowance-10-8678-',
+  },
+  {
     id: VA_FORM_IDS.FORM_10182,
     benefit: 'Board Appeal',
     title: 'Board Appeal (10182)',
@@ -574,6 +585,14 @@ export const MY_VA_SIP_FORMS = [
     title: 'form 21-4193 upload',
     description: 'uploaded file for form 21-4193',
     trackingPrefix: 'form-21-4193-upload-',
+  },
+  {
+    id: VA_FORM_IDS.FORM_21_4502,
+    benefit: 'automobile or other conveyance and adaptive equipment',
+    title: 'Apply for automobile and adaptive equipment online',
+    description:
+      'Application For Automobile or Other Conveyance and Adaptive Equipment (Under 38 U.S.C. 3901-3904) (VA Form 21-4502)',
+    trackingPrefix: 'ss-4502-',
   },
   {
     id: VA_FORM_IDS.FORM_21_0788_UPLOAD,
