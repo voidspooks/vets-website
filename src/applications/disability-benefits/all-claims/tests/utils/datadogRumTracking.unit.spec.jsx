@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { add, format } from 'date-fns';
 import { VA_FORM_IDS } from '@department-of-veterans-affairs/platform-forms/constants';
 import * as datadogRumAddActionModule from '../../utils/tracking/datadogRumAddAction';
 import {
@@ -12,6 +13,7 @@ import {
   TRACKING_526EZ_SIDENAV_BACK_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_CONTINUE_BUTTON_CLICKS,
   TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE,
+  SAVED_SEPARATION_DATE,
 } from '../../constants';
 
 describe('datadogRumTracking', () => {
@@ -132,10 +134,15 @@ describe('datadogRumTracking', () => {
   });
 
   describe('trackFormStarted', () => {
-    it('tracks when form is started from introduction page', () => {
+    it('tracks BDD claim start with isBdd:true', () => {
       sessionStorage.setItem(TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE, 'true');
+      // Set up BDD claim: separation date 120 days in future (within BDD window)
+      const futureDate = add(new Date(), { days: 120 });
+      const separationDateStr = format(futureDate, 'yyyy-MM-dd');
+      sessionStorage.setItem(SAVED_SEPARATION_DATE, separationDateStr);
+      const bddFormData = { 'view:isBddData': true };
 
-      trackFormStarted();
+      trackFormStarted(bddFormData);
 
       expect(addActionStub.calledOnce).to.be.true;
 
@@ -144,12 +151,40 @@ describe('datadogRumTracking', () => {
       expect(properties).to.include({
         formId: VA_FORM_IDS.FORM_21_526EZ,
         sidenav526ezEnabled: true,
+        isBdd: true,
       });
       expect(properties.sourcePath).to.be.a('string');
       // Should not have click counts on first form start
       expect(properties).to.not.have.property('backButtonClickCount');
       expect(properties).to.not.have.property('continueButtonClickCount');
       expect(properties).to.not.have.property('sideNavClickCount');
+
+      sessionStorage.removeItem(SAVED_SEPARATION_DATE);
+    });
+
+    it('tracks non-BDD claim start with isBdd:false', () => {
+      sessionStorage.setItem(TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE, 'true');
+      const nonBddFormData = {};
+
+      trackFormStarted(nonBddFormData);
+
+      expect(addActionStub.calledOnce).to.be.true;
+
+      const [actionName, properties] = addActionStub.firstCall.args;
+      expect(actionName).to.equal('21-526EZ_claimStarted');
+      expect(properties).to.include({
+        formId: VA_FORM_IDS.FORM_21_526EZ,
+        sidenav526ezEnabled: true,
+        isBdd: false,
+      });
+    });
+
+    it('handles undefined formData gracefully', () => {
+      trackFormStarted(undefined);
+
+      expect(addActionStub.calledOnce).to.be.true;
+      const [, properties] = addActionStub.firstCall.args;
+      expect(properties.isBdd).to.equal(false);
     });
 
     it('does not throw when datadogRum.addAction fails', () => {

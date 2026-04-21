@@ -5,6 +5,7 @@ import {
   TRACKING_526EZ_SIDENAV_FEATURE_TOGGLE,
   TRACKING_526EZ_SIDENAV_CLICKS,
 } from '../../constants';
+import { isBDD } from '../index';
 import * as datadogRumAddActionModule from './datadogRumAddAction';
 
 // ──────────────────────────────────────────────
@@ -167,15 +168,15 @@ export const trackContinueButtonClick = () => {
  * Tracks when user starts the form from introduction page
  * This tracks the initial form start event (not resumption)
  *
- * @param {boolean} isBddForm - Whether this form is started as a BDD claim
+ * @param {object} formData - The form data to check if BDD claim
  *
  */
-export const trackFormStarted = (isBddForm = false) => {
+export const trackFormStarted = (formData = {}) => {
   const { sourcePath, sidenav526ezEnabled } = getTrackingDefaults();
 
   const properties = {
     formId: VA_FORM_IDS.FORM_21_526EZ,
-    isBdd: Boolean(isBddForm),
+    isBdd: isBDD(formData),
     sourcePath,
     ...getClickCounts(),
   };

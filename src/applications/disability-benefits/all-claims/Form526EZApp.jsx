@@ -160,7 +160,7 @@ export const Form526Entry = ({
         sessionStorage.getItem(TRACKING_526EZ_SIDENAV_FORM_START) === 'true';
 
       if (isFirstFormPage && hasNoSavedForm && !alreadyTracked) {
-        trackFormStarted();
+        trackFormStarted(form?.data);
         try {
           sessionStorage.setItem(TRACKING_526EZ_SIDENAV_FORM_START, 'true');
         } catch (error) {
