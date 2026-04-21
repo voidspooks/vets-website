@@ -4,21 +4,31 @@ import { Toggler, useFeatureToggle } from 'platform/utilities/feature-toggles';
 import { AUTHN_SETTINGS } from '@department-of-veterans-affairs/platform-user/exports';
 
 export default function PortalRemovalNotice() {
-  const { useToggleLoadingValue } = useFeatureToggle();
+  const { useToggleValue, useToggleLoadingValue } = useFeatureToggle();
   const featureTogglesLoading = useToggleLoadingValue();
-  useEffect(() => {
-    const newUrl = appendQuery(window.location.href, {
-      operation: 'myva_portal_interstitial',
-    });
-    window.history.replaceState({}, '', newUrl);
-  }, []);
+  const isPortalNoticeInterstitialRedirectEnabled = useToggleValue(
+    Toggler.TOGGLE_NAMES.portalNoticeInterstitialRedirect,
+  );
+  useEffect(
+    () => {
+      if (!featureTogglesLoading && isPortalNoticeInterstitialRedirectEnabled) {
+        window.location.replace('/my-health');
+        return;
+      }
+      const newUrl = appendQuery(window.location.href, {
+        operation: 'myva_portal_interstitial',
+      });
+      window.history.replaceState({}, '', newUrl);
+    },
+    [featureTogglesLoading, isPortalNoticeInterstitialRedirectEnabled],
+  );
 
   const returnUrl =
     sessionStorage.getItem(AUTHN_SETTINGS.RETURN_URL) || '/my-va';
   return (
     <section className="container row login vads-u-padding--3">
       <div className="columns small-12 vads-u-margin-y--2">
-        {featureTogglesLoading ? (
+        {featureTogglesLoading || isPortalNoticeInterstitialRedirectEnabled ? (
           <va-loading-indicator
             label="Loading"
             message="Loading your application..."

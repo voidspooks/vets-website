@@ -326,6 +326,7 @@
   "showUpdatedToeApp": "show_updated_toe_app",
   "signInModalV2": "sign_in_modal_v2",
   "portalNoticeInterstitialEnabled": "portal_notice_interstitial_enabled",
+  "portalNoticeInterstitialRedirect": "portal_notice_interstitial_redirect",
   "portalNoticeInterstitialSunset": "portal_notice_interstitial_sunset",
   "stemAutomatedDecision": "stem_automated_decision",
   "stemSCOEmail": "stem_sco_email",
