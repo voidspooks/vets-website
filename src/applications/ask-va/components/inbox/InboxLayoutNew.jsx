@@ -4,7 +4,7 @@ import {
   VaSort,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import InquiriesList from './InquiriesList';
 import { filterAndSort } from '../../utils/inbox';
@@ -43,6 +43,56 @@ export default function InboxLayoutNew({
     types: showInquiryTypes ? ['Business'] : [],
     query: '',
   });
+
+  const filtersRef = useRef(null);
+  const filtersHeader = 'Filters';
+
+  // Traverse down the DOM (defaults to shadow root with light as fallback)
+  function shadowQuery(root, ...selectors) {
+    let node = root;
+    for (const selector of selectors) {
+      if (!node) return null;
+      const searchRoot = node.shadowRoot ?? node;
+      node = searchRoot.querySelector(selector) ?? node.querySelector(selector);
+    }
+    return node;
+  }
+
+  useEffect(() => {
+    const searchFilter = filtersRef.current;
+
+    const tryClick = () => {
+      const button = shadowQuery(
+        searchFilter,
+        'va-accordion',
+        'va-accordion-item',
+        'div',
+        'h2',
+        'button',
+      );
+      // Only the mobile version has the header text in the button. On desktop, the header text is an h2
+      if (button?.textContent.startsWith(filtersHeader)) {
+        button.click();
+      }
+    };
+
+    const observer = new MutationObserver((_, obs) => {
+      if (searchFilter?.classList.contains('hydrated')) {
+        tryClick();
+        obs.disconnect();
+      }
+    });
+
+    if (!searchFilter) return () => observer.disconnect();
+
+    if (searchFilter.classList.contains('hydrated')) {
+      tryClick();
+    } else {
+      observer.observe(searchFilter, { attributes: true });
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   if (!inquiries.length) {
     return (
@@ -105,6 +155,8 @@ export default function InboxLayoutNew({
     <div id="inbox">
       <div id="filters-column">
         <VaSearchFilter
+          header={filtersHeader}
+          ref={filtersRef}
           filterOptions={uiFilterOptions}
           onVaFilterApply={e => {
             const activeFilters = e.detail.reduce(
