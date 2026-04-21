@@ -49,7 +49,7 @@ describe('BROWSER_MONITORING_PROPS', () => {
   });
 
   it('has the correct service name', () => {
-    expect(BROWSER_MONITORING_PROPS.service).to.equal('simple-forms-21-4138');
+    expect(BROWSER_MONITORING_PROPS.service).to.equal('21-4138');
   });
 
   it('sets defaultPrivacyLevel to mask-user-input', () => {

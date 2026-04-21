@@ -24,7 +24,7 @@ export const BROWSER_MONITORING_PROPS = {
   applicationId: '7fccf5de-fc36-44c4-9dd0-1687f521536e',
   clientToken: 'pub371bb36afe0e4c66507112e4a03011f5',
   site: 'ddog-gov.com',
-  service: 'simple-forms-21-4138',
+  service: '21-4138',
   env: environment.vspEnvironment(),
   sessionSampleRate: 100,
   sessionReplaySampleRate:
