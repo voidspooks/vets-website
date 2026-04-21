@@ -231,11 +231,13 @@ const buildPrimaryContactInfo = (data = {}) => {
   const { certifierRole } = data;
 
   if (certifierRole === 'applicant') {
-    const appIndex = Number(data['view:certifierApplicantIndex'] ?? '0');
+    const appIndex = Number(data['view:certifierApplicantIndex'] ?? 0);
     const applicant = data?.applicants?.[appIndex] || {};
+    const fallbackEmail = data?.applicants?.[0]?.applicantEmailAddress;
+
     return {
       name: applicant.applicantName,
-      email: applicant.applicantEmailAddress,
+      email: applicant.applicantEmailAddress || fallbackEmail,
       phone: applicant.applicantPhone,
     };
   }
