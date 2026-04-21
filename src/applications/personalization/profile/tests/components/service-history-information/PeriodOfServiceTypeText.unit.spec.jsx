@@ -4,7 +4,7 @@ import * as api from '~/platform/utilities/api';
 import sinon from 'sinon';
 import { renderWithProfileReducers } from '../../unit-test-helpers';
 
-import MilitaryInformation from '../../../components/military-information/MilitaryInformation';
+import ServiceHistoryInformation from '../../../components/service-history-information/ServiceHistoryInformation';
 
 function createBasicInitialState(toggles = {}) {
   return {
@@ -59,7 +59,7 @@ function createBasicInitialState(toggles = {}) {
   };
 }
 
-describe('MilitaryInformation - Period of Service Type Text', () => {
+describe('ServiceHistoryInformation - Period of Service Type Text', () => {
   let apiRequestStub;
 
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('MilitaryInformation - Period of Service Type Text', () => {
     it('should render periodOfServiceTypeText when present and when periodOfServiceTypeCode is A or V', () => {
       const initialState = createBasicInitialState();
 
-      const view = renderWithProfileReducers(<MilitaryInformation />, {
+      const view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -89,7 +89,7 @@ describe('MilitaryInformation - Period of Service Type Text', () => {
       const initialState = createBasicInitialState();
       initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory = [];
 
-      const view = renderWithProfileReducers(<MilitaryInformation />, {
+      const view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -112,7 +112,7 @@ describe('MilitaryInformation - Period of Service Type Text', () => {
         },
       );
 
-      const view = renderWithProfileReducers(<MilitaryInformation />, {
+      const view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -135,7 +135,7 @@ describe('MilitaryInformation - Period of Service Type Text', () => {
         },
       );
 
-      const view = renderWithProfileReducers(<MilitaryInformation />, {
+      const view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 

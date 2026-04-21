@@ -5,7 +5,10 @@ import { ProfileHubItem } from './hub/ProfileHubItem';
 
 const AccountSecurity = () => {
   return (
-    <Tier2PageContent pageHeader="Account security">
+    <Tier2PageContent
+      pageHeader="Account security"
+      pageTitle="Account Security"
+    >
       <ProfileHubItem
         heading={PROFILE_PATH_NAMES.CONNECTED_APPLICATIONS}
         content="Manage third-party apps that have access to your VA.gov profile."

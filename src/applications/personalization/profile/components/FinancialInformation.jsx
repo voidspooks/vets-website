@@ -5,7 +5,10 @@ import { ProfileHubItem } from './hub/ProfileHubItem';
 
 const FinancialInformation = () => {
   return (
-    <Tier2PageContent pageHeader="Financial information">
+    <Tier2PageContent
+      pageHeader="Financial information"
+      pageTitle="Financial Information"
+    >
       <ProfileHubItem
         heading={PROFILE_PATH_NAMES.DIRECT_DEPOSIT}
         content="Add or edit your bank account information for disability compensation, pension, and education benefit payments."

@@ -137,7 +137,7 @@ const UnderReviewConfirmation = ({
           </li>
           <li>
             <va-link
-              href="/profile/direct-deposit"
+              href="/profile/financial-information/direct-deposit"
               text="Review and/or update your direct deposit information on your VA.gov profile"
             />
             .

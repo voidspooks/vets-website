@@ -1,27 +1,25 @@
-import PersonalInformationPage from '../pages/PersonalInformationPage';
+import MessagesSignaturePage from '../pages/MessagesSignaturePage';
 import mockSignature from '../../fixtures/personal-information-signature.json';
-import { Locators, Data } from '../../fixtures/constants';
+import { Data, Locators } from '../../fixtures/constants';
 
-describe('PERSONAL INFORMATION REMOVE SIGNATURE', () => {
+describe('MESSAGES SIGNATURE REMOVE', () => {
   beforeEach(() => {
-    const updatedFeatureToggles = PersonalInformationPage.updateFeatureToggles(
+    const updatedFeatureToggles = MessagesSignaturePage.updateFeatureToggles(
       [],
     );
-
-    PersonalInformationPage.load(updatedFeatureToggles);
+    MessagesSignaturePage.load(updatedFeatureToggles);
   });
 
   it('verify remove alert details', () => {
     cy.get(Locators.SIGNATURE.REMOVE_BTN).click();
 
-    cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN).should(`be.focused`);
-
+    cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN).should('be.focused');
     cy.get(Locators.SIGNATURE.ALERTS.REMOVE_TITLE).should(
-      `have.text`,
+      'have.text',
       Data.SIGNATURE.ALERTS.REMOVE,
     );
     cy.get(Locators.SIGNATURE.ALERTS.REMOVE_TEXT).should(
-      `have.text`,
+      'have.text',
       Data.SIGNATURE.ALERTS.REMOVE_TEXT,
     );
 
@@ -30,22 +28,19 @@ describe('PERSONAL INFORMATION REMOVE SIGNATURE', () => {
       .find('va-button')
       .first()
       .shadow()
-      .should(`have.text`, Data.SIGNATURE.ALERTS.REMOVE_BTN);
-
+      .should('have.text', Data.SIGNATURE.ALERTS.REMOVE_BTN);
     cy.get(Locators.SIGNATURE.ALERTS.MODAL)
       .shadow()
       .find('va-button[secondary]')
       .first()
       .shadow()
-      .should(`have.text`, Data.SIGNATURE.ALERTS.CANCEL_REMOVE_BTN);
+      .should('have.text', Data.SIGNATURE.ALERTS.CANCEL_REMOVE_BTN);
 
     cy.injectAxeThenAxeCheck();
   });
 
   it('verify user can cancel remove signature', () => {
-    // close modal by cancel btn
     cy.get(Locators.SIGNATURE.REMOVE_BTN).click();
-
     cy.get(Locators.SIGNATURE.ALERTS.MODAL)
       .shadow()
       .find('va-button[secondary]')
@@ -53,10 +48,9 @@ describe('PERSONAL INFORMATION REMOVE SIGNATURE', () => {
 
     cy.get(Locators.SIGNATURE.REMOVE_BTN)
       .shadow()
-      .find(`button`)
+      .find('button')
       .should('be.focused');
 
-    // close modal by cross btn
     cy.get(Locators.SIGNATURE.REMOVE_BTN).click();
     cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN)
       .first()
@@ -64,7 +58,7 @@ describe('PERSONAL INFORMATION REMOVE SIGNATURE', () => {
 
     cy.get(Locators.SIGNATURE.REMOVE_BTN)
       .shadow()
-      .find(`button`)
+      .find('button')
       .should('be.focused');
 
     cy.injectAxeThenAxeCheck();
@@ -83,16 +77,12 @@ describe('PERSONAL INFORMATION REMOVE SIGNATURE', () => {
       },
     };
 
-    PersonalInformationPage.removeSignature(noSignatureResponse);
+    MessagesSignaturePage.removeSignature(noSignatureResponse);
 
-    cy.get(Locators.SIGNATURE.ALERTS.SUCCESS)
-      .should(`be.visible`)
-      .and('contain.text', Data.SIGNATURE.UPDATE_SAVED);
-
+    MessagesSignaturePage.verifySuccessAlert();
     cy.get(Locators.SIGNATURE.EDIT_BTN).should('be.visible');
-
     cy.get(Locators.SIGNATURE.GENERAL).should(
-      `contain.text`,
+      'contain.text',
       Data.SIGNATURE.CHOOSE_EDIT,
     );
 

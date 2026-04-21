@@ -46,6 +46,6 @@ describe('LettersAndDocuments', () => {
 
   it('sets the document title', () => {
     render(<LettersAndDocuments />);
-    expect(document.title).to.include('Letters and documents');
+    expect(document.title).to.equal('Letters And Documents | Veterans Affairs');
   });
 });

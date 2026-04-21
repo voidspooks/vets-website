@@ -5,7 +5,6 @@ import { renderWithProfileReducersAndRouter } from '@@profile/tests/unit-test-he
 import PersonalInformation from '@@profile/components/personal-information/PersonalInformation';
 import { mockApiRequest } from '@department-of-veterans-affairs/platform-testing/helpers';
 import { waitFor } from '@testing-library/dom';
-import { TOGGLE_NAMES } from 'platform/utilities/feature-toggles';
 import sinon from 'sinon';
 import { PROFILE_PATHS } from '../../../constants';
 import * as helpers from '../../../helpers';
@@ -142,7 +141,7 @@ describe('<PersonalInformation />', () => {
     expect(getByText('Personal information', { selector: 'h1' })).to.exist;
   });
 
-  it('renders Messaging signature section if messagingSignature is not null', async () => {
+  it('renders the health care settings alert when messagingSignature is not null', async () => {
     const mhvAccount = {
       messagingSignature: {
         signatureName: 'Abraham Lincoln',
@@ -157,10 +156,10 @@ describe('<PersonalInformation />', () => {
       optionalServices: ['messaging'],
       mhvAccount,
     });
-    const messagingSignatureSection = screen.getByTestId('messagingSignature');
-
-    expect(messagingSignatureSection.innerHTML).to.contain('Abraham Lincoln');
-    expect(messagingSignatureSection.innerHTML).to.contain('Veteran');
+    await waitFor(() => {
+      expect(screen.queryByTestId('messagingSignature')).to.not.exist;
+      expect(screen.container.querySelector('va-alert')).to.exist;
+    });
   });
 
   it('does not render Messaging signature section if messaging service is not enabled', async () => {
@@ -180,34 +179,12 @@ describe('<PersonalInformation />', () => {
     });
   });
 
-  it('does render Messaging signature if profile2 is enabled but health care settings is not enabled', async () => {
-    const mhvAccount = {
-      messagingSignature: {
-        signatureName: 'Abraham Lincoln',
-        signatureTitle: 'Veteran',
-      },
-    };
-
-    const screen = setup({
-      toggles: { [TOGGLE_NAMES.profile2Enabled]: true },
-      optionalServices: ['messaging'],
-      mhvAccount,
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('messagingSignature')).to.exist;
-    });
-  });
-
-  it('renders a va-alert if profile2 and health care settings are enabled', async () => {
+  it('renders a va-alert about the new messages signature location', async () => {
     sinon.stub(helpers, 'handleRouteChange').callsFake(() => {});
 
     const screen = setup({
       hasUnsavedEdits: false,
-      toggles: {
-        [TOGGLE_NAMES.profile2Enabled]: true,
-        [TOGGLE_NAMES.profileHealthCareSettingsPage]: true,
-      },
+      toggles: {},
       optionalServices: ['messaging'],
     });
 
@@ -227,7 +204,7 @@ describe('<PersonalInformation />', () => {
     });
   });
 
-  it('renders the SingleFieldLoadFailAlert if hasError is true', async () => {
+  it('continues to render the health care settings alert if messagingSignature has an error', async () => {
     const screen = setup({
       optionalServices: ['messaging'],
       messagingSignature: {
@@ -236,15 +213,12 @@ describe('<PersonalInformation />', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText(
-          /something went wrong on our end and we can’t load your signature information/i,
-        ),
-      ).to.exist;
+      expect(screen.queryByTestId('messagingSignature')).to.not.exist;
+      expect(screen.container.querySelector('va-alert')).to.exist;
     });
   });
 
-  it('retrieves the messaging signatue from SM API if messaging is enabled but messagingSignature is not populated', async () => {
+  it('renders the health care settings alert if messaging is enabled but messagingSignature is not populated', async () => {
     mockApiRequest({
       data: {
         attributes: {
@@ -259,10 +233,8 @@ describe('<PersonalInformation />', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('messagingSignature')).to.exist;
+      expect(screen.queryByTestId('messagingSignature')).to.not.exist;
+      expect(screen.container.querySelector('va-alert')).to.exist;
     });
-    const messagingSignatureSection = screen.getByTestId('messagingSignature');
-    expect(messagingSignatureSection.textContent).to.contain('Abraham Lincoln');
-    expect(messagingSignatureSection.textContent).to.contain('Veteran');
   });
 });

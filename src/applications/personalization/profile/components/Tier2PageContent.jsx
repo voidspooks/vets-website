@@ -12,7 +12,7 @@ const getScrollTarget = hash => {
   return document.querySelector(hashWithoutLeadingEdit);
 };
 
-const Tier2PageContent = ({ children, pageHeader }) => {
+const Tier2PageContent = ({ children, pageHeader, pageTitle = pageHeader }) => {
   const location = useLocation();
 
   const dispatch = useDispatch();
@@ -23,13 +23,13 @@ const Tier2PageContent = ({ children, pageHeader }) => {
 
   useEffect(
     () => {
-      document.title = `${pageHeader} | Veterans Affairs`;
+      document.title = `${pageTitle} | Veterans Affairs`;
 
       return () => {
         clearSuccessAlert();
       };
     },
-    [clearSuccessAlert, pageHeader],
+    [clearSuccessAlert, pageTitle],
   );
 
   useEffect(
@@ -67,6 +67,7 @@ const Tier2PageContent = ({ children, pageHeader }) => {
 Tier2PageContent.propTypes = {
   children: PropTypes.node,
   pageHeader: PropTypes.string,
+  pageTitle: PropTypes.string,
 };
 
 export default Tier2PageContent;

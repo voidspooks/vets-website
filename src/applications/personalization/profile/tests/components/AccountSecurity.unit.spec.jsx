@@ -46,6 +46,6 @@ describe('AccountSecurity', () => {
 
   it('sets the document title', () => {
     render(<AccountSecurity />);
-    expect(document.title).to.include('Account security');
+    expect(document.title).to.equal('Account Security | Veterans Affairs');
   });
 });

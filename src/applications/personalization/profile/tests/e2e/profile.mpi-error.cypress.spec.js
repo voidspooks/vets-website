@@ -54,7 +54,7 @@ function test({ mobile = false } = {}) {
   onlyAccountSecuritySectionIsAccessible();
 }
 
-describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI and feature profile2Enabled is true', () => {
+describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI', () => {
   beforeEach(() => {
     cy.login(mockMPIErrorUser);
     mockGETEndpoints([
@@ -65,11 +65,7 @@ describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI and 
       'v0/profile/service_history',
       'v0/disability_compensation_form/rating_info',
     ]);
-    cy.intercept(
-      'GET',
-      'v0/feature_toggles*',
-      generateFeatureToggles({ profile2Enabled: true }),
-    );
+    cy.intercept('GET', 'v0/feature_toggles*', generateFeatureToggles());
   });
   it('should only have access to the Account Security section at desktop size', () => {
     test();

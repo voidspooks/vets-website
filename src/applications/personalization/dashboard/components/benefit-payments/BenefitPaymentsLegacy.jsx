@@ -29,7 +29,7 @@ const PopularActionsForPayments = ({ showPaymentHistoryLink = false }) => {
     <>
       {/* todo check for direct deposit first */}
       <IconCTALink
-        href="/profile/direct-deposit"
+        href="/profile/financial-information/direct-deposit"
         icon="attach_money"
         text="Manage your direct deposit information"
         /* eslint-disable react/jsx-no-bind */

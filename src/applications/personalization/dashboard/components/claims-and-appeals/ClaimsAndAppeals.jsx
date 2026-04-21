@@ -144,7 +144,7 @@ const PopularActionsForClaimsAndAppeals = ({ isLOA1 }) => {
         !isLOA1 && (
           <IconCTALink
             text="Get help from your accredited representative or VSO"
-            href="/profile/accredited-representative/"
+            href="/profile/dependents-and-contacts/accredited-representative-or-vso"
             icon="account_circle"
             onClick={() => {
               recordEvent({

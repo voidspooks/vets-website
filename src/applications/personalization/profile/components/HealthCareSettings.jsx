@@ -9,7 +9,10 @@ import { ProfileHubItem } from './hub/ProfileHubItem';
 
 const HealthCareSettings = ({ isSchedulingPreferencesPilotEligible }) => {
   return (
-    <Tier2PageContent pageHeader="Health care settings">
+    <Tier2PageContent
+      pageHeader="Health care settings"
+      pageTitle="Health Care Settings"
+    >
       <Toggler toggleName={Toggler.TOGGLE_NAMES.profileHideHealthCareContacts}>
         <Toggler.Disabled>
           <ProfileHubItem

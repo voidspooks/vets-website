@@ -1,31 +1,29 @@
-import PersonalInformationPage from '../pages/PersonalInformationPage';
+import MessagesSignaturePage from '../pages/MessagesSignaturePage';
 import mockSignature from '../../fixtures/personal-information-signature.json';
-import { Locators, Data } from '../../fixtures/constants';
+import { Data, Locators } from '../../fixtures/constants';
 
-describe('PERSONAL INFORMATION SIGNATURE ALERTS', () => {
+describe('MESSAGES SIGNATURE ALERTS', () => {
   it('verify empty fields alerts', () => {
-    const updatedFeatureToggles = PersonalInformationPage.updateFeatureToggles(
+    const updatedFeatureToggles = MessagesSignaturePage.updateFeatureToggles(
       [],
     );
 
-    PersonalInformationPage.load(updatedFeatureToggles);
+    MessagesSignaturePage.load(updatedFeatureToggles);
 
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
     cy.get(Locators.SIGNATURE.NAME_FIELD).clear();
     cy.get(Locators.SIGNATURE.TITLE_FIELD).clear();
-    cy.get(Locators.SIGNATURE.SAVE_BTN).click({
-      waitForAnimations: true,
-    });
+    cy.get(Locators.SIGNATURE.SAVE_BTN).click({ waitForAnimations: true });
 
     cy.get(Locators.SIGNATURE.ALERTS.FIELD_ERROR).each(el => {
-      cy.wrap(el).should(`have.text`, Data.SIGNATURE.ALERTS.EMPTY_FIELD);
+      cy.wrap(el).should('have.text', Data.SIGNATURE.ALERTS.EMPTY_FIELD);
     });
 
     cy.injectAxeThenAxeCheck();
   });
 });
 
-describe('PERSONAL INFORMATION ADD SIGNATURE ALERTS', () => {
+describe('MESSAGES SIGNATURE ADD ALERTS', () => {
   beforeEach(() => {
     const noSignatureResponse = {
       ...mockSignature,
@@ -39,10 +37,10 @@ describe('PERSONAL INFORMATION ADD SIGNATURE ALERTS', () => {
       },
     };
 
-    const updatedFeatureToggles = PersonalInformationPage.updateFeatureToggles(
+    const updatedFeatureToggles = MessagesSignaturePage.updateFeatureToggles(
       [],
     );
-    PersonalInformationPage.load(updatedFeatureToggles, noSignatureResponse);
+    MessagesSignaturePage.load(updatedFeatureToggles, noSignatureResponse);
   });
 
   it('verify alert modal details', () => {
@@ -50,25 +48,21 @@ describe('PERSONAL INFORMATION ADD SIGNATURE ALERTS', () => {
     cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
-    // verify alert details
-    cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN).should(`be.focused`);
-
+    cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN).should('be.focused');
     cy.get(Locators.SIGNATURE.ALERTS.CONFIRM_CANCEL_MODAL)
       .shadow()
-      .find(`h2`)
-      .should(`have.text`, Data.SIGNATURE.ALERTS.CANCEL_CHANGES);
-
+      .find('h2')
+      .should('have.text', Data.SIGNATURE.ALERTS.CANCEL_CHANGES);
     cy.get(Locators.SIGNATURE.ALERTS.CONFIRM_CANCEL_MODAL)
-      .find(`p`)
-      .should(`contain.text`, Data.SIGNATURE.ALERTS.CANCEL_ALERT);
+      .find('p')
+      .should('contain.text', Data.SIGNATURE.ALERTS.CANCEL_ALERT);
 
-    PersonalInformationPage.getCancelChangesBtn().should(
-      `have.text`,
+    MessagesSignaturePage.getCancelChangesBtn().should(
+      'have.text',
       Data.SIGNATURE.ALERTS.CANCEL_BTN,
     );
-
-    PersonalInformationPage.getBackToEditBtn().should(
-      `have.text`,
+    MessagesSignaturePage.getBackToEditBtn().should(
+      'have.text',
       Data.SIGNATURE.ALERTS.BACK_TO_EDIT_BTN,
     );
 
@@ -76,16 +70,13 @@ describe('PERSONAL INFORMATION ADD SIGNATURE ALERTS', () => {
   });
 
   it('verify user can cancel changes', () => {
-    // close modal by cancel btn
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
     cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
-    PersonalInformationPage.getCancelChangesBtn().click();
+    MessagesSignaturePage.getCancelChangesBtn().click();
+    cy.get(Locators.SIGNATURE.EDIT_BTN).should('be.focused');
 
-    cy.get(Locators.SIGNATURE.EDIT_BTN).should(`be.focused`);
-
-    // close modal by cross btn
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
     cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
@@ -93,7 +84,7 @@ describe('PERSONAL INFORMATION ADD SIGNATURE ALERTS', () => {
     cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN)
       .first()
       .click();
-    cy.get(Locators.SIGNATURE.CANCEL_BTN).should(`be.focused`);
+    cy.get(Locators.SIGNATURE.CANCEL_BTN).should('be.focused');
 
     cy.injectAxeThenAxeCheck();
   });
@@ -103,46 +94,40 @@ describe('PERSONAL INFORMATION ADD SIGNATURE ALERTS', () => {
     cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
-    PersonalInformationPage.getBackToEditBtn().click();
-
-    cy.get(Locators.SIGNATURE.CANCEL_BTN).should(`be.focused`);
+    MessagesSignaturePage.getBackToEditBtn().click();
+    cy.get(Locators.SIGNATURE.CANCEL_BTN).should('be.focused');
 
     cy.injectAxeThenAxeCheck();
   });
 });
 
-describe('PERSONAL INFORMATION EDIT SIGNATURE ALERTS', () => {
+describe('MESSAGES SIGNATURE EDIT ALERTS', () => {
   beforeEach(() => {
-    const updatedFeatureToggles = PersonalInformationPage.updateFeatureToggles(
+    const updatedFeatureToggles = MessagesSignaturePage.updateFeatureToggles(
       [],
     );
-    PersonalInformationPage.load(updatedFeatureToggles);
+    MessagesSignaturePage.load(updatedFeatureToggles);
   });
 
   it('verify alert modal details', () => {
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
-    cy.get(Locators.SIGNATURE.NAME_FIELD)
-      .clear()
-      .type('Jack Sparrow');
+    cy.get(Locators.SIGNATURE.NAME_FIELD).clear();
+    cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
-    // verify alert details
     cy.get(Locators.SIGNATURE.ALERTS.CONFIRM_CANCEL_MODAL)
       .shadow()
-      .find(`h2`)
-      .should(`have.text`, Data.SIGNATURE.ALERTS.CANCEL_CHANGES);
-
+      .find('h2')
+      .should('have.text', Data.SIGNATURE.ALERTS.CANCEL_CHANGES);
     cy.get(Locators.SIGNATURE.ALERTS.CONFIRM_CANCEL_MODAL)
-      .find(`p`)
-      .should(`contain.text`, Data.SIGNATURE.ALERTS.CANCEL_ALERT);
-
-    PersonalInformationPage.getCancelChangesBtn().should(
-      `have.text`,
+      .find('p')
+      .should('contain.text', Data.SIGNATURE.ALERTS.CANCEL_ALERT);
+    MessagesSignaturePage.getCancelChangesBtn().should(
+      'have.text',
       Data.SIGNATURE.ALERTS.CANCEL_BTN,
     );
-
-    PersonalInformationPage.getBackToEditBtn().should(
-      `have.text`,
+    MessagesSignaturePage.getBackToEditBtn().should(
+      'have.text',
       Data.SIGNATURE.ALERTS.BACK_TO_EDIT_BTN,
     );
 
@@ -150,28 +135,23 @@ describe('PERSONAL INFORMATION EDIT SIGNATURE ALERTS', () => {
   });
 
   it('verify user can cancel changes', () => {
-    // close modal by cancel btn
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
-    cy.get(Locators.SIGNATURE.NAME_FIELD)
-      .clear()
-      .type('Jack Sparrow');
+    cy.get(Locators.SIGNATURE.NAME_FIELD).clear();
+    cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
-    PersonalInformationPage.getCancelChangesBtn().click();
+    MessagesSignaturePage.getCancelChangesBtn().click();
+    cy.get(Locators.SIGNATURE.EDIT_BTN).should('be.focused');
 
-    cy.get(Locators.SIGNATURE.EDIT_BTN).should(`be.focused`);
-
-    // close modal by cross btn
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
-    cy.get(Locators.SIGNATURE.NAME_FIELD)
-      .clear()
-      .type('Jack Sparrow');
+    cy.get(Locators.SIGNATURE.NAME_FIELD).clear();
+    cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
     cy.get(Locators.SIGNATURE.ALERTS.CROSS_BTN)
       .first()
       .click();
-    cy.get(Locators.SIGNATURE.CANCEL_BTN).should(`be.focused`);
+    cy.get(Locators.SIGNATURE.CANCEL_BTN).should('be.focused');
 
     cy.injectAxeThenAxeCheck();
   });
@@ -181,9 +161,8 @@ describe('PERSONAL INFORMATION EDIT SIGNATURE ALERTS', () => {
     cy.get(Locators.SIGNATURE.NAME_FIELD).type('Jack Sparrow');
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
 
-    PersonalInformationPage.getBackToEditBtn().click();
-
-    cy.get(Locators.SIGNATURE.CANCEL_BTN).should(`be.focused`);
+    MessagesSignaturePage.getBackToEditBtn().click();
+    cy.get(Locators.SIGNATURE.CANCEL_BTN).should('be.focused');
 
     cy.injectAxeThenAxeCheck();
   });

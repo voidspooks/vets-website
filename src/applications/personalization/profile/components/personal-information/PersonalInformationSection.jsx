@@ -1,20 +1,16 @@
-import React, { useEffect, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
+import { connect, useSelector } from 'react-redux';
 
 import ProfileInformationFieldController from '@@vap-svc/components/ProfileInformationFieldController';
-import { FIELD_IDS, FIELD_NAMES, FIELD_TITLES } from '@@vap-svc/constants';
+import { FIELD_IDS, FIELD_NAMES } from '@@vap-svc/constants';
 import { renderDOB } from '@@vap-svc/util/personal-information/personalInformationUtils';
 import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
 import backendServices from '@department-of-veterans-affairs/platform-user/profile/backendServices';
-import { getMessagingSignature } from 'platform/user/profile/actions';
-import { useFeatureToggle } from 'platform/utilities/feature-toggles';
 import { ProfileInfoSection } from '../ProfileInfoSection';
 import LegalName from './LegalName';
 import DisabilityRating from './DisabilityRating';
-import MessagingSignature from './MessagingSignature';
 import { PROFILE_PATHS } from '../../constants';
 import { handleRouteChange } from '../../helpers';
 
@@ -36,108 +32,38 @@ const LegalNameDescription = () => (
 );
 
 const PersonalInformationSection = ({ dob }) => {
-  const dispatch = useDispatch();
-  const location = useLocation();
   const history = useHistory();
   const userServices = useSelector(state => state.user.profile.services);
   const isMessagingServiceEnabled = userServices.includes(
     backendServices.MESSAGING,
   );
-  const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
-  const isProfile2Enabled = useToggleValue(TOGGLE_NAMES.profile2Enabled);
-  const isHealthCareSettingsEnabled = useToggleValue(
-    TOGGLE_NAMES.profileHealthCareSettingsPage,
-  );
-
-  const messagingSignature = useSelector(
-    state => state.user?.profile?.mhvAccount?.messagingSignature,
-  );
-  const messagingSignatureName = messagingSignature?.signatureName;
-  const hasMessagingSignatureError = messagingSignature?.error !== undefined;
-
-  useEffect(
-    () => {
-      if (isMessagingServiceEnabled && messagingSignature == null)
-        dispatch(getMessagingSignature());
-    },
-    [dispatch, isMessagingServiceEnabled, messagingSignature],
-  );
-
-  useEffect(
-    () => {
-      const fieldName = `#${FIELD_IDS[FIELD_NAMES.MESSAGING_SIGNATURE]}`;
-      if (messagingSignatureName !== null && location.hash === fieldName) {
-        const targetElement = document.querySelector(fieldName);
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth' });
-          focusElement(targetElement.querySelector('h2'));
-        }
-      }
-    },
-    [messagingSignatureName, location.hash],
-  );
 
   const updatedCardFields = useMemo(
-    () => {
-      const cardFields = [
-        {
-          title: 'Legal name',
-          description: <LegalNameDescription />,
-          value: <LegalName />,
-        },
-        { title: 'Date of birth', value: renderDOB(dob) },
-        {
-          title: 'Preferred name',
-          description:
-            "Share this information if you'd like us to use a first name that's different from your legal name when you come in to VA.",
-          id: FIELD_IDS[FIELD_NAMES.PREFERRED_NAME],
-          value: (
-            <ProfileInformationFieldController
-              fieldName={FIELD_NAMES.PREFERRED_NAME}
-              isDeleteDisabled
-            />
-          ),
-        },
-        {
-          title: 'Disability rating',
-          value: <DisabilityRating />,
-        },
-      ];
-
-      if (
-        isMessagingServiceEnabled &&
-        (!isProfile2Enabled || !isHealthCareSettingsEnabled)
-      ) {
-        const signaturePresent =
-          !!messagingSignature?.signatureName?.trim() &&
-          !!messagingSignature?.signatureTitle?.trim();
-        return [
-          ...cardFields,
-          {
-            title: FIELD_TITLES[FIELD_NAMES.MESSAGING_SIGNATURE],
-            description:
-              'You can add a signature and signature title to be automatically added to all outgoing secure messages.',
-            id: FIELD_IDS[FIELD_NAMES.MESSAGING_SIGNATURE],
-            value: (
-              <MessagingSignature
-                hasError={hasMessagingSignatureError}
-                fieldName={FIELD_NAMES.MESSAGING_SIGNATURE}
-                signaturePresent={signaturePresent}
-              />
-            ),
-          },
-        ];
-      }
-      return cardFields;
-    },
-    [
-      dob,
-      hasMessagingSignatureError,
-      isMessagingServiceEnabled,
-      isProfile2Enabled,
-      isHealthCareSettingsEnabled,
-      messagingSignature,
+    () => [
+      {
+        title: 'Legal name',
+        description: <LegalNameDescription />,
+        value: <LegalName />,
+      },
+      { title: 'Date of birth', value: renderDOB(dob) },
+      {
+        title: 'Preferred name',
+        description:
+          "Share this information if you'd like us to use a first name that's different from your legal name when you come in to VA.",
+        id: FIELD_IDS[FIELD_NAMES.PREFERRED_NAME],
+        value: (
+          <ProfileInformationFieldController
+            fieldName={FIELD_NAMES.PREFERRED_NAME}
+            isDeleteDisabled
+          />
+        ),
+      },
+      {
+        title: 'Disability rating',
+        value: <DisabilityRating />,
+      },
     ],
+    [dob],
   );
 
   return (
@@ -179,24 +105,22 @@ const PersonalInformationSection = ({ dob }) => {
         </va-additional-info>
       </div>
       <ProfileInfoSection data={updatedCardFields} level={1} />
-      {isMessagingServiceEnabled &&
-        isProfile2Enabled &&
-        isHealthCareSettingsEnabled && (
-          <div className="vads-u-margin-top--4">
-            <va-alert slim status="info" visible>
-              <p className="vads-u-margin-y--0">
-                Your health care messages signature has moved to your health
-                care settings.{' '}
-                <va-link
-                  href={PROFILE_PATHS.MESSAGES_SIGNATURE}
-                  text="Manage the signature on your messages"
-                  onClick={event => handleRouteChange(event, history)}
-                />
-                .
-              </p>
-            </va-alert>
-          </div>
-        )}
+      {isMessagingServiceEnabled && (
+        <div className="vads-u-margin-top--4">
+          <va-alert slim status="info" visible>
+            <p className="vads-u-margin-y--0">
+              Your health care messages signature has moved to your health care
+              settings.{' '}
+              <va-link
+                href={PROFILE_PATHS.MESSAGES_SIGNATURE}
+                text="Manage the signature on your messages"
+                onClick={event => handleRouteChange(event, history)}
+              />
+              .
+            </p>
+          </va-alert>
+        </div>
+      )}
     </div>
   );
 };

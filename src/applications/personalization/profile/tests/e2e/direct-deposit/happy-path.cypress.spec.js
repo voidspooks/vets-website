@@ -1,4 +1,3 @@
-import { generateFeatureToggles } from '../../../mocks/endpoints/feature-toggles';
 import { mockGETEndpoints } from '../helpers';
 import DirectDepositPage from './page-objects/DirectDeposit';
 
@@ -19,76 +18,14 @@ describe('Direct Deposit - Happy Path', () => {
     );
   });
 
-  describe('loading page', () => {
-    it('should show new unified page when profileShowDirectDepositSingleForm is true', () => {
-      directDeposit.setup();
-
-      directDeposit.visitPage();
-
-      directDeposit.confirmDirectDepositInSubnav();
-
-      // exclusive to new unified page
-      cy.findAllByTestId('unified-direct-deposit').should('exist');
-
-      cy.findByRole('heading', { name: 'Direct deposit information' }).should(
-        'exist',
-      );
-
-      cy.injectAxeThenAxeCheck();
-    });
-  });
-
-  describe('unified direct deposit page', () => {
-    it('should show the direct deposit account information when present and eligible', () => {
-      directDeposit.setup();
-
-      directDeposit.visitPage();
-
-      directDeposit.confirmDirectDepositInSubnav();
-
-      cy.findAllByTestId('unified-direct-deposit').should('exist');
-
-      cy.findByRole('heading', { name: 'Direct deposit information' }).should(
-        'exist',
-      );
-
-      cy.injectAxeThenAxeCheck();
-    });
-  });
-
-  describe('when profile2Enabled is true', () => {
-    it('should show new unified page', () => {
-      directDeposit.setup({
-        featureToggles: generateFeatureToggles({
-          profile2Enabled: true,
-        }),
-      });
-      directDeposit.visitPage();
-      directDeposit.confirmDirectDepositInSubnav({
-        profile2Enabled: true,
-      });
-      cy.findAllByTestId('unified-direct-deposit').should('exist');
-      cy.findByRole('heading', { name: 'Direct deposit information' }).should(
-        'exist',
-      );
-      cy.injectAxeThenAxeCheck();
-    });
-
-    it('should show the direct deposit account information when present and eligible', () => {
-      directDeposit.setup({
-        featureToggles: generateFeatureToggles({
-          profile2Enabled: true,
-        }),
-      });
-      directDeposit.visitPage();
-      directDeposit.confirmDirectDepositInSubnav({
-        profile2Enabled: true,
-      });
-      cy.findAllByTestId('unified-direct-deposit').should('exist');
-      cy.findByRole('heading', { name: 'Direct deposit information' }).should(
-        'exist',
-      );
-      cy.injectAxeThenAxeCheck();
-    });
+  it('should show new unified page', () => {
+    directDeposit.setup();
+    directDeposit.visitPage();
+    directDeposit.confirmDirectDepositInSubnav();
+    cy.findAllByTestId('unified-direct-deposit').should('exist');
+    cy.findByRole('heading', { name: 'Direct deposit information' }).should(
+      'exist',
+    );
+    cy.injectAxeThenAxeCheck();
   });
 });

@@ -42,7 +42,7 @@ describe('Updating Notification Settings', () => {
   context('when there is an API error', () => {
     it('should handle 401 errors when opting into getting notifications for the first time - C9518', () => {
       cy.login(mockPatient);
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       cy.get('[data-testid="checkbox-group-item1"]')
         .find('va-checkbox')
@@ -77,7 +77,7 @@ describe('Updating Notification Settings', () => {
 
     it('should handle 500 error when opting out of getting notifications - C9519', () => {
       cy.login(mockPatient);
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       // the "notify me" radio button will start off checked because of the
       // mocked response from mockCommunicationPreferences

@@ -22,7 +22,7 @@ const normalizedPhoneValue = value => {
 export const phoneFormSchema = ({ allowInternational = false } = {}) => {
   const extensionField = {
     type: 'string',
-    pattern: '^\\s*[0-9-]{0,6}\\s*$',
+    pattern: '^\\s*[0-9\\-]{0,6}\\s*$',
     maxLength: 6,
   };
 
@@ -54,7 +54,7 @@ export const phoneFormSchema = ({ allowInternational = false } = {}) => {
       },
       inputPhoneNumber: {
         type: 'string',
-        pattern: '^[0-9()\\- ]+$',
+        pattern: '^[0-9\\(\\)\\- ]+$',
         maxLength: 14,
         minLength: 10,
       },

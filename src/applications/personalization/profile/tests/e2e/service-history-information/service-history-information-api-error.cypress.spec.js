@@ -5,9 +5,9 @@ import { loa3User72, nonVeteranUser } from '../../../mocks/endpoints/user';
 import { generateFeatureToggles } from '../../../mocks/endpoints/feature-toggles';
 import fullName from '../../../mocks/endpoints/full-name';
 
-import MilitaryInformation from './MilitaryInformation';
+import ServiceHistoryInformation from './ServiceHistoryInformation';
 
-describe('Military Information - Profile page', () => {
+describe('Service history information - Profile page', () => {
   beforeEach(() => {
     cy.intercept(
       'GET',
@@ -35,24 +35,24 @@ describe('Military Information - Profile page', () => {
 
   it('Should not display error message on Personal and Contact page', () => {
     cy.login(loa3User72);
-    MilitaryInformation.visitContactInformationPage();
+    ServiceHistoryInformation.visitContactInformationPage();
     cy.injectAxeThenAxeCheck();
-    MilitaryInformation.heroErrorMessageShouldNotExist();
-    MilitaryInformation.visitPersonalInformationPage();
+    ServiceHistoryInformation.heroErrorMessageShouldNotExist();
+    ServiceHistoryInformation.visitPersonalInformationPage();
     cy.injectAxeThenAxeCheck();
-    MilitaryInformation.heroErrorMessageShouldNotExist();
+    ServiceHistoryInformation.heroErrorMessageShouldNotExist();
   });
   it('should display correct error messaging on military information page', () => {
     cy.login(loa3User72);
-    MilitaryInformation.visitMilitaryInformationPage();
+    ServiceHistoryInformation.visitServiceHistoryInformationPage();
     cy.injectAxeThenAxeCheck();
-    MilitaryInformation.heroErrorMessageShouldNotExist();
-    MilitaryInformation.serviceDownMessageShouldExist();
-    MilitaryInformation.veteranStatusShouldNotExist();
+    ServiceHistoryInformation.heroErrorMessageShouldNotExist();
+    ServiceHistoryInformation.serviceDownMessageShouldExist();
+    ServiceHistoryInformation.veteranStatusShouldNotExist();
   });
 });
 
-describe('Military Information - NonVeteran', () => {
+describe('Service history information - NonVeteran', () => {
   beforeEach(() => {
     cy.intercept(
       'GET',
@@ -79,15 +79,15 @@ describe('Military Information - NonVeteran', () => {
   });
   it('should display non veteran user error on military information page and veteran status should not exist', () => {
     cy.login(nonVeteranUser);
-    MilitaryInformation.visitMilitaryInformationPage();
+    ServiceHistoryInformation.visitServiceHistoryInformationPage();
     cy.injectAxeThenAxeCheck();
-    MilitaryInformation.heroErrorMessageShouldNotExist();
-    MilitaryInformation.notAVeteranMessageShouldExist();
-    MilitaryInformation.veteranStatusShouldNotExist();
+    ServiceHistoryInformation.heroErrorMessageShouldNotExist();
+    ServiceHistoryInformation.notAVeteranMessageShouldExist();
+    ServiceHistoryInformation.veteranStatusShouldNotExist();
   });
 });
 
-describe('Military Information - NotInDeers', () => {
+describe('Service history information - NotInDeers', () => {
   beforeEach(() => {
     cy.intercept(
       'GET',
@@ -114,10 +114,10 @@ describe('Military Information - NotInDeers', () => {
   });
   it('should display user not in deers error on military information page and veteran status should not exist', () => {
     cy.login(loa3User72);
-    MilitaryInformation.visitMilitaryInformationPage();
+    ServiceHistoryInformation.visitServiceHistoryInformationPage();
     cy.injectAxeThenAxeCheck();
-    MilitaryInformation.heroErrorMessageShouldNotExist();
-    MilitaryInformation.notInDeersMessageShouldExist();
-    MilitaryInformation.veteranStatusShouldNotExist();
+    ServiceHistoryInformation.heroErrorMessageShouldNotExist();
+    ServiceHistoryInformation.notInDeersMessageShouldExist();
+    ServiceHistoryInformation.veteranStatusShouldNotExist();
   });
 });

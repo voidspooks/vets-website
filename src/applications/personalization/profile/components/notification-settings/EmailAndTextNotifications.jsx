@@ -30,7 +30,6 @@ import DowntimeNotification, {
   externalServices,
 } from '~/platform/monitoring/DowntimeNotification';
 import { FIELD_NAMES, USA } from '@@vap-svc/constants';
-import { Toggler } from 'platform/utilities/feature-toggles';
 import { LOADING_STATES } from '../../../common/constants';
 
 import LoadFail from '../alerts/LoadFail';
@@ -41,7 +40,7 @@ import NotificationGroup from './NotificationGroup';
 import { FieldHasBeenUpdated as FieldHasBeenUpdatedAlert } from '../alerts/FieldHasBeenUpdated';
 import { MissingContactInfoExpandable } from './MissingContactInfoExpandable';
 
-const NotificationSettings = ({
+const EmailAndTextNotifications = ({
   emailAddress,
   facilities,
   fetchNotificationSettings,
@@ -55,7 +54,7 @@ const NotificationSettings = ({
 
   const updateMobileNumberHref = generateContactInfoLink({
     fieldName: FIELD_NAMES.MOBILE_PHONE,
-    returnPath: encodeURIComponent(PROFILE_PATHS.NOTIFICATION_SETTINGS),
+    returnPath: encodeURIComponent(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS),
   });
 
   const { showEmail, useAvailableGroups } = useNotificationSettingsUtils();
@@ -97,7 +96,7 @@ const NotificationSettings = ({
       }
 
       focusElement('[data-focus-target]');
-      document.title = `Notification Settings | Veterans Affairs`;
+      document.title = `Email And Text Notifications | Veterans Affairs`;
     },
     [location.state?.scrollToTop],
   );
@@ -139,14 +138,7 @@ const NotificationSettings = ({
 
   return (
     <>
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.profile2Enabled}>
-        <Toggler.Enabled>
-          <Headline>{PROFILE_PATH_NAMES.EMAIL_AND_TEXT_NOTIFICATIONS}</Headline>
-        </Toggler.Enabled>
-        <Toggler.Disabled>
-          <Headline>{PROFILE_PATH_NAMES.NOTIFICATION_SETTINGS}</Headline>
-        </Toggler.Disabled>
-      </Toggler>
+      <Headline>{PROFILE_PATH_NAMES.EMAIL_AND_TEXT_NOTIFICATIONS}</Headline>
 
       <DowntimeNotification
         appTitle="notification settings page"
@@ -242,7 +234,7 @@ const NotificationSettings = ({
   );
 };
 
-NotificationSettings.propTypes = {
+EmailAndTextNotifications.propTypes = {
   fetchNotificationSettings: PropTypes.func.isRequired,
   shouldShowLoadingIndicator: PropTypes.bool.isRequired,
   emailAddress: PropTypes.string,
@@ -287,6 +279,6 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(NotificationSettings);
+)(EmailAndTextNotifications);
 
-export const NotificationSettingsUnconnected = NotificationSettings;
+export const EmailAndTextNotificationsUnconnected = EmailAndTextNotifications;

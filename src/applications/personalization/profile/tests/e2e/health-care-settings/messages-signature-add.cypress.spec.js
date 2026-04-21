@@ -1,13 +1,12 @@
-import PersonalInformationPage from '../pages/PersonalInformationPage';
+import MessagesSignaturePage from '../pages/MessagesSignaturePage';
 import mockSignature from '../../fixtures/personal-information-signature.json';
-import { Locators, Data } from '../../fixtures/constants';
+import { Data, Locators } from '../../fixtures/constants';
 
-describe('PERSONAL INFORMATION ADD SIGNATURE', () => {
+describe('MESSAGES SIGNATURE ADD', () => {
   beforeEach(() => {
-    const updatedFeatureToggles = PersonalInformationPage.updateFeatureToggles(
+    const updatedFeatureToggles = MessagesSignaturePage.updateFeatureToggles(
       [],
     );
-
     const noSignatureResponse = {
       ...mockSignature,
       data: {
@@ -20,7 +19,7 @@ describe('PERSONAL INFORMATION ADD SIGNATURE', () => {
       },
     };
 
-    PersonalInformationPage.load(updatedFeatureToggles, noSignatureResponse);
+    MessagesSignaturePage.load(updatedFeatureToggles, noSignatureResponse);
   });
 
   it('verify user can cancel adding signature', () => {
@@ -33,30 +32,26 @@ describe('PERSONAL INFORMATION ADD SIGNATURE', () => {
       .and('contain.text', Data.SIGNATURE.ALERTS.REQUIRED);
 
     cy.get(Locators.SIGNATURE.CANCEL_BTN).click();
-    cy.get(Locators.SIGNATURE.EDIT_BTN).should(`be.focused`);
+    cy.get(Locators.SIGNATURE.EDIT_BTN).should('be.focused');
 
     cy.injectAxeThenAxeCheck();
   });
 
-  it(`verify user can add and save signature`, () => {
+  it('verify user can add and save signature', () => {
     cy.get(Locators.SIGNATURE.EDIT_BTN).click();
     cy.get(Locators.SIGNATURE.NAME_FIELD)
-      .should(`be.focused`)
+      .should('be.focused')
       .type('Name');
     cy.get(Locators.SIGNATURE.TITLE_FIELD).type('TestTitle');
 
-    PersonalInformationPage.saveSignature();
+    MessagesSignaturePage.saveSignature();
 
     cy.get(Locators.SIGNATURE.GENERAL).should(
-      `contain.text`,
+      'contain.text',
       `${mockSignature.data.attributes.signatureName +
         mockSignature.data.attributes.signatureTitle}`,
     );
-
-    cy.get(Locators.SIGNATURE.ALERTS.SUCCESS)
-      .should(`be.visible`)
-      .and('contain.text', Data.SIGNATURE.UPDATE_SAVED);
-    cy.get('va-alert[status="success"]').should('be.focused');
+    MessagesSignaturePage.verifySuccessAlert();
 
     cy.injectAxeThenAxeCheck();
   });

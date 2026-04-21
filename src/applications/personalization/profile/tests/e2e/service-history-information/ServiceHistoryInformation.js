@@ -1,8 +1,8 @@
 import { PROFILE_PATHS } from '@@profile/constants';
 
-class MilitaryInformationPage {
-  visitMilitaryInformationPage = () => {
-    cy.visit(PROFILE_PATHS.MILITARY_INFORMATION);
+class ServiceHistoryInformationPage {
+  visitServiceHistoryInformationPage = () => {
+    cy.visit(PROFILE_PATHS.SERVICE_HISTORY_INFORMATION);
   };
 
   visitPersonalInformationPage = () => {
@@ -35,11 +35,13 @@ class MilitaryInformationPage {
 
   veteranStatusShouldNotExist = () => {
     // make sure the page is loaded by checking for the heading
-    cy.findByRole('heading', { name: /Military information/i }).should('exist');
+    cy.findByRole('heading', { name: /Service history information/i }).should(
+      'exist',
+    );
     cy.get(
       '[alt="sample proof of veteran status card featuring name, date of birth, disability rating and period of service"]',
     ).should('not.exist');
   };
 }
 
-export default new MilitaryInformationPage();
+export default new ServiceHistoryInformationPage();

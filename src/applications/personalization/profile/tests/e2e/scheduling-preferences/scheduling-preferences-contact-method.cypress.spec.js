@@ -12,16 +12,7 @@ const setup = (preferences = []) => {
   mockFeatureToggles(() => ({
     data: {
       type: 'feature_toggles',
-      features: [
-        {
-          name: 'profile_2_enabled',
-          value: true,
-        },
-        {
-          name: 'profile_health_care_settings_page',
-          value: true,
-        },
-      ],
+      features: [],
     },
   }));
   mockGETEndpoints([

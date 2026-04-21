@@ -47,7 +47,7 @@ describe('ctaWidgetsLookup', () => {
   it('should return the appropriate tool url and correct MHV account info for DIRECT_DEPOSIT', () => {
     const ctaWidget = ctaWidgetsLookup[CTA_WIDGET_TYPES.DIRECT_DEPOSIT];
     expect(ctaWidget.deriveToolUrlDetails()).to.eql({
-      url: '/profile/direct-deposit',
+      url: '/profile/financial-information/direct-deposit',
       redirect: true,
     });
     expect(ctaWidget.hasRequiredMhvAccount()).to.be.false;

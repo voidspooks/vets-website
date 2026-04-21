@@ -47,7 +47,7 @@ let getServiceHistoryStub;
 let getDisabilityInfoStub;
 let getFullNameStub;
 
-describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI and feature profile2Enabled is true', () => {
+describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI', () => {
   beforeEach(() => {
     cy.login(mockUserNotInMPI);
     mockGETEndpoints([
@@ -58,11 +58,7 @@ describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI and 
       'v0/profile/service_history',
       'v0/disability_compensation_form/rating_info',
     ]);
-    cy.intercept(
-      'GET',
-      'v0/feature_toggles*',
-      generateFeatureToggles({ profile2Enabled: true }),
-    );
+    cy.intercept('GET', 'v0/feature_toggles*', generateFeatureToggles());
     getDD4EDUBankInfoStub = cy.stub();
     getFullNameStub = cy.stub();
     getPersonalInfoStub = cy.stub();
@@ -85,17 +81,17 @@ describe('When user is LOA3 with 2FA turned on but we cannot connect to MPI and 
     });
   });
   it('should only have access to the Account Security section at desktop size', () => {
-    test({ profile2Enabled: true });
+    test();
     cy.injectAxe();
     cy.axeCheck();
   });
   it('should only have access to the Account Security section at mobile size', () => {
-    test({ profile2Enabled: true, mobile: true });
+    test({ mobile: true });
     cy.injectAxe();
     cy.axeCheck();
   });
   it('should not call profile apis', () => {
-    test({ profile2Enabled: true });
+    test();
     cy.should(() => {
       expect(getDD4EDUBankInfoStub).not.to.be.called;
       expect(getFullNameStub).not.to.be.called;

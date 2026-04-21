@@ -65,7 +65,11 @@ export const viewAccountAlertForModifiedPrefill = (
       Until then, we’ll deposit your current disability payments into the
       previous account we showed. To change your direct deposit information now,
       go to your{' '}
-      <a href="/profile/direct-deposit" target="_blank" rel="noreferrer">
+      <a
+        href="/profile/financial-information/direct-deposit"
+        target="_blank"
+        rel="noreferrer"
+      >
         VA.gov profile (opens in new tab)
       </a>
       .

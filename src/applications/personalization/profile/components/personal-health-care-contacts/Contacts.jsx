@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { ProfileInfoSection } from '@@profile/components/ProfileInfoSection';
 import { VaTelephone } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { CONTACTS } from '@department-of-veterans-affairs/component-library/contacts';
-import { Toggler } from '~/platform/utilities/feature-toggles';
 import Contact from './Contact';
 import Instructions from './Instructions';
 import { CONTACT_TYPE_DESCRIPTIONS, CONTACT_TYPE_UI_NAMES } from './constants';
@@ -64,16 +63,9 @@ const Contacts = ({ data }) => {
 
   return (
     <>
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.profile2Enabled}>
-        <Toggler.Enabled>
-          <va-additional-info trigger="Learn how to update your personal health care information">
-            <UpdateInstructions />
-          </va-additional-info>
-        </Toggler.Enabled>
-        <Toggler.Disabled>
-          <UpdateInstructions />
-        </Toggler.Disabled>
-      </Toggler>
+      <va-additional-info trigger="Learn how to update your personal health care information">
+        <UpdateInstructions />
+      </va-additional-info>
 
       <ProfileInfoSection
         title="Emergency contacts"

@@ -113,7 +113,7 @@ describe('<Edit>', () => {
 
     await waitFor(() => {
       expect(document.title).to.equal(
-        'Add your contact email address | Veterans Affairs',
+        'Add Your Contact Email Address | Veterans Affairs',
       );
     });
   });
@@ -138,7 +138,7 @@ describe('<Edit>', () => {
 
     await waitFor(() => {
       expect(document.title).to.equal(
-        'Update your contact email address | Veterans Affairs',
+        'Update Your Contact Email Address | Veterans Affairs',
       );
     });
   });

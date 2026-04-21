@@ -47,12 +47,12 @@ describe('VA Profile ID Initialization - ProfileWrapper', () => {
       }).as('getCommunicationPreferences');
 
       // Visit Notification Settings directly (first Profile page accessed)
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       // Page should load successfully
-      cy.findByRole('heading', { name: /Notification settings/i }).should(
-        'exist',
-      );
+      cy.findByRole('heading', {
+        name: /Email and text notifications/i,
+      }).should('exist');
 
       // Verify no error messages
       cy.contains(/system error/i).should('not.exist');
@@ -65,10 +65,10 @@ describe('VA Profile ID Initialization - ProfileWrapper', () => {
       cy.login(mockPatient);
 
       // Visit Military Information directly
-      cy.visit(PROFILE_PATHS.MILITARY_INFORMATION);
+      cy.visit(PROFILE_PATHS.SERVICE_HISTORY_INFORMATION);
 
       // Page should load successfully
-      cy.findByRole('heading', { name: /Military information/i }).should(
+      cy.findByRole('heading', { name: /Service history information/i }).should(
         'exist',
       );
 
@@ -114,12 +114,12 @@ describe('VA Profile ID Initialization - ProfileWrapper', () => {
         },
       });
 
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       // Page loads normally
-      cy.findByRole('heading', { name: /Notification settings/i }).should(
-        'exist',
-      );
+      cy.findByRole('heading', {
+        name: /Email and text notifications/i,
+      }).should('exist');
 
       // No double-initialization or errors
       cy.contains(/system error/i).should('not.exist');
@@ -163,12 +163,12 @@ describe('VA Profile ID Initialization - ProfileWrapper', () => {
       });
 
       // This used to fail with system error before the ProfileWrapper fix
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       // Now it should work
-      cy.findByRole('heading', { name: /Notification settings/i }).should(
-        'exist',
-      );
+      cy.findByRole('heading', {
+        name: /Email and text notifications/i,
+      }).should('exist');
       cy.contains(/system error/i).should('not.exist');
 
       cy.injectAxeThenAxeCheck();
@@ -178,10 +178,10 @@ describe('VA Profile ID Initialization - ProfileWrapper', () => {
       cy.login(mockPatient);
 
       // This used to fail with system error before the ProfileWrapper fix
-      cy.visit(PROFILE_PATHS.MILITARY_INFORMATION);
+      cy.visit(PROFILE_PATHS.SERVICE_HISTORY_INFORMATION);
 
       // Now it should work
-      cy.findByRole('heading', { name: /Military information/i }).should(
+      cy.findByRole('heading', { name: /Service history information/i }).should(
         'exist',
       );
       cy.contains(/system error/i).should('not.exist');

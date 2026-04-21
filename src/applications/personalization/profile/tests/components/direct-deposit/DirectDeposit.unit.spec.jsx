@@ -123,7 +123,7 @@ describe('authenticated experience -- profile -- unified direct deposit', () => 
               profileHideDirectDeposit: true,
             }).featureToggles,
           }),
-          path: '/profile/direct-deposit',
+          path: '/profile/financial-information/direct-deposit',
         },
       );
 
@@ -143,7 +143,7 @@ describe('authenticated experience -- profile -- unified direct deposit', () => 
             serviceType: CSP_IDS.ID_ME,
             loadError: 'Internal Server Error',
           }),
-          path: '/profile/direct-deposit',
+          path: '/profile/financial-information/direct-deposit',
         },
       );
 
@@ -177,7 +177,7 @@ describe('authenticated experience -- profile -- unified direct deposit', () => 
         <DirectDeposit />,
         {
           initialState: state,
-          path: '/profile/direct-deposit',
+          path: '/profile/financial-information/direct-deposit',
         },
       );
 

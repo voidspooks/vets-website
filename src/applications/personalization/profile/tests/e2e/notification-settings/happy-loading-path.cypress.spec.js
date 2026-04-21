@@ -39,9 +39,9 @@ describe('Notification Settings', () => {
             facilities: [{ facilityId: '983' }, { facilityId: '123' }],
           }),
         );
-        cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+        cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
         cy.findByRole('heading', {
-          name: 'Notification settings',
+          name: 'Email and text notifications',
           level: 1,
         }).should('exist');
 
@@ -77,9 +77,9 @@ describe('Notification Settings', () => {
             facilities: [{ facilityId: '983' }, { facilityId: '554' }],
           }),
         );
-        cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+        cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
         cy.findByRole('heading', {
-          name: 'Notification settings',
+          name: 'Email and text notifications',
           level: 1,
         }).should('exist');
 
@@ -114,9 +114,9 @@ describe('Notification Settings', () => {
             facilities: [{ facilityId: '123' }],
           }),
         );
-        cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+        cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
         cy.findByRole('heading', {
-          name: 'Notification settings',
+          name: 'Email and text notifications',
           level: 1,
         }).should('exist');
 
@@ -143,9 +143,9 @@ describe('Notification Settings', () => {
   context('when user is not a VA patient', () => {
     it('should not show the Health Care notification group - C9480', () => {
       cy.login(makeUserObject({ isPatient: false }));
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
       cy.findByRole('heading', {
-        name: 'Notification settings',
+        name: 'Email and text notifications',
         level: 1,
       }).should('exist');
 

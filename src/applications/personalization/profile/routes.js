@@ -42,17 +42,12 @@ export const getRedirectedRoutes = () => [
 ];
 
 const getRoutes = (
-  {
-    profileHealthCareSettingsPage = false,
-    profileHideHealthCareContacts = false,
-  } = {
-    profileHealthCareSettingsPage: false,
+  { profileHideHealthCareContacts = false } = {
     profileHideHealthCareContacts: false,
   },
 ) => {
   return [
     ...getRoutesForNav({
-      profileHealthCareSettingsPage,
       profileHideHealthCareContacts,
     }),
     {
@@ -61,7 +56,6 @@ const getRoutes = (
       path: PROFILE_PATHS.EDIT,
       requiresLOA3: true,
       requiresMVI: true,
-      requiresSchedulingPreferencesPilot: false,
     },
     {
       component: ProfileHub,
@@ -69,7 +63,6 @@ const getRoutes = (
       path: PROFILE_PATHS.PROFILE_ROOT,
       requiresLOA3: true,
       requiresMVI: true,
-      requiresSchedulingPreferencesPilot: false,
     },
     {
       component: ContactMethodWrapper,

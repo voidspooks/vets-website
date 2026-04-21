@@ -33,14 +33,14 @@ describe('Notification Settings For Mobile Phone', () => {
         const user = makeMockUser();
         user.data.attributes.vet360ContactInformation.mobilePhone = null;
         cy.login(user);
-        cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+        cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
         cy.get('va-loading-indicator').should('exist');
         cy.injectAxeThenAxeCheck();
 
         // and then the loading indicator should be removed
         cy.get('va-loading-indicator').should('not.exist');
         cy.findByRole('heading', {
-          name: 'Notification settings',
+          name: 'Email and text notifications',
           level: 1,
         }).should('exist');
 
@@ -76,11 +76,11 @@ describe('Notification Settings For Mobile Phone', () => {
         user.data.attributes.vet360ContactInformation.mobilePhone = null;
         user.data.attributes.vet360ContactInformation.email = null;
         cy.login(user);
-        cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+        cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
         cy.injectAxeThenAxeCheck();
 
         cy.findByRole('heading', {
-          name: 'Notification settings',
+          name: 'Email and text notifications',
           level: 1,
         }).should('exist');
 

@@ -160,8 +160,6 @@ class Profile extends Component {
   // content to show after data has loaded
   mainContent = () => {
     let routes = getRoutes({
-      profileHealthCareSettingsPage: this.props
-        .shouldShowHealthCareSettingsPage,
       profileHideHealthCareContacts: this.props
         .shouldHideHealthCareContactsPage,
     });
@@ -175,7 +173,7 @@ class Profile extends Component {
     }
 
     if (!this.props.isSchedulingPreferencesPilotEligible) {
-      routes = routes.filter(item => !item.requiresSchedulingPreferencesPilot);
+      routes = routes.filter(item => !item?.requiresSchedulingPreferencesPilot);
     }
 
     return (
@@ -197,11 +195,7 @@ class Profile extends Component {
                   return (
                     <Redirect
                       from={route.path}
-                      to={
-                        this.props.shouldShowProfile2
-                          ? PROFILE_PATHS.SIGNIN_INFORMATION
-                          : PROFILE_PATHS.ACCOUNT_SECURITY
-                      }
+                      to={PROFILE_PATHS.SIGNIN_INFORMATION}
                       key={route.path}
                     />
                   );
@@ -292,8 +286,6 @@ Profile.propTypes = {
   user: PropTypes.object.isRequired,
   shouldHideHealthCareContactsPage: PropTypes.bool,
   shouldShowAccreditedRepTab: PropTypes.bool,
-  shouldShowHealthCareSettingsPage: PropTypes.bool,
-  shouldShowProfile2: PropTypes.bool,
 };
 
 const mapStateToProps = state => {
@@ -320,9 +312,6 @@ const mapStateToProps = state => {
   );
   const shouldShowAccreditedRepTab =
     profileToggles?.representativeStatusEnableV2Features;
-  const shouldShowProfile2 = profileToggles?.profile2Enabled;
-  const shouldShowHealthCareSettingsPage =
-    profileToggles?.profileHealthCareSettingsPage;
   const shouldHideHealthCareContactsPage =
     profileToggles?.profileHideHealthCareContacts;
   const shouldFetchDirectDeposit =
@@ -385,8 +374,6 @@ const mapStateToProps = state => {
     shouldFetchDirectDeposit,
     shouldHideHealthCareContactsPage,
     shouldShowAccreditedRepTab,
-    shouldShowProfile2,
-    shouldShowHealthCareSettingsPage,
     shouldFetchSchedulingPreferences,
     shouldFetchTotalDisabilityRating,
     isBlocked,

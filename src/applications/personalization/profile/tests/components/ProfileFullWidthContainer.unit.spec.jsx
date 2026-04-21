@@ -18,7 +18,6 @@ describe('ProfileFullWidthContainer', () => {
     useFeatureToggleStub.returns({
       useToggleValue: useToggleValueStub,
       TOGGLE_NAMES: {
-        profileHealthCareSettingsPage: 'profileHealthCareSettingsPage',
         profileHideHealthCareContacts: 'profileHideHealthCareContacts',
       },
     });
@@ -31,7 +30,6 @@ describe('ProfileFullWidthContainer', () => {
 
   const renderComponent = (props = {}) => {
     const defaultProps = {
-      profile2Enabled: true,
       breadcrumbs: true,
     };
     return render(
@@ -51,9 +49,8 @@ describe('ProfileFullWidthContainer', () => {
     expect(container.querySelector('.vads-l-grid-container')).to.exist;
   });
 
-  it('renders ProfileBreadcrumbs when profile2Enabled and breadcrumbs are both true', () => {
+  it('renders ProfileBreadcrumbs when breadcrumbs is true', () => {
     const { container } = renderComponent({
-      profile2Enabled: true,
       breadcrumbs: true,
     });
     // ProfileBreadcrumbs renders a va-breadcrumbs element
@@ -63,16 +60,7 @@ describe('ProfileFullWidthContainer', () => {
 
   it('does not render ProfileBreadcrumbs when breadcrumbs is false', () => {
     const { container } = renderComponent({
-      profile2Enabled: true,
       breadcrumbs: false,
-    });
-    expect(container.querySelector('va-breadcrumbs')).to.not.exist;
-  });
-
-  it('does not render ProfileBreadcrumbs when profile2Enabled is false', () => {
-    const { container } = renderComponent({
-      profile2Enabled: false,
-      breadcrumbs: true,
     });
     expect(container.querySelector('va-breadcrumbs')).to.not.exist;
   });

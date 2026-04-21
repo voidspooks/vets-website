@@ -102,6 +102,6 @@ describe('HealthCareSettings', () => {
     render(<HealthCareSettings />, {
       initialState: getInitialState(),
     });
-    expect(document.title).to.include('Health care settings');
+    expect(document.title).to.equal('Health Care Settings | Veterans Affairs');
   });
 });

@@ -5,7 +5,10 @@ import { ProfileHubItem } from './hub/ProfileHubItem';
 
 const LettersAndDocuments = () => {
   return (
-    <Tier2PageContent pageHeader="Letters and documents">
+    <Tier2PageContent
+      pageHeader="Letters and documents"
+      pageTitle="Letters And Documents"
+    >
       <ProfileHubItem
         heading="VA benefit letters and documents"
         content="Access and download your VA Benefit Summary Letter (sometimes called a VA award letter) and other benefit letters and documents."

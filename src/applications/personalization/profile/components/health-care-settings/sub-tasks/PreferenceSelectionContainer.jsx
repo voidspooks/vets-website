@@ -28,6 +28,7 @@ import {
 } from '@@vap-svc/util/health-care-settings/schedulingPreferencesUtils';
 import { createSchedulingPreferencesUpdate } from '@@vap-svc/actions/schedulingPreferences';
 import { EditContext } from '../../edit/EditContext';
+import { toInitialCaps } from '../../../util/textUtils';
 import { EditConfirmCancelModal } from '../../edit/EditConfirmCancelModal';
 
 import { PROFILE_PATHS, PROFILE_PATH_NAMES } from '../../../constants';
@@ -82,18 +83,11 @@ export const PreferenceSelectionContainer = ({
   const [error, setError] = useState(false);
 
   const { TOGGLE_NAMES, useToggleValue } = useFeatureToggle();
-  const profile2Toggle = useToggleValue(TOGGLE_NAMES.profile2Enabled);
-  const profileHealthCareSettingsPageToggle = useToggleValue(
-    TOGGLE_NAMES.profileHealthCareSettingsPage,
-  );
-
   const isSchedulingPreferencesPilotEligible = useSelector(state =>
     isSchedulingPreferencesPilotEligibleSelector(state),
   );
 
   const routesForNav = getRoutesForNav({
-    profile2Enabled: profile2Toggle,
-    profileHealthCareSettingsPage: profileHealthCareSettingsPageToggle,
     profileSchedulingPreferencesEnabled: isSchedulingPreferencesPilotEligible,
   });
 
@@ -177,7 +171,9 @@ export const PreferenceSelectionContainer = ({
 
   useEffect(
     () => {
-      document.title = `${editPageHeadingString} | Veterans Affairs`;
+      document.title = `${toInitialCaps(
+        editPageHeadingString,
+      )} | Veterans Affairs`;
     },
     [editPageHeadingString],
   );

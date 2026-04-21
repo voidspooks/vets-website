@@ -10,7 +10,6 @@ import {
 } from '@@profile/components/connected-apps/actions';
 import recordEvent from 'platform/monitoring/record-event';
 import { focusElement } from '@department-of-veterans-affairs/platform-utilities/ui';
-import { Toggler } from '~/platform/utilities/feature-toggles';
 import LoadFail from '../alerts/LoadFail';
 import Headline from '../ProfileSectionHeadline';
 import { AppDeletedAlert } from './AppDeletedAlert';
@@ -182,28 +181,14 @@ export const ConnectedApps = ({
       )}
 
       {!isEmpty(activeApps) && (
-        <Toggler toggleName={Toggler.TOGGLE_NAMES.profile2Enabled}>
-          <Toggler.Enabled>
-            <div className="vads-u-margin-y--3 available-connected-apps">
-              {ConnectedAppsAdditionalInfo()}
-            </div>
-          </Toggler.Enabled>
-        </Toggler>
+        <div className="vads-u-margin-y--3 available-connected-apps">
+          {ConnectedAppsAdditionalInfo()}
+        </div>
       )}
 
       {activeApps.map(app => (
         <ConnectedApp key={app.id} confirmDelete={confirmDelete} {...app} />
       ))}
-
-      {!isEmpty(activeApps) && (
-        <Toggler toggleName={Toggler.TOGGLE_NAMES.profile2Enabled}>
-          <Toggler.Disabled>
-            <div className="vads-u-margin-y--3 available-connected-apps">
-              {ConnectedAppsAdditionalInfo()}
-            </div>
-          </Toggler.Disabled>
-        </Toggler>
-      )}
 
       <va-card background uswds>
         <h2 className="vads-u-margin-top--0 vads-u-font-size--lg">

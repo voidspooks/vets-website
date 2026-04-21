@@ -22,7 +22,7 @@ export function CurrentRep({
 }) {
   // "Learn more" link becomes Find-a-Rep link when place in profile (per design)
   const containerIsProfile = window.location.pathname.startsWith(
-    '/profile/accredited-representative',
+    '/profile/dependents-and-contacts/accredited-representative-or-vso',
   );
 
   const isOrganization = poaType === 'organization';

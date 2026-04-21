@@ -26,7 +26,6 @@ describe('Accredited representative', () => {
       cy.intercept('GET', '/v0/feature_toggles*', {
         data: {
           features: [
-            { name: 'profile_2_enabled', value: true },
             { name: 'representative_status_enable_v2_features', value: true },
           ],
         },

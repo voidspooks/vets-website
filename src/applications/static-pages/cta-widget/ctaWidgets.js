@@ -89,7 +89,7 @@ export const ctaWidgetsLookup = {
   [CTA_WIDGET_TYPES.DIRECT_DEPOSIT]: {
     id: CTA_WIDGET_TYPES.DIRECT_DEPOSIT,
     deriveToolUrlDetails: () => ({
-      url: '/profile/direct-deposit',
+      url: '/profile/financial-information/direct-deposit',
       redirect: true,
     }),
     hasRequiredMhvAccount: () => false,

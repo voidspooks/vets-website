@@ -5,8 +5,8 @@ import sinon from 'sinon';
 import { renderWithStoreAndRouter } from '~/platform/testing/unit/react-testing-library-helpers';
 import * as useRepresentativeStatus from 'platform/user/widgets/representative-status/hooks/useRepresentativeStatus';
 import { CSP_IDS } from '~/platform/user/authentication/constants';
+import { formatContactInfo } from '~/platform/user/widgets/representative-status/utilities/formatContactInfo';
 import mockRepresentativeData from '../../../mock-representative-data.json';
-import { formatContactInfo } from '../../../util/formatContactInfo';
 
 import AccreditedRepresentative from '../../../components/accredited-representative/AccreditedRepresentative';
 

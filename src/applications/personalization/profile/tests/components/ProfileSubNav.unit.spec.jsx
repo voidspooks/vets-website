@@ -21,7 +21,7 @@ const defaultRoutes = [
     hasSubnav: true,
   },
   {
-    path: '/profile/direct-deposit',
+    path: '/profile/financial-information/direct-deposit',
     name: 'Direct Deposit',
     requiresMVI: true,
     subnavParent: 'Financial information',
@@ -64,57 +64,69 @@ describe('ProfileSubNav', () => {
   });
 
   it('renders all routes when requirements are met', () => {
-    const container = renderSubNav(
+    const { container } = renderSubNav(
       <ProfileSubNav routes={defaultRoutes} isLOA3 isInMVI />,
       {
         store,
       },
     );
-    expect(container.getByText('Personal Info')).to.exist;
-    expect(container.getByText('Contact Info')).to.exist;
-    expect(container.getByText('Direct Deposit')).to.exist;
+    expect(container.querySelector('va-sidenav-item[label="Personal Info"]')).to
+      .exist;
+    expect(container.querySelector('va-sidenav-item[label="Contact Info"]')).to
+      .exist;
+    expect(container.querySelector('va-sidenav-item[label="Direct Deposit"]'))
+      .to.exist;
   });
 
   it('filters out LOA3 routes if not LOA3', () => {
-    const container = renderSubNav(
+    const { container } = renderSubNav(
       <ProfileSubNav routes={defaultRoutes} isLOA3={false} isInMVI />,
       {
         store,
       },
     );
-    expect(container.getByText('Personal Info')).to.exist;
-    expect(container.queryByText('Contact Info')).to.be.null;
-    expect(container.getByText('Direct Deposit')).to.exist;
+    expect(container.querySelector('va-sidenav-item[label="Personal Info"]')).to
+      .exist;
+    expect(container.querySelector('va-sidenav-item[label="Contact Info"]')).to
+      .not.exist;
+    expect(container.querySelector('va-sidenav-item[label="Direct Deposit"]'))
+      .to.exist;
   });
 
   it('filters out LOA3 routes if user is blocked', () => {
     mockState.directDeposit.controlInformation = { isCompetent: false };
-    const container = renderSubNav(
+    const { container } = renderSubNav(
       <ProfileSubNav routes={defaultRoutes} isLOA3 isInMVI />,
       {
         store,
       },
     );
-    expect(container.getByText('Personal Info')).to.exist;
-    expect(container.queryByText('Contact Info')).to.be.null;
-    expect(container.getByText('Direct Deposit')).to.exist;
+    expect(container.querySelector('va-sidenav-item[label="Personal Info"]')).to
+      .exist;
+    expect(container.querySelector('va-sidenav-item[label="Contact Info"]')).to
+      .not.exist;
+    expect(container.querySelector('va-sidenav-item[label="Direct Deposit"]'))
+      .to.exist;
   });
 
   it('filters out MVI routes if not in MVI', () => {
-    const container = renderSubNav(
+    const { container } = renderSubNav(
       <ProfileSubNav routes={defaultRoutes} isLOA3 isInMVI={false} />,
       {
         store,
       },
     );
-    expect(container.getByText('Personal Info')).to.exist;
-    expect(container.getByText('Contact Info')).to.exist;
-    expect(container.queryByText('Direct Deposit')).to.be.null;
+    expect(container.querySelector('va-sidenav-item[label="Personal Info"]')).to
+      .exist;
+    expect(container.querySelector('va-sidenav-item[label="Contact Info"]')).to
+      .exist;
+    expect(container.querySelector('va-sidenav-item[label="Direct Deposit"]'))
+      .to.not.exist;
   });
 
   it('calls clickHandler and records event on click', () => {
     const clickHandler = sinon.spy();
-    const container = renderSubNav(
+    const { container } = renderSubNav(
       <ProfileSubNav
         routes={defaultRoutes}
         isLOA3
@@ -125,17 +137,22 @@ describe('ProfileSubNav', () => {
         store,
       },
     );
-    const link = container.getByText('Personal Info');
-    fireEvent.click(link);
+    const link = container.querySelector(
+      'va-sidenav-item[label="Personal Info"]',
+    );
+    fireEvent(
+      link,
+      new CustomEvent('vaRouteChange', {
+        bubbles: true,
+        detail: { href: '/profile/personal-information' },
+      }),
+    );
     expect(clickHandler.calledOnce).to.be.true;
   });
 
   describe('VADS side nav implemented', () => {
     beforeEach(() => {
-      mockState.featureToggles = {
-        // eslint-disable-next-line camelcase
-        profile_2_enabled: true,
-      };
+      mockState.featureToggles = {};
     });
 
     it('renders all routes when requirements are met', () => {

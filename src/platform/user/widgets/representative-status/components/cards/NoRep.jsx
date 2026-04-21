@@ -39,7 +39,7 @@ export function NoRep({ DynamicHeader, isWidget = false }) {
     );
   }
 
-  // This view should be used by the profile when a user goes to the URL: '/profile/accredited-representative'
+  // This view should be used by the profile when a user goes to the URL: '/profile/dependents-and-contacts/accredited-representative-or-vso'
   return (
     <div className="no-rep" data-testid="no-rep">
       <p>You don’t have an accredited representative.</p>

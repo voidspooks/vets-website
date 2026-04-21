@@ -6,7 +6,7 @@ import {
   renderWithProfileReducers,
   createFeatureTogglesState,
 } from '../../unit-test-helpers';
-import MilitaryInformation from '../../../components/military-information/MilitaryInformation';
+import ServiceHistoryInformation from '../../../components/service-history-information/ServiceHistoryInformation';
 
 function createBasicInitialState(toggles = {}) {
   return {
@@ -61,7 +61,7 @@ function createBasicInitialState(toggles = {}) {
   };
 }
 
-describe('MilitaryInformation', () => {
+describe('ServiceHistoryInformation', () => {
   let initialState;
   let view;
   let apiRequestStub;
@@ -80,7 +80,7 @@ describe('MilitaryInformation', () => {
       // Using queries on RTL `screen` does not work for some reason. So I'm just
       // storing the entire response from `render` as `view` so I can treat `view`
       // like I would `screen`
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -113,7 +113,7 @@ describe('MilitaryInformation', () => {
       };
 
       apiRequestStub.resolves(mockData);
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -133,7 +133,7 @@ describe('MilitaryInformation', () => {
       initialState = createBasicInitialState();
       initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory[0].endDate =
         'not a valid date';
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -158,7 +158,7 @@ describe('MilitaryInformation', () => {
       initialState = createBasicInitialState();
       initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory[0].endDate =
         '';
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -178,7 +178,7 @@ describe('MilitaryInformation', () => {
     it('should not parse a null date', () => {
       initialState = createBasicInitialState();
       initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory[0].endDate = null;
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -198,7 +198,7 @@ describe('MilitaryInformation', () => {
     it('should not parse an undefined date', () => {
       initialState = createBasicInitialState();
       initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory[0].beginDate = undefined;
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -221,7 +221,7 @@ describe('MilitaryInformation', () => {
         .serviceHistory[0].beginDate;
       delete initialState.vaProfile.militaryInformation.serviceHistory
         .serviceHistory[0].endDate;
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
       const entries = view.queryAllByRole('listitem');
@@ -246,7 +246,7 @@ describe('MilitaryInformation', () => {
       initialState = createBasicInitialState();
       initialState.user.profile.veteranStatus.status = null;
       initialState.vaProfile.militaryInformation = null;
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -259,7 +259,7 @@ describe('MilitaryInformation', () => {
     it('should show the correct error', () => {
       initialState = createBasicInitialState();
       initialState.vaProfile.militaryInformation.serviceHistory.serviceHistory = [];
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -282,7 +282,7 @@ describe('MilitaryInformation', () => {
         },
       };
 
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -320,7 +320,7 @@ describe('MilitaryInformation', () => {
         error: {},
       };
 
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -328,25 +328,23 @@ describe('MilitaryInformation', () => {
     });
   });
 
-  describe('when profile2Enabled is enabled', () => {
-    it('should render the correct heading', () => {
-      initialState = {
-        ...createBasicInitialState(),
-        ...createFeatureTogglesState({ profile2Enabled: true }),
-      };
-      view = renderWithProfileReducers(<MilitaryInformation />, {
-        initialState,
-      });
-
-      expect(view.getByRole('heading', { name: 'Service history information' }))
-        .to.exist;
+  it('should render the correct heading', () => {
+    initialState = {
+      ...createBasicInitialState(),
+      ...createFeatureTogglesState(),
+    };
+    view = renderWithProfileReducers(<ServiceHistoryInformation />, {
+      initialState,
     });
+
+    expect(view.getByRole('heading', { name: 'Service history information' }))
+      .to.exist;
   });
 
   describe('Periods of Service heading', () => {
     it('should render "Periods of service" when there are multiple entries in the service history', () => {
       initialState = createBasicInitialState();
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 
@@ -366,7 +364,7 @@ describe('MilitaryInformation', () => {
           characterOfDischargeCode: 'A',
         },
       ];
-      view = renderWithProfileReducers(<MilitaryInformation />, {
+      view = renderWithProfileReducers(<ServiceHistoryInformation />, {
         initialState,
       });
 

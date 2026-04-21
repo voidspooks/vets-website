@@ -16,3 +16,11 @@ export function oxfordCommaList(items = []) {
   const last = items[items.length - 1];
   return `${head}, and ${last}`;
 }
+
+/**
+ * Convert a string to initial caps (first letter of each word capitalized).
+ * @param {string} text - text to be converted
+ * @returns {string}
+ */
+export const toInitialCaps = text =>
+  text.replace(/\b([a-z])/g, char => char.toUpperCase());

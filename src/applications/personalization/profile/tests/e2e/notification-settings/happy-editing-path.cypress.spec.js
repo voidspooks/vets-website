@@ -38,7 +38,7 @@ describe('Updating Notification Settings', () => {
   context('when the API behaves', () => {
     it('should allow opting into getting notifications for the first time - C8544', () => {
       cy.login(mockPatient);
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       cy.intercept('POST', '/v0/profile/communication_preferences', {
         statusCode: 200,
@@ -78,7 +78,7 @@ describe('Updating Notification Settings', () => {
 
     it('should allow opting out of getting notifications - C8545', () => {
       cy.login(mockPatient);
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
       // Alias the PATCH request to wait for it
       cy.intercept('PATCH', '/v0/profile/communication_preferences/*', {
@@ -129,7 +129,7 @@ describe('Updating Notification Settings', () => {
   });
   it('should allow opting out of getting notifications - C8545', () => {
     cy.login(mockPatient);
-    cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+    cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
     // Alias the PATCH request to wait for it
     cy.intercept('PATCH', '/v0/profile/communication_preferences/*', {

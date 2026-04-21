@@ -49,8 +49,6 @@ describe('PreferenceSelectionContainer', () => {
     },
     featureToggles: {
       loading: false,
-      profile2Enabled: true,
-      profileHealthCareSettingsPage: true,
     },
   });
 
@@ -58,8 +56,6 @@ describe('PreferenceSelectionContainer', () => {
     useFeatureToggleStub = sinon.stub(featureToggles, 'useFeatureToggle');
     useFeatureToggleStub.returns({
       TOGGLE_NAMES: {
-        profile2Enabled: 'profile2Enabled',
-        profileHealthCareSettingsPage: 'profileHealthCareSettingsPage',
         profileInternationalPhoneNumbers: 'profileInternationalPhoneNumbers',
       },
       useToggleValue: sinon.stub().returns(true),
@@ -164,7 +160,7 @@ describe('PreferenceSelectionContainer', () => {
 
       await waitFor(() => {
         expect(document.title).to.equal(
-          'Edit contact preferences | Veterans Affairs',
+          'Edit Contact Preferences | Veterans Affairs',
         );
       });
     });

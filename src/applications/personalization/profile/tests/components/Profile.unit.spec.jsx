@@ -423,8 +423,6 @@ describe('mapStateToProps', () => {
       'shouldFetchDirectDeposit',
       'shouldHideHealthCareContactsPage',
       'shouldShowAccreditedRepTab',
-      'shouldShowProfile2',
-      'shouldShowHealthCareSettingsPage',
       'shouldFetchSchedulingPreferences',
       'shouldFetchTotalDisabilityRating',
       'isBlocked',

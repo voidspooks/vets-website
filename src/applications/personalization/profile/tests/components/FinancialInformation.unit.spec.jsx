@@ -53,7 +53,9 @@ describe('FinancialInformation', () => {
   it('sets the document title', async () => {
     render(<FinancialInformation />);
     await waitFor(() => {
-      expect(document.title).to.include('Financial information');
+      expect(document.title).to.equal(
+        'Financial Information | Veterans Affairs',
+      );
     });
   });
 });

@@ -16,7 +16,9 @@ const MissingContactInfoAlertLink = ({ missingInfo }) => {
           linkText: 'Add an email address to your profile',
           linkTarget: generateContactInfoLink({
             fieldName: FIELD_NAMES.EMAIL,
-            returnPath: encodeURIComponent(PROFILE_PATHS.NOTIFICATION_SETTINGS),
+            returnPath: encodeURIComponent(
+              PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS,
+            ),
           }),
           linkTestId: 'add-email-address-link',
         },
@@ -24,7 +26,9 @@ const MissingContactInfoAlertLink = ({ missingInfo }) => {
           linkText: 'Add a US based mobile number to your profile',
           linkTarget: generateContactInfoLink({
             fieldName: FIELD_NAMES.MOBILE_PHONE,
-            returnPath: encodeURIComponent(PROFILE_PATHS.NOTIFICATION_SETTINGS),
+            returnPath: encodeURIComponent(
+              PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS,
+            ),
           }),
           linkTestId: 'add-mobile-phone-link',
         },

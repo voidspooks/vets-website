@@ -15,7 +15,7 @@ const ContactInfoOnFile = ({
 
   const updateMobileNumberHref = generateContactInfoLink({
     fieldName: FIELD_NAMES.MOBILE_PHONE,
-    returnPath: encodeURIComponent(PROFILE_PATHS.NOTIFICATION_SETTINGS),
+    returnPath: encodeURIComponent(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS),
   });
 
   const isInternationalMobile =
@@ -40,7 +40,7 @@ const ContactInfoOnFile = ({
               href={generateContactInfoLink({
                 fieldName: FIELD_NAMES.EMAIL,
                 returnPath: encodeURIComponent(
-                  PROFILE_PATHS.NOTIFICATION_SETTINGS,
+                  PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS,
                 ),
               })}
               text={

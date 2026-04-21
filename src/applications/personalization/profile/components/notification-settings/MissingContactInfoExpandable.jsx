@@ -64,7 +64,9 @@ const AddYourInfoLink = ({ channel }) => {
     <va-link
       href={generateContactInfoLink({
         fieldName: fieldNames[channel.id],
-        returnPath: encodeURIComponent(PROFILE_PATHS.NOTIFICATION_SETTINGS),
+        returnPath: encodeURIComponent(
+          PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS,
+        ),
       })}
       text={`Add your ${channelDescriptions[channel.id]} to your profile`}
     />

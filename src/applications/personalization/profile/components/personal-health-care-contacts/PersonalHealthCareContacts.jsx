@@ -14,8 +14,6 @@ import Loading from './Loading';
 import LoadFail from '../alerts/LoadFail';
 import NonVAPatientMessage from './NonVAPatientMessage';
 
-const PAGE_TITLE = 'Personal Health Care Contacts | Veterans Affairs';
-
 const PersonalHealthCareContacts = ({
   fetchProfileContacts = fetchProfileContactsFn,
 }) => {
@@ -30,7 +28,7 @@ const PersonalHealthCareContacts = ({
   ]);
 
   useEffect(() => {
-    document.title = PAGE_TITLE;
+    document.title = 'Health Care Contacts | Veterans Affairs';
   }, []);
 
   useEffect(() => !loading && focusElement('[data-focus-target]'), [loading]);

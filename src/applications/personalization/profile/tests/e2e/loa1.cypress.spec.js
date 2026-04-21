@@ -28,7 +28,7 @@ context('when user is LOA1', () => {
     });
     cy.intercept('GET', 'v0/feature_toggles*', {
       data: {
-        features: [{ name: 'profile_2_enabled', value: true }],
+        features: [],
       },
     });
     cy.login(mockLOA1User);

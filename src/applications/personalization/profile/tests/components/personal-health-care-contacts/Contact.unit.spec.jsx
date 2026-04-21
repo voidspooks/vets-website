@@ -1,7 +1,7 @@
 import React from 'react';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
-import Contact from './Contact';
+import Contact from '../../../components/personal-health-care-contacts/Contact';
 
 const initialProps = {
   contactType: 'Primary Next of Kin',

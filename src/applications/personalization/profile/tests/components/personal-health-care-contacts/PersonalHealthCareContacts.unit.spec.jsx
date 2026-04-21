@@ -7,7 +7,7 @@ import { renderInReduxProvider } from '@department-of-veterans-affairs/platform-
 import scheduledDowntime from '~/platform/monitoring/DowntimeNotification/reducer';
 import contacts from '@@profile/tests/fixtures/contacts.json';
 import reducers from '@@profile/reducers';
-import PersonalHealthCareContacts from './PersonalHealthCareContacts';
+import PersonalHealthCareContacts from '../../../components/personal-health-care-contacts/PersonalHealthCareContacts';
 
 let dispatchSpy;
 let props;

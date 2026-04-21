@@ -55,12 +55,12 @@ describe('Notification Settings', () => {
           const user = makeMockUser();
           user.data.attributes.vet360ContactInformation.mobilePhone = null;
           cy.login(user);
-          cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+          cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
           cy.loadingIndicatorWorks();
 
           cy.findByRole('heading', {
-            name: 'Notification settings',
+            name: 'Email and text notifications',
             level: 1,
           }).should('exist');
 
@@ -118,12 +118,12 @@ describe('Notification Settings', () => {
           const user = makeMockUser();
           user.data.attributes.vet360ContactInformation.email = null;
           cy.login(user);
-          cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+          cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
 
           cy.loadingIndicatorWorks();
 
           cy.findByRole('heading', {
-            name: 'Notification settings',
+            name: 'Email and text notifications',
             level: 1,
           }).should('exist');
 
@@ -191,9 +191,9 @@ describe('Notification Settings', () => {
             user.data.attributes.vet360ContactInformation.email = null;
             user.data.attributes.vet360ContactInformation.mobilePhone = null;
             cy.login(user);
-            cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+            cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
             cy.findByRole('heading', {
-              name: 'Notification settings',
+              name: 'Email and text notifications',
               level: 1,
             }).should('exist');
 
@@ -251,9 +251,9 @@ describe('Notification Settings', () => {
           const user = makeMockUser();
           user.data.attributes.vet360ContactInformation.mobilePhone = null;
           cy.login(user);
-          cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+          cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
           cy.findByRole('heading', {
-            name: 'Notification settings',
+            name: 'Email and text notifications',
             level: 1,
           }).should('exist');
 
@@ -290,9 +290,9 @@ describe('Notification Settings', () => {
           const user = makeMockUser();
           user.data.attributes.vet360ContactInformation.email = null;
           cy.login(user);
-          cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+          cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
           cy.findByRole('heading', {
-            name: 'Notification settings',
+            name: 'Email and text notifications',
             level: 1,
           }).should('exist');
 

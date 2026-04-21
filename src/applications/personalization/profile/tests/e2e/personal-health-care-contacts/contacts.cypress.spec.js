@@ -13,8 +13,6 @@ describe('Personal health care contacts', () => {
       'GET',
       '/v0/feature_toggles*',
       generateFeatureToggles({
-        profile2Enabled: true,
-        profileHealthCareSettingsPage: true,
         profileHideHealthCareContacts: false,
       }),
     );

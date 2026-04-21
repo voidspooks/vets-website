@@ -17,14 +17,14 @@ describe('AccountSecurity Page', () => {
         initialState: createCustomProfileState(),
       },
     );
-    expect(getByText('Account security')).to.exist;
+    expect(getByText('Sign-in information')).to.exist;
   });
 
   it('sets the document title on mount', () => {
     renderWithProfileReducersAndRouter(<AccountSecurity />, {
       initialState: createCustomProfileState(),
     });
-    expect(document.title).to.equal('Account security | Veterans Affairs');
+    expect(document.title).to.equal('Sign-In Information | Veterans Affairs');
   });
 
   it('renders main section headings of account security page', () => {
@@ -39,15 +39,11 @@ describe('AccountSecurity Page', () => {
     expect(getByText('Account setup')).to.exist;
   });
 
-  it('shows the correct headline text when profile2Enabled toggle is on', () => {
+  it('shows the correct headline text', () => {
     const { getByText } = renderWithProfileReducersAndRouter(
       <AccountSecurity />,
       {
-        initialState: createCustomProfileState({
-          featureToggles: {
-            profile2Enabled: true,
-          },
-        }),
+        initialState: createCustomProfileState(),
       },
     );
     expect(getByText('Sign-in information')).to.exist;

@@ -23,7 +23,10 @@ describe('Profile - Data Claims', () => {
 
     cy.wait('@getRatingInfo');
 
-    cy.findByText('40% service connected');
+    cy.findByRole('heading', { name: /^Profile$/i }).should('exist');
+    cy.findByText(
+      /Legal name, date of birth, preferred name, and disability rating/i,
+    ).should('exist');
 
     cy.injectAxeThenAxeCheck();
   });
@@ -37,7 +40,9 @@ describe('Profile - Data Claims', () => {
 
     cy.visit(PROFILE_PATHS.PROFILE_ROOT);
 
-    cy.findByText('40% service connected').should('not.exist');
+    cy.findByText(
+      /Legal name, date of birth, preferred name, and disability rating/i,
+    ).should('exist');
 
     cy.get('@getRatingInfoSpy').should('not.have.been.called');
 

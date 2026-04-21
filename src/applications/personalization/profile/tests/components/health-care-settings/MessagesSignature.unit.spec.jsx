@@ -124,7 +124,7 @@ const defaultOptions = {
   path: PROFILE_PATHS.MESSAGES_SIGNATURE,
   signInServiceName: 'idme',
   hasUnsavedEdits: false,
-  toggles: { profile2Enabled: true },
+  toggles: {},
 };
 
 const setup = (options = defaultOptions) => {

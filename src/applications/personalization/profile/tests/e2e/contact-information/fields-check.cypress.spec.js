@@ -36,11 +36,7 @@ const setup = () => {
 describe('Content on the personal information section in the profile', () => {
   it('should render as expected', () => {
     setup();
-    // Check full name
-    cy.findByText(/Wesley Watson Ford/i).should('exist');
-
-    // Check service branch
-    cy.findByText(/United States Air Force/i).should('exist');
+    cy.findByRole('heading', { name: /Contact information/i }).should('exist');
 
     // Check mailing address
     cy.get('div[data-field-name="mailingAddress"]')

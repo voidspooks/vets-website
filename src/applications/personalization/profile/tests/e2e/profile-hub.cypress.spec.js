@@ -10,7 +10,6 @@ describe('Profile - Hub page', () => {
     cy.login(mockUser);
     mockProfileLOA3(
       generateFeatureToggles({
-        profile2Enabled: true,
         profileHideHealthCareContacts: false,
       }),
     );
@@ -57,7 +56,6 @@ describe('Profile - Hub page', () => {
     cy.intercept(
       'v0/feature_toggles*',
       generateFeatureToggles({
-        profile2Enabled: true,
         profileLighthouseDirectDeposit: true,
       }),
     );

@@ -5,7 +5,10 @@ import { ProfileHubItem } from './hub/ProfileHubItem';
 
 const DependentsAndContacts = () => {
   return (
-    <Tier2PageContent pageHeader="Dependents and contacts">
+    <Tier2PageContent
+      pageHeader="Dependents and contacts"
+      pageTitle="Dependents And Contacts"
+    >
       <ProfileHubItem
         heading={PROFILE_PATH_NAMES.ACCREDITED_REPRESENTATIVE}
         content="Review contact information for your current accredited attorney, claims agent, or Veterans Service Organization (VSO)."

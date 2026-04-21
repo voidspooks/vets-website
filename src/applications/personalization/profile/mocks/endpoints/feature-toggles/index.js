@@ -18,7 +18,6 @@ const profileToggles = {
   profileShowMhvNotificationSettingsMedicalImages: false,
   profileShowNoValidationKeyAddressAlert: false,
   profileShowPaperlessDelivery: false,
-  profile2Enabled: false,
   cveVeteranStatusNewService: false,
 };
 

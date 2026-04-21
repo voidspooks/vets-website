@@ -11,13 +11,9 @@ import { PROFILE_PATHS } from '../../constants';
 describe('Profile NameTag', () => {
   beforeEach(() => {
     cy.login(mockUser);
-    cy.intercept(
-      'GET',
-      '/v0/feature_toggles*',
-      generateFeatureToggles({
-        profile2Enabled: true,
-      }),
-    ).as('getFeatureToggles');
+    cy.intercept('GET', '/v0/feature_toggles*', generateFeatureToggles()).as(
+      'getFeatureToggles',
+    );
     cy.intercept('/v0/profile/service_history', serviceHistory);
     cy.intercept('/v0/profile/full_name', fullName);
     cy.intercept(

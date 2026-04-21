@@ -19,8 +19,6 @@ function clickSubNavButton(buttonLabel, mobile, parentMenu = false) {
 }
 
 /**
- *
- * @param {boolean} profile2Enabled - feature
  * @param {boolean} mobile - test on a mobile viewport or not
  *
  * This helper:
@@ -33,11 +31,7 @@ function clickSubNavButton(buttonLabel, mobile, parentMenu = false) {
  *   - checks that focus is managed correctly
  */
 function checkSubNavFocus({ mobile = false } = {}) {
-  cy.intercept(
-    'GET',
-    'v0/feature_toggles*',
-    generateFeatureToggles({ profile2Enabled: true }),
-  );
+  cy.intercept('GET', 'v0/feature_toggles*', generateFeatureToggles());
   cy.visit(PROFILE_PATHS.PERSONAL_INFORMATION);
   if (mobile) {
     cy.viewport('iphone-4');
@@ -96,20 +90,6 @@ function checkSubNavFocus({ mobile = false } = {}) {
   );
   cy.title().should('eq', 'Direct Deposit Information | Veterans Affairs');
   cy.axeCheck();
-
-  // make the a11y and focus management check on the Account Security section
-  // clickSubNavButton(
-  //   PROFILE_PATH_NAMES.ACCOUNT_SECURITY,
-  //   mobile,
-  //   profile2Enabled,
-  //   true,
-  // );
-  // cy.url().should(
-  //   'eq',
-  //   `${Cypress.config().baseUrl}${PROFILE_PATHS.ACCOUNT_SECURITY}`,
-  // );
-  // cy.title().should('eq', 'Account Security | Veterans Affairs');
-  // cy.axeCheck();
 
   // make the a11y and focus management check on the Connected Apps section
   clickSubNavButton(PROFILE_PATH_NAMES.CONNECTED_APPLICATIONS, mobile);

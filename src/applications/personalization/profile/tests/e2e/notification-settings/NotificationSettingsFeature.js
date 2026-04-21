@@ -26,7 +26,7 @@ class NotificationSettingsFeature {
 
   loginAsUser36AndVisitNotficationSettingsPage = () => {
     cy.login(mockUser36);
-    cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+    cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
   };
 
   confirmHearingReminderNotificationSanityCheck = () => {

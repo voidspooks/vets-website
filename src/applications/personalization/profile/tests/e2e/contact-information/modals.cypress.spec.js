@@ -2,24 +2,19 @@ import { PROFILE_PATHS } from '@@profile/constants';
 import { mockUser } from '@@profile/tests/fixtures/users/user';
 import transactionCompletedWithNoChanges from '@@profile/tests/fixtures/transactions/no-changes-transaction.json';
 import transactionCompletedWithError from '@@profile/tests/fixtures/transactions/error-transaction.json';
-import { mockFeatureToggles } from '../helpers';
 
-const setup = ({ profile2Enabled = false, mobile = false } = {}) => {
+const setup = ({ mobile = false } = {}) => {
   if (mobile) {
     cy.viewportPreset('va-top-mobile-1');
   }
 
   cy.login(mockUser);
-  if (profile2Enabled) {
-    cy.intercept('GET', 'v0/feature_toggles*', {
-      data: {
-        type: 'feature_toggles',
-        features: [{ name: 'profile_2_enabled', value: true }],
-      },
-    });
-  } else {
-    mockFeatureToggles();
-  }
+  cy.intercept('GET', 'v0/feature_toggles*', {
+    data: {
+      type: 'feature_toggles',
+      features: [],
+    },
+  });
   cy.visit(PROFILE_PATHS.CONTACT_INFORMATION);
 
   // should show a loading indicator
@@ -298,30 +293,19 @@ describe('when moving to other profile pages', () => {
     // Open edit view
     cy.get(`va-button[label="Edit ${sectionName}"]`).click({ force: true });
 
-    cy.findByRole('link', {
-      name: /service history information/i,
-    }).click({
-      force: true,
-    });
-    cy.findByRole('link', {
-      name: /contact.*information/i,
-    }).click({
-      force: true,
-    });
-    // uncomment when Paperless Delivery is ready for production
-    //  cy.get('va-sidenav-item[label="Service history information"]')
-    //   .filter(':visible')
-    //   .click();
-    // cy.get('va-sidenav-item[label="Contact information"]')
-    //   .filter(':visible')
-    //   .click();
+    cy.get('va-sidenav-item[label="Service history information"]')
+      .filter(':visible')
+      .click();
+    cy.get('va-sidenav-item[label="Contact information"]')
+      .filter(':visible')
+      .click();
     cy.get(`va-button[label="Edit ${sectionName}"]`).should('exist');
 
     cy.axeCheck();
   });
 
-  it('should exit edit mode if opened (profile2Enabled)', () => {
-    setup({ profile2Enabled: true });
+  it('should exit edit mode if opened', () => {
+    setup();
 
     const sectionName = 'Contact email address';
 

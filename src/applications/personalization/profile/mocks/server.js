@@ -122,8 +122,6 @@ const responses = {
             profileUseExperimental: false,
             profileShowPrivacyPolicy: false,
             profileShowPaperlessDelivery: false,
-            profile2Enabled: true,
-            profileHealthCareSettingsPage: true,
             profileHideHealthCareContacts: true,
             profileHideMissingClaimInformationNotificationSetting: true,
             vetStatusPdfLogging: true,

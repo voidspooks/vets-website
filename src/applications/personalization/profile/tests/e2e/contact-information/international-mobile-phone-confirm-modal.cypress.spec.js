@@ -1,137 +1,88 @@
 import { PROFILE_PATHS } from '@@profile/constants';
-import user36 from '@@profile/tests/fixtures/users/user-36.json';
-import set from 'lodash/set';
-import cloneDeep from 'lodash/cloneDeep';
-import { mockFeatureToggles, mockGETEndpoints } from '../helpers';
+import mockUser from '@@profile/tests/fixtures/users/user-36.json';
+import {
+  mockFeatureToggles,
+  mockGETEndpoints,
+} from '@@profile/tests/e2e/helpers';
 
-/**
- * Expected changes to user payload after the transactions completes.
- * No particular reason for user36, just seen in other contact info tests.
- */
-const user36IntlMobile = set(
-  cloneDeep(user36),
-  'data.attributes.vet360ContactInformation.mobilePhone',
-  {
-    ...cloneDeep(user36.data.attributes.vet360ContactInformation.mobilePhone),
-    areaCode: null,
-    countryCode: '93',
-    isInternational: true,
-    phoneNumber: '201234567',
-  },
-);
+const setup = () => {
+  cy.viewportPreset('va-top-mobile-1');
 
-describe('International mobile phone number confirm modal', () => {
-  it('user sees the confirmation modal and confirms the update', () => {
-    cy.viewportPreset('va-top-mobile-1');
+  cy.login(mockUser);
 
-    cy.login(user36);
+  mockGETEndpoints([
+    'v0/mhv_account',
+    'v0/profile/full_name',
+    'v0/profile/status',
+    'v0/profile/personal_information',
+    'v0/profile/service_history',
+    'v0/profile/direct_deposits',
+  ]);
 
-    // Mock the intl mobile phone update transaction and follow-up requests
-
-    cy.intercept('PUT', '/v0/profile/telephones', {
-      statusCode: 200,
-      body: {
-        data: {
-          id: '',
-          type: 'async_transaction_va_profile_telephone_transactions',
-          attributes: {
-            transactionId: '06880455-a2e2-4379-95ba-90aa53fdb273',
-            transactionStatus: 'RECEIVED',
-            type: 'AsyncTransaction::VAProfile::TelephoneTransaction',
-            metadata: [],
-          },
+  mockFeatureToggles(() => ({
+    data: {
+      type: 'feature_toggles',
+      features: [
+        {
+          name: 'profile_international_phone_numbers',
+          value: true,
         },
-      },
+        {
+          name: 'profileInternationalPhoneNumbers',
+          value: true,
+        },
+      ],
+    },
+  }));
+
+  cy.intercept('GET', '/v0/user?*', {
+    statusCode: 200,
+    body: mockUser,
+  });
+
+  cy.visit(PROFILE_PATHS.CONTACT_INFORMATION);
+  cy.get('va-loading-indicator').should('not.exist');
+};
+
+describe('International mobile phone number editing', () => {
+  it('shows the inline text-notification warning for international mobile numbers', () => {
+    setup();
+
+    cy.get('va-button[label="Edit Mobile phone number"]').click({
+      force: true,
     });
 
-    cy.intercept(
-      'GET',
-      '/v0/profile/status/06880455-a2e2-4379-95ba-90aa53fdb273',
-      {
-        statusCode: 200,
-        body: {
-          data: {
-            id: '',
-            type: 'async_transaction_va_profile_mock_transactions',
-            attributes: {
-              transactionId: '06880455-a2e2-4379-95ba-90aa53fdb273',
-              transactionStatus: 'COMPLETED_SUCCESS',
-              type: 'AsyncTransaction::VAProfile::MockTransaction',
-              metadata: [],
-            },
-          },
-        },
-      },
-    );
-
-    cy.intercept('GET', '/v0/user?*', {
-      statusCode: 200,
-      body: user36IntlMobile,
-    });
-
-    mockGETEndpoints([
-      'v0/mhv_account',
-      'v0/profile/full_name',
-      'v0/profile/status',
-      'v0/profile/personal_information',
-      'v0/profile/service_history',
-      'v0/profile/direct_deposits',
-    ]);
-
-    // Enable the intl feature
-    mockFeatureToggles(() => ({
-      data: {
-        type: 'feature_toggles',
-        features: [
-          {
-            name: 'profile_international_phone_numbers',
-            value: true,
-          },
-          {
-            name: 'profileInternationalPhoneNumbers',
-            value: true,
-          },
-        ],
-      },
-    }));
-
-    cy.visit(PROFILE_PATHS.CONTACT_INFORMATION);
-
-    cy.get('va-loading-indicator').should('not.exist');
-
-    // Edit the mobile phone number
-
-    cy.get('#edit-mobile-phone-number').click();
-
-    cy.get('va-telephone-input[label="Mobile phone number"]').should('exist');
-    cy.get('va-telephone-input[label="Mobile phone number"]').scrollIntoView();
-
-    cy.get('va-combo-box').should('exist');
-
-    // Interact with the country code combobox dropdown and number input
-
-    cy.get('button.usa-combo-box__toggle-list').click();
-
-    cy.get('li[data-value="AF"]').click({ force: true });
+    cy.contains(
+      'Enter a U.S. mobile phone number to receive text notifications. We can’t send text notifications to international numbers.',
+    ).should('be.visible');
 
     cy.get('va-combo-box')
-      .next()
+      .should('exist')
+      .as('countryCodeInput');
+    cy.get('va-telephone-input[label="Mobile phone number"]')
+      .should('exist')
+      .as('mobilePhoneInput');
+
+    cy.get('@countryCodeInput').then($comboBox => {
+      cy.selectVaComboBox($comboBox, 'AF');
+    });
+
+    cy.get('@mobilePhoneInput').then($telephoneInput => {
+      cy.fillVaTelephoneInput($telephoneInput, {
+        contact: '201234567',
+      });
+    });
+
+    cy.get('@countryCodeInput')
       .shadow()
-      .get('#inputField')
-      .type('201234567');
+      .find('input')
+      .should('have.value', 'Afghanistan +93');
 
-    // Trigger save
-    cy.findByTestId('save-edit-button').click();
-
-    // Proceed through the confirmation modal
-
-    cy.findByTestId('confirm-international-mobile-save-modal').should('exist');
+    cy.get('@mobilePhoneInput')
+      .shadow()
+      .find('input#inputField')
+      .should('have.value', '201234567');
 
     cy.injectAxeThenAxeCheck();
-
-    cy.contains('button', 'Save the number you entered').click();
-
-    // Update was good
-    cy.get('va-alert[status="success"]').should('exist');
   });
 });

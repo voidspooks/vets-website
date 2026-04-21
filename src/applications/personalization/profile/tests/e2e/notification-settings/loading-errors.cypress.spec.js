@@ -31,9 +31,9 @@ describe('Notification Settings - Load Errors', () => {
       });
 
       cy.login(mockUserVAPError);
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
       cy.findByRole('heading', {
-        name: 'Notification settings',
+        name: 'Email and text notifications',
         level: 1,
       }).should('exist');
       cy.findByTestId('service-is-down-banner').should('exist');
@@ -51,9 +51,9 @@ describe('Notification Settings - Load Errors', () => {
         data: error500,
       });
       cy.login(mockUser);
-      cy.visit(PROFILE_PATHS.NOTIFICATION_SETTINGS);
+      cy.visit(PROFILE_PATHS.EMAIL_AND_TEXT_NOTIFICATIONS);
       cy.findByRole('heading', {
-        name: 'Notification settings',
+        name: 'Email and text notifications',
         level: 1,
       }).should('exist');
 

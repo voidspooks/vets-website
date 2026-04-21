@@ -28,11 +28,7 @@ describe('When there is a known issue connecting to VA Profile', () => {
     // Contact info alert should be shown
     cy.findByTestId('service-is-down-banner').should('exist');
 
-    // Check full name
-    cy.findByText(/Wesley Watson Ford/i).should('exist');
-
-    // Check service branch
-    cy.findByText(/United States Air Force/i).should('exist');
+    cy.findByRole('heading', { name: /Contact information/i }).should('exist');
 
     // Contact info sections should not be shown
     cy.findByText(/^Mailing address$/i).should('not.exist');

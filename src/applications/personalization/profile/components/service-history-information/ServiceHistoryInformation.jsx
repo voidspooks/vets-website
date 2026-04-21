@@ -12,11 +12,6 @@ import DowntimeNotification, {
 import { focusElement } from '~/platform/utilities/ui';
 import { selectVeteranStatus } from '~/platform/user/selectors';
 
-import {
-  TOGGLE_NAMES,
-  Toggler,
-  useFeatureToggle,
-} from 'platform/utilities/feature-toggles';
 import LoadFail from '../alerts/LoadFail';
 import Headline from '../ProfileSectionHeadline';
 import { transformServiceHistoryEntryIntoTableRow } from '../../helpers';
@@ -129,7 +124,10 @@ const NoServiceHistoryAlert = () => {
   );
 };
 
-const MilitaryInformationContent = ({ militaryInformation, veteranStatus }) => {
+const ServiceHistoryInformationContent = ({
+  serviceHistoryInformation,
+  veteranStatus,
+}) => {
   useEffect(() => {
     focusElement('[data-focus-target]');
   }, []);
@@ -137,17 +135,17 @@ const MilitaryInformationContent = ({ militaryInformation, veteranStatus }) => {
   const invalidVeteranStatus =
     !veteranStatus?.status || veteranStatus?.status === 'NOT_AUTHORIZED';
 
-  // When the user is not authorized, militaryInformation.serviceHistory is populated with .error
+  // When the user is not authorized, serviceHistoryInformation.serviceHistory is populated with .error
   if (
     invalidVeteranStatus &&
-    !militaryInformation?.serviceHistory?.serviceHistory
+    !serviceHistoryInformation?.serviceHistory?.serviceHistory
   ) {
     return <NotAVeteranAlert />;
   }
 
   const {
     serviceHistory: { serviceHistory, error },
-  } = militaryInformation;
+  } = serviceHistoryInformation;
 
   if (error) {
     if (some(error.errors, ['code', '403'])) {
@@ -162,13 +160,9 @@ const MilitaryInformationContent = ({ militaryInformation, veteranStatus }) => {
 
   return (
     <>
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.profile2Enabled}>
-        <Toggler.Enabled>
-          <div className="vads-u-margin-bottom--4 vads-u-margin-top--1">
-            <MilitaryRecordErrorInfo />
-          </div>
-        </Toggler.Enabled>
-      </Toggler>
+      <div className="vads-u-margin-bottom--4 vads-u-margin-top--1">
+        <ServiceHistoryRecordErrorInfo />
+      </div>
       <ProfileInfoSection
         data={serviceHistory.map(item =>
           transformServiceHistoryEntryIntoTableRow(item),
@@ -179,24 +173,16 @@ const MilitaryInformationContent = ({ militaryInformation, veteranStatus }) => {
         level={2}
         asList
       />
-
-      <Toggler toggleName={Toggler.TOGGLE_NAMES.profile2Enabled}>
-        <Toggler.Disabled>
-          <div className="vads-u-margin-bottom--4 vads-u-margin-top--1">
-            <MilitaryRecordErrorInfo />
-          </div>
-        </Toggler.Disabled>
-      </Toggler>
     </>
   );
 };
 
-MilitaryInformationContent.propTypes = {
-  militaryInformation: PropTypes.object,
+ServiceHistoryInformationContent.propTypes = {
+  serviceHistoryInformation: PropTypes.object,
   veteranStatus: PropTypes.object,
 };
 
-const MilitaryRecordErrorInfo = () => (
+const ServiceHistoryRecordErrorInfo = () => (
   <va-additional-info
     trigger="What if I don't think my military service information is correct?"
     uswds
@@ -216,16 +202,15 @@ const MilitaryRecordErrorInfo = () => (
   </va-additional-info>
 );
 
-const MilitaryInformation = ({ militaryInformation, veteranStatus }) => {
+const ServiceHistoryInformation = ({
+  serviceHistoryInformation,
+  veteranStatus,
+}) => {
   useEffect(() => {
     document.title = `Service History Information | Veterans Affairs`;
   }, []);
 
-  const { useToggleValue } = useFeatureToggle();
-  const isProfile2Enabled = useToggleValue(TOGGLE_NAMES.profile2Enabled);
-  const headlineText = isProfile2Enabled
-    ? 'Service history information'
-    : 'Military Information';
+  const headlineText = 'Service history information';
 
   return (
     <div>
@@ -234,8 +219,8 @@ const MilitaryInformation = ({ militaryInformation, veteranStatus }) => {
         appTitle="military information page"
         dependencies={[externalServices.VAPRO_MILITARY_INFO]}
       >
-        <MilitaryInformationContent
-          militaryInformation={militaryInformation}
+        <ServiceHistoryInformationContent
+          serviceHistoryInformation={serviceHistoryInformation}
           veteranStatus={veteranStatus}
         />
       </DowntimeNotification>
@@ -255,15 +240,18 @@ const MilitaryInformation = ({ militaryInformation, veteranStatus }) => {
         active
       />
 
-      <DevTools devToolsData={{ militaryInformation, veteranStatus }} panel>
+      <DevTools
+        devToolsData={{ serviceHistoryInformation, veteranStatus }}
+        panel
+      >
         <p>Profile devtools test, please ignore.</p>
       </DevTools>
     </div>
   );
 };
 
-MilitaryInformation.propTypes = {
-  militaryInformation: PropTypes.shape({
+ServiceHistoryInformation.propTypes = {
+  serviceHistoryInformation: PropTypes.shape({
     serviceHistory: PropTypes.shape({
       serviceHistory: PropTypes.arrayOf(
         PropTypes.shape({
@@ -282,8 +270,8 @@ MilitaryInformation.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  militaryInformation: state.vaProfile?.militaryInformation,
+  serviceHistoryInformation: state.vaProfile?.militaryInformation,
   veteranStatus: selectVeteranStatus(state),
 });
 
-export default connect(mapStateToProps)(MilitaryInformation);
+export default connect(mapStateToProps)(ServiceHistoryInformation);

@@ -44,6 +44,8 @@ describe('DependentsAndContacts', () => {
 
   it('sets the document title', () => {
     render(<DependentsAndContacts />);
-    expect(document.title).to.include('Dependents and contacts');
+    expect(document.title).to.equal(
+      'Dependents And Contacts | Veterans Affairs',
+    );
   });
 });

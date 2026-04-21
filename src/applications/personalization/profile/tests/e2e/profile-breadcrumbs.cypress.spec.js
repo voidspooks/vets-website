@@ -115,8 +115,6 @@ describe('Profile Breadcrumbs', () => {
         '/v0/feature_toggles*',
         generateFeatureToggles({
           representativeStatusEnableV2Features: true,
-          profile2Enabled: true,
-          profileHealthCareSettingsPage: true,
           profileHideHealthCareContacts: false,
         }),
       ).as('featureToggles');

@@ -22,6 +22,7 @@ const AccreditedRepresentative = ({ isLOA3 }) => {
   const store = useStore();
 
   useEffect(() => {
+    document.title = 'Accredited Representative Or VSO | Veterans Affairs';
     focusElement('.rep-section-header');
     repStatusLoader(store, 'representative-status', 2);
   }, []);

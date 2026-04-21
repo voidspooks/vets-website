@@ -43,7 +43,8 @@ describe('AccountSecurityContent component', () => {
       },
     );
 
-    expect(getByText('Sign-in information')).to.exist;
+    expect(getByText('Update your sign-in information on the ID.me website')).to
+      .exist;
     expect(getByText('Account setup')).to.exist;
   });
 
@@ -154,7 +155,7 @@ describe('AccountSecurityContent component', () => {
     expect(getByTestId('mpi-connection-error')).to.exist;
   });
 
-  it("renders <SignInServiceUpdateLink /> when identity isn't verified and profile2 is enabled", () => {
+  it("renders <SignInServiceUpdateLink /> when identity isn't verified", () => {
     const { getByText } = renderWithProfileReducersAndRouter(
       <AccountSecurityContent />,
       {
@@ -166,9 +167,7 @@ describe('AccountSecurityContent component', () => {
               },
             },
           }),
-          ...createFeatureTogglesState({
-            [Toggler.TOGGLE_NAMES.profile2Enabled]: true,
-          }),
+          ...createFeatureTogglesState({}),
         },
       },
     );
@@ -190,9 +189,7 @@ describe('AccountSecurityContent component', () => {
               },
             },
           }),
-          ...createFeatureTogglesState({
-            [Toggler.TOGGLE_NAMES.profile2Enabled]: true,
-          }),
+          ...createFeatureTogglesState({}),
         },
       },
     );

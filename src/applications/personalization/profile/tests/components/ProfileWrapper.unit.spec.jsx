@@ -19,7 +19,6 @@ describe('ProfileWrapper', () => {
     sandbox.stub(featureToggles, 'useFeatureToggle').returns({
       useToggleValue: sandbox.stub().returns(false),
       TOGGLE_NAMES: {
-        profileHealthCareSettingsPage: 'profileHealthCareSettingsPage',
         profileHideHealthCareContacts: 'profileHideHealthCareContacts',
       },
     });
@@ -36,7 +35,7 @@ describe('ProfileWrapper', () => {
     </MemoryRouter>
   );
 
-  it('should render NameTag when the full name of the user was fetched)', () => {
+  it('should not render NameTag on non-hub routes even when the full name was fetched)', () => {
     const initialState = {
       vaProfile: {
         hero: {
@@ -47,10 +46,8 @@ describe('ProfileWrapper', () => {
         },
       },
     };
-    const { getByTestId } = render(uiLOA3, { initialState });
-
-    const NameTag = getByTestId('name-tag');
-    expect(NameTag.textContent.match(/Test Test/i)).not.to.be.null;
+    const { queryByTestId } = render(uiLOA3, { initialState });
+    expect(queryByTestId('name-tag')).to.not.exist;
   });
 
   it('should not render NameTag when the full name of the user could not be fetched)', () => {
@@ -62,8 +59,7 @@ describe('ProfileWrapper', () => {
       },
     };
     const { queryByTestId } = render(uiLOA3, { initialState });
-    const NameTag = queryByTestId('name-tag');
-    expect(NameTag).to.be.null;
+    expect(queryByTestId('name-tag')).to.not.exist;
   });
 
   it('should not render NameTag when the user is LOA1)', () => {

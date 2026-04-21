@@ -19,7 +19,7 @@ describe('Profile - Hub page', () => {
   beforeEach(() => {
     cy.login(mockUser);
 
-    mockProfileLOA3(generateFeatureToggles({ profile2Enabled: true }));
+    mockProfileLOA3(generateFeatureToggles());
   });
 
   it('should render blocked profile content when user is deceased', () => {
