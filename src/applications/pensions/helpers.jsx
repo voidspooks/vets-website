@@ -166,3 +166,16 @@ export const netWorthEstimateIsOverThreshold = formData => {
   }
   return value > threshold;
 };
+
+export const adjustTotalNetWorthBooleanIfNeeded = (formData, setFormData) => {
+  if (
+    netWorthEstimateIsOverThreshold(formData) &&
+    formData.totalNetWorth === false
+  ) {
+    setFormData({
+      ...formData,
+      totalNetWorth: true,
+    });
+  }
+  return true;
+};

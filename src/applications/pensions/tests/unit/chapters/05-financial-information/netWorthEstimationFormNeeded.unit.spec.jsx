@@ -68,3 +68,38 @@ describe('NetWorthEstimationFormNeeded page depends', () => {
     expect(netWorthEstimateIsOverThresholdStub.calledOnce).to.be.true;
   });
 });
+
+describe('NetWorthEstimationFormNeeded page onContinue', () => {
+  it('should call setFormData in adjustTotalNetWorthBooleanIfNeeded when totalNetWorth is false and netWorthEstimationFormNeeded is above the threshold', () => {
+    const formData = { totalNetWorth: false, netWorthEstimation: 100_000 };
+    const setFormData = sinon.spy();
+
+    pageConfig.onContinue(formData, setFormData);
+
+    expect(setFormData.args[0][0].totalNetWorth).to.be.true;
+  });
+  it('should not call setFormData in adjustTotalNetWorthBooleanIfNeeded when totalNetWorth is false and netWorthEstimationFormNeeded is below the threshold', () => {
+    const formData = { totalNetWorth: false, netWorthEstimation: 1000 };
+    const setFormData = sinon.spy();
+
+    pageConfig.onContinue(formData, setFormData);
+
+    expect(setFormData.notCalled).to.be.true;
+  });
+  it('should not call setFormData in adjustTotalNetWorthBooleanIfNeeded when totalNetWorth is true and netWorthEstimationFormNeeded is below the threshold', () => {
+    const formData = { totalNetWorth: true, netWorthEstimation: 1000 };
+    const setFormData = sinon.spy();
+
+    pageConfig.onContinue(formData, setFormData);
+
+    expect(setFormData.notCalled).to.be.true;
+  });
+  it('should not call setFormData in adjustTotalNetWorthBooleanIfNeeded when totalNetWorth is true and netWorthEstimationFormNeeded is below the threshold', () => {
+    const formData = { totalNetWorth: true, netWorthEstimation: 100_000 };
+    const setFormData = sinon.spy();
+
+    pageConfig.onContinue(formData, setFormData);
+
+    expect(setFormData.notCalled).to.be.true;
+  });
+});
