@@ -354,56 +354,10 @@ export const FORM_21_4502 = {
     ERROR_DATE_VALID: 'Please provide a valid date',
     HINT_DATE: 'For example: January 19, 2022',
   },
-  ELIGIBILITY: {
-    TITLE: 'Is this the form I need?',
-    INTRO:
-      'Use this form if you are a Veteran or service member with specific service-connected disabilities to apply for automobile or other transportation and adaptive equipment allowance under federal law. This benefit helps eligible Veterans and service members purchase a vehicle and obtain approved adaptive equipment needed to operate the vehicle safely.',
-    ANSWER_QUESTIONS: 'Answer a few questions to get started.',
-    QUESTION_VA_REACHED_OUT:
-      'Has the VA reached out to you about this benefit?',
-    HINT_VA_REACHED_OUT:
-      'This form should be completed only by Veterans who have already been determined by the VA to be entitled to an automobile or adaptive equipment',
-    OPTION_YES: 'Yes, I received communication from the VA about this benefit',
-    OPTION_NO:
-      'No, I have not received communication from the VA about this benefit',
-    QUESTION_APPLYING_FOR: 'What benefit are you applying for?',
-    OPTION_AUTOMOBILE: 'Financial assistance in purchasing an automobile',
-    OPTION_ADAPTIVE_EQUIPMENT:
-      'Financial assistance in purchasing approved adaptive equipment',
-    SUMMARY_TITLE: 'Eligibility summary',
-    YOUR_RESPONSES: 'Your responses:',
-    REQUIREMENT_VA_REACHED_OUT: 'VA has reached out to you about this benefit',
-    REQUIREMENT_AUTOMOBILE:
-      'Applying for financial assistance to purchase an automobile (not adaptive equipment only)',
-    NOT_ELIGIBLE_DISABILITY:
-      'Based on your response, you may not currently be eligible to complete ',
-    NOT_ELIGIBLE_DISABILITY_EMPHASIS: 'VA Form 21-4502',
-    NOT_ELIGIBLE_DISABILITY_AFTER:
-      '. Confirm you have applied for service-connected disability benefits through the VA. Select the link to file for disability compensation with the VA.',
-    LINK_DISABILITY_CLAIM:
-      'File for disability compensation with VA Form 21-526EZ',
-    OPENS_IN_NEW_TAB: '(opens in a new tab)',
-    NOT_ELIGIBLE_ADAPTIVE:
-      'If you are applying for financial assistance in purchasing adaptive equipment only for a vehicle you already own, complete VA Form 10-1394 (Application for Adaptive Equipment - Motor Vehicle).',
-    LINK_FORM_10_1394: 'VA Form 10-1394',
-    ELIGIBLE_AUTOMOBILE_BEFORE:
-      "Based on your responses, you'll file for an automobile or other conveyance using ",
-    ELIGIBLE_AUTOMOBILE_AFTER: '.',
-    ALREADY_KNOW_TITLE: 'Already know this is the right form?',
-    ALREADY_KNOW_DESCRIPTION:
-      'If you know VA Form 21-4502 is correct, or if you were directed to complete this application, you can continue without answering the questions above.',
-    CONTINUE: 'Continue',
-    REQUIREMENT_MET: 'Requirement met: ',
-    REQUIREMENT_NOT_MET: 'Requirement not met: ',
-    FORM_10_1394_URL: 'https://www.va.gov/forms/10-1394/',
-    DISABILITY_CLAIM_URL:
-      'https://www.va.gov/disability/file-disability-claim-form-21-526ez/introduction',
-  },
   FORM_CONFIG: {
     TITLE:
       'Application for Automobile or Other Conveyance and Adaptive Equipment (UNDER 38 U.S.C. 3901-3904) (VA 21-4502)',
     SUB_TITLE: 'Please complete this form as accurately as you can.',
-    CHAPTER_ELIGIBILITY: 'Is this the form I need?',
     CHAPTER_VETERAN_ID: 'Section I: Basic information',
     CHAPTER_CONTACT: 'Section I: Contact information',
     CHAPTER_ADDRESS: 'Section I: Mailing address',

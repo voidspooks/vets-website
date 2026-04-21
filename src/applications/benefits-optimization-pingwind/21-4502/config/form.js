@@ -16,7 +16,6 @@ import getHelp from '../../shared/components/GetFormHelp';
 import transformForSubmit from './submit-transformer';
 import prefillTransformer from './prefill-transformer';
 
-import EligibilityFormPage from '../pages/eligibility';
 import personalInfoBasic from '../pages/personalInfoBasic';
 import contactInfo from '../pages/contactInfo';
 import address from '../pages/address';
@@ -123,20 +122,6 @@ const formConfig = {
   }),
 
   chapters: {
-    eligibilityChapter: {
-      title: FORM_21_4502.FORM_CONFIG.CHAPTER_ELIGIBILITY,
-      hideOnReviewPage: true,
-      pages: {
-        eligibilityPage: {
-          path: 'eligibility',
-          title: FORM_21_4502.FORM_CONFIG.CHAPTER_ELIGIBILITY,
-          CustomPage: EligibilityFormPage,
-          CustomPageReview: null,
-          uiSchema: {},
-          schema: { type: 'object', properties: {} },
-        },
-      },
-    },
     veteranIdChapter: {
       title: FORM_21_4502.FORM_CONFIG.CHAPTER_VETERAN_ID,
       pages: {

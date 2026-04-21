@@ -64,15 +64,6 @@ describe('21-4502 form config', () => {
   });
 
   describe('chapters', () => {
-    it('has eligibility as first chapter', () => {
-      expect(formConfig.chapters).to.have.property('eligibilityChapter');
-      const firstChapterKey = Object.keys(formConfig.chapters)[0];
-      expect(firstChapterKey).to.equal('eligibilityChapter');
-      expect(
-        formConfig.chapters.eligibilityChapter.pages.eligibilityPage,
-      ).to.have.property('CustomPage');
-    });
-
     it('has schema and uiSchema for form pages', () => {
       const veteranPages = formConfig.chapters.veteranIdChapter.pages;
       expect(veteranPages.personalInfoBasicPage).to.have.property('schema');
