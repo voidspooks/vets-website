@@ -17,44 +17,27 @@ describe('21-4502 veteranDisabilityCompensation page', () => {
     );
   });
 
-  it('defines appliedDisabilityCompensationPlace and appliedDisabilityCompensationDate', () => {
-    expect(
-      appSchema.properties[
-        applicationInfoFields.appliedDisabilityCompensationPlace
-      ],
-    ).to.exist;
+  it('defines appliedDisabilityCompensationDate and removes deleted fields', () => {
     expect(
       appSchema.properties[
         applicationInfoFields.appliedDisabilityCompensationDate
       ],
     ).to.exist;
+    expect(
+      appSchema.properties[
+        applicationInfoFields.appliedDisabilityCompensationPlace
+      ],
+    ).to.not.exist;
+    expect(appSchema.properties[applicationInfoFields.vaOfficeLocation]).to.not
+      .exist;
   });
 
-  it('uses the custom required messages', () => {
+  it('uses the custom required messages for the yes/no question', () => {
     expect(
       appUiSchema[applicationInfoFields.veteranDisabilityCompensation][
         'ui:errorMessages'
       ].required,
     ).to.equal(V.ERROR_APPLIED);
-    expect(
-      appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace][
-        'ui:errorMessages'
-      ].required,
-    ).to.equal(V.ERROR_IF_YES);
-    expect(
-      appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace][
-        'ui:required'
-      ],
-    ).to.be.a('function');
-    expect(
-      appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace][
-        'ui:required'
-      ]({
-        applicationInfo: {
-          [applicationInfoFields.veteranDisabilityCompensation]: true,
-        },
-      }),
-    ).to.equal(true);
   });
 
   it('uses the custom date hint and messages', () => {
@@ -77,5 +60,12 @@ describe('21-4502 veteranDisabilityCompensation page', () => {
       V.ERROR_DATE_APPLIED_INVALID,
     );
     expect(dateUi['ui:validations']).to.have.length(1);
+  });
+
+  it('does not render the deleted conditional text fields', () => {
+    expect(
+      appUiSchema[applicationInfoFields.appliedDisabilityCompensationPlace],
+    ).to.not.exist;
+    expect(appUiSchema[applicationInfoFields.vaOfficeLocation]).to.not.exist;
   });
 });

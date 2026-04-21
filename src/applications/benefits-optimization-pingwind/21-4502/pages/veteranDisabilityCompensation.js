@@ -9,7 +9,6 @@ import {
   parseISODate,
 } from 'platform/forms-system/src/js/helpers';
 import VaDateField from 'platform/forms-system/src/js/web-component-fields/VaDateField';
-import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
 import { isValidDate } from 'platform/forms-system/src/js/utilities/validations';
 import { applicationInfoFields, FORM_21_4502 } from '../definitions/constants';
 
@@ -58,20 +57,6 @@ export default {
           required: V.ERROR_APPLIED,
         },
       }),
-      // 12A.1: If yes, where did you apply for disability compensation?
-      [applicationInfoFields.appliedDisabilityCompensationPlace]: {
-        'ui:title': V.TITLE_IF_YES,
-        'ui:options': {
-          hideIf: formData =>
-            formData?.applicationInfo?.veteranDisabilityCompensation !== true,
-        },
-        'ui:required': formData =>
-          formData?.applicationInfo?.veteranDisabilityCompensation === true,
-        'ui:errorMessages': {
-          required: V.ERROR_IF_YES,
-        },
-        'ui:webComponentField': VaTextInputField,
-      },
       // 12B: Date you applied for disability compensation
       [applicationInfoFields.appliedDisabilityCompensationDate]: {
         ...currentOrPastDateUI({
@@ -96,11 +81,6 @@ export default {
         },
         'ui:validations': [validateDisabilityCompensationDateApplied],
       },
-      // 13: VA office location
-      [applicationInfoFields.vaOfficeLocation]: {
-        'ui:title': V.VA_OFFICE_LOCATION,
-        'ui:options': { hideEmptyValueInReview: true },
-      },
     },
   },
   schema: {
@@ -110,16 +90,8 @@ export default {
         type: 'object',
         properties: {
           [applicationInfoFields.veteranDisabilityCompensation]: yesNoSchema,
-          [applicationInfoFields.appliedDisabilityCompensationPlace]: {
-            type: 'string',
-            maxLength: 100,
-          },
           [applicationInfoFields.appliedDisabilityCompensationDate]: {
             type: 'string',
-          },
-          [applicationInfoFields.vaOfficeLocation]: {
-            type: 'string',
-            maxLength: 200,
           },
         },
         required: [applicationInfoFields.veteranDisabilityCompensation],
