@@ -89,11 +89,11 @@ export const SearchResultsHeader = () => {
         >
           {handleNumberOfResults()} for
           {` `}
-          <b>“{repFormat[representativeType]}”</b>
+          <strong>“{repFormat[representativeType]}”</strong>
           {representativeType === 'veteran_service_officer' &&
             organization && (
               <>
-                , <b>“{organization}”</b>
+                , <strong>“{organization}”</strong>
               </>
             )}
           {context.repOrgName && (
@@ -101,7 +101,7 @@ export const SearchResultsHeader = () => {
               {` `}
               named
               {` `}
-              <b>“{context.repOrgName}”</b>
+              <strong>“{context.repOrgName}”</strong>
             </>
           )}
           {` `}
@@ -109,29 +109,30 @@ export const SearchResultsHeader = () => {
             <>
               within
               {` `}
-              <b>
+              <strong>
                 {searchArea === 'Show all' ? (
                   '“Show all”'
                 ) : (
                   <>“{searchArea} miles”</>
                 )}
-              </b>
+              </strong>
               {` `}
               of
               {` `}
-              <b>“{context.location}”</b>{' '}
+              <strong>“{context.location}”</strong>{' '}
             </>
           )}
           <>
             sorted by
             {` `}
-            <b>“{sortOptions[sortType]}”</b>
+            <strong>“{sortOptions[sortType]}”</strong>
           </>
         </p>
 
         {noResultsFound ? (
           <p className="vads-u-margin-bottom--8">
-            For better results, try increasing your <b>search area</b>.
+            For better results, try increasing your <strong>search area</strong>
+            .
           </p>
         ) : (
           <VaSelect
