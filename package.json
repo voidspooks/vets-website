@@ -313,8 +313,8 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "^17.0.2",
     "react-focus-lock": "^2.11.1",
-    "react-is": "^17.0.2",
     "react-i18next": "11.18.6",
+    "react-is": "^17.0.2",
     "react-leaflet": "^3.2.2",
     "react-linkify": "^1.0.0-alpha",
     "react-meta-tags": "^1.0.1",
@@ -337,7 +337,7 @@
     "url-search-params-polyfill": "^8.1.1",
     "uswds": "1.6.10",
     "vanilla-lazyload": "^16.1.0",
-    "vets-json-schema": "https://github.com/department-of-veterans-affairs/vets-json-schema.git#a65dc70011f5ea444a6e1ab4c438fc9f1d0ba64c",
+    "vets-json-schema": "https://github.com/department-of-veterans-affairs/vets-json-schema.git#ea08303608c47dc35ada003546bb43d7b8ba794b",
     "web-vitals": "^4.2.4"
   },
   "resolutions": {
