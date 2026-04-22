@@ -115,9 +115,9 @@ export const ClaimInformationDescription = ({ formData }) => {
   return (
     <va-card background>
       <div>
-        <h3 className="vads-u-margin-top--0">
+        <h4 className="vads-u-margin-top--0">
           Here’s the personal information you selected:
-        </h3>
+        </h4>
         <ul>{claimInformationLabels}</ul>
       </div>
     </va-card>
