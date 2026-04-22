@@ -33,22 +33,14 @@ const poaFormLink = () => {
 const poaStatusCta = claimant => {
   if (
     claimant.representative &&
-    requestsContainStatus('declination', claimant.poaRequests)
-  ) {
-    return (
-      <span>
-        To change POA, have the claimant submit a new representation request
-        online using {poaFormLink()}.
-      </span>
-    );
-  }
-  if (
-    claimant.representative &&
     requestsContainStatus('pending', claimant.poaRequests)
   ) {
     return 'If you accept the pending request from the claimant, you will replace the current representative with the new one.';
   }
-  if (requestsContainStatus('declined', claimant.poaRequests)) {
+  if (requestsContainStatus('pending', claimant.poaRequests)) {
+    return 'To establish POA, accept the pending request from the claimant.';
+  }
+  if (requestsContainStatus('declination', claimant.poaRequests)) {
     return (
       <span>
         To establish POA, have the claimant submit a new representation request
@@ -56,16 +48,13 @@ const poaStatusCta = claimant => {
       </span>
     );
   }
-  if (requestsContainStatus('pending', claimant.poaRequests)) {
-    return 'To establish POA, accept the pending request from the claimant.';
-  }
   return null;
 };
 
 const SearchResults = ({ claimant, searchData }) => {
   return (
     <>
-      {!claimant ? (
+      {!(claimant?.representative || claimant?.poaRequests?.length) ? (
         <ClaimantSearchNoPOA {...searchData} />
       ) : (
         <Toggler

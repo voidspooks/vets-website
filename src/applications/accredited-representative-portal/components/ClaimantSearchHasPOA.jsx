@@ -28,10 +28,7 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
     return null;
   };
   const statusAlert = claim => {
-    if (
-      claim.representative &&
-      requestsContainStatus('pending', claim.poaRequests)
-    ) {
+    if (requestsContainStatus('pending', claim.poaRequests)) {
       return (
         <va-alert status="warning" visible>
           <h2>There is a pending representation request</h2>
@@ -88,13 +85,13 @@ const ClaimantSearchHasPOA = ({ searchData, claimant }) => {
           <strong>Representative:</strong> {claimant.representative}
         </p>
       ) : (
-        <span>
+        <p>
           <strong>POA Status: </strong>
           <span>
             <va-icon size={3} icon="warning" class="yellow-warning" />
           </span>{' '}
           You do not have POA for this claimant.
-        </span>
+        </p>
       )}
       {checkStatus(claimant) ? (
         <va-link
