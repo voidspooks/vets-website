@@ -158,7 +158,8 @@ export default {
         issuingFacility: selectUI({
           title:
             'At which VHA location did you receive the device, orthopedic appliance, or skin medication?',
-          hint: VHA_MEDICAL_FACILITY.DESCRIPTION,
+          hint:
+            'Select a facility or PSAS from the list. If your facility isn’t listed select "Other" and enter the name in the field provided.',
           labels: VHA_MEDICAL_FACILITY_LABELS,
           errorMessages: {
             required: VHA_MEDICAL_FACILITY.FIELD_ERROR,
