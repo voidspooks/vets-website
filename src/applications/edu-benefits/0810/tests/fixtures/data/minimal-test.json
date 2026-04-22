@@ -1,9 +1,38 @@
 {
   "data": {
-    "fullName": {
-      "first": "John",
-      "last": "Doe"
+   "examCost":500.5,
+   "organizationName":"Exam Organization Name",
+   "organizationAddress":
+   {
+    "street":"1234 Test Drive",
+    "city":"Test City",
+    "state":"KS",
+    "postalCode":"12345"
     },
-    "dateOfBirth": "1980-01-01"
+    "examName":"Test Exam Name",
+    "examDate":"2021-01-01",
+    "vaBenefitProgram":"chapter33",
+    "hasPreviouslyApplied":true,
+    "applicantName":
+    {
+      "first":"Rita",
+      "middle":"Ann",
+      "last":"Jackson"
+      },
+      "ssn":"513096784",
+      "vaFileNumber":"123456789",
+      "statementOfTruthSignature":"John Doe",
+      "mailingAddress":
+      {
+      "isMilitary":false,
+      "street":"123 Charlesgate Rd",
+      "street2":"",
+      "street3":"",
+      "city":"Providence",
+      "state":"RI",
+      "postalCode":"02903",
+      "country":"USA"
+      },
+      "dateSigned":"2026-04-20"
   }
 }

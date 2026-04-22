@@ -1,10 +1,40 @@
 {
   "data": {
-    "fullName": {
-      "first": "John",
-      "middle": "Michael",
-      "last": "Doe"
-    },
-    "dateOfBirth": "1980-01-01"
+      "remarks":"Test Remarks",
+      "examCost":200.5,
+      "organizationName":"Test Organization Name",
+      "organizationAddress":
+      {
+        "street":"123 Test Drive",
+        "city":"Test City",
+        "state":"IL",
+        "postalCode":"12345"
+      },
+      "examName":"Test Exam Name",
+      "examDate":"2021-01-01",
+      "payeeNumber":"AB",
+      "vaBenefitProgram":"chapter35",
+      "hasPreviouslyApplied":true,
+      "applicantName":
+      {
+        "first":"Rita",
+        "middle":"Ann",
+        "last":"Jackson"
+      },
+      "ssn":"513096784",
+      "vaFileNumber":"123456789",
+      "statementOfTruthSignature":"John Doe",
+      "mailingAddress":
+      {
+        "isMilitary":false,
+        "street":"123 Charlesgate Rd",
+        "street2":"",
+        "street3":"",
+        "city":"Providence",
+        "state":"RI",
+        "postalCode":"02903",
+        "country":"USA"
+      },
+      "dateSigned":"2026-04-22"
   }
 }
