@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
 import {
-  transformForSubmit as formsSystemTransformForSubmit,
   filterViewFields,
+  transformForSubmit as formsSystemTransformForSubmit,
 } from 'platform/forms-system/src/js/helpers';
+import recordEvent from 'platform/monitoring/record-event';
 import {
   adjustYearString,
   getObjectsWithAttachmentId,
@@ -34,22 +35,12 @@ const getTrueKeys = (obj = {}) =>
 
 const getRelationship = relationship => getTrueKeys(relationship).join('; ');
 
-/**
- * Formats a date string from YYYY-MM-DD to MM-DD-YYYY
- * @param {string} date - Date string in format YYYY-MM-DD
- * @returns {string} Date in format MM-DD-YYYY or original input if invalid
- */
 function formatDate(date) {
   if (typeof date !== 'string') return date;
   const [year, month, day] = date.split('-');
   return year && month && day ? `${month}-${day}-${year}` : date;
 }
 
-/**
- * Extracts a relationship string from potentially complex relationship object
- * @param {Object|string} relationshipData - Relationship information
- * @returns {string} Simple relationship string
- */
 function extractRelationship(relationshipData) {
   if (typeof relationshipData === 'string') {
     return relationshipData;
@@ -74,11 +65,6 @@ function extractRelationship(relationshipData) {
   return relationshipData?.relationshipToVeteran || '';
 }
 
-/**
- * Transforms applicant data into required format
- * @param {Array} applicants - Array of applicant objects
- * @returns {Array} Transformed applicants array
- */
 function transformApplicants(applicants = []) {
   return applicants.map(applicant => {
     const transformedApplicant = {
@@ -96,11 +82,6 @@ function transformApplicants(applicants = []) {
   });
 }
 
-/**
- * Maps health insurance and Medicare policies to applicants
- * @param {Object} data - Form data
- * @returns {Object} Data with policies mapped to applicants
- */
 function mapHealthInsuranceToApplicants(
   data,
   advantageParticipants = new Set(),
@@ -170,11 +151,6 @@ function mapHealthInsuranceToApplicants(
   };
 }
 
-/**
- * Collects all supporting documents across applicants and policies
- * @param {Object} data - Form data
- * @returns {Array} Array of supporting documents
- */
 const collectSupportingDocuments = data => {
   const topLevelDocs = getObjectsWithAttachmentId(data, 'confirmationCode');
 
@@ -265,12 +241,6 @@ const hydrateApplicantAddresses = (
     ),
   }));
 
-/**
- * Builds simplified submission for existing/enrollment flows
- * @param {Object} data - Transformed form data
- * @param {Object} formConfig - Form configuration
- * @returns {string} JSON string of simplified data
- */
 const buildEnhancedFlowSubmission = (data, formConfig) => {
   const {
     certifierRole,
@@ -320,17 +290,34 @@ const buildEnhancedFlowSubmission = (data, formConfig) => {
   });
 };
 
+const getSubmissionTypeEventName = data => {
+  if (isNewSubmission(data)) return '10-10d_new_application';
+  return data.submissionType === 'existing'
+    ? '10-10d_update_existing_application'
+    : '10-10d_update_beneficiary_enrollment';
+};
+
 /**
  * Main transformer function that prepares form data for submission
- * @param {Object} formConfig - Form configuration
- * @param {Object} form - Form data
- * @returns {string} JSON string of transformed data
+ * @param {Object} formConfig - Form configuration object containing form settings and metadata
+ * @param {Object} form - Form object containing the user-submitted data
+ * @param {Boolean} [disableAnalytics=false] - Flag to disable analytics event tracking
+ * @returns {string} JSON string of transformed data ready for submission
  */
-export default function transformForSubmit(formConfig, form) {
+export default function transformForSubmit(
+  formConfig,
+  form,
+  disableAnalytics = false,
+) {
   const originalData = form?.data || {};
   const initialTransform = JSON.parse(
     formsSystemTransformForSubmit(formConfig, form),
   );
+
+  // Track submission type analytics
+  if (!disableAnalytics) {
+    recordEvent({ event: getSubmissionTypeEventName(originalData) });
+  }
 
   // Use simplified transformation for enhanced flow submissions
   if (!isNewSubmission(originalData)) {

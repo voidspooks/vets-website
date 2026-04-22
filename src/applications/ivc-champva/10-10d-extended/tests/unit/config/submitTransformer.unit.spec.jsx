@@ -1,8 +1,10 @@
 import { expect } from 'chai';
-import formConfig from '../../../config/form';
-import transformForSubmit from '../../../config/submitTransformer';
+import * as recordEventModule from 'platform/monitoring/record-event';
+import sinon from 'sinon-v20';
 import { toHash } from '../../../../shared/utilities';
 import { NOT_SHARED } from '../../../components/FormFields/AddressSelectionField';
+import formConfig from '../../../config/form';
+import transformForSubmit from '../../../config/submitTransformer';
 
 const APPLICANT_SSN = '345345345';
 const SSN_HASH = toHash(APPLICANT_SSN);
@@ -913,6 +915,50 @@ describe('10-10d-extended transform for submit', () => {
       };
       const transformed = JSON.parse(transformForSubmit(formConfig, testData));
       expect(transformed.supportingDocs).to.be.an('array');
+    });
+  });
+
+  context('Submission type event tracking', () => {
+    let recordEventStub;
+
+    beforeEach(() => {
+      recordEventStub = sinon.stub(recordEventModule, 'default');
+    });
+
+    afterEach(() => recordEventStub.restore());
+
+    const submitForm = (data = {}, disableAnalytics = false) => {
+      transformForSubmit(formConfig, { data }, disableAnalytics);
+    };
+
+    const expectEvent = eventName => {
+      sinon.assert.calledOnceWithExactly(recordEventStub, { event: eventName });
+    };
+
+    it('should fire new application event for new submissions', () => {
+      submitForm({ applicants: [{ applicantName: { first: 'Test' } }] });
+      expectEvent('10-10d_new_application');
+    });
+
+    it('should fire update existing application event when submissionType is existing', () => {
+      submitForm({
+        'view:form1010dEnhancedFlowEnabled': true,
+        submissionType: 'existing',
+      });
+      expectEvent('10-10d_update_existing_application');
+    });
+
+    it('should fire update beneficiary enrollment event when submissionType is enrollment', () => {
+      submitForm({
+        'view:form1010dEnhancedFlowEnabled': true,
+        submissionType: 'enrollment',
+      });
+      expectEvent('10-10d_update_beneficiary_enrollment');
+    });
+
+    it('should not fire events when disableAnalytics is true', () => {
+      submitForm({ applicants: [{ applicantName: { first: 'Test' } }] }, true);
+      sinon.assert.notCalled(recordEventStub);
     });
   });
 });
