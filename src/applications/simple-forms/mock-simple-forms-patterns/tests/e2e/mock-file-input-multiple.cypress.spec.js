@@ -32,7 +32,8 @@ function deleteFile() {
 }
 
 // test adding a variety of file types
-function testFileUploads() {
+// set deleteAfterUpload to false to test max file count
+function testFileUploads(deleteAfterUpload = true) {
   const funcs = [
     makeMinimalJPG,
     makeMinimalPNG,
@@ -43,7 +44,7 @@ function testFileUploads() {
     testFileUpload(files);
   });
   for (let i = 0; i < funcs.length; i++) {
-    deleteFile();
+    if (deleteAfterUpload) deleteFile();
   }
 }
 
@@ -170,6 +171,17 @@ function uploadValidFileAndNavigateToReviewPage() {
   cy.url().should('include', '/review-and-submit');
 }
 
+function testMaxFileCount() {
+  testFileUploads(false);
+  const index =
+    formConfig.chapters.fileInputMultiple.pages.fileInputMultiple.uiSchema
+      .wcv3FileInputMultiple['ui:options'].maxFileCount;
+  cy.expectVaFileInputMultipleErrorMaxFileCountExceeded(undefined, index);
+  for (let i = 0; i <= index; i++) {
+    deleteFile();
+  }
+}
+
 const fileInputMultiplePage = 'file-input-multiple';
 const reviewAndSubmit = 'review-and-submit';
 
@@ -206,6 +218,7 @@ const testConfig = createTestConfig(
           testEncryptedPdf();
           testRejectFileNotAccepted();
           testCancelUpload();
+          testMaxFileCount();
           uploadValidFileAndNavigateToReviewPage();
         });
       },

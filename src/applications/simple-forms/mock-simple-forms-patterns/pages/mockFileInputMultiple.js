@@ -40,6 +40,7 @@ export default {
           minFileSize: 1,
         },
       },
+      maxFileCount: 3,
       errorMessages: {
         additionalInput: 'Choose a document status',
       },

@@ -102,6 +102,7 @@ import ReviewField from '../review/FileInputMultiple';
  * @param {boolean} [options.skipUpload] - skip attempt to upload in dev when there is no backend
  * @param {boolean} [options.disallowEncryptedPdfs] - don't allow encrypted pdfs
  * @param {Record<string, { maxFileSize: number, minFileSize: number }>} [options.fileSizesByFileType] - object that specifies max and min file size limits by file type or by default
+ * @param {number} [options.maxFileCount] - maximum number of files that can be added to an instance
  * @returns {UISchemaOptions}
  */
 export const fileInputMultipleUI = options => {
@@ -112,6 +113,7 @@ export const fileInputMultipleUI = options => {
     required,
     reviewField,
     confirmationField,
+    maxFileCount,
     ...uiOptions
   } = options;
   if (required === undefined) {
@@ -141,6 +143,16 @@ export const fileInputMultipleUI = options => {
       (errors, data, formData) => {
         const isNavigationEvent = navigationState.getNavigationEventStatus();
         const passwordErrorInstances = errorManager.getPasswordInstances();
+        // was there an errror in any file due to bad file check?
+        const fileCheckError = errorManager
+          .getFileCheckErrors()
+          .some(error => !!error);
+        if (fileCheckError) {
+          // add a placeholder error to force re-render
+          errors.addError(`${Math.random()}`);
+          return;
+        }
+
         if (isNavigationEvent) {
           const isRequired =
             typeof required === 'function' ? required(formData) : !!required;
@@ -185,15 +197,6 @@ export const fileInputMultipleUI = options => {
             errors.addError(`${Math.random()}`);
           }
 
-          // was there an errror in any file due to bad file check?
-          const fileCheckError = errorManager
-            .getFileCheckErrors()
-            .some(error => !!error);
-          if (fileCheckError) {
-            // add a placeholder error to force re-render
-            errors.addError(`${Math.random()}`);
-          }
-
           // was there an error due to a failed check inside a va-file-input instance?
           if (errorManager.getInternalFileInputErrors().some(error => error)) {
             // add a placeholder error to force re-render
@@ -204,6 +207,7 @@ export const fileInputMultipleUI = options => {
     ],
     'ui:options': {
       ...uiOptions,
+      maxFileCount,
       keepInPageOnReview: true,
     },
     'ui:reviewField': reviewField || ReviewField,

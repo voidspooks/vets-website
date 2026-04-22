@@ -1438,6 +1438,7 @@ export default {
       // disallowEncryptedPdfs: true,
       maxFileSize: 1024 * 1024 * 5,
       minFileSize: 1,
+      maxFileCount: 3,
     }) + fileInputMultipleSchema(),
   },
   schema: {

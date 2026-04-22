@@ -218,6 +218,14 @@ function checkFileSizeByFileType(
 }
 
 /**
+ * @param { number } limit the maximum number of files that can be uploaded
+ * @returns { string } error message
+ */
+export function getFileLimitErrorMessage(limit) {
+  return `You can only upload ${limit} files.`;
+}
+
+/**
  *
  * @param {File} file the file to upload
  * @param { boolean } disallowEncryptedPdfs flag to prevent encrypted pdfs
@@ -226,29 +234,43 @@ function checkFileSizeByFileType(
  */
 export async function getFileError(
   file,
-  { disallowEncryptedPdfs, fileSizesByFileType, maxFileSize, minFileSize },
+  {
+    disallowEncryptedPdfs,
+    fileSizesByFileType,
+    maxFileSize,
+    minFileSize,
+    maxFileCount,
+  },
   files = [],
 ) {
   let fileError = null;
   let encryptedCheck = null;
 
-  for (const f of files) {
-    if (f.name === file.name && f.size === file.size) {
-      fileError = DUPLICATE_FILE_ERROR;
-      break;
+  if (maxFileCount && files.length + 1 > maxFileCount) {
+    fileError = getFileLimitErrorMessage(maxFileCount);
+  }
+
+  if (fileError === null) {
+    for (const f of files) {
+      if (f.name === file.name && f.size === file.size) {
+        fileError = DUPLICATE_FILE_ERROR;
+        break;
+      }
     }
   }
 
-  // always check file size; we don't rely on component file size validation
-  fileError = checkFileSizeByFileType(
-    file,
-    fileSizesByFileType,
-    maxFileSize,
-    minFileSize,
-  );
+  if (fileError === null) {
+    // always check file size; we don't rely on component file size validation
+    fileError = checkFileSizeByFileType(
+      file,
+      fileSizesByFileType,
+      maxFileSize,
+      minFileSize,
+    );
+  }
 
-  // don't do more checks if there is a duplicate file or file size error
-  if (!fileError) {
+  // don't do more checks if there is a max file count or duplicate file or file size error
+  if (fileError === null) {
     const checks = await standardFileChecks(file);
     encryptedCheck = !!checks.checkIsEncryptedPdf;
 

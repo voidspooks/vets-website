@@ -292,6 +292,9 @@ Cypress.Commands.add('fillVaFileInputMultiple', (field, value, files) => {
 
       cy.wrap(filesPromise).then(_files => {
         _files.forEach((f, index) => {
+          // make sure React has time to add form data
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
+          cy.wait(100);
           cy.wrap(el)
             .shadow()
             .find('va-file-input')
@@ -792,6 +795,19 @@ Cypress.Commands.add(
       field,
       index,
     );
+  },
+);
+
+/**
+ * Assert that max file count error is set if too many files uploaded
+ * @param { string } [field] - Optional `name` attribute of the parent.
+ * @param {number} [index=0] - Which child file-input to check.
+ */
+Cypress.Commands.add(
+  'expectVaFileInputMultipleErrorMaxFileCountExceeded',
+  (field = undefined, index = 0) => {
+    const regex = new RegExp(`You can only upload ${index} files`, 'g');
+    cy.expectVaFileInputMultipleError(regex, field, index);
   },
 );
 
