@@ -19,7 +19,7 @@ const ProcessList = () => {
             The name and address of your institution and all additional
             locations
           </li>
-          <li>The details of the program(s) you are applying for</li>
+          <li>The details of the program(s) you wish to seek approval for</li>
           <li>
             If the program is a medical program you’ll need to have recent
             program graduate information available
@@ -87,9 +87,10 @@ export const IntroductionPage = props => {
     <article className="schemaform-intro">
       <FormTitle title={TITLE} subTitle={SUBTITLE} />
       <p className="vads-u-font-size--lg vads-u-font-family--serif vads-u-color--base vads-u-font-weight--normal">
-        VA Form 22-0976 is used by foreign educational institutions that wish to
-        offer degree programs eligible for VA education benefits and must be
-        completed by an authorized school official representing a foreign
+        VA Form 22-0976 is used by foreign educational institutions that offer
+        degree programs they wish to have approved for U.S. Department of
+        Veterans Affairs (VA) education benefit payment. The 22-0976 must be
+        completed by an authorized school official representing the foreign
         institution.
       </p>
       <h2 className="vads-u-font-size--h3 vad-u-margin-top--0">
