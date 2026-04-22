@@ -98,7 +98,10 @@ const uiSchema = {
       ),
       'ui:options': {
         hideIf: formData => {
-          return !!formData?.contactInfo?.mobilePhone?.contact;
+          const wantsTexts = formData[
+            'view:receiveTextMessages'
+          ]?.receiveTextMessages?.includes('Yes,');
+          return !!formData?.contactInfo?.mobilePhone?.contact || !wantsTexts;
         },
       },
     },

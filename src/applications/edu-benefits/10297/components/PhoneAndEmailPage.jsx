@@ -28,41 +28,40 @@ const PhoneAndEmailPage = ({
 
   const checkDuplicate = useCallback(
     () => {
+      const email = data?.contactInfo?.emailAddress;
+      const mobilePhone = data?.contactInfo?.mobilePhone?.contact.replace(
+        /\D/g,
+        '',
+      );
+
       const emailUpdated =
         data?.duplicateEmail?.length > 0 &&
-        !data?.duplicateEmail?.some(
-          entry => entry?.address === data?.contactInfo?.emailAddress,
-        );
+        !data?.duplicateEmail?.some(entry => entry?.address === email);
       const phoneUpdated =
         data?.duplicatePhone?.length > 0 &&
-        !data?.duplicatePhone?.some(
-          entry => entry?.number === data?.contactInfo?.mobilePhone?.contact,
-        );
+        !data?.duplicatePhone?.some(entry => entry?.number === mobilePhone);
 
       const isEmailValid =
         !document
           .querySelector("va-text-input[label='Email']")
-          ?.hasAttribute('error') &&
-        isValidEmail(data?.contactInfo?.emailAddress);
+          ?.hasAttribute('error') && isValidEmail(email);
 
-      if (
-        isEmailValid &&
-        data?.contactInfo?.mobilePhone?.isValid &&
-        (emailUpdated || phoneUpdated)
-      ) {
+      const isPhoneValid = data?.contactInfo?.mobilePhone?.isValid;
+
+      if (isEmailValid && isPhoneValid && (emailUpdated || phoneUpdated)) {
         getDuplicateContactInfo(
-          [{ value: data?.contactInfo?.emailAddress, dupe: '' }],
-          [{ value: data?.contactInfo?.mobilePhone?.contact, dupe: '' }],
+          [{ value: email, dupe: '' }],
+          [{ value: mobilePhone, dupe: '' }],
         );
       } else if (isEmailValid && emailUpdated) {
         getDuplicateContactInfo(
-          [{ value: data?.contactInfo?.emailAddress, dupe: '' }],
+          [{ value: email, dupe: '' }],
           [{ value: '', dupe: '' }],
         );
-      } else if (data?.contactInfo?.mobilePhone?.isValid && phoneUpdated) {
+      } else if (isPhoneValid && phoneUpdated) {
         getDuplicateContactInfo(
           [{ value: '', dupe: '' }],
-          [{ value: data?.contactInfo?.mobilePhone?.contact, dupe: '' }],
+          [{ value: mobilePhone, dupe: '' }],
         );
       }
     },

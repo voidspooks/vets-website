@@ -12,13 +12,13 @@ describe('22-10297 Contact preferences page', () => {
     uiSchema,
   } = formConfig.chapters.identificationChapter.pages.contactPreferences;
 
-  const renderPage = (
-    data = {
-      contactInfo: {},
-      contactMethod: {},
-      'view:receiveTextMessages': {},
-    },
-  ) => {
+  const mockData = {
+    contactInfo: {},
+    contactMethod: {},
+    'view:receiveTextMessages': {},
+  };
+
+  const renderPage = (data = mockData) => {
     return render(
       <DefinitionTester schema={schema} uiSchema={uiSchema} data={data} />,
     );
@@ -112,14 +112,34 @@ describe('22-10297 Contact preferences page', () => {
       .to.exist;
   });
 
-  it('renders noMobilePhoneAlert if user does not have a valid mobile phone number', () => {
-    const screen = renderPage();
+  it('renders noMobilePhoneAlert if user does not have a valid mobile phone number and wants to receive texts', () => {
+    const screen = renderPage({
+      ...mockData,
+      'view:receiveTextMessages': {
+        receiveTextMessages: 'Yes, send me text message notifications',
+      },
+    });
 
     expect(
       screen.getByText(
         'We can’t send you text message notifications because we don’t have a mobile phone number on file for you.',
       ),
     ).to.exist;
+  });
+
+  it('does not render noMobilePhoneAlert if user does not have a valid mobile phone number but does not want to receive texts', () => {
+    const screen = renderPage({
+      ...mockData,
+      'view:receiveTextMessages': {
+        receiveTextMessages: 'No, just send me email notifications',
+      },
+    });
+
+    expect(
+      screen.queryByText(
+        'We can’t send you text message notifications because we don’t have a mobile phone number on file for you.',
+      ),
+    ).not.to.exist;
   });
 
   it('renders internationalTextMessageAlert if user has an international mobile phone number', () => {
