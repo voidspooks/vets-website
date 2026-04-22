@@ -1,7 +1,10 @@
-import { titleUI } from 'platform/forms-system/src/js/web-component-patterns';
-import { futureDateSchema, futureDateUI } from '../../definitions';
+import {
+  futureDateSchema,
+  futureDateUI,
+  medicarePageTitleUI,
+  subtitleUI,
+} from '../../definitions';
 import content from '../../locales/en/content.json';
-import { medicarePageTitleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['medicare--effective-dates-title'];
 const SUBTITLE_TEXT = content['medicare--part-a-subtitle'];
@@ -12,11 +15,7 @@ export default {
   uiSchema: {
     ...medicarePageTitleUI(TITLE_TEXT),
     'view:medicarePartAEffectiveDate': {
-      ...titleUI({
-        title: SUBTITLE_TEXT,
-        headerLevel: 2,
-        headerStyleLevel: 3,
-      }),
+      ...subtitleUI(SUBTITLE_TEXT),
       medicarePartAEffectiveDate: futureDateUI({
         title: INPUT_LABEL,
         hint: HINT_TEXT,

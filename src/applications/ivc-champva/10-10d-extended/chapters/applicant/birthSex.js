@@ -4,10 +4,9 @@ import {
   radioUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import BirthSexAddtlInfo from '../../components/FormDescriptions/BirthSexAddtlInfo';
-import { blankSchema } from '../../definitions';
+import { blankSchema, titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
 import { capitalizeFirst } from '../../utils/helpers';
-import { titleWithNameUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['applicants--birth-sex-title'];
 const INPUT_LABEL = content['applicants--birth-sex-label'];

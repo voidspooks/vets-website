@@ -2,8 +2,8 @@ import {
   radioSchema,
   radioUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { medicarePageTitleUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { medicarePageTitleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['medicare--plan-type-title'];
 const INPUT_LABEL = content['medicare--plan-type-label'];

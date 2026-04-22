@@ -1,7 +1,8 @@
+export * from './addresses';
 export * from './attachments';
 export * from './dates';
-export * from './patterns';
+export * from './names';
+export * from './text';
+export * from './titles';
 
 export const blankSchema = { type: 'object', properties: {} };
-
-export const textareaSchema = { type: 'string', maxLength: 155 };

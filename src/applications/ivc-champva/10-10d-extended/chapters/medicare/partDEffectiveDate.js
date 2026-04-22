@@ -2,9 +2,12 @@ import {
   currentOrPastDateSchema,
   currentOrPastDateUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { futureDateSchema, futureDateUI } from '../../definitions';
+import {
+  futureDateSchema,
+  futureDateUI,
+  medicarePageTitleUI,
+} from '../../definitions';
 import content from '../../locales/en/content.json';
-import { medicarePageTitleUI } from '../../utils/titles';
 import { validateMedicarePartDDates } from '../../utils/validations';
 
 const TITLE_TEXT = content['medicare--part-d-effective-date-title'];

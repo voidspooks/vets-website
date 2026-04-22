@@ -2,8 +2,8 @@ import {
   yesNoSchema,
   yesNoUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithNameUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['applicants--remarriage-title'];
 const INPUT_LABEL = content['applicants--remarriage-label'];

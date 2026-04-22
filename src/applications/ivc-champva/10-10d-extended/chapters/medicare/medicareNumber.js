@@ -1,5 +1,4 @@
-import { textUI } from 'platform/forms-system/src/js/web-component-patterns';
-import { medicarePageTitleUI } from '../../utils/titles';
+import { medicarePageTitleUI, textUI } from '../../definitions';
 import content from '../../locales/en/content.json';
 
 const TITLE_TEXT = content['medicare--mbi-label'];

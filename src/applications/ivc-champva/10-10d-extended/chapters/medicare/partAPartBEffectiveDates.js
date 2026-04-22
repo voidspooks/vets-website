@@ -1,11 +1,13 @@
-import {
-  descriptionUI,
-  titleUI,
-} from 'platform/forms-system/src/js/web-component-patterns';
+import { descriptionUI } from 'platform/forms-system/src/js/web-component-patterns';
 import MedicarePartCAddtlInfo from '../../components/FormDescriptions/MedicarePartCAddtlInfo';
-import { blankSchema, futureDateSchema, futureDateUI } from '../../definitions';
+import {
+  blankSchema,
+  futureDateSchema,
+  futureDateUI,
+  medicarePageTitleUI,
+  subtitleUI,
+} from '../../definitions';
 import content from '../../locales/en/content.json';
-import { medicarePageTitleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['medicare--effective-dates-title'];
 const SUBTITLE_TEXT = {
@@ -15,13 +17,6 @@ const SUBTITLE_TEXT = {
 
 const INPUT_LABEL = content['medicare--effective-dates-label'];
 const HINT_TEXT = content['medicare--effective-dates-hint'];
-
-const subtitleUI = title =>
-  titleUI({
-    title,
-    headerLevel: 2,
-    headerStyleLevel: 3,
-  });
 
 export default {
   uiSchema: {

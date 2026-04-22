@@ -4,8 +4,8 @@ import {
   phoneSchema,
   phoneUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithNameUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['applicants--contact-info-title'];
 const DESC_TEXT = content['applicants--contact-info-description'];

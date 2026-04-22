@@ -1,6 +1,5 @@
 {
   "address--page-description": "We’ll send any important information about this application to this address.",
-  "address--label--military": "Address is on a U.S. military base outside of the United States.",
   "address-selection--page-title": "%s address",
   "address-selection--no-option": "No, use a new address",
   "address-selection--yes-option": "Yes, use",

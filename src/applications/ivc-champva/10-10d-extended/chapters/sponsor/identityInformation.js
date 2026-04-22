@@ -2,18 +2,18 @@ import {
   ssnSchema,
   ssnUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { titleWithRoleUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithRoleUI } from '../../utils/titles';
 import { validateSponsorSsn } from '../../utils/validations';
 
 const TITLE_TEXT = content['sponsor--identity-info-title'];
 
-const OPTS = { matchRole: 'sponsor', other: content['noun--veteran'] };
-const PAGE_TITLE = titleWithRoleUI(TITLE_TEXT, null, OPTS);
-
 export default {
   uiSchema: {
-    ...PAGE_TITLE,
+    ...titleWithRoleUI(TITLE_TEXT, null, {
+      matchRole: 'sponsor',
+      other: content['noun--veteran'],
+    }),
     sponsorSsn: {
       ...ssnUI(),
       'ui:validations': [validateSponsorSsn],

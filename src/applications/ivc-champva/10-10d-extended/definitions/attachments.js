@@ -14,13 +14,40 @@ const API_ENDPOINT = 'ivc_champva/v1/forms/submit_supporting_documents';
 const FILE_UPLOAD_URL = `${environment.API_URL}/${API_ENDPOINT}`;
 
 /**
- * Builds a configured file upload UI component for submitting a single supporting document.
+ * Builds a configured file upload UI component for submitting supporting documents.
  *
- * @param {Object} [options={}] - Configuration options.
- * @param {string} [options.label=''] - Optional label displayed for the upload field.
- * @param {string} [options.attachmentId=''] - Optional attachment identifier sent with the upload payload.
- * @param {boolean} [options.withMetadata=false] - Optional attachment identifier sent with the upload payload.
- * @returns {Object} A `fileUploadUI` configuration object.
+ * Handles file uploads to the CHAMPVA supporting documents API endpoint with
+ * automatic payload construction and response parsing. Optionally supports
+ * attachment metadata selection via dropdown.
+ *
+ * @param {Object} [options={}] - Configuration options
+ * @param {string} [options.label=''] - Label displayed for the upload field (hidden if empty)
+ * @param {string} [options.attachmentId=''] - Attachment identifier sent with upload payload
+ * @param {boolean} [options.withMetadata=false] - Enables attachment type selection dropdown
+ * @returns {Object} fileUploadUI configuration object
+ *
+ * @example
+ * // Simple upload without label
+ * birthCertificate: attachmentUI()
+ *
+ * @example
+ * // Upload with custom label
+ * proofOfMarriage: attachmentUI({
+ *   label: 'Upload marriage certificate'
+ * })
+ *
+ * @example
+ * // Upload with attachment ID for tracking
+ * medicareCard: attachmentUI({
+ *   attachmentId: 'medicare_card_front'
+ * })
+ *
+ * @example
+ * // Upload with metadata selection dropdown
+ * supportingDocs: attachmentUI({
+ *   withMetadata: true,
+ *   label: 'Upload supporting documents'
+ * })
  */
 export const attachmentUI = ({
   label = '',
@@ -64,6 +91,18 @@ export const attachmentUI = ({
   });
 };
 
+/**
+ * Basic attachment array schema for file uploads.
+ *
+ * Stores uploaded file metadata including name and confirmation code.
+ * Use with attachmentUI when no minimum file requirement exists.
+ *
+ * @type {SchemaOptions}
+ * @example
+ * properties: {
+ *   optionalDocuments: attachmentSchema
+ * }
+ */
 export const attachmentSchema = Object.freeze({
   type: 'array',
   items: {
@@ -74,6 +113,25 @@ export const attachmentSchema = Object.freeze({
   },
 });
 
+/**
+ * Attachment array schema with metadata selection and minimum items requirement.
+ *
+ * Requires users to categorize each uploaded file using a dropdown.
+ * Use with attachmentUI({ withMetadata: true }) to enable the selection UI.
+ *
+ * @param {Object} [options={}] - Configuration options
+ * @param {string[]} [options.enumNames=[]] - Available attachment type options for dropdown
+ * @param {number} [options.minItems=1] - Minimum number of required attachments
+ * @returns {SchemaOptions} Schema with attachment metadata requirements
+ *
+ * @example
+ * properties: {
+ *   supportingDocuments: attachmentWithMetadataSchema({
+ *     enumNames: ['Birth Certificate', 'Marriage License', 'School Enrollment'],
+ *     minItems: 1
+ *   })
+ * }
+ */
 export const attachmentWithMetadataSchema = ({
   enumNames = [],
   minItems = 1,
@@ -110,6 +168,19 @@ export const attachmentWithMetadataSchema = ({
   });
 };
 
+/**
+ * Attachment schema that requires exactly one file upload.
+ *
+ * Enforces a single required file upload with both minimum and maximum of 1.
+ * Use for required documents where only one file is needed.
+ *
+ * @type {SchemaOptions}
+ * @example
+ * properties: {
+ *   birthCertificate: singleAttachmentSchema
+ * }
+ * required: ['birthCertificate']
+ */
 export const singleAttachmentSchema = Object.freeze({
   type: 'array',
   minItems: 1,

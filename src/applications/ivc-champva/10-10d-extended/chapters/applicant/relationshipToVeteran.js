@@ -2,9 +2,9 @@ import {
   radioSchema,
   radioUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { validateSpousalRelationship } from '../../utils/validations';
-import { titleWithNameUI } from '../../utils/titles';
+import { titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
+import { validateSpousalRelationship } from '../../utils/validations';
 
 const TITLE_TEXT = content['applicants--sponsor-relationship-title'];
 const INPUT_LABEL = content['applicants--sponsor-relationship-label'];

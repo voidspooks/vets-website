@@ -1,6 +1,5 @@
-import { addressSelectionUI } from '../../definitions';
+import { addressSelectionUI, titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithNameUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['address-selection--page-title'];
 const DESC_TEXT = content['address--page-description'];

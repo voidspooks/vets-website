@@ -2,8 +2,8 @@ import {
   yesNoSchema,
   yesNoUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { titleWithFormDataUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithFormDataUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['health-insurance--prescription-title'];
 const INPUT_LABEL = content['health-insurance--prescription-label'];

@@ -4,18 +4,18 @@ import {
   phoneSchema,
   phoneUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { titleWithRoleUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithRoleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['sponsor--contact-info-title'];
 const DESC_TEXT = content['sponsor--contact-info-description'];
 
-const OPTS = { matchRole: 'sponsor', other: content['noun--veteran'] };
-const PAGE_TITLE = titleWithRoleUI(TITLE_TEXT, DESC_TEXT, OPTS);
-
 export default {
   uiSchema: {
-    ...PAGE_TITLE,
+    ...titleWithRoleUI(TITLE_TEXT, DESC_TEXT, {
+      matchRole: 'sponsor',
+      other: content['noun--veteran'],
+    }),
     sponsorPhone: phoneUI(),
     sponsorEmail: emailUI({
       required: formData => formData.certifierRole === 'sponsor',

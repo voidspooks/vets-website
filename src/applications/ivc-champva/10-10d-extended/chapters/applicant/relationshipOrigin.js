@@ -2,7 +2,7 @@ import {
   radioSchema,
   radioUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { titleWithNameUI } from '../../utils/titles';
+import { titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
 
 const TITLE_TEXT = content['applicants--relationship-origin-title'];

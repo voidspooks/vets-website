@@ -4,9 +4,8 @@ import {
   yesNoUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import ProofOfMedicareAlert from '../../components/FormAlerts/ProofOfMedicareAlert';
-import { blankSchema } from '../../definitions';
+import { blankSchema, medicarePageTitleUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { medicarePageTitleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['medicare--part-a-denial-notice-title'];
 const INPUT_LABEL = content['medicare--part-a-denial-notice-label'];

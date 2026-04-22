@@ -1,9 +1,12 @@
 import { descriptionUI } from 'platform/forms-system/src/js/web-component-patterns';
 import FileUploadDescription from '../../components/FormDescriptions/FileUploadDescription';
-import { attachmentUI, singleAttachmentSchema } from '../../definitions';
+import {
+  attachmentUI,
+  singleAttachmentSchema,
+  titleWithFormDataUI,
+} from '../../definitions';
 import content from '../../locales/en/content.json';
 import { ATTACHMENT_IDS } from '../../utils/constants';
-import { titleWithFormDataUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['health-insurance--card-upload-title'];
 const DESC_TEXT = content['health-insurance--card-upload-description'];

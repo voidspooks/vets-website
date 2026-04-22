@@ -2,8 +2,8 @@ import {
   ssnSchema,
   ssnUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { titleWithNameUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithNameUI } from '../../utils/titles';
 import { validateApplicantSsn } from '../../utils/validations';
 
 const TITLE_TEXT = content['applicants--identification-info-title'];

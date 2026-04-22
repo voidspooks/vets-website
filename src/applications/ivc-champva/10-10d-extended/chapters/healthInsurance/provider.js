@@ -2,11 +2,10 @@ import {
   arrayBuilderItemSubsequentPageTitleUI,
   currentOrPastDateSchema,
   currentOrPastDateUI,
-  textSchema,
-  textUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { validateChars, validateDateRange } from '../../utils/validations';
+import { textSchema, textUI } from '../../definitions';
 import content from '../../locales/en/content.json';
+import { validateDateRange } from '../../utils/validations';
 
 const TITLE_TEXT = content['health-insurance--provider-title'];
 const PROVIDER_LABEL = content['health-insurance--provider-label'];
@@ -31,7 +30,7 @@ const VALIDATIONS = [
 export default {
   uiSchema: {
     ...arrayBuilderItemSubsequentPageTitleUI(TITLE_TEXT),
-    provider: textUI({ title: PROVIDER_LABEL, validations: [validateChars] }),
+    provider: textUI(PROVIDER_LABEL),
     effectiveDate: currentOrPastDateUI({
       title: INPUT_LABELS.effectiveDate,
       hint: HINT_TEXT.effectiveDate,

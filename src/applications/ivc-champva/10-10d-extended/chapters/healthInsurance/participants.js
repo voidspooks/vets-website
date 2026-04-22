@@ -3,9 +3,9 @@ import {
   checkboxGroupUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 import { toHash } from '../../../shared/utilities';
+import { titleWithFormDataUI } from '../../definitions';
 import content from '../../locales/en/content.json';
 import { formatFullName } from '../../utils/helpers';
-import { titleWithFormDataUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['health-insurance--participant-title'];
 const INPUT_LABEL = content['health-insurance--participant-label'];

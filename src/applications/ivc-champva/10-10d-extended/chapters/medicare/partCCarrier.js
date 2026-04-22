@@ -1,10 +1,11 @@
 import {
+  futureDateSchema,
+  futureDateUI,
+  medicarePageTitleUI,
   textSchema,
   textUI,
-} from 'platform/forms-system/src/js/web-component-patterns';
-import { futureDateSchema, futureDateUI } from '../../definitions';
+} from '../../definitions';
 import content from '../../locales/en/content.json';
-import { medicarePageTitleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['medicare--part-c-carrier-title'];
 const INPUT_LABELS = {

@@ -11,7 +11,7 @@ import {
   formatFullName,
   makePossessive,
   replaceStrValues,
-} from './helpers/formatting';
+} from '../utils/helpers/formatting';
 
 const DEFAULT_OPTS = {
   // common template behavior
@@ -40,20 +40,13 @@ const DEFAULT_OPTS = {
     'vads-u-color--black vads-u-margin-top--0 mobile-lg:vads-u-font-size--h2 vads-u-font-size--h3 dd-privacy-mask',
 };
 
-/**
- * Merges user options with defaults.
- * @param {Object} opts - User-provided options
- * @returns {Object} Merged options object
- */
+const isSelf = (formData, opts) => formData?.[opts.roleKey] === opts.matchRole;
+
 const mergeOpts = (opts = {}) => ({ ...DEFAULT_OPTS, ...opts });
 
-/**
- * Fills a title template by replacing a placeholder with a value.
- * @param {string} src - Template string with placeholder
- * @param {string} value - Value to insert into template
- * @param {Object} opts - Options containing placeholder and capitalize flags
- * @returns {string} Formatted title string
- */
+const roleLabel = opts =>
+  opts.possessive ? makePossessive(opts.other) : opts.other;
+
 const fillTitleTemplate = (src, value, opts) => {
   const { placeholder, capitalize } = opts;
   if (!src) return '';
@@ -62,42 +55,14 @@ const fillTitleTemplate = (src, value, opts) => {
   return replaceStrValues(src, target, placeholder);
 };
 
-/**
- * Wraps a computed title with array builder edit-title behavior when configured.
- * @param {Function} computedTitle - Function that returns the computed title
- * @param {Object} opts - Configuration options
- * @returns {Function|string} Title function or wrapped edit title
- */
+const makeTitleValue = (title, resolveValue, opts) => ({ formData }) =>
+  fillTitleTemplate(title, resolveValue(formData, opts), opts);
+
 const wrapTitleForArrayBuilder = (computedTitle, opts) =>
   opts.arrayBuilder
     ? withEditTitle(computedTitle, opts.lowercaseOnEdit)
     : computedTitle;
 
-/**
- * Creates a computed title function from a value resolver.
- * @param {string} title - Title template with placeholder
- * @param {Function} resolveValue - Function that resolves the replacement value from formData and opts
- * @param {Object} opts - Configuration options
- * @returns {Function} Function that returns the computed title string
- */
-const makeTitleValue = (title, resolveValue, opts) => ({ formData }) =>
-  fillTitleTemplate(title, resolveValue(formData, opts), opts);
-
-/**
- * Checks if the form certifier is the applicant (self).
- * @param {Object} formData - Form data object
- * @param {Object} opts - Options containing roleKey and matchRole
- * @returns {boolean} True if certifier is self
- */
-const isSelf = (formData, opts) => formData?.[opts.roleKey] === opts.matchRole;
-
-/**
- * Resolves a configured value from form data.
- * Supports either a direct form data key or a resolver function.
- * @param {Object} formData - Form data object
- * @param {Object} opts - Options containing dataKey and fallback
- * @returns {string} Resolved value or fallback
- */
 const resolveFormDataValue = (formData, opts) => {
   const fallback = String(opts?.fallback ?? '');
   const { dataKey } = opts || {};
@@ -112,12 +77,6 @@ const resolveFormDataValue = (formData, opts) => {
   return normalized === '' ? fallback : normalized;
 };
 
-/**
- * Generates a label from the applicant's name.
- * @param {Object} formData - Form data object
- * @param {Object} opts - Options for name formatting
- * @returns {string} Formatted name label
- */
 const nameLabel = (formData, opts) => {
   const nameObj = formData?.[opts.nameKey] || {};
   const baseName = opts.firstNameOnly ? nameObj.first : formatFullName(nameObj);
@@ -125,20 +84,6 @@ const nameLabel = (formData, opts) => {
   return opts.possessive ? makePossessive(baseName) : baseName;
 };
 
-/**
- * Generates a label from the configured role text.
- * @param {Object} opts - Options containing other and possessive
- * @returns {string} Formatted role label
- */
-const roleLabel = opts =>
-  opts.possessive ? makePossessive(opts.other) : opts.other;
-
-/**
- * Determines the appropriate subject label based on role and mode.
- * @param {Object} formData - Form data object
- * @param {Object} options - Configuration options
- * @returns {string} Subject label for title
- */
 const subjectLabel = (formData, options = {}) => {
   const opts = mergeOpts(options);
   if (isSelf(formData, opts)) return opts.self;
@@ -146,12 +91,7 @@ const subjectLabel = (formData, options = {}) => {
   return nameLabel(formData, opts) || roleLabel(opts);
 };
 
-/**
- * Factory function that creates title UI helpers from a value resolver.
- * @param {Function} resolveValue - Function that resolves the replacement value from formData and opts
- * @param {Object} baseOptions - Base options to merge with user options
- * @returns {Function} Title UI function
- */
+// Factory for creating dynamic title UI helpers
 const makeDynamicTitleUI = (resolveValue, baseOptions = {}) => (
   title,
   description = null,
@@ -167,6 +107,7 @@ const makeDynamicTitleUI = (resolveValue, baseOptions = {}) => (
   });
 };
 
+// Factory for creating component-based title UI helpers
 const makeComponentTitleUI = (Component, baseOptions = {}) => (
   title,
   description = null,
@@ -196,6 +137,29 @@ export const medicarePageTitleUI = makeComponentTitleUI(MedicarePageTitle, {
   classNames: DEFAULT_OPTS.piiClassNames,
   arrayBuilder: true,
 });
+
+/**
+ * Creates a subtitle UI for subsection headings.
+ *
+ * Uses h2 semantic level but styled as h3 for visual hierarchy.
+ * Useful for creating subsections within a form page.
+ *
+ * @param {string} title - The subtitle text to display
+ * @returns {Object} UI schema object for titleUI with subtitle styling
+ *
+ * @example
+ * // Add a subsection title
+ * uiSchema: {
+ *   ...subtitleUI('Additional information'),
+ *   fieldName: textUI('Field label')
+ * }
+ */
+export const subtitleUI = title =>
+  titleUI({
+    title,
+    headerLevel: 2,
+    headerStyleLevel: 3,
+  });
 
 /**
  * Creates a dynamic title that adapts based on the certifier's role.

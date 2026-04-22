@@ -1,8 +1,9 @@
-import { textareaUI } from 'platform/forms-system/src/js/web-component-patterns';
-import { validFieldCharsOnly } from '../../../shared/validations';
-import { textareaSchema } from '../../definitions';
+import {
+  textareaSchema,
+  textareaUI,
+  titleWithFormDataUI,
+} from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithFormDataUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['health-insurance--addtl-comments-title'];
 const INPUT_LABEL = content['health-insurance--addtl-comments-label'];
@@ -20,10 +21,6 @@ export default {
       hint: HINT_TEXT,
       charcount: true,
     }),
-    'ui:validations': [
-      (errors, formData) =>
-        validFieldCharsOnly(errors, null, formData, 'additionalComments'),
-    ],
   },
   schema: {
     type: 'object',

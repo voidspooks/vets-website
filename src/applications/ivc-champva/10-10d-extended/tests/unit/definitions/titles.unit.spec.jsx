@@ -8,7 +8,7 @@ import {
   titleWithFormDataUI,
   titleWithNameUI,
   titleWithRoleUI,
-} from '../../../utils/titles';
+} from '../../../definitions';
 
 const renderTitle = (uiSchema, formData = {}) => {
   const TitleComponent = uiSchema['ui:title'];

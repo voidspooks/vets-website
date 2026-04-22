@@ -1,6 +1,5 @@
-import { textUI } from 'platform/forms-system/src/js/web-component-patterns';
+import { textUI, titleWithRoleUI } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { titleWithRoleUI } from '../../utils/titles';
 
 const TITLE_TEXT = content['supplemental--member-number-title'];
 const INPUT_LABEL = content['supplemental--member-number-label'];
@@ -17,12 +16,11 @@ const MEMBER_NUMBER_SCHEMA = {
   minLength: 8,
 };
 
-const OPTS = { other: content['noun--beneficiary'] };
-const PAGE_TITLE = titleWithRoleUI(TITLE_TEXT, null, OPTS);
-
 export default {
   uiSchema: {
-    ...PAGE_TITLE,
+    ...titleWithRoleUI(TITLE_TEXT, null, {
+      other: content['noun--beneficiary'],
+    }),
     applicantMemberNumber: textUI({
       title: INPUT_LABEL,
       hint: HINT_TEXT,
