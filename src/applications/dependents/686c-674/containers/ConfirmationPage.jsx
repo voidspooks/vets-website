@@ -98,11 +98,11 @@ export default function ConfirmationPage() {
               <h2 className="vads-u-margin-top--3 vads-u-margin-bottom--2 save-a-copy">
                 Save a copy of your form
               </h2>
-              <span>
+              <p>
                 You can open, download, or print a copy of your submitted form
                 now.
-              </span>
-              <div className="vads-u-margin-top--2">
+              </p>
+              <p className="vads-u-margin-top--2">
                 <strong>
                   <va-link
                     external
@@ -113,11 +113,11 @@ export default function ConfirmationPage() {
                     }
                   />
                 </strong>
-              </div>
-              <div className="vads-u-margin-top--2 vads-u-margin-bottom--3">
+              </p>
+              <p className="vads-u-margin-top--2 vads-u-margin-bottom--3">
                 <strong>Note:</strong> You won't be able to access a copy of the
                 information you submitted once you leave this page.
-              </div>
+              </p>
             </section>
           ) : (
             submissionBox()
@@ -158,10 +158,12 @@ export default function ConfirmationPage() {
           Tool. After your request appears, you can upload your documents in the
           Files tab.
         </p>
-        <va-link
-          href="/track-claims"
-          text="Use the Claim Status Tool to upload your documents"
-        />
+        <p>
+          <va-link
+            href="/track-claims"
+            text="Use the Claim Status Tool to upload your documents"
+          />
+        </p>
         <h3>Option 2: Mail us copies of your documents</h3>
         <p>
           <strong>If your request is related to disability compensation</strong>
@@ -202,7 +204,12 @@ export default function ConfirmationPage() {
           If you need to add or remove another dependent, complete and submit
           another dependency claim.
         </p>
-        <va-link href={manifest.rootUrl} text="Start a new dependency claim" />
+        <p>
+          <va-link
+            href={manifest.rootUrl}
+            text="Start a new dependency claim"
+          />
+        </p>
       </section>
       <section>
         <h2>How to contact us if you have questions</h2>
@@ -216,10 +223,12 @@ export default function ConfirmationPage() {
           Or you can ask us a question online through Ask VA. Select the
           category and topic for the VA benefit this form is related to.
         </p>
-        <va-link
-          text="Contact us online through Ask VA"
-          href="https://ask.va.gov"
-        />
+        <p>
+          <va-link
+            text="Contact us online through Ask VA"
+            href="https://ask.va.gov"
+          />
+        </p>
         <div className="vads-u-margin-top--3 vads-u-margin-bottom--6">
           <va-link-action text="Go back to VA.gov" href="/" type="secondary" />
         </div>

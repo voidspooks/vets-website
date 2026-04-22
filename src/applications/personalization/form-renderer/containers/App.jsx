@@ -66,9 +66,9 @@ export default function App({ params }) {
   const unauthorizedAlert = () => {
     return (
       <div className="error-state">
-        <h2 className="vads-u-margin-top--0 vads-u-margin-bottom--1p5">
+        <h1 className="vads-u-margin-top--0 vads-u-margin-bottom--1p5">
           We can’t match your records
-        </h2>
+        </h1>
         <p>
           We’re sorry. We can’t match this submitted form with your records.
           Check your link and try again. If you still can’t access your

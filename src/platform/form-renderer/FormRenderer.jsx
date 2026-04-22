@@ -91,12 +91,12 @@ function createChecklist(obj) {
 
 const createNotAnsweredMessage = index => {
   return (
-    <div
+    <p
       key={`not-answered-${index}`}
-      className="vads-u-font-style--italic vads-u-margin-bottom--2p5"
+      className="vads-u-font-style--italic vads-u-margin-bottom--2p5 vads-u-margin-top--0"
     >
       Not answered
-    </div>
+    </p>
   );
 };
 
@@ -335,17 +335,21 @@ const FormRenderer = ({ config, data }) => {
   return (
     <div className="digital-forms-renderer vads-grid-container vads-u-padding--0">
       <div className="vads-grid-col-12">
-        <h1 className="vads-u-margin-bottom--1 vads-u-margin-top--0">
+        <h1 className="vads-u-margin-bottom--0 vads-u-margin-top--0">
           {config.formDescription}{' '}
           <span className="form-name">(VA Form {config.formId})</span>
         </h1>
-        <div>{config.formVersion}</div>
-        <div>{signatureInfo}</div>
-        {rendered}
+        <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+          {config.formVersion}
+        </p>
+        <p className="vads-u-margin-top--0 vads-u-margin-bottom--0">
+          {signatureInfo}
+        </p>
+        <div className="vads-u-margin-top--1">{rendered}</div>
         <div>
-          <span>
+          <p>
             {signatureInfo} Signee signed with an identity-verified account.
-          </span>
+          </p>
         </div>
       </div>
     </div>

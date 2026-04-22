@@ -80,6 +80,7 @@ src/applications/disability-benefits @department-of-veterans-affairs/disability-
 
 # Disability Benefits Employee Experience (DSVA Slack: #benefits-employee-exp)
 src/platform/form-renderer @department-of-veterans-affairs/employee-experience @department-of-veterans-affairs/va-platform-cop-frontend
+src/applications/personalization/form-renderer @department-of-veterans-affairs/employee-experience @department-of-veterans-affairs/va-platform-cop-frontend
 
 # Benefits Management Tools (DSVA Slack: #benefits-management-tools)
 src/applications/claims-status @department-of-veterans-affairs/benefits-management-tools-fe @department-of-veterans-affairs/va-platform-cop-frontend
