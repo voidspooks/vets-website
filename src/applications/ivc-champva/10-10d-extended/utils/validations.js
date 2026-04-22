@@ -1,6 +1,6 @@
 import { add, isAfter, isBefore, isValid } from 'date-fns';
-import { isValidSSN } from 'platform/forms-system/src/js/utilities/validations';
 import { minYear } from 'platform/forms-system/src/js/helpers';
+import { isValidSSN } from 'platform/forms-system/src/js/utilities/validations';
 import {
   convertToDateField,
   validateDate,
@@ -14,7 +14,112 @@ const ERR_SSN_INVALID = content['validation--ssn-invalid'];
 
 const STATE_REQUIRED_COUNTRIES = new Set(['USA', 'CAN', 'MEX']);
 
-const normalizeSSN = val => String(val ?? '').replace(/\D/g, '');
+/**
+ * Validates a text field for disallowed characters and adds an error message
+ * when any invalid characters are found.
+ *
+ * @param {Object} errors - The rjsf/vets-forms error object
+ * @param {string} fieldData - The input string to validate
+ */
+export const validateChars = (errors, fieldData) => {
+  if (!fieldData || typeof fieldData !== 'string') return;
+
+  const invalidCharsPattern = /[~!@#$%^&*+=[\]{}()<>;:"`\\/_|]/g;
+  const matches = fieldData.match(invalidCharsPattern);
+
+  if (!matches) return;
+
+  const uniqueChars = [...new Set(matches)];
+  const isPlural = uniqueChars.length > 1;
+  const charsList = uniqueChars.join(' ');
+
+  const msgPlural = content['validation--text-characters--plural'];
+  const msgSingular = content['validation--text-characters--singular'];
+  const message = isPlural
+    ? `${msgPlural}: ${charsList}`
+    : `${msgSingular}: ${charsList}`;
+
+  errors.addError(message);
+};
+
+/**
+ * Generic validator factory for date ranges with effective/termination or effective/expiration date patterns
+ * @param {Object} options - configuration options
+ * @param {string} options.startDateKey - key name for the effective/start date field
+ * @param {string} options.endDateKey - key name for the termination/expiration/end date field
+ * @param {string} [options.invalidDateMessage] - custom error message for invalid dates
+ * @param {string} [options.rangeErrorMessage] - custom error message for invalid date range
+ * @returns {Function} validator function that accepts (errors, data)
+ */
+export const validateDateRange = (options = {}) => {
+  const {
+    startDateKey,
+    endDateKey,
+    invalidDateMessage = content['validation--date-value--current'],
+    rangeErrorMessage = content['validation--date-range'],
+  } = options;
+
+  return (errors, data) => {
+    const startDate = data[startDateKey];
+    const endDate = data[endDateKey];
+
+    const fromDate = convertToDateField(startDate);
+    const toDate = convertToDateField(endDate);
+
+    // Validate end date is a valid date, if provided
+    if (endDate && !isValid(new Date(endDate))) {
+      errors[endDateKey].addError(invalidDateMessage);
+      return;
+    }
+
+    // Validate date range (end date must be after start date)
+    if (!isValidDateRange(fromDate, toDate)) {
+      errors[endDateKey].addError(rangeErrorMessage);
+    }
+  };
+};
+
+/**
+ * Validates that a date is not more than one year in the future.
+ *
+ * Ensures the date is valid, within the allowed year range (minYear to current year + 1),
+ * and not more than one calendar year from today. Used for dates that should be current or near-future.
+ *
+ * @param {Object} errors - The errors object to add validation errors to
+ * @param {string} dateString - The date string to validate (format: 'YYYY-MM-DD')
+ * @param {Object} formData - The complete form data object
+ * @param {Object} schema - The JSON schema for the date field
+ * @param {Object} [errorMessages={}] - Optional custom error messages to override defaults
+ */
+export const validateFutureDate = (
+  errors,
+  dateString,
+  formData,
+  schema,
+  errorMessages = {},
+) => {
+  const yearFromToday = add(new Date(), { years: 1 });
+  const maxYear = new Date().getFullYear() + 1;
+
+  validateDate(
+    errors,
+    dateString,
+    formData,
+    schema,
+    errorMessages,
+    undefined,
+    undefined,
+    minYear,
+    maxYear,
+  );
+
+  const date = dateString ? new Date(dateString) : null;
+  if (date && isValid(date) && isAfter(date, yearFromToday)) {
+    errors.addError(ERR_FUTURE_DATE);
+  }
+};
+
+const normalizeSsn = val => String(val ?? '').replace(/\D/g, '');
 
 const getCurrentItemIndex = () => {
   try {
@@ -26,24 +131,11 @@ const getCurrentItemIndex = () => {
   }
 };
 
-/**
- * Analyzes SSN matches between sponsor and applicants in form data.
- *
- * @param {Object} fullData - The complete form data object
- * @param {string} fullData.sponsorSsn - The sponsor's Social Security Number
- * @param {Array} fullData.applicants - Array of applicant objects
- * @param {string} fullData.applicants[].applicantSsn - Each applicant's Social Security Number
- * @param {string} current - The SSN to check for matches (normalized, digits only)
- * @returns {Object} Match results
- * @returns {boolean} returns.sponsorMatch - True if current SSN matches the sponsor's SSN
- * @returns {number} returns.applicantMatches - Count of applicants with matching SSN
- * @returns {number|null} returns.currentIndex - The current array index, if the URL param exists
- */
 const getSsnMatches = (fullData, current) => {
   const currentIndex = getCurrentItemIndex();
-  const sponsor = normalizeSSN(fullData?.sponsorSsn);
+  const sponsor = normalizeSsn(fullData?.sponsorSsn);
   const applicants = (fullData?.applicants ?? [])
-    .map(a => normalizeSSN(a?.applicantSsn))
+    .map(a => normalizeSsn(a?.applicantSsn))
     .filter(Boolean);
 
   const sponsorMatch = sponsor === current;
@@ -55,22 +147,13 @@ const getSsnMatches = (fullData, current) => {
   return { sponsorMatch, applicantMatches, currentIndex };
 };
 
-/**
- * Validates that an SSN is valid and unique among all form participants.
- *
- * @param {Object} options
- * @param {Object} options.errors - The validation errors object to add errors to
- * @param {string} options.fieldData - The SSN field data to validate
- * @param {Object} options.fullData - The complete form data for cross-reference checking
- * @param {boolean} [options.isSponsor=false] - Whether this is validating the sponsor's SSN
- */
 const validateUniqueSsn = ({
   errors,
   fieldData,
   fullData,
   isSponsor = false,
 } = {}) => {
-  const current = normalizeSSN(fieldData);
+  const current = normalizeSsn(fieldData);
   if (!current) return;
 
   if (!isValidSSN(current)) {
@@ -94,76 +177,33 @@ const validateUniqueSsn = ({
   }
 };
 
+/**
+ * Validates that the sponsor's SSN is valid and unique among all form participants.
+ * Checks that the SSN is properly formatted and not duplicated by any applicants.
+ *
+ * @param {Object} errors - The validation errors object to add errors to
+ * @param {string} fieldData - The sponsor's Social Security Number to validate
+ * @param {Object} fullData - The complete form data for cross-reference checking
+ * @param {string} fullData.sponsorSsn - The sponsor's SSN
+ * @param {Array} fullData.applicants - Array of applicant objects with their SSNs
+ */
 export const validateSponsorSsn = (errors, fieldData, fullData) => {
   validateUniqueSsn({ errors, fieldData, fullData, isSponsor: true });
 };
 
+/**
+ * Validates that an applicant's SSN is valid and unique among all form participants.
+ * Checks that the SSN is properly formatted, not duplicated by other applicants,
+ * and does not match the sponsor's SSN.
+ *
+ * @param {Object} errors - The validation errors object to add errors to
+ * @param {string} fieldData - The applicant's Social Security Number to validate
+ * @param {Object} fullData - The complete form data for cross-reference checking
+ * @param {string} fullData.sponsorSsn - The sponsor's SSN (to check for conflicts)
+ * @param {Array} fullData.applicants - Array of all applicant objects with their SSNs
+ */
 export const validateApplicantSsn = (errors, fieldData, fullData) => {
   validateUniqueSsn({ errors, fieldData, fullData });
-};
-
-/**
- * Validates an applicant's date of marriage to sponsor is not before
- * said applicant's date of birth.
- * @param {Object} errors - The errors object for the current page
- * @param {Object} page - The current page data
- */
-export const validateMarriageAfterDob = (errors, page) => {
-  const difference =
-    Date.parse(page?.dateOfMarriageToSponsor) - Date.parse(page?.applicantDob);
-
-  if (difference !== undefined && difference <= 0) {
-    errors.dateOfMarriageToSponsor.addError(
-      'Date of marriage must be after applicant’s date of birth',
-    );
-  }
-};
-
-/**
- * Validates Medicare termination date not before the effective date
- * @param {Object} errors - object holding the error message content
- * @param {Object} data - field data from the form inputs
- */
-export const validateMedicarePartDDates = (errors, data) => {
-  const { medicarePartDEffectiveDate, medicarePartDTerminationDate } = data;
-  const fromDate = convertToDateField(medicarePartDEffectiveDate);
-  const toDate = convertToDateField(medicarePartDTerminationDate);
-
-  if (
-    medicarePartDTerminationDate &&
-    !isValid(new Date(medicarePartDTerminationDate))
-  ) {
-    errors.medicarePartDTerminationDate.addError(
-      'Please enter a valid current or past date',
-    );
-  }
-
-  if (!isValidDateRange(fromDate, toDate)) {
-    errors.medicarePartDTerminationDate.addError(
-      'Termination date must be after the effective date',
-    );
-  }
-};
-
-/**
- * Validates Other Health Insurance termination date not before the effective date
- * @param {Object} errors - object holding the error message content
- * @param {Object} data - field data from the form inputs
- */
-export const validateOHIDates = (errors, data) => {
-  const { effectiveDate, expirationDate } = data;
-  const fromDate = convertToDateField(effectiveDate);
-  const toDate = convertToDateField(expirationDate);
-
-  if (expirationDate && !isValid(new Date(expirationDate))) {
-    errors.expirationDate.addError('Please enter a valid current or past date');
-  }
-
-  if (!isValidDateRange(fromDate, toDate)) {
-    errors.expirationDate.addError(
-      'Termination date must be after the effective date',
-    );
-  }
 };
 
 /**
@@ -195,11 +235,6 @@ export const validateSpousalRelationship = (errors, fieldData, formData) => {
   }
 };
 
-/**
- * Validates file upload has proper structure
- * @param {Array} fileArray - Array of uploaded files
- * @returns {boolean} - true if file upload is valid
- */
 const hasValidUpload = fileArray =>
   Array.isArray(fileArray) && fileArray[0]?.name;
 
@@ -415,11 +450,6 @@ export const validateHealthInsurancePlan = (item = {}) => {
   );
 };
 
-/**
- * Validates basic required fields for all applicants
- * @param {Object} item - The applicant item data
- * @returns {boolean} - true if any basic field is missing
- */
 const validateApplicantBasicFields = item => {
   const {
     applicantName,
@@ -444,21 +474,11 @@ const validateApplicantBasicFields = item => {
   return !applicantRelationshipToSponsor?.relationshipToVeteran;
 };
 
-/**
- * Validates date of birth is valid and not in future
- * @param {string} applicantDob - Date of birth string
- * @returns {boolean} - true if date is invalid
- */
 const validateApplicantDateOfBirth = applicantDob => {
   if (!isValid(new Date(applicantDob))) return true;
   return isAfter(new Date(applicantDob), new Date());
 };
 
-/**
- * Validates child-specific document requirements based on relationship origin
- * @param {Object} item - The applicant item data
- * @returns {boolean} - true if child documents are incomplete
- */
 const validateChildDocuments = item => {
   const {
     applicantRelationshipOrigin,
@@ -489,11 +509,6 @@ const validateChildDocuments = item => {
   );
 };
 
-/**
- * Validates age-based dependent status for children (18-23 years old)
- * @param {Object} item - The applicant item data
- * @returns {boolean} - true if dependent status is incomplete
- */
 const validateChildDependentStatus = item => {
   const { applicantDob, applicantDependentStatus, applicantSchoolCert } = item;
   const birthDate = new Date(applicantDob);
@@ -516,21 +531,11 @@ const validateChildDependentStatus = item => {
   return false;
 };
 
-/**
- * Validates child-specific requirements
- * @param {Object} item - The applicant item data
- * @returns {boolean} - true if child validation fails
- */
 const validateChildRequirements = item => {
   if (validateChildDocuments(item)) return true;
   return validateChildDependentStatus(item);
 };
 
-/**
- * Validates marriage date requirements for spouses
- * @param {Object} item - The applicant item data
- * @returns {boolean} - true if marriage date validation fails
- */
 const validateSpouseMarriageDate = item => {
   const { applicantDob, dateOfMarriageToSponsor } = item;
   if (!dateOfMarriageToSponsor) return true;
@@ -539,13 +544,6 @@ const validateSpouseMarriageDate = item => {
   return isAfter(new Date(applicantDob), new Date(dateOfMarriageToSponsor));
 };
 
-/**
- * Validates spouse-specific requirements
- * Note: This simplified version doesn't handle deceased sponsor scenarios
- * since we don't have access to formData in isItemIncomplete
- * @param {Object} item - The applicant item data
- * @returns {boolean} - true if spouse validation fails
- */
 const validateSpouseRequirements = item => {
   return validateSpouseMarriageDate(item);
 };
@@ -572,108 +570,4 @@ export const validateApplicant = (item = {}) => {
   }
 
   return false;
-};
-
-/**
- * Validates that a date is not more than one year in the future.
- *
- * Ensures the date is valid, within the allowed year range (minYear to current year + 1),
- * and not more than one calendar year from today. Used for dates that should be current or near-future.
- *
- * @param {Object} errors - The errors object to add validation errors to
- * @param {string} dateString - The date string to validate (format: 'YYYY-MM-DD')
- * @param {Object} formData - The complete form data object
- * @param {Object} schema - The JSON schema for the date field
- * @param {Object} [errorMessages={}] - Optional custom error messages to override defaults
- */
-export const validateFutureDate = (
-  errors,
-  dateString,
-  formData,
-  schema,
-  errorMessages = {},
-) => {
-  const yearFromToday = add(new Date(), { years: 1 });
-  const maxYear = new Date().getFullYear() + 1;
-
-  validateDate(
-    errors,
-    dateString,
-    formData,
-    schema,
-    errorMessages,
-    undefined,
-    undefined,
-    minYear,
-    maxYear,
-  );
-
-  const date = dateString ? new Date(dateString) : null;
-  if (date && isValid(date) && isAfter(date, yearFromToday)) {
-    errors.addError(ERR_FUTURE_DATE);
-  }
-};
-
-/**
- * Validates a text field for disallowed characters and adds an error message
- * when any invalid characters are found.
- *
- * @param {Object} errors - The rjsf/vets-forms error object
- * @param {string} fieldData - The input string to validate
- */
-export const validateChars = (errors, fieldData) => {
-  if (!fieldData || typeof fieldData !== 'string') return;
-
-  const invalidCharsPattern = /[~!@#$%^&*+=[\]{}()<>;:"`\\/_|]/g;
-  const matches = fieldData.match(invalidCharsPattern);
-
-  if (!matches) return;
-
-  const uniqueChars = [...new Set(matches)];
-  const isPlural = uniqueChars.length > 1;
-  const charsList = uniqueChars.join(' ');
-
-  const msgPlural = content['validation--text-characters--plural'];
-  const msgSingular = content['validation--text-characters--singular'];
-  const message = isPlural
-    ? `${msgPlural}: ${charsList}`
-    : `${msgSingular}: ${charsList}`;
-
-  errors.addError(message);
-};
-
-/**
- * Generic validator for date ranges with effective/termination or effective/expiration date patterns
- * @param {Object} errors - The rjsf/vets-forms error object
- * @param {Object} data - field data from the form inputs
- * @param {Object} options - configuration options
- * @param {string} options.startDateKey - key name for the effective/start date field
- * @param {string} options.endDateKey - key name for the termination/expiration/end date field
- * @param {string} [options.invalidDateMessage] - custom error message for invalid dates
- * @param {string} [options.rangeErrorMessage] - custom error message for invalid date range
- */
-export const validateDateRange = (errors, data, options = {}) => {
-  const {
-    startDateKey,
-    endDateKey,
-    invalidDateMessage = content['validation--date-value--current'],
-    rangeErrorMessage = content['validation--date-range'],
-  } = options;
-
-  const startDate = data[startDateKey];
-  const endDate = data[endDateKey];
-
-  const fromDate = convertToDateField(startDate);
-  const toDate = convertToDateField(endDate);
-
-  // Validate end date is a valid date if provided
-  if (endDate && !isValid(new Date(endDate))) {
-    errors[endDateKey].addError(invalidDateMessage);
-    return;
-  }
-
-  // Validate date range (end date must be after effective date)
-  if (!isValidDateRange(fromDate, toDate)) {
-    errors[endDateKey].addError(rangeErrorMessage);
-  }
 };

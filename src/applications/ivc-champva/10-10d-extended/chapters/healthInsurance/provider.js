@@ -20,11 +20,10 @@ const HINT_TEXT = {
 };
 
 const VALIDATIONS = [
-  (errors, formData) =>
-    validateDateRange(errors, formData, {
-      startDateKey: 'effectiveDate',
-      endDateKey: 'expirationDate',
-    }),
+  validateDateRange({
+    startDateKey: 'effectiveDate',
+    endDateKey: 'expirationDate',
+  }),
 ];
 
 export default {

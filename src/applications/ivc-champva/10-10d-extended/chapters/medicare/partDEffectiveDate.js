@@ -8,7 +8,7 @@ import {
   medicarePageTitleUI,
 } from '../../definitions';
 import content from '../../locales/en/content.json';
-import { validateMedicarePartDDates } from '../../utils/validations';
+import { validateDateRange } from '../../utils/validations';
 
 const TITLE_TEXT = content['medicare--part-d-effective-date-title'];
 const INPUT_LABELS = {
@@ -19,6 +19,13 @@ const HINT_TEXT = {
   effectiveDate: content['medicare--part-d-effective-date-hint'],
   terminationDate: content['medicare--part-d-termination-date-hint'],
 };
+
+const VALIDATIONS = [
+  validateDateRange({
+    startDateKey: 'medicarePartDEffectiveDate',
+    endDateKey: 'medicarePartDTerminationDate',
+  }),
+];
 
 export default {
   uiSchema: {
@@ -31,7 +38,7 @@ export default {
       title: INPUT_LABELS.terminationDate,
       hint: HINT_TEXT.terminationDate,
     }),
-    'ui:validations': [validateMedicarePartDDates],
+    'ui:validations': VALIDATIONS,
   },
   schema: {
     type: 'object',

@@ -273,6 +273,7 @@
   "validation--date-range--future": "Date may not be more than 1 year from today",
   "validation--mbi-invalid": "Enter a valid 11-character MBI code (without dashes)",
   "validation--required": "You must provide a response",
+  "validation--marriage-date-range": "Date of marriage must be after applicant’s date of birth",
   "validation--member-number--pattern": "Response may only contain numbers",
   "validation--spousal-relationship": "Only one applicant can have a spousal or partner relationship to the Veteran",
   "validation--ssn-invalid": "Enter a valid 9-digit SSN (dashes allowed)",

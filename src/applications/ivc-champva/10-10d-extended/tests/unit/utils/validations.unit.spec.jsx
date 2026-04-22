@@ -1,19 +1,196 @@
-import sinon from 'sinon-v20';
 import { expect } from 'chai';
+import sinon from 'sinon-v20';
 import {
   validateApplicant,
-  validateHealthInsurancePlan,
-  validateMarriageAfterDob,
-  validateMedicarePartDDates,
-  validateMedicarePlan,
-  validateOHIDates,
   validateApplicantSsn,
-  validateSponsorSsn,
-  validateFutureDate,
   validateChars,
   validateDateRange,
+  validateFutureDate,
+  validateHealthInsurancePlan,
+  validateMedicarePlan,
+  validateSponsorSsn,
   validateSpousalRelationship,
 } from '../../../utils/validations';
+
+describe('1010d `validateChars` form validation', () => {
+  let addErrorSpy;
+  let errors;
+
+  beforeEach(() => {
+    addErrorSpy = sinon.spy();
+    errors = { addError: addErrorSpy };
+  });
+
+  afterEach(() => {
+    addErrorSpy.resetHistory();
+  });
+
+  it('should not add error when text contains only valid characters', () => {
+    validateChars(errors, 'Valid text with letters and numbers 123');
+    sinon.assert.notCalled(addErrorSpy);
+  });
+
+  it('should add error when text contains a single invalid character', () => {
+    validateChars(errors, 'text with $ symbol');
+    sinon.assert.calledOnce(addErrorSpy);
+    sinon.assert.calledWith(addErrorSpy, sinon.match(/this character.*\$/));
+  });
+
+  it('should add error when text contains multiple invalid characters', () => {
+    validateChars(errors, 'text with $@# symbols');
+    sinon.assert.calledOnce(addErrorSpy);
+    sinon.assert.calledWith(addErrorSpy, sinon.match(/these characters/));
+  });
+
+  it('should not add error for empty string', () => {
+    validateChars(errors, '');
+    sinon.assert.notCalled(addErrorSpy);
+  });
+
+  it('should allow hyphens, periods, apostrophes, and commas', () => {
+    validateChars(errors, "Text with - . ' , allowed");
+    sinon.assert.notCalled(addErrorSpy);
+  });
+});
+
+describe('1010d `validateDateRange` form validation', () => {
+  let errors;
+  let startDateSpy;
+  let endDateSpy;
+
+  const runValidator = (opts = {}) =>
+    validateDateRange({
+      startDateKey: 'effectiveDate',
+      endDateKey: 'terminationDate',
+      ...opts,
+    });
+
+  beforeEach(() => {
+    startDateSpy = sinon.spy();
+    endDateSpy = sinon.spy();
+    errors = {
+      effectiveDate: { addError: startDateSpy },
+      terminationDate: { addError: endDateSpy },
+    };
+  });
+
+  afterEach(() => {
+    startDateSpy.resetHistory();
+    endDateSpy.resetHistory();
+  });
+
+  it('should not add error when dates are valid and in correct order', () => {
+    const data = {
+      effectiveDate: '2020-01-01',
+      terminationDate: '2021-01-01',
+    };
+    runValidator()(errors, data);
+    sinon.assert.notCalled(endDateSpy);
+  });
+
+  it('should not add error when termination date is omitted', () => {
+    const data = {
+      effectiveDate: '2020-01-01',
+      terminationDate: undefined,
+    };
+    runValidator()(errors, data);
+    sinon.assert.notCalled(endDateSpy);
+  });
+
+  it('should add error when termination date is before effective date', () => {
+    const data = {
+      effectiveDate: '2021-01-01',
+      terminationDate: '2020-01-01',
+    };
+    runValidator()(errors, data);
+    sinon.assert.calledOnce(endDateSpy);
+  });
+
+  it('should add error when termination date is invalid', () => {
+    const data = {
+      effectiveDate: '2020-01-01',
+      terminationDate: 'invalid-date',
+    };
+    runValidator()(errors, data);
+    sinon.assert.calledOnce(endDateSpy);
+  });
+
+  it('should add error when termination date is same as effective date', () => {
+    const data = {
+      effectiveDate: '2020-01-01',
+      terminationDate: '2020-01-01',
+    };
+    runValidator()(errors, data);
+    sinon.assert.calledOnce(endDateSpy);
+  });
+
+  it('should use custom error messages when provided', () => {
+    const data = {
+      effectiveDate: '2021-01-01',
+      terminationDate: '2020-01-01',
+    };
+    const rangeErrorMessage = 'Custom error message';
+    runValidator({ rangeErrorMessage })(errors, data);
+    sinon.assert.calledWith(endDateSpy, rangeErrorMessage);
+  });
+});
+
+describe('1010d `validateFutureDate` form validation', () => {
+  const NOW_ISO = '2026-01-06T12:00:00.000Z';
+  const formData = {};
+  const schema = {};
+  let errors;
+  let clock;
+
+  const run = (dateString, errorMessages) =>
+    validateFutureDate(errors, dateString, formData, schema, errorMessages);
+
+  before(() => {
+    clock = sinon.useFakeTimers(new Date(NOW_ISO));
+  });
+
+  after(() => {
+    clock.restore();
+  });
+
+  beforeEach(() => {
+    errors = { addError: sinon.spy() };
+  });
+
+  const noErrorCases = [
+    { title: 'date is today', dateString: '2026-01-06' },
+    { title: 'date is in the past', dateString: '2025-01-01' },
+    { title: 'date is within one year from today', dateString: '2026-12-31' },
+    { title: 'date is exactly one year from today', dateString: '2027-01-06' },
+    { title: 'date is empty string', dateString: '' },
+    { title: 'date is undefined', dateString: undefined },
+  ];
+
+  noErrorCases.forEach(({ title, dateString }) => {
+    it(`should not add an error when ${title}`, () => {
+      run(dateString);
+      sinon.assert.notCalled(errors.addError);
+    });
+  });
+
+  const errorCases = [
+    {
+      title: 'date is more than one year in the future',
+      dateString: '2027-01-07',
+    },
+    { title: 'date is far in the future', dateString: '2030-01-01' },
+    { title: 'date year exceeds maxYear', dateString: '2028-01-01' },
+    { title: 'date has invalid month', dateString: '2026-13-01' },
+    { title: 'date has invalid day', dateString: '2026-02-30' },
+  ];
+
+  errorCases.forEach(({ title, dateString }) => {
+    it(`should add an error when ${title}`, () => {
+      run(dateString);
+      sinon.assert.calledOnce(errors.addError);
+    });
+  });
+});
 
 describe('1010d `validateSponsorSsn` form validation', () => {
   let errors;
@@ -270,171 +447,6 @@ describe('1010d `validateApplicantSsn` form validation', () => {
       validateApplicantSsn(errors, '123123123', fullData);
       sinon.assert.calledOnce(errors.addError);
     });
-  });
-});
-
-describe('1010d `validateMarriageAfterDob` form validation', () => {
-  let errors;
-
-  beforeEach(() => {
-    errors = {
-      dateOfMarriageToSponsor: {
-        addError: sinon.spy(),
-      },
-    };
-  });
-
-  it('should add an error when applicant dob is after date of marriage', () => {
-    const page = {
-      applicantDob: '2000-01-01',
-      dateOfMarriageToSponsor: '1999-01-01',
-    };
-
-    validateMarriageAfterDob(errors, page);
-    expect(errors.dateOfMarriageToSponsor.addError.calledOnce).to.be.true;
-  });
-
-  it('should add an error when applicant dob is same as date of marriage', () => {
-    const page = {
-      applicantDob: '2000-01-01',
-      dateOfMarriageToSponsor: '2000-01-01',
-    };
-
-    validateMarriageAfterDob(errors, page);
-    expect(errors.dateOfMarriageToSponsor.addError.calledOnce).to.be.true;
-  });
-
-  it('should NOT add an error when applicant dob is before date of marriage', () => {
-    const page = {
-      applicantDob: '1995-01-01',
-      dateOfMarriageToSponsor: '2020-01-01',
-    };
-
-    validateMarriageAfterDob(errors, page);
-    expect(errors.dateOfMarriageToSponsor.addError.called).to.be.false;
-  });
-
-  it('should NOT add an error when date of marriage is undefined', () => {
-    const page = {
-      applicantDob: '1995-01-01',
-      dateOfMarriageToSponsor: undefined,
-    };
-
-    validateMarriageAfterDob(errors, page);
-    expect(errors.dateOfMarriageToSponsor.addError.called).to.be.false;
-  });
-
-  it('should NOT add an error when date of birth is undefined', () => {
-    const page = {
-      applicantDob: undefined,
-      dateOfMarriageToSponsor: '2000-01-01',
-    };
-
-    validateMarriageAfterDob(errors, page);
-    expect(errors.dateOfMarriageToSponsor.addError.called).to.be.false;
-  });
-});
-
-describe('1010d `validateMedicarePartDDates` form validation', () => {
-  const terminationDateSpy = sinon.spy();
-  const effectiveDateSpy = sinon.spy();
-  const getData = ({
-    terminationDate = '2016-01-01',
-    effectiveDate = '2011-01-01',
-  } = {}) => ({
-    errors: {
-      medicarePartDTerminationDate: { addError: terminationDateSpy },
-      medicarePartDEffectiveDate: { addError: effectiveDateSpy },
-    },
-    fieldData: {
-      medicarePartDTerminationDate: terminationDate,
-      medicarePartDEffectiveDate: effectiveDate,
-    },
-  });
-
-  afterEach(() => {
-    terminationDateSpy.resetHistory();
-    effectiveDateSpy.resetHistory();
-  });
-
-  it('should not set error message when form data is valid', () => {
-    const { errors, fieldData } = getData();
-    validateMedicarePartDDates(errors, fieldData);
-    sinon.assert.notCalled(terminationDateSpy);
-    sinon.assert.notCalled(effectiveDateSpy);
-  });
-
-  it('should not set error message when termination date is omitted', () => {
-    const { errors, fieldData } = getData({ terminationDate: undefined });
-    validateMedicarePartDDates(errors, fieldData);
-    sinon.assert.notCalled(terminationDateSpy);
-    sinon.assert.notCalled(effectiveDateSpy);
-  });
-
-  it('should set error message when termination date is invalid', () => {
-    const { errors, fieldData } = getData({
-      terminationDate: '2018-XX-01',
-    });
-    validateMedicarePartDDates(errors, fieldData);
-    sinon.assert.calledOnce(terminationDateSpy);
-  });
-
-  it('should set error message when termination date is before effective date', () => {
-    const { errors, fieldData } = getData({
-      terminationDate: '2010-01-01',
-    });
-    validateMedicarePartDDates(errors, fieldData);
-    sinon.assert.calledOnce(terminationDateSpy);
-  });
-});
-
-describe('1010d `validateOHIDates` form validation', () => {
-  const expirationDateSpy = sinon.spy();
-  const effectiveDateSpy = sinon.spy();
-  const getData = ({
-    expirationDate = '2016-01-01',
-    effectiveDate = '2011-01-01',
-  } = {}) => ({
-    errors: {
-      expirationDate: { addError: expirationDateSpy },
-      effectiveDate: { addError: effectiveDateSpy },
-    },
-    fieldData: { expirationDate, effectiveDate },
-  });
-
-  afterEach(() => {
-    expirationDateSpy.resetHistory();
-    effectiveDateSpy.resetHistory();
-  });
-
-  it('should not set error message when form data is valid', () => {
-    const { errors, fieldData } = getData();
-    validateOHIDates(errors, fieldData);
-    sinon.assert.notCalled(expirationDateSpy);
-    sinon.assert.notCalled(effectiveDateSpy);
-  });
-
-  it('should not set error message when termination date is omitted', () => {
-    const { errors, fieldData } = getData({ expirationDate: undefined });
-    validateOHIDates(errors, fieldData);
-    sinon.assert.notCalled(expirationDateSpy);
-    sinon.assert.notCalled(effectiveDateSpy);
-  });
-
-  it('should set error message when termination date is invalid', () => {
-    const { errors, fieldData } = getData({
-      expirationDate: '2018-XX-01',
-    });
-    validateOHIDates(errors, fieldData);
-    sinon.assert.calledOnce(expirationDateSpy);
-  });
-
-  it('should set error message when termination date is before effective date', () => {
-    const { errors, fieldData } = getData({
-      expirationDate: '2010-01-01',
-    });
-    validateOHIDates(errors, fieldData);
-    sinon.assert.calledOnce(expirationDateSpy);
   });
 });
 
@@ -1475,209 +1487,5 @@ describe('1010d `validateApplicant` form validation', () => {
       });
       expect(validateApplicant(applicant)).to.be.false;
     });
-  });
-});
-
-describe('1010d `validateFutureDate` form validation', () => {
-  const NOW_ISO = '2026-01-06T12:00:00.000Z';
-  const formData = {};
-  const schema = {};
-  let errors;
-  let clock;
-
-  const run = (dateString, errorMessages) =>
-    validateFutureDate(errors, dateString, formData, schema, errorMessages);
-
-  before(() => {
-    clock = sinon.useFakeTimers(new Date(NOW_ISO));
-  });
-
-  after(() => {
-    clock.restore();
-  });
-
-  beforeEach(() => {
-    errors = { addError: sinon.spy() };
-  });
-
-  const noErrorCases = [
-    { title: 'date is today', dateString: '2026-01-06' },
-    { title: 'date is in the past', dateString: '2025-01-01' },
-    { title: 'date is within one year from today', dateString: '2026-12-31' },
-    { title: 'date is exactly one year from today', dateString: '2027-01-06' },
-    { title: 'date is empty string', dateString: '' },
-    { title: 'date is undefined', dateString: undefined },
-  ];
-
-  noErrorCases.forEach(({ title, dateString }) => {
-    it(`should not add an error when ${title}`, () => {
-      run(dateString);
-      sinon.assert.notCalled(errors.addError);
-    });
-  });
-
-  const errorCases = [
-    {
-      title: 'date is more than one year in the future',
-      dateString: '2027-01-07',
-    },
-    { title: 'date is far in the future', dateString: '2030-01-01' },
-    { title: 'date year exceeds maxYear', dateString: '2028-01-01' },
-    { title: 'date has invalid month', dateString: '2026-13-01' },
-    { title: 'date has invalid day', dateString: '2026-02-30' },
-  ];
-
-  errorCases.forEach(({ title, dateString }) => {
-    it(`should add an error when ${title}`, () => {
-      run(dateString);
-      sinon.assert.calledOnce(errors.addError);
-    });
-  });
-});
-
-describe('1010d `validateDateRange` form validation', () => {
-  let errors;
-  let startDateSpy;
-  let endDateSpy;
-
-  beforeEach(() => {
-    startDateSpy = sinon.spy();
-    endDateSpy = sinon.spy();
-    errors = {
-      medicarePartDEffectiveDate: { addError: startDateSpy },
-      medicarePartDTerminationDate: { addError: endDateSpy },
-    };
-  });
-
-  afterEach(() => {
-    startDateSpy.resetHistory();
-    endDateSpy.resetHistory();
-  });
-
-  it('should not add error when dates are valid and in correct order', () => {
-    const data = {
-      medicarePartDEffectiveDate: '2020-01-01',
-      medicarePartDTerminationDate: '2021-01-01',
-    };
-
-    validateDateRange(errors, data, {
-      startDateKey: 'medicarePartDEffectiveDate',
-      endDateKey: 'medicarePartDTerminationDate',
-    });
-
-    sinon.assert.notCalled(endDateSpy);
-  });
-
-  it('should not add error when termination date is omitted', () => {
-    const data = {
-      medicarePartDEffectiveDate: '2020-01-01',
-      medicarePartDTerminationDate: undefined,
-    };
-
-    validateDateRange(errors, data, {
-      startDateKey: 'medicarePartDEffectiveDate',
-      endDateKey: 'medicarePartDTerminationDate',
-    });
-
-    sinon.assert.notCalled(endDateSpy);
-  });
-
-  it('should add error when termination date is before effective date', () => {
-    const data = {
-      medicarePartDEffectiveDate: '2021-01-01',
-      medicarePartDTerminationDate: '2020-01-01',
-    };
-
-    validateDateRange(errors, data, {
-      startDateKey: 'medicarePartDEffectiveDate',
-      endDateKey: 'medicarePartDTerminationDate',
-    });
-
-    sinon.assert.calledOnce(endDateSpy);
-  });
-
-  it('should add error when termination date is invalid', () => {
-    const data = {
-      medicarePartDEffectiveDate: '2020-01-01',
-      medicarePartDTerminationDate: 'invalid-date',
-    };
-
-    validateDateRange(errors, data, {
-      startDateKey: 'medicarePartDEffectiveDate',
-      endDateKey: 'medicarePartDTerminationDate',
-    });
-
-    sinon.assert.calledOnce(endDateSpy);
-  });
-
-  it('should add error when termination date is same as effective date', () => {
-    const data = {
-      medicarePartDEffectiveDate: '2020-01-01',
-      medicarePartDTerminationDate: '2020-01-01',
-    };
-
-    validateDateRange(errors, data, {
-      startDateKey: 'medicarePartDEffectiveDate',
-      endDateKey: 'medicarePartDTerminationDate',
-    });
-
-    sinon.assert.calledOnce(endDateSpy);
-  });
-
-  it('should use custom error messages when provided', () => {
-    const data = {
-      medicarePartDEffectiveDate: '2021-01-01',
-      medicarePartDTerminationDate: '2020-01-01',
-    };
-    const customMessage = 'Custom error message';
-
-    validateDateRange(errors, data, {
-      startDateKey: 'medicarePartDEffectiveDate',
-      endDateKey: 'medicarePartDTerminationDate',
-      rangeErrorMessage: customMessage,
-    });
-
-    sinon.assert.calledWith(endDateSpy, customMessage);
-  });
-});
-
-describe('1010d `validateChars` form validation', () => {
-  let addErrorSpy;
-  let errors;
-
-  beforeEach(() => {
-    addErrorSpy = sinon.spy();
-    errors = { addError: addErrorSpy };
-  });
-
-  afterEach(() => {
-    addErrorSpy.resetHistory();
-  });
-
-  it('should not add error when text contains only valid characters', () => {
-    validateChars(errors, 'Valid text with letters and numbers 123');
-    sinon.assert.notCalled(addErrorSpy);
-  });
-
-  it('should add error when text contains a single invalid character', () => {
-    validateChars(errors, 'text with $ symbol');
-    sinon.assert.calledOnce(addErrorSpy);
-    sinon.assert.calledWith(addErrorSpy, sinon.match(/this character.*\$/));
-  });
-
-  it('should add error when text contains multiple invalid characters', () => {
-    validateChars(errors, 'text with $@# symbols');
-    sinon.assert.calledOnce(addErrorSpy);
-    sinon.assert.calledWith(addErrorSpy, sinon.match(/these characters/));
-  });
-
-  it('should not add error for empty string', () => {
-    validateChars(errors, '');
-    sinon.assert.notCalled(addErrorSpy);
-  });
-
-  it('should allow hyphens, periods, apostrophes, and commas', () => {
-    validateChars(errors, "Text with - . ' , allowed");
-    sinon.assert.notCalled(addErrorSpy);
   });
 });
