@@ -2,15 +2,33 @@ import React from 'react';
 import { ADDRESS_TYPES } from 'platform/forms/address/helpers';
 
 export const transformPhoneNumberObject = (phone = {}) => {
-  const { isInternational, areaCode, phoneNumber, countryCode } = phone;
+  const {
+    isInternational,
+    areaCode,
+    phoneNumber,
+    countryCode,
+    extension,
+  } = phone;
 
   if (!phoneNumber || !areaCode) {
     return '';
   }
 
-  let base = `${areaCode}${phoneNumber}`;
+  let formattedPhoneNumber = phoneNumber;
+  if (!isInternational) {
+    formattedPhoneNumber = `${phoneNumber.substring(
+      0,
+      3,
+    )}-${phoneNumber.substring(3)}`;
+  }
+
+  let base = `${areaCode}-${formattedPhoneNumber}`;
   if (isInternational && countryCode) {
     base = `+${countryCode} ${base}`;
+  }
+
+  if (extension) {
+    base = `${base} x${extension}`;
   }
 
   return base;

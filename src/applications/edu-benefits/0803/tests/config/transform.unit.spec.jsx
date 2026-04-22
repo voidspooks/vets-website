@@ -99,10 +99,11 @@ describe('transform function', () => {
         veteran: {
           ...baseData.veteran,
           homePhone: {
-            areaCode: '080',
-            countryCode: '21',
-            isInternational: true,
+            areaCode: '434',
+            countryCode: '1',
+            isInternational: false,
             phoneNumber: '8981233',
+            extension: '123',
           },
           mobilePhone: {
             areaCode: '989',
@@ -134,8 +135,8 @@ describe('transform function', () => {
         state: 'OK',
         postalCode: '23456',
       },
-      homePhone: '+21 0808981233',
-      mobilePhone: '+22 9898981233',
+      homePhone: '434-898-1233 x123',
+      mobilePhone: '+22 989-8981233',
       testName: 'Fake test',
       testDate: '2022-11-13',
       emailAddress: 'example@example.com',

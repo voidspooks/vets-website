@@ -15,7 +15,7 @@ describe('0803 Helpers', () => {
         phoneNumber: '8981233',
         countryCode: '22',
       };
-      expect(transformPhoneNumberObject(input)).to.eq('+22 9898981233');
+      expect(transformPhoneNumberObject(input)).to.eq('+22 989-8981233');
     });
 
     it('returns an empty string when not enough info available', () => {
