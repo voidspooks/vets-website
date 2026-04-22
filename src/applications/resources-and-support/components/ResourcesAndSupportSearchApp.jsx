@@ -3,6 +3,7 @@ import { VaPagination } from '@department-of-veterans-affairs/component-library/
 import URLSearchParams from 'url-search-params';
 import { focusElement } from 'platform/utilities/ui';
 import { getAppUrl } from 'platform/utilities/registry-helpers';
+import { usePrevious } from 'platform/utilities/react-hooks';
 import SearchBar from './SearchBar';
 import SearchResultList from './SearchResultList';
 import useArticleData from '../hooks/useArticleData';
@@ -15,14 +16,7 @@ const ResourcesAndSupportSearchApp = () => {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [results] = useGetSearchResults(articles, query, page);
-  const [previousValue, setPreviousValue] = useState('');
-
-  useEffect(
-    () => {
-      setPreviousValue(userInput);
-    },
-    [userInput],
-  );
+  const previousValue = usePrevious(userInput);
 
   const totalPages = Math.ceil(results.length / RESULTS_PER_PAGE);
 

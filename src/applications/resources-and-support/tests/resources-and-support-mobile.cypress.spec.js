@@ -4,13 +4,14 @@ import * as h from './helpers';
 
 describe('Resources & Support (Mobile)', () => {
   beforeEach(() => {
-    cy.intercept('/resources/search/articles.json', articles);
+    cy.intercept('/resources/search/articles.json', articles).as('getArticles');
   });
 
   it('shows the appropriate elements for mobile view and searching', () => {
     // Setup with search term
     cy.viewport(400, 1000);
     cy.visit('/resources/search/?query=benefits');
+    cy.wait('@getArticles');
     cy.injectAxeThenAxeCheck();
 
     // Check header
@@ -88,6 +89,9 @@ describe('Resources & Support (Mobile)', () => {
     );
 
     h.goToNextPage();
+    // Reopen mobile accordion after URL navigation
+    h.expandSearchMenu();
+
     h.verifySearchInputsExist();
 
     // Check search results summary
@@ -106,6 +110,9 @@ describe('Resources & Support (Mobile)', () => {
       '#pagination-summary',
       'We didn’t find any resources and support articles for "discharge upgrade." Try using different words or .',
     );
+
+    // Reopen mobile accordion after URL navigation
+    h.expandSearchMenu();
 
     // Do a sitewide search
     h.clickSitewideRadio();

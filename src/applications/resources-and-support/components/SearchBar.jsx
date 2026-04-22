@@ -63,6 +63,10 @@ function SearchBar({ onInputChange, previousValue, setSearchData, userInput }) {
     const newUrl = `${URL}?${queryParams}`;
 
     window.location.assign(newUrl);
+
+    if (previousValue) {
+      window.history.pushState(null, '', newUrl);
+    }
   };
 
   const handleSubmit = event => {
@@ -234,9 +238,9 @@ function SearchBar({ onInputChange, previousValue, setSearchData, userInput }) {
 
 SearchBar.propTypes = {
   previousValue: PropTypes.string,
+  setSearchData: PropTypes.func,
   userInput: PropTypes.string,
   onInputChange: PropTypes.func,
-  setSearchData: PropTypes.func,
 };
 
 export default SearchBar;

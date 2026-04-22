@@ -65,9 +65,17 @@ export const verifyResult = (
     });
 };
 
-export const expandSearchMenu = () => cy.get('va-icon[icon="add"]').click();
+export const expandSearchMenu = () => {
+  cy.get('va-icon[icon="add"]').click();
+  // Wait for the accordion to expand
+  cy.get('#resources-support-search').should('be.visible');
+};
 
-export const closeSearchMenu = () => cy.get('va-icon[icon="remove"]').click();
+export const closeSearchMenu = () => {
+  cy.get('va-icon[icon="remove"]').click();
+  // Wait for the accordion to collapse
+  cy.get('#resources-support-search').should('not.be.visible');
+};
 
 export const verifyElementNotVisible = selector =>
   cy.get(selector).should('not.be.visible');
@@ -108,6 +116,8 @@ export const clickSitewideRadio = () => {
 };
 
 export const verifySearchInputsExist = () => {
+  // Wait for the parent container to be visible first
+  cy.get('#resources-support-search').should('be.visible');
   verifyElement('va-radio');
   verifyText('va-radio-option', 'Resources and Support', 0);
   verifyText('va-radio-option', 'All VA.gov', 1);
