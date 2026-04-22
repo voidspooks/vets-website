@@ -59,6 +59,29 @@ export function mapGmtToAbbreviation(abbreviation) {
 }
 
 /**
+ * Function to return the short timezone abbreviation (DST-agnostic) for a given
+ * IANA timezone, with GMT offsets mapped to named abbreviations when possible.
+ *
+ * @export
+ * @param {string} timezone - The IANA timezone string (e.g., 'America/New_York')
+ * @param {Date|number|string} [date=new Date()] - Date used to resolve the
+ *   abbreviation (only matters for historical/future dates).
+ * @returns {string} - Timezone abbreviation (e.g., 'ET', 'CT', 'PHT')
+ */
+export function getTimezoneAbbreviation(timezone, date = new Date()) {
+  let abbreviation = mapGmtToAbbreviation(
+    formatInTimeZone(date, timezone, 'z'),
+  );
+
+  // Strip out middle char in abbreviation so we can ignore DST
+  if (timezone.includes('America') || timezone.includes('Pacific')) {
+    abbreviation = stripDST(abbreviation);
+  }
+
+  return abbreviation;
+}
+
+/**
  * Function to return timezone description by timezone string
  *
  * @export
@@ -66,14 +89,7 @@ export function mapGmtToAbbreviation(abbreviation) {
  * @returns Timezone description Example: 'Central time (CT)'
  */
 export function getTimezoneDescByTimeZoneString(timezone) {
-  let abbreviation = formatInTimeZone(new Date(), timezone, 'z');
-  abbreviation = mapGmtToAbbreviation(abbreviation);
-
-  // Strip out middle char in abbreviation so we can ignore DST
-  if (timezone.includes('America') || timezone.includes('Pacific')) {
-    abbreviation = stripDST(abbreviation);
-  }
-
+  const abbreviation = getTimezoneAbbreviation(timezone);
   const label = TIMEZONE_LABELS[abbreviation];
 
   if (label) {

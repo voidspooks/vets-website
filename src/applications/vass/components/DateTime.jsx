@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { formatInTimeZone } from 'date-fns-tz';
 
-import { getBrowserTimezone } from '../utils/timezone';
+import { getBrowserTimezone, getTimezoneAbbreviation } from '../utils/timezone';
 
 const formatInBrowserTimezone = dateString => {
   const timezone = getBrowserTimezone();
@@ -14,8 +14,11 @@ const formatInBrowserTimezone = dateString => {
     'EEEE, MMMM dd, yyyy', // e.g., "Monday, November 17, 2025"
   );
 
-  // Format time as "HH:MM p.m. TZ"
-  const formattedTime = formatInTimeZone(dateString, timezone, 'hh:mm a zzz');
+  // Format time as "3:15 p.m." (no leading zero, lowercase with periods)
+  const time = formatInTimeZone(dateString, timezone, 'h:mm aaaa');
+  const abbreviation = getTimezoneAbbreviation(timezone, new Date(dateString));
+
+  const formattedTime = `${time} ${abbreviation}`;
 
   return { formattedDate, formattedTime };
 };

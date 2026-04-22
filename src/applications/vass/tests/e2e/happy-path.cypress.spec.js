@@ -139,8 +139,8 @@ describe('VASS Schedule Appointment', () => {
         tz,
         'EEEE, MMMM dd, yyyy',
       );
-      const expectedTime1 = formatInTimeZone(firstSlotStart, tz, 'hh:mm a');
-      const expectedTime2 = formatInTimeZone(secondSlotStart, tz, 'hh:mm a');
+      const expectedTime1 = formatInTimeZone(firstSlotStart, tz, 'h:mm aaaa');
+      const expectedTime2 = formatInTimeZone(secondSlotStart, tz, 'h:mm aaaa');
 
       cy.clock(mockToday, ['Date']);
       seedAppState({ uuid });

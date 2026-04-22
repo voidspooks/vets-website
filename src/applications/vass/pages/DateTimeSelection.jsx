@@ -125,12 +125,13 @@ const DateTimeSelection = () => {
     >
       <div data-testid="content">
         <p>
-          Select an available date and time from the calendar below. Appointment
-          times are displayed in {getTimezoneDescByTimeZoneString(timezone)}.
+          Select an available date and time from the calendar below. Phone
+          appointment times are displayed in{' '}
+          {getTimezoneDescByTimeZoneString(timezone)}.
         </p>
         <p>
-          <strong>Note:</strong> You can schedule an call on a weekday within
-          the next 2 weeks.
+          <strong>Note:</strong> You can schedule a call on a weekday within the
+          next 2 weeks.
         </p>
       </div>
 

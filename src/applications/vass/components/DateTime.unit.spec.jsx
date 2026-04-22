@@ -17,11 +17,12 @@ describe('VASS Component: DateTime', () => {
     const { getByTestId } = render(<DateTime dateTime={mockDateTime} />);
 
     const dateTimeElement = getByTestId('date-time-description');
-    const text = dateTimeElement.textContent;
+    const [dateLine, timeLine] = dateTimeElement.innerHTML.split(/<br\s*\/?>/);
 
     // Check for weekday, month, day, year format (e.g., "Monday, November 17, 2025")
-    expect(text).to.match(/\w+,\s\w+\s\d{1,2},\s\d{4}/);
-    // Check for time format (e.g., "03:00 PM EST" or "3:00 pm EST")
-    expect(text).to.match(/\d{1,2}:\d{2}\s[APap][Mm]/);
+    expect(dateLine).to.match(/^\w+,\s\w+\s\d{1,2},\s\d{4}$/);
+    // Check for time format with no leading zero, lowercase a.m./p.m., and
+    // short timezone abbreviation (e.g., "3:15 p.m. ET")
+    expect(timeLine).to.match(/^(?:1[0-2]|[1-9]):\d{2}\s(?:a|p)\.m\.\s\S+$/);
   });
 });
