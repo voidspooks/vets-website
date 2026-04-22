@@ -1,45 +1,59 @@
 import React from 'react';
 import { expect } from 'chai';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { DefinitionTester } from 'platform/testing/unit/schemaform-utils';
-import { $$ } from 'platform/forms-system/src/js/utilities/ui';
 import formConfig from '../../config/form';
 
+const {
+  schema,
+  uiSchema,
+} = formConfig.chapters.educationBenefitsChapter.pages.educationBenefitsHistory;
+
+const renderPage = (formData = {}) =>
+  render(
+    <DefinitionTester
+      schema={schema}
+      uiSchema={uiSchema}
+      data={formData}
+      definitions={{}}
+    />,
+  );
+
 describe('22-10272 Your education benefits information Step 1 - Page 2', () => {
-  const {
-    schema,
-    uiSchema,
-  } = formConfig.chapters.educationBenefitsChapter.pages.educationBenefitsHistory;
-
-  it('should render with a textarea', () => {
-    const { container } = render(
-      <DefinitionTester
-        definitions={formConfig.defaultDefinitions}
-        schema={schema}
-        uiSchema={uiSchema}
-      />,
+  it('renders the radio group with the correct label', () => {
+    const { container } = renderPage();
+    const vaRadio = container.querySelector('va-radio');
+    expect(vaRadio).to.exist;
+    expect(vaRadio.getAttribute('label')).to.equal(
+      'Select the education benefit under which you are requesting Prep Course fee reimbursement.',
     );
-    const benefitsHistoryTextarea = container.querySelector(
-      'va-textarea[label="Please enter all VA education benefits you have previously applied for"',
-    );
-
-    expect(benefitsHistoryTextarea).to.exist;
-    expect($$('va-textarea', container).length).to.equal(1);
   });
 
-  it('should render an error message if the textarea has no input', async () => {
-    const { container, getByRole } = render(
-      <DefinitionTester
-        definitions={formConfig.defaultDefinitions}
-        schema={schema}
-        uiSchema={uiSchema}
-      />,
-    );
-
-    expect($$('va-textarea', container).length).to.equal(1);
-    getByRole('button', { name: /submit/i }).click();
-    await waitFor(() => {
-      expect($$('va-textarea[error]', container).length).to.equal(1);
+  it('accepts any valid option without error', () => {
+    const { container, unmount } = renderPage({
+      agreementType: 'chapter30',
     });
+    expect(container.querySelectorAll('[error]')).to.have.length(0);
+    unmount();
+
+    const vaBenefits = renderPage({
+      agreementType: 'chapter33',
+    });
+    expect(vaBenefits.container.querySelectorAll('[error]')).to.have.length(0);
+    vaBenefits.unmount();
+  });
+
+  it('shows an error when no option is selected on submit', async () => {
+    const { container, getByRole } = renderPage();
+
+    getByRole('button', { name: /submit/i }).click();
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const vaRadio = container.querySelector('va-radio');
+    expect(vaRadio).to.exist;
+    expect(vaRadio.getAttribute('error')).to.equal(
+      'You must provide a response',
+    );
   });
 });

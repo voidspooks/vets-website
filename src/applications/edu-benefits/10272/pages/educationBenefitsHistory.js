@@ -1,21 +1,23 @@
 import {
+  radioSchema,
+  radioUI,
   titleUI,
-  textareaUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
 
-import { validateWhiteSpace } from 'platform/forms/validations';
+const vaBenefitProgramOptions = {
+  chapter33:
+    'Post-9/11 GI Bill Including Transfer of Entitlement and Fry Scholarship Recipients (Chapter 33)',
+  chapter35:
+    'Survivors and Dependents’ Educational Assistance Program (DEA) (Chapter 35)',
+};
 
 const uiSchema = {
-  ...titleUI('Your VA education benefits history'),
+  ...titleUI('Your VA education benefits'),
   vaBenefitProgram: {
-    ...textareaUI({
+    ...radioUI({
       title:
-        'Please enter all VA education benefits you have previously applied for',
-      charcount: true,
-      validations: [validateWhiteSpace],
-      errorMessages: {
-        maxLength: 'You are over the character limit. Shorten your text.',
-      },
+        'Select the education benefit under which you are requesting Prep Course fee reimbursement.',
+      labels: vaBenefitProgramOptions,
     }),
   },
 };
@@ -23,11 +25,7 @@ const uiSchema = {
 const schema = {
   type: 'object',
   properties: {
-    vaBenefitProgram: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 500,
-    },
+    vaBenefitProgram: radioSchema(Object.keys(vaBenefitProgramOptions)),
   },
   required: ['vaBenefitProgram'],
 };

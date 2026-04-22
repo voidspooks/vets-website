@@ -106,7 +106,7 @@ const formConfig = {
         },
         educationBenefitsHistory: {
           path: 'education-benefits-history',
-          title: 'Your VA education benefits history',
+          title: 'Your VA education benefits',
           uiSchema: educationBenefitsHistory.uiSchema,
           schema: educationBenefitsHistory.schema,
           depends: formData => formData?.hasPreviouslyApplied === true,

@@ -65,7 +65,15 @@ describe('22-10272 EDU Form', () => {
         .educationBenefitsHistory.path,
     );
     cy.injectAxeThenAxeCheck();
-    cy.focused().should('contain.text', 'Your VA education benefits history');
+    cy.focused().should('contain.text', 'Your VA education benefits');
+    cy.realPress('Tab');
+    cy.allyEvaluateRadioButtons(
+      [
+        'input#root_vaBenefitProgramchapter33input',
+        'input#root_vaBenefitProgramchapter35input',
+      ],
+      'ArrowDown',
+    );
     cy.clickFormBack();
 
     // Your education benefits information - Step 1 (has previously applied de-selected to visit eligibility warning page)

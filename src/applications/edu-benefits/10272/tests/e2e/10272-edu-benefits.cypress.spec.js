@@ -22,13 +22,6 @@ const testConfig = createTestConfig(
             .click();
         });
       },
-      'education-benefits-history': ({ afterHook }) => {
-        afterHook(() => {
-          cy.waitForTextarea();
-          cy.fillPage();
-          cy.tabToSubmitForm();
-        });
-      },
       'prep-course-details-3': ({ afterHook }) => {
         afterHook(() => {
           cy.waitForMemorableDate();
