@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Form, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  VaSelect,
+  VaSort,
   VaCheckbox,
 } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 import { addStyleToShadowDomOnPages } from '../utilities/helpers';
@@ -60,9 +60,8 @@ const SortForm = ({ options, defaults }) => {
 
   return (
     <Form id="search-form" role="search" className="poa-request__sort-by">
-      <VaSelect
-        onVaSelect={handleChange}
-        label="Sort by"
+      <VaSort
+        onVaSortSelect={handleChange}
         name="options"
         className="poa-request__select"
         value={sort ? `${sort}` : `${defaults.SORT_ORDER}`}
@@ -72,7 +71,7 @@ const SortForm = ({ options, defaults }) => {
             {option.label}
           </option>
         ))}
-      </VaSelect>
+      </VaSort>
       <VaCheckbox
         class="poa-request__checkbox"
         id="privacy-agreement"
