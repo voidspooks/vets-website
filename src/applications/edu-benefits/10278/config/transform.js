@@ -24,6 +24,7 @@ export default function transform(formConfig, form) {
         country: mailingAddress.countryCodeIso3 || 'USA',
         street: mailingAddress.addressLine1 || '',
         street2: mailingAddress.addressLine2 || '',
+        street3: mailingAddress.addressLine3 || '',
         city: mailingAddress.city || '',
         state: mailingAddress.stateCode || '',
         postalCode: mailingAddress.zipCode || '',
