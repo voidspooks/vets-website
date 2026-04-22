@@ -16,10 +16,25 @@ const facilityCodeUIValidation = (errors, fieldData, formData) => {
 
   const { failedToLoad } = formData.primaryInstitutionDetails;
 
-  if (badFormat || (!badFormat && failedToLoad)) {
-    errors.addError(
-      'Enter a valid facility code. To determine your facility code, refer to your WEAMS 22-1998 Report or contact your ELR.',
-    );
+  const firstDigitError =
+    Number(facilityCode[0]) === 0 || Number(facilityCode[0]) > 3;
+  const thirdDigitError =
+    Number(facilityCode[2]) === 0 || Number(facilityCode[2]) > 4;
+
+  const lastDigits = Number(facilityCode[6] + facilityCode[7]);
+  const lastDigitsError = lastDigits <= 51 || lastDigits === 64;
+
+  const errorMessage =
+    'Enter a valid facility code. You can only enter a facility code for a foreign institution of higher learning.';
+
+  if (
+    badFormat ||
+    (!badFormat && failedToLoad) ||
+    firstDigitError ||
+    thirdDigitError ||
+    lastDigitsError
+  ) {
+    errors.addError(errorMessage);
   }
 };
 

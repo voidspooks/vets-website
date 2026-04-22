@@ -115,8 +115,52 @@ describe('22-0976 primary institution details page', () => {
       const input = container.querySelector('va-text-input');
 
       expect(input.getAttribute('error')).to.equal(
-        'Enter a valid facility code. To determine your facility code, refer to your WEAMS 22-1998 Report or contact your ELR.',
+        'Enter a valid facility code. You can only enter a facility code for a foreign institution of higher learning.',
       );
     });
+  });
+
+  const FOREIGN_INSTITUTION_ERROR =
+    'Enter a valid facility code. You can only enter a facility code for a foreign institution of higher learning.';
+
+  const expectForeignInstitutionError = async facilityCode => {
+    const { container, getByRole } = renderPage(
+      buildState({
+        facilityCode,
+        name: '',
+        failedToLoad: false,
+      }),
+    );
+
+    getByRole('button', { name: /submit/i }).click();
+
+    await waitFor(() => {
+      const input = container.querySelector('va-text-input');
+      expect(input.getAttribute('error')).to.equal(FOREIGN_INSTITUTION_ERROR);
+    });
+  };
+
+  it('shows an error when the first digit is 0', async () => {
+    await expectForeignInstitutionError('01345650');
+  });
+
+  it('shows an error when the first digit is greater than 3', async () => {
+    await expectForeignInstitutionError('41345650');
+  });
+
+  it('shows an error when the third digit is 0', async () => {
+    await expectForeignInstitutionError('12045650');
+  });
+
+  it('shows an error when the third digit is greater than 4', async () => {
+    await expectForeignInstitutionError('12545650');
+  });
+
+  it('shows an error when the last two digits are less than or equal to 51', async () => {
+    await expectForeignInstitutionError('12345651');
+  });
+
+  it('shows an error when the last two digits equal 64', async () => {
+    await expectForeignInstitutionError('12345664');
   });
 });
