@@ -143,6 +143,18 @@ class MockReferralListResponse {
         expirationDate: format(addMonths(today, 3), formatStr),
         hasAppointments: true,
       }),
+      // Stale referral list scenario: the list says hasAppointments: false
+      // (so the "Schedule an appointment" link is shown), but the referral
+      // details endpoint reports hasAppointments: true. Used to exercise the
+      // stale-list guard in ProviderSelection which redirects the user back
+      // to ScheduleReferral with the "already scheduled" alert.
+      MockReferralListResponse.createReferral({
+        id: 'stale-referral-list',
+        categoryOfCare: 'PRIMARY CARE',
+        referralNumber: 'stale-referral-list',
+        expirationDate: format(addMonths(today, 3), formatStr),
+        hasAppointments: false,
+      }),
       MockReferralListResponse.createReferral({
         id: 'details-error',
         categoryOfCare: 'PRIMARY CARE',

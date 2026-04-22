@@ -157,12 +157,10 @@ describe('VAOS Referrals and Requests', () => {
 
   describe('Downtime', () => {
     it('should display downtime message when community care service is down', () => {
-      // Bracket the real "now" so the maintenance window is active when the
-      // app evaluates it. These values aren't displayed — they only gate the
-      // downtime branch — so relative-to-now is the right shape here.
-      const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-      const startTime = new Date(Date.now() - ONE_DAY_MS);
-      const endTime = new Date(Date.now() + ONE_DAY_MS);
+      // Freeze time and bracket it with fixed start/end timestamps so the
+      // maintenance window is deterministically active when the app evaluates
+      // it.
+      cy.clock(APPOINTMENT_START, ['Date']);
 
       cy.intercept('GET', '/v0/maintenance_windows', {
         data: [
@@ -172,8 +170,8 @@ describe('VAOS Referrals and Requests', () => {
             attributes: {
               externalService: 'community_care_ds',
               description: 'Community care is down',
-              startTime: startTime.toISOString(),
-              endTime: endTime.toISOString(),
+              startTime: '2025-01-14T10:00:00Z',
+              endTime: '2025-01-16T10:00:00Z',
             },
           },
         ],
@@ -208,11 +206,10 @@ describe('VAOS Referrals and Requests', () => {
     // on another tab/session, clicking "Schedule an appointment" navigates to
     // the provider-selection page, which fetches the referral detail fresh.
     // If the fresh response shows the referral now has an appointment, the
-    // provider-selection page redirects to ScheduleReferral with the
-    // "already scheduled" alert instead of rendering providers.
+    // provider-selection page redirects to ScheduleReferral
     const staleReferralId = 'stale-referral-1';
 
-    it('should show already-scheduled alert when fresh fetch reveals the referral was already booked', () => {
+    it('should navigate to ScheduleReferral when fresh fetch reveals the referral was already booked', () => {
       mockAppointmentsGetApi({ response: [] });
       mockReferralsGetApi({
         response: {
@@ -249,24 +246,13 @@ describe('VAOS Referrals and Requests', () => {
       );
       cy.url().should('not.include', '/schedule-referral/provider-selection');
 
-      cy.findByTestId('already-scheduled-alert')
-        .should('exist')
-        .and(
-          'contain.text',
-          'You\u2019ve already scheduled an appointment for this referral',
-        )
-        .and(
-          'contain.text',
-          'Contact this provider if you need to reschedule or cancel your appointment.',
-        );
-
-      cy.findByTestId('has-appointments-content').should('not.exist');
+      cy.findByTestId('has-appointments-content').should('exist');
       cy.findByTestId('schedule-appointment-button').should('not.exist');
-      cy.findByTestId('subtitle').should('exist');
+      cy.findByTestId('subtitle').should('not.exist');
 
       cy.injectAxeThenAxeCheck();
       saveScreenshot(
-        'vaos_ccDirectScheduling_referralsAndRequests_alreadyScheduledAlert',
+        'vaos_ccDirectScheduling_referralsAndRequests_staleReferral_redirectsToScheduleReferral',
       );
     });
 
@@ -309,7 +295,6 @@ describe('VAOS Referrals and Requests', () => {
         'include',
         `/my-health/appointments/schedule-referral/provider-selection?id=${staleReferralId}`,
       );
-      cy.findByTestId('already-scheduled-alert').should('not.exist');
       cy.injectAxeThenAxeCheck();
     });
   });

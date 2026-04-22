@@ -786,6 +786,18 @@ const responses = {
         hasAppointments: true,
         ...detailOverrides,
       });
+    } else if (referralId === 'stale-referral-list') {
+      // Stale referral list scenario: the list response reports
+      // hasAppointments: false, but the fresh detail reports
+      // hasAppointments: true. ProviderSelection should detect this and
+      // redirect the user back to ScheduleReferral with the already
+      // scheduled alert.
+      response = new MockReferralDetailResponse({
+        id: referralId,
+        referralNumber: referralId,
+        hasAppointments: true,
+        ...detailOverrides,
+      });
     } else if (referralId === 'online-schedule-false') {
       response = new MockReferralDetailResponse({
         id: referralId,

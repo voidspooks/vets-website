@@ -336,34 +336,6 @@ describe('VAOS Component: ScheduleReferral', () => {
     const addressAlert = screen.queryByTestId('address-alert');
     expect(addressAlert).to.be.null;
   });
-  it('should display already-scheduled alert when navigated with alreadyScheduledAlert state and hasAppointments is true', async () => {
-    const referral = createReferralById(referralDate, 'already-scheduled');
-    referral.attributes.hasAppointments = true;
-
-    const screen = renderWithStoreAndRouter(
-      <ScheduleReferral currentReferral={referral} />,
-      {},
-    );
-
-    screen.history.replace({
-      pathname: '/schedule-referral',
-      search: '?id=already-scheduled',
-      state: { alreadyScheduledAlert: true },
-    });
-
-    const alert = await screen.findByTestId('already-scheduled-alert');
-    expect(alert).to.exist;
-    expect(alert).to.contain.text(
-      'You\u2019ve already scheduled an appointment for this referral',
-    );
-    expect(alert).to.contain.text(
-      'Contact this provider if you need to reschedule or cancel your appointment.',
-    );
-
-    expect(screen.queryByTestId('has-appointments-content')).to.be.null;
-    expect(screen.queryByTestId('schedule-appointment-button')).to.be.null;
-    expect(screen.getByTestId('subtitle')).to.exist;
-  });
   it('should not display already-scheduled alert when state flag is present but hasAppointments is false', async () => {
     const referral = createReferralById(referralDate, 'stale-flag');
 

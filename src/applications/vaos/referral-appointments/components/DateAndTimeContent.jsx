@@ -35,9 +35,6 @@ export const DateAndTimeContent = props => {
     displayProvider?.providerType === 'va' || careType === 'VA';
   const providerName = displayProvider?.individualProviders?.[0]?.name;
   const organizationName = displayProvider?.providerOrganization?.name;
-  const locationName = displayProvider?.location?.name;
-  const providerPhone = displayProvider?.phone;
-  const providerTty = displayProvider?.tty;
 
   const isStationIdValid = getIsInPilotReferralStation(currentReferral);
 
@@ -234,31 +231,6 @@ export const DateAndTimeContent = props => {
           onSubmit={onSubmit}
           loadingText="Page change in progress"
         />
-        <div
-          className="vads-u-margin-top--4"
-          data-testid="different-time-section"
-        >
-          <strong className="vads-u-margin--0 vads-u-margin-bottom--1">
-            Need a different time?
-          </strong>
-          <p className="vads-u-margin--0">
-            Contact your facility, or find a new facility.
-          </p>
-          <p className="vads-u-margin--0">{locationName}</p>
-          <p className="vads-u-margin--0">Main Phone: {providerPhone}</p>
-          {providerTty && (
-            <p className="vads-u-margin--0">(TTY: {providerTty})</p>
-          )}
-          <p className="vads-u-margin-top--4 vads-u-margin-bottom--0">
-            Or find a different VA location.
-          </p>
-          <va-link
-            href="/find-locations"
-            text="Facility locator"
-            className="vads-u-display--block"
-            data-testid="facility-locator-link"
-          />
-        </div>
       </>
     );
   };

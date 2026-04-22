@@ -342,9 +342,6 @@ describe('VAOS Page: ProviderSelection', () => {
         pathname: '/schedule-referral',
         search: `?id=${bookedReferral.attributes.uuid}`,
       });
-      expect(replacedTo.state).to.deep.equal({
-        alreadyScheduledAlert: true,
-      });
 
       expect(providersRequested).to.be.false;
       expect(screen.queryByTestId('provider-selection-card')).to.be.null;

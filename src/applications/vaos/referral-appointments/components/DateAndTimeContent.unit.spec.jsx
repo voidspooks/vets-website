@@ -211,21 +211,6 @@ describe('VAOS Component: DateAndTimeContent', () => {
     });
   });
 
-  it('should render the "Need a different time?" section when slots are available', () => {
-    const screen = renderWithStoreAndRouter(
-      <DateAndTimeContent
-        currentReferral={referral}
-        draftAppointmentInfo={draftAppointmentInfo}
-        appointmentsByMonth={appointmentsByMonth}
-      />,
-      {
-        initialState,
-      },
-    );
-    expect(screen.getByTestId('different-time-section')).to.exist;
-    expect(screen.getByTestId('facility-locator-link')).to.exist;
-  });
-
   it('should display "clinic" in header for VA appointments', () => {
     const vaDraftAppointmentInfo = createDraftAppointmentInfo();
     vaDraftAppointmentInfo.attributes.careType = 'VA';

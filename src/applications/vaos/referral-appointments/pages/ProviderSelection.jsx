@@ -45,7 +45,6 @@ export default function ProviderSelection({ currentReferral }) {
         to={{
           pathname: '/schedule-referral',
           search: `?id=${referralId}`,
-          state: { alreadyScheduledAlert: true },
         }}
       />
     );
