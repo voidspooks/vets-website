@@ -3,7 +3,6 @@ import {
   radioSchema,
   textUI,
   textSchema,
-  titleUI,
 } from '~/platform/forms-system/src/js/web-component-patterns';
 
 const RELATIONSHIP_OPTIONS = {
@@ -16,18 +15,13 @@ const RELATIONSHIP_OPTIONS = {
 /** @type {PageSchema} */
 export const relationshipToVeteranPage = {
   uiSchema: {
-    ...titleUI({
-      title: 'What’s your relationship to the Veteran?',
-      headerLevel: 1,
-    }),
     relationshipToVeteran: radioUI({
       title: 'What’s your relationship to the Veteran?',
       labels: RELATIONSHIP_OPTIONS,
       errorMessages: {
         required: 'Select your relationship to the Veteran',
       },
-      labelHeaderLevel: '3',
-      labelHeaderLevelStyle: '3',
+      labelHeaderLevel: '1',
     }),
     relationshipToVeteranOther: textUI({
       title:

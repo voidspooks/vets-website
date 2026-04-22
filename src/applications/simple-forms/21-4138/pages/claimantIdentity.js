@@ -2,7 +2,6 @@ import {
   radioUI,
   radioSchema,
 } from '~/platform/forms-system/src/js/web-component-patterns';
-import { titleUI } from '~/platform/forms-system/src/js/web-component-patterns/titlePattern';
 
 const IDENTITY_DESCRIPTION =
   'This helps us understand your relationship to the person you are filling out this form for (called the "claimant"). The claimant is the person who is claiming the VA benefit or service.';
@@ -46,11 +45,9 @@ const getIdentityTitle = formData =>
 /** @type {PageSchema} */
 export const claimantIdentityPage = {
   uiSchema: {
-    ...titleUI({ title: 'Your identity', headerLevel: 1 }),
     claimantType: radioUI({
       labels: VETERAN_IDENTITY_OPTIONS,
-      labelHeaderLevel: '3',
-      labelHeaderLevelStyle: '3',
+      labelHeaderLevel: '1',
       errorMessages: {
         required: 'Select the option that best describes you',
       },
