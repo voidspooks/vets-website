@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import sinon from 'sinon';
 import plannedAddress from '../../../pages/plannedAddress';
 import { FORM_21_4502, veteranFields } from '../../../definitions/constants';
 
@@ -23,22 +22,34 @@ describe('21-4502 plannedAddress page', () => {
     ).to.equal(P.NOT_APPLICABLE);
   });
 
-  it('does not mark address fields required before the user starts the section', () => {
-    const plannedAddressUi = veteranUiSchema[veteranFields.plannedAddress];
+  it('hides the address when not applicable is checked', () => {
+    const addressUiOptions =
+      veteranUiSchema[veteranFields.plannedAddress]['ui:options'];
+    const formData = { veteran: { plannedAddressNotApplicable: true } };
 
-    expect(plannedAddressUi.street['ui:required']({})).to.equal(false);
-    expect(plannedAddressUi.city['ui:required']({})).to.equal(false);
-    expect(plannedAddressUi.postalCode['ui:required']({})).to.equal(false);
-    expect(plannedAddressUi.state['ui:required']({})).to.equal(false);
-    expect(plannedAddressUi.country['ui:required']({})).to.equal(false);
+    expect(addressUiOptions.hideIf(formData)).to.equal(true);
   });
 
-  it('marks address fields required after the user starts entering an address', () => {
+  it('shows the address when not applicable is not checked', () => {
+    const addressUiOptions =
+      veteranUiSchema[veteranFields.plannedAddress]['ui:options'];
+    const formData = { veteran: { plannedAddressNotApplicable: false } };
+
+    expect(addressUiOptions.hideIf(formData)).to.equal(false);
+  });
+
+  it('shows the address by default when not applicable is undefined', () => {
+    const addressUiOptions =
+      veteranUiSchema[veteranFields.plannedAddress]['ui:options'];
+
+    expect(addressUiOptions.hideIf({})).to.equal(false);
+  });
+
+  it('marks address fields required when address is visible', () => {
     const plannedAddressUi = veteranUiSchema[veteranFields.plannedAddress];
     const formData = {
       veteran: {
         plannedAddress: {
-          street: '123 Main St',
           country: 'USA',
         },
       },
@@ -51,7 +62,7 @@ describe('21-4502 plannedAddress page', () => {
     expect(plannedAddressUi.country['ui:required'](formData)).to.equal(true);
   });
 
-  it('marks address fields required when the military base checkbox is selected', () => {
+  it('does not require country when military base checkbox is selected', () => {
     const plannedAddressUi = veteranUiSchema[veteranFields.plannedAddress];
     const formData = {
       veteran: {
@@ -68,28 +79,24 @@ describe('21-4502 plannedAddress page', () => {
     expect(plannedAddressUi.country['ui:required'](formData)).to.equal(false);
   });
 
-  it('shows the new page-level error when no address data is entered', () => {
-    const validation =
-      veteranUiSchema[veteranFields.plannedAddressNotApplicable][
-        'ui:validations'
-      ][0];
-    const errors = { addError: sinon.spy() };
+  it('does not require address fields when not applicable is checked', () => {
+    const plannedAddressUi = veteranUiSchema[veteranFields.plannedAddress];
+    const formData = {
+      veteran: {
+        plannedAddressNotApplicable: true,
+        plannedAddress: {
+          street: '123 Main St',
+          country: 'USA',
+        },
+      },
+    };
 
-    validation(errors, false, {});
-
-    expect(errors.addError.calledOnce).to.equal(true);
-    expect(errors.addError.firstCall.args[0]).to.equal(P.ERROR_REQUIRED);
-  });
-
-  it('does not show the new page-level error when not applicable is selected', () => {
-    const validation =
-      veteranUiSchema[veteranFields.plannedAddressNotApplicable][
-        'ui:validations'
-      ][0];
-    const errors = { addError: sinon.spy() };
-
-    validation(errors, true, {});
-
-    expect(errors.addError.called).to.equal(false);
+    expect(plannedAddressUi.street['ui:required'](formData)).to.equal(false);
+    expect(plannedAddressUi.city['ui:required'](formData)).to.equal(false);
+    expect(plannedAddressUi.postalCode['ui:required'](formData)).to.equal(
+      false,
+    );
+    expect(plannedAddressUi.state['ui:required'](formData)).to.equal(false);
+    expect(plannedAddressUi.country['ui:required'](formData)).to.equal(false);
   });
 });

@@ -14,45 +14,8 @@ import {
 
 const { ADDRESS: A, PLANNED_ADDRESS: PA } = FORM_21_4502;
 
-const hasPlannedAddressInput = formData => {
-  const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
-
-  return ['country', 'street', 'street2', 'city', 'state', 'postalCode'].some(
-    field => {
-      const value = plannedAddressData[field];
-      return typeof value === 'string' && value.trim() !== '';
-    },
-  );
-};
-
-const hasRequiredPlannedAddressTrigger = formData => {
-  const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
-
-  return (
-    plannedAddressData.isMilitary === true || hasPlannedAddressInput(formData)
-  );
-};
-
-const isPlannedAddressFieldRequired = fieldName => formData => {
-  const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
-
-  if (!hasRequiredPlannedAddressTrigger(formData)) {
-    return false;
-  }
-
-  if (fieldName === 'country') {
-    return plannedAddressData.isMilitary !== true;
-  }
-
-  if (fieldName === 'state') {
-    return (
-      plannedAddressData.isMilitary === true ||
-      ['USA', 'CAN', 'MEX'].includes(plannedAddressData.country)
-    );
-  }
-
-  return true;
-};
+const isNotApplicable = formData =>
+  formData?.veteran?.plannedAddressNotApplicable === true;
 
 const plannedAddressUISchema = addressUI({
   labels: {
@@ -64,11 +27,22 @@ const plannedAddressUISchema = addressUI({
   },
   omit: ['street3'],
   required: {
-    country: isPlannedAddressFieldRequired('country'),
-    street: isPlannedAddressFieldRequired('street'),
-    city: isPlannedAddressFieldRequired('city'),
-    state: isPlannedAddressFieldRequired('state'),
-    postalCode: isPlannedAddressFieldRequired('postalCode'),
+    country: formData => {
+      if (isNotApplicable(formData)) return false;
+      const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
+      return plannedAddressData.isMilitary !== true;
+    },
+    street: formData => !isNotApplicable(formData),
+    city: formData => !isNotApplicable(formData),
+    state: formData => {
+      if (isNotApplicable(formData)) return false;
+      const plannedAddressData = formData?.veteran?.plannedAddress ?? {};
+      return (
+        plannedAddressData.isMilitary === true ||
+        ['USA', 'CAN', 'MEX'].includes(plannedAddressData.country)
+      );
+    },
+    postalCode: formData => !isNotApplicable(formData),
   },
 });
 
@@ -130,18 +104,14 @@ export default {
           hideEmptyValueInReview: true,
           validateRequired: false,
         },
-        'ui:validations': [
-          (errors, value, formData) => {
-            if (value === true || hasRequiredPlannedAddressTrigger(formData)) {
-              return;
-            }
-
-            errors.addError(PA.ERROR_REQUIRED);
-          },
-        ],
       },
       [veteranFields.plannedAddress]: {
         ...plannedAddressUISchema,
+        'ui:options': {
+          ...plannedAddressUISchema['ui:options'],
+          hideIf: formData =>
+            formData?.veteran?.plannedAddressNotApplicable === true,
+        },
       },
     },
   },
