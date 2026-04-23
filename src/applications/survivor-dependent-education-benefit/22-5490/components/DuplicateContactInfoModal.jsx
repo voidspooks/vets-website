@@ -101,9 +101,9 @@ function DuplicateContactInfoModal(props) {
 DuplicateContactInfoModal.propTypes = {
   duplicateEmail: PropTypes.array,
   duplicatePhone: PropTypes.array,
-  toggleModal: PropTypes.func,
-  openModal: PropTypes.bool,
   email: PropTypes.string,
+  openModal: PropTypes.bool,
+  toggleModal: PropTypes.func,
 };
 
 const mapStateToProps = state => ({

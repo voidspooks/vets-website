@@ -14,6 +14,12 @@ import {
   UPDATE_GLOBAL_PHONE_NUMBER,
   ACKNOWLEDGE_DUPLICATE,
   TOGGLE_MODAL,
+  FETCH_CLAIM_STATUS,
+  FETCH_CLAIM_STATUS_SUCCESS,
+  FETCH_CLAIM_STATUS_FAILURE,
+  SEND_CONFIRMATION,
+  SEND_CONFIRMATION_SUCCESS,
+  SEND_CONFIRMATION_FAILURE,
 } from '../actions';
 
 const initialState = {
@@ -26,6 +32,11 @@ const initialState = {
   form: {
     data: {},
   },
+  confirmationLoading: false,
+  confirmationSuccess: false,
+  confirmationError: null,
+  claimStatus: null,
+  claimStatusError: null,
 };
 
 const handleDirectDepositApi = action => {
@@ -108,6 +119,48 @@ export default {
           ...state,
           fetchDirectDepositInProgress: false,
           bankInformation: handleDirectDepositApi(action),
+        };
+      case FETCH_CLAIM_STATUS:
+        return {
+          ...state,
+          claimStatus: null,
+          claimStatusError: null,
+        };
+      case FETCH_CLAIM_STATUS_SUCCESS:
+        return {
+          ...state,
+          claimStatus: action?.response?.attributes || {},
+          claimStatusError: null,
+        };
+      case FETCH_CLAIM_STATUS_FAILURE:
+        return {
+          ...state,
+          claimStatus: {
+            claimStatus: 'ERROR',
+            receivedDate: new Date().toISOString().split('T')[0],
+          },
+          claimStatusError: action?.errors || true,
+        };
+      case SEND_CONFIRMATION:
+        return {
+          ...state,
+          confirmationLoading: true,
+          confirmationSuccess: false,
+          confirmationError: null,
+        };
+      case SEND_CONFIRMATION_SUCCESS:
+        return {
+          ...state,
+          confirmationLoading: false,
+          confirmationSuccess: true,
+          confirmationError: null,
+        };
+      case SEND_CONFIRMATION_FAILURE:
+        return {
+          ...state,
+          confirmationLoading: false,
+          confirmationSuccess: false,
+          confirmationError: action.errors,
         };
       default:
         return state;

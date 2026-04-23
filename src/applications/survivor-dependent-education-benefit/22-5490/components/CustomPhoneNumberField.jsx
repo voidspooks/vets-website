@@ -37,8 +37,8 @@ function CustomPhoneNumberField(props) {
 
 CustomPhoneNumberField.propTypes = {
   fetchDuplicateContactInfo: PropTypes.func,
-  updateGlobalEmail: PropTypes.func,
   mobilePhone: PropTypes.object,
+  updateGlobalEmail: PropTypes.func,
 };
 
 const mapStateToProps = state => {

@@ -1,26 +1,30 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import environment from 'platform/utilities/environment';
 import LoadingIndicator from '../LoadingIndicator';
 
-const UnderReviewConfirmation = ({
-  user,
+const LETTER_ENDPOINT = `${
+  environment.API_URL
+}/meb_api/v0/forms_claim_letter?type=Chapter35`;
+
+const ConfirmationDenied = ({
+  claimantName,
+  confirmationDate,
+  confirmationError,
+  confirmationLoading,
   printPage,
-  dateReceived,
   sendConfirmation,
   userEmail,
   userFirstName,
-  confirmationLoading,
-  confirmationError,
+  chosenBenefit,
 }) => {
   useEffect(
     () => {
-      if (sendConfirmation && userEmail && userFirstName) {
-        sendConfirmation({
-          claimStatus: 'IN_PROGRESS',
-          email: userEmail,
-          firstName: userFirstName,
-        });
-      }
+      sendConfirmation({
+        claimStatus: 'DENIED',
+        email: userEmail,
+        firstName: userFirstName,
+      });
     },
     [sendConfirmation, userEmail, userFirstName],
   );
@@ -35,19 +39,35 @@ const UnderReviewConfirmation = ({
     console.error('Error sending confirmation email:', confirmationError);
   }
 
+  const isFry = chosenBenefit === 'fry';
+  const benefitName = isFry
+    ? 'Fry Scholarship'
+    : "Survivors' and Dependents' Educational Assistance";
+  const chapterLabel = isFry ? 'FRY, Chapter 33' : 'DEA, Chapter 35';
+
   return (
     <>
       <div className="vads-u-margin-bottom--6">
         <va-alert
           close-btn-aria-label="Close notification"
-          status="success"
+          status="info"
           visible
         >
-          <h3 slot="headline">We’ve received your application</h3>
+          <h3 slot="headline">You’re not eligible for this benefit</h3>
           <div>
-            Your application requires additional review. Once we have reviewed
-            your application, we will reach out to notify you about next steps.
+            Unfortunately, based on the information you provided and Department
+            of Defense records, we have determined you are not eligible for the
+            {benefitName} at this time. Your denial letter, which explains why
+            you are ineligible, is now available. A physical copy will also be
+            mailed to your mailing address.
           </div>
+          <va-link
+            download
+            href={LETTER_ENDPOINT}
+            filetype="PDF"
+            text="Download your denial letter"
+            class="vads-u-padding-top--2"
+          />
         </va-alert>
       </div>
       <va-summary-box class="vads-u-margin-y--3">
@@ -61,21 +81,25 @@ const UnderReviewConfirmation = ({
           slot="headline"
           className="vads-u-margin-top--0 vads-u-margin-bottom--0"
         >
-          DEA, Chapter 35
+          {chapterLabel}
         </h3>
 
         <div className="vads-u-margin-bottom--2">
           <h4 className="vads-u-margin-bottom--0p5 vads-u-font-weight--bold">
             Who submitted this form
           </h4>
-          <p className="vads-u-margin--0">{user || 'Not provided'}</p>
+          {claimantName.trim() ? (
+            <p className="vads-u-margin--0">{claimantName}</p>
+          ) : (
+            <p className="vads-u-margin--0">Not provided</p>
+          )}
         </div>
 
         <div className="vads-u-margin-bottom--2">
           <h4 className="vads-u-margin-bottom--0p5 vads-u-font-weight--bold">
             Date received
           </h4>
-          <p className="vads-u-margin--0">{dateReceived}</p>
+          <p className="vads-u-margin--0">{confirmationDate}</p>
         </div>
 
         <div className="vads-u-margin-bottom--1">
@@ -96,60 +120,26 @@ const UnderReviewConfirmation = ({
           />
         </div>
       </va-summary-box>
-      <h2>When will I hear back about my application?</h2>
-      <va-card background class="vads-u-margin-y--3">
-        <h2>In 1 month</h2>
-        <hr className="meb-hr" />
-        <p>
-          If more than a month has passed since you gave us your application and
-          you haven’t heard back, please don’t apply again.{' '}
-          <va-link
-            href="https://ask.va.gov"
-            external
-            text="Contact us through Ask VA"
-          />
-          .
-        </p>
-      </va-card>
       <div className="vads-u-margin-bottom--4">
         <h2>What happens next?</h2>
         <ul>
           <li>
-            We’ll review your eligibility for the Survivors' and Dependents'
-            Educational Assistance (Chapter 35).
+            <va-link
+              href={LETTER_ENDPOINT}
+              download
+              filetype="PDF"
+              text="Download a copy of your denial letter for your records"
+            />
+            .
           </li>
-          <li>We may reach out with questions about your application.</li>
+          <li>
+            We will review your eligibility for other VA education benefit
+            programs.
+          </li>
           <li>
             We’ll notify you if you’re eligible for other VA education benefits.
           </li>
-          <li>We don’t require further action from you at this time.</li>
-        </ul>
-      </div>
-      <div className="vads-u-margin-bottom--4">
-        <h2>What can I do while I wait?</h2>
-        <ul>
-          <li>
-            <va-link
-              href="https://ask.va.gov/"
-              external
-              text="If you need to submit documentation to VA, such as service records, please send this through Ask VA"
-            />
-            .
-          </li>
-          <li>
-            <va-link
-              href="/change-direct-deposit/"
-              text="Review and/or update your direct deposit information on your VA.gov profile"
-            />
-            .
-          </li>
-          <li>
-            <va-link
-              href="/education/gi-bill-comparison-tool/"
-              text="Use our GI Bill Comparison Tool on VA.gov to help you decide which education program and school is best for you"
-            />
-            .
-          </li>
+          <li>There is no further action required by you at this time.</li>
           <li>
             <va-link
               href="https://benefits.va.gov/gibill/docs/gibguideseries/chooseyoureducationbenefits.pdf"
@@ -161,28 +151,37 @@ const UnderReviewConfirmation = ({
           </li>
         </ul>
       </div>
+      <div className="vads-u-margin-bottom--4">
+        <h2>What can I do if I disagree with this decision?</h2>
+        <p>
+          If you disagree with our decision, you can file an appeal. For more
+          information about filing an appeal, visit{' '}
+          <va-link
+            href="https://www.va.gov/decision-reviews/"
+            text="VA.gov's decision reviews page"
+          />
+          .
+        </p>
+      </div>
     </>
   );
 };
 
-UnderReviewConfirmation.propTypes = {
+ConfirmationDenied.propTypes = {
+  chosenBenefit: PropTypes.string.isRequired,
+  claimantName: PropTypes.string.isRequired,
+  confirmationDate: PropTypes.string.isRequired,
   printPage: PropTypes.func.isRequired,
-  user: PropTypes.string.isRequired,
+  sendConfirmation: PropTypes.func.isRequired,
+  userEmail: PropTypes.string.isRequired,
+  userFirstName: PropTypes.string.isRequired,
   confirmationError: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   confirmationLoading: PropTypes.bool,
-  dateReceived: PropTypes.string,
-  sendConfirmation: PropTypes.func,
-  userEmail: PropTypes.string,
-  userFirstName: PropTypes.string,
 };
 
-UnderReviewConfirmation.defaultProps = {
-  dateReceived: null,
-  sendConfirmation: null,
-  userEmail: '',
-  userFirstName: '',
-  confirmationLoading: false,
+ConfirmationDenied.defaultProps = {
   confirmationError: null,
+  confirmationLoading: false,
 };
 
-export default UnderReviewConfirmation;
+export default ConfirmationDenied;

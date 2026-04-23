@@ -35,9 +35,19 @@ export const CLAIM_STATUS_ENDPOINT = `${
   environment.API_URL
 }/meb_api/v0/forms_claim_status`;
 export const CLAIM_STATUS_RESPONSE_IN_PROGRESS = 'INPROGRESS';
+export const CLAIM_STATUS_RESPONSE_ELIGIBLE = 'ELIGIBLE';
+export const CLAIM_STATUS_RESPONSE_DENIED = 'DENIED';
+export const CLAIM_STATUS_RESPONSE_ERROR = 'ERROR';
 export const FETCH_CLAIM_STATUS = 'FETCH_CLAIM_STATUS';
 export const FETCH_CLAIM_STATUS_SUCCESS = 'FETCH_CLAIM_STATUS_SUCCESS';
 export const FETCH_CLAIM_STATUS_FAILURE = 'FETCH_CLAIM_STATUS_FAILURE';
+
+export const CONFIRMATION_ENDPOINT = `${
+  environment.API_URL
+}/meb_api/v0/send_confirmation_email`;
+export const SEND_CONFIRMATION = 'SEND_CONFIRMATION';
+export const SEND_CONFIRMATION_SUCCESS = 'SEND_CONFIRMATION_SUCCESS';
+export const SEND_CONFIRMATION_FAILURE = 'SEND_CONFIRMATION_FAILURE';
 
 const FIVE_SECONDS = 5000;
 const ONE_MINUTE_IN_THE_FUTURE = () =>
@@ -75,7 +85,12 @@ const poll = ({
       // Continue polling if conditions are not met
       setTimeout(() => executePoll(resolve, reject), interval);
     } catch (error) {
-      reject(error); // Reject on error
+      // Continue polling through errors until timeout
+      if (new Date() >= endTime) {
+        resolve(timeoutResponse); // Return INPROGRESS on timeout
+        return;
+      }
+      setTimeout(() => executePoll(resolve, reject), interval);
     }
   };
 
@@ -186,5 +201,39 @@ export function fetchDirectDeposit() {
           errors,
         });
       });
+  };
+}
+
+// Helper function to convert camelCase to snake_case
+const toSnakeCase = obj => {
+  const result = {};
+  Object.keys(obj).forEach(key => {
+    const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+    result[snakeKey] = obj[key];
+  });
+  return result;
+};
+
+export function sendConfirmation(params) {
+  return async dispatch => {
+    dispatch({ type: SEND_CONFIRMATION });
+    const snakeCaseParams = toSnakeCase(params);
+    return apiRequest(CONFIRMATION_ENDPOINT, {
+      method: 'POST',
+      body: JSON.stringify(snakeCaseParams),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response =>
+        dispatch({
+          type: SEND_CONFIRMATION_SUCCESS,
+          response,
+        }),
+      )
+      .catch(errors =>
+        dispatch({
+          type: SEND_CONFIRMATION_FAILURE,
+          errors,
+        }),
+      );
   };
 }

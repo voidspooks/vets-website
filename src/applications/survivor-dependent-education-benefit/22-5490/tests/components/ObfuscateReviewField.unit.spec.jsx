@@ -1,7 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 import ObfuscateReviewField from '../../components/ObfuscateReviewField';
+
+const MockComponent = ({ formData }) => <span>{formData}</span>;
+MockComponent.propTypes = {
+  formData: PropTypes.string,
+};
 
 describe('ObfuscateReviewField component', () => {
   it('renders without crashing', () => {
@@ -10,7 +16,7 @@ describe('ObfuscateReviewField component', () => {
 
     const wrapper = mount(
       <ObfuscateReviewField uiSchema={uiSchema}>
-        <span formData={formData} />
+        <MockComponent formData={formData} />
       </ObfuscateReviewField>,
     );
 
@@ -24,7 +30,7 @@ describe('ObfuscateReviewField component', () => {
 
     const wrapper = mount(
       <ObfuscateReviewField uiSchema={uiSchema}>
-        <span formData={formData} />
+        <MockComponent formData={formData} />
       </ObfuscateReviewField>,
     );
 
@@ -38,7 +44,7 @@ describe('ObfuscateReviewField component', () => {
 
     const wrapper = mount(
       <ObfuscateReviewField uiSchema={uiSchema}>
-        <span formData={formData} />
+        <MockComponent formData={formData} />
       </ObfuscateReviewField>,
     );
 

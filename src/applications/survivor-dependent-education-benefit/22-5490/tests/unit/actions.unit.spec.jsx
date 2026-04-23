@@ -90,12 +90,31 @@ describe('Claim Status action', () => {
     });
   });
 
-  it('should handle fetch claim status eror', () => {
-    sandbox.stub(api, 'apiRequest').rejects(new Error('Network Error'));
+  it('should handle fetch claim status error and retry', () => {
+    const mockSuccessData = {
+      data: {
+        attributes: {
+          claimStatus: 'ELIGIBLE',
+          receivedDate: '2024-01-01',
+        },
+      },
+    };
+
+    // First call fails, second call succeeds
+    const apiStub = sandbox.stub(api, 'apiRequest');
+    apiStub.onFirstCall().rejects(new Error('Network Error'));
+    apiStub.onSecondCall().resolves(mockSuccessData);
+
     const dispatch = sinon.spy();
 
     return fetchClaimStatus(selectedChapter)(dispatch).then(() => {
       expect(dispatch.firstCall.args[0].type).to.equal(FETCH_CLAIM_STATUS);
+      // Should eventually succeed after retrying
+      const successAction = dispatch.secondCall.args[0];
+      expect(successAction.type).to.equal(actions.FETCH_CLAIM_STATUS_SUCCESS);
+      expect(successAction.response.attributes.claimStatus).to.equal(
+        'ELIGIBLE',
+      );
     });
   });
 

@@ -94,12 +94,12 @@ function IntroductionLogin({
               online.
             </p>
             <p>
-              <b>Need to apply now?</b> Complete a{' '}
+              <b>Need to apply now?</b> Complete a
               <va-link
                 href="https://www.vba.va.gov/pubs/forms/VBA-22-5490-ARE.pdf"
                 text="paper application"
-              />{' '}
-              and submit through{' '}
+              />
+              and submit through
               <va-link
                 href="https://www.va.gov/contact-us/ask-va/introduction"
                 text="Ask VA"
@@ -108,7 +108,7 @@ function IntroductionLogin({
               application on your behalf.
             </p>
             <p>
-              If you believe our records are incorrect,{' '}
+              If you believe our records are incorrect,
               <va-link
                 href="https://www.va.gov/contact-us/ask-va/introduction"
                 text="you can submit a request to update your personal information through Ask VA"
@@ -117,7 +117,6 @@ function IntroductionLogin({
             </p>
           </va-alert>
         )}
-
       {isLoggedIn &&
         !isMinor &&
         apiCallsComplete &&

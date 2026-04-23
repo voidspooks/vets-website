@@ -1,11 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 const UnderReviewConfirmation = ({ user, printPage, dateReceived }) => {
-  useEffect(() => {
-    // Logic for sending confirmation email or any other setup if needed
-  }, []);
-
   return (
     <>
       <div className="vads-u-margin-bottom--6">

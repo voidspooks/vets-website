@@ -20,6 +20,7 @@ export const getAppData = state => {
     mebBankInfoConfirmationField:
       state?.featureToggles?.mebBankInfoConfirmationField,
     mebBlockUnder18: state?.featureToggles?.mebBlockUnder18,
+    meb5490Automation: state?.featureToggles?.meb5490Automation,
     savedForms: state?.user?.profile?.savedForms,
     showMeb5490MaintenanceAlert:
       state?.featureToggles?.showMeb5490MaintenanceAlert,
