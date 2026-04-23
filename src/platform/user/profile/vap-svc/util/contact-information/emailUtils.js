@@ -6,7 +6,7 @@ export const emailFormSchema = {
     emailAddress: {
       type: 'string',
       maxLength: 255,
-      pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$',
+      pattern: '^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}$',
     },
   },
   required: ['emailAddress'],
