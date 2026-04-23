@@ -4,12 +4,13 @@ import {
   checkboxGroupUI,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
+import { validateSubmissionReasons } from '../helpers';
 
 const Options = {
   initialApplication: {
     title: 'Initial application',
     description:
-      'This is a request for an initial approval to be designated as an institution with programs eligible for participation in a VA GI Bill Benefit.',
+      'This is a request for an initial approval to be designated as an institution with programs eligible for participation in a VA GI Bill® Benefit.',
   },
   approvalOfNewPrograms: {
     title: 'Approval of new programs',
@@ -19,16 +20,16 @@ const Options = {
   reapproval: {
     title: 'Reapprovals',
     description:
-      'This is a request for a full reapproval of currently approved GI Bill program. Program reapprovals are required every 48 months.',
+      'This is a request for a full reapproval of currently approved GI Bill programs. Program reapprovals are required every 48 months.',
   },
   updateInformation: {
     title: 'Update information',
     description:
-      'The purpose of this application is to update information about the institution. If “update information” is checked, please identify at least one purpose.',
+      'The purpose of this application is to update information about the institution. If “update information” is checked, you will need to identify at least one purpose on the next page.',
   },
   other: {
     title: 'Other',
-    description: 'Specify why you are submitting this form',
+    description: `If you select "other" you'll need to specify why you are submitting this form on the next page.`,
   },
 };
 
@@ -38,10 +39,18 @@ export default {
     ...titleUI('Application information'),
     submissionReasons: checkboxGroupUI({
       title: 'Why are you submitting this application?',
-      hint: 'You can select more than one answer.',
+      hint:
+        'Unless this is your initial application, you may select more than one answer.',
       required: true,
       labels: Options,
     }),
+    'ui:validations': [
+      {
+        validator: (errors, formData) => {
+          validateSubmissionReasons(errors, formData);
+        },
+      },
+    ],
   },
   schema: {
     type: 'object',

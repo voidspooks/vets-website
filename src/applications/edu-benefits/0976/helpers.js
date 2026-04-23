@@ -309,3 +309,18 @@ export const todaysDate = () => {
   const today = new Date(date.getTime() - offset * 60 * 1000);
   return today.toISOString().split('T')[0];
 };
+
+export function validateSubmissionReasons(errors, formData) {
+  const reasons = formData.submissionReasons;
+  if (
+    reasons.initialApplication &&
+    (reasons.approvalOfNewPrograms ||
+      reasons.reapproval ||
+      reasons.updateInformation ||
+      reasons.other)
+  ) {
+    errors.submissionReasons.addError(
+      `Because you selected 'initial application' you cannot make another selection`,
+    );
+  }
+}

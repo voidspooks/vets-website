@@ -38,18 +38,6 @@ describe('22-0976 acknowledgement 1 page', () => {
     expect(input).to.exist;
   });
 
-  it('shows error when initials are empty on submit', async () => {
-    const { container, getByRole } = renderPage(baseData);
-
-    getByRole('button', { name: /submit/i }).click();
-
-    await waitFor(() => {
-      const input = container.querySelector('va-text-input');
-
-      expect(input.getAttribute('error')).to.equal('Enter your initials');
-    });
-  });
-
   it('shows error when initials do not match', async () => {
     const { container, getByRole } = renderPage({
       ...baseData,

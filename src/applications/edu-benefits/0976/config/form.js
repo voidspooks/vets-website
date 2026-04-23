@@ -116,6 +116,27 @@ const formConfig = {
           uiSchema: authorizingOfficialName.uiSchema,
           schema: authorizingOfficialName.schema,
         },
+        submissionReasons: {
+          path: 'submission-reasons',
+          title: 'Submission reasons',
+          uiSchema: submissionReasons.uiSchema,
+          schema: submissionReasons.schema,
+        },
+        submissionReasonUpdateInformationText: {
+          path: 'submission-reason-update-text',
+          title: 'Submission reason update text',
+          uiSchema: submissionReasonUpdateInformationText.uiSchema,
+          schema: submissionReasonUpdateInformationText.schema,
+          depends: formData =>
+            formData?.submissionReasons?.updateInformation === true,
+        },
+        submissionReasonOtherText: {
+          path: 'submission-reasons-other text',
+          title: 'Submission reason other text',
+          uiSchema: submissionReasonOtherText.uiSchema,
+          schema: submissionReasonOtherText.schema,
+          depends: formData => formData?.submissionReasons?.other === true,
+        },
         whatToExpect: {
           path: 'what-to-expect',
           title: 'What to expect',
@@ -249,27 +270,6 @@ const formConfig = {
           title: 'Primary institution website',
           uiSchema: primaryInstitutionWebsite.uiSchema,
           schema: primaryInstitutionWebsite.schema,
-        },
-        submissionReasons: {
-          path: 'submission-reasons',
-          title: 'Submission reasons',
-          uiSchema: submissionReasons.uiSchema,
-          schema: submissionReasons.schema,
-        },
-        submissionReasonUpdateInformationText: {
-          path: 'submission-reason-update-text',
-          title: 'Submission reason update text',
-          uiSchema: submissionReasonUpdateInformationText.uiSchema,
-          schema: submissionReasonUpdateInformationText.schema,
-          depends: formData =>
-            formData?.submissionReasons?.updateInformation === true,
-        },
-        submissionReasonOtherText: {
-          path: 'submission-reasons-other text',
-          title: 'Submission reason other text',
-          uiSchema: submissionReasonOtherText.uiSchema,
-          schema: submissionReasonOtherText.schema,
-          depends: formData => formData?.submissionReasons?.other === true,
         },
         primaryInstitutionIHL: {
           path: 'primary-institution-ihl',

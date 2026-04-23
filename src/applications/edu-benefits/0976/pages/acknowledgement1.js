@@ -36,13 +36,13 @@ export default {
             the unused portion of a tuition, fees, and other charges in the
             event a student withdraws or discontinues their enrollment.
           </li>
+          <li>
+            Schools Deemed Nonaccredited for VA purposes; Any institution which
+            fails to forward any refund due within 40 days after such a change
+            in status, shall be deemed, prima facie, to have failed to make a
+            prompt refund and may be suspended or withdrawn from eligibility.
+          </li>
         </ul>
-        <p>
-          Schools deemed Nonaccredited for VA purposes. Any institution which
-          fails to forward any refund due within 40 days after such a change in
-          status, shall be deemed, prima facie, to have failed to make a prompt
-          refund and may be suspended or withdrawn from eligibility.
-        </p>
       </div>,
     ),
     acknowledgement7: {
@@ -70,6 +70,6 @@ export default {
         pattern: '^[A-Za-z]{2,3}$',
       },
     },
-    required: ['acknowledgement7'],
+    required: [],
   },
 };

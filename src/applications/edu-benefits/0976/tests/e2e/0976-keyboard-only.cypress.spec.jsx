@@ -40,6 +40,17 @@ describe('22-0976 keyboard only specs', () => {
     cy.typeInFocused('Doe');
     cy.tabToContinueForm();
 
+    // Application type
+    cy.url().should(
+      'include',
+      formConfig.chapters.authorizingOfficialAndAcknowledgements.pages
+        .submissionReasons.path,
+    );
+    cy.contains('Application information');
+    cy.repeatKey('Tab', 2);
+    cy.realPress('Space');
+    cy.tabToContinueForm();
+
     // What to expect page
     cy.url().should(
       'include',
@@ -187,16 +198,6 @@ describe('22-0976 keyboard only specs', () => {
     cy.contains('What is your institution’s web address?');
     cy.tabToElement('[name="root_website"]');
     cy.typeInFocused('http://example.com');
-    cy.tabToContinueForm();
-
-    // Application type
-    cy.url().should(
-      'include',
-      formConfig.chapters.institutionDetails.pages.submissionReasons.path,
-    );
-    cy.contains('Application information');
-    cy.repeatKey('Tab', 2);
-    cy.realPress('Space');
     cy.tabToContinueForm();
 
     // IHL pafge

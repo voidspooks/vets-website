@@ -35,7 +35,7 @@ export default {
           <li>
             Institution will not engage in advertising and/or enrollment
             practices of any type, which are erroneous, deceptive, or misleading
-            ither by actual statements, omission or intimidation.
+            either by actual statement, omission or intimidation.
           </li>
           <li>
             Institutions are prohibited from using “GI Bill” in any manner that
@@ -91,6 +91,6 @@ export default {
         pattern: '^[A-Za-z]{2,3}$',
       },
     },
-    required: ['acknowledgement9'],
+    required: [],
   },
 };

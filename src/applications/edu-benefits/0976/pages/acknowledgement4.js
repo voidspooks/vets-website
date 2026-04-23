@@ -32,7 +32,7 @@ export default {
             additional guidance if needed).
           </p>
           <p>
-            <strong>Note:</strong> USE Department of Education, Title 4 school
+            <strong>Note:</strong> US Department of Education, Title IV school
             participants are not required to provide financial statement with
             the application.
           </p>
@@ -54,8 +54,6 @@ export default {
       },
       financialSoundnessExplanation: {
         ...textareaUI({
-          required: formData =>
-            formData.acknowledgement10a?.financiallySound === false,
           errorMessages: {
             required:
               'You must specify a reason the institution is not capable of fulfilling its commitments for training.',
@@ -67,6 +65,7 @@ export default {
           hideLabelText: true,
           expandUnder: 'financiallySound',
           expandUnderCondition: false,
+          hint: 'Explain the circumstances below',
         },
       },
     },
@@ -84,7 +83,7 @@ export default {
             title: 'Financial Soundness Explanation',
           },
         },
-        required: ['financiallySound'],
+        required: [],
       },
     },
   },

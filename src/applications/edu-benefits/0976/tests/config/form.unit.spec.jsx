@@ -21,7 +21,11 @@ describe('22-0976 Form Config', () => {
     };
 
     const { chapters } = formConfig;
-    const { institutionDetails, programInformation } = chapters;
+    const {
+      authorizingOfficialAndAcknowledgements,
+      institutionDetails,
+      programInformation,
+    } = chapters;
     expect(institutionDetails.pages.primaryInstitutionDetails.depends(formData))
       .to.be.true;
     expect(institutionDetails.pages.primaryInstitutionType.depends(formData)).to
@@ -60,12 +64,15 @@ describe('22-0976 Form Config', () => {
     ).to.be.false;
 
     expect(
-      institutionDetails.pages.submissionReasonUpdateInformationText.depends(
+      authorizingOfficialAndAcknowledgements.pages.submissionReasonUpdateInformationText.depends(
         formData,
       ),
     ).to.be.true;
-    expect(institutionDetails.pages.submissionReasonOtherText.depends(formData))
-      .to.be.true;
+    expect(
+      authorizingOfficialAndAcknowledgements.pages.submissionReasonOtherText.depends(
+        formData,
+      ),
+    ).to.be.true;
 
     expect(programInformation.pages.medicalAuthorityName.depends(formData)).to
       .be.true;

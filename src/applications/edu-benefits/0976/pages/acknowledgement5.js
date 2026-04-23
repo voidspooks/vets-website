@@ -52,6 +52,6 @@ export default {
         pattern: '^[A-Za-z]{2,3}$',
       },
     },
-    required: ['acknowledgement10b'],
+    required: [],
   },
 };

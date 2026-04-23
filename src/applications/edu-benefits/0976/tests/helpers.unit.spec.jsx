@@ -10,6 +10,7 @@ import {
   officialsArrayOptions,
   institutionResponseToObject,
   getCountryLabel,
+  validateSubmissionReasons,
 } from '../helpers';
 
 describe('0976 Helpers', () => {
@@ -372,6 +373,48 @@ describe('0976 Helpers', () => {
           country: '',
         },
       });
+    });
+  });
+  describe('validateSubmissionReasons', () => {
+    let errors;
+    const formData = {
+      submissionReasons: {
+        initialApplication: true,
+        approvalOfNewPrograms: false,
+        reapproval: false,
+        updateInformation: false,
+        other: false,
+      },
+    };
+
+    beforeEach(() => {
+      errors = {
+        submissionReasons: {
+          messages: [],
+          addError(message) {
+            this.messages.push(message);
+          },
+        },
+      };
+    });
+
+    it('displays no errors when only initial application', () => {
+      validateSubmissionReasons(errors, formData);
+      expect(errors.submissionReasons.messages.length).to.eq(0);
+    });
+
+    it('displays error when initial applciation and other seletion', () => {
+      const errorFormData = {
+        submissionReasons: {
+          initialApplication: true,
+          approvalOfNewPrograms: false,
+          reapproval: false,
+          updateInformation: false,
+          other: true,
+        },
+      };
+      validateSubmissionReasons(errors, errorFormData);
+      expect(errors.submissionReasons.messages.length).to.eq(1);
     });
   });
 });
