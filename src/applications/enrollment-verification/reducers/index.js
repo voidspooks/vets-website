@@ -20,7 +20,12 @@ const initialState = {
 export default {
   data: (state = initialState, action) => {
     switch (action.type) {
-      case FETCH_POST_911_GI_BILL_ELIGIBILITY_SUCCESS:
+      case FETCH_POST_911_GI_BILL_ELIGIBILITY_SUCCESS: {
+        const today = new Date();
+        const localDateString = `${today.getFullYear()}-${String(
+          today.getMonth() + 1,
+        ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
         return {
           ...state,
           enrollmentVerificationFetchComplete: true,
@@ -28,11 +33,11 @@ export default {
           enrollmentVerification: {
             ...action?.response?.data?.attributes,
             enrollmentVerifications: action?.response?.data?.attributes?.enrollmentVerifications?.filter(
-              ev =>
-                ev.certifiedEndDate < new Date().toISOString().split('T')[0],
+              ev => ev.certifiedEndDate <= localDateString,
             ),
           },
         };
+      }
       case FETCH_POST_911_GI_BILL_ELIGIBILITY_FAILURE:
         return {
           ...state,
