@@ -54,30 +54,4 @@ describe('22-0976 institution IHL page', () => {
       );
     });
   });
-
-  describe('validations', () => {
-    let errors;
-
-    beforeEach(() => {
-      errors = {
-        addError(message) {
-          this.message = message;
-        },
-      };
-    });
-
-    it('validates for normal characters in the degree level input', () => {
-      const validator =
-        page.uiSchema.institutionProfile.ihlDegreeTypes['ui:validations'][1];
-      validator(errors, 'normal degree', {});
-      expect(errors.message).to.be.undefined;
-    });
-
-    it('validates for special characters in the degree level input', () => {
-      const validator =
-        page.uiSchema.institutionProfile.ihlDegreeTypes['ui:validations'][1];
-      validator(errors, 'cr$A&y degree', {});
-      expect(errors.message).to.eq('No special characters allowed');
-    });
-  });
 });

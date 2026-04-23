@@ -15,14 +15,17 @@ export const EmptyCard = () => {
 
 export const DetailsCard = ({ details, isWithoutCode = false }) => {
   const {
-    street,
-    street2,
-    street3,
-    city,
-    state,
-    postalCode,
-    country,
-  } = details.mailingAddress;
+    mailingAddress: {
+      street,
+      street2,
+      street3,
+      city,
+      state,
+      postalCode,
+      country,
+    },
+    facilityCode,
+  } = details;
 
   return (
     <div>
@@ -36,7 +39,7 @@ export const DetailsCard = ({ details, isWithoutCode = false }) => {
       <p className="vads-u-margin-top--0">
         {getCountryLabel(country, isWithoutCode)}
       </p>
-      <FacilityCodeAdditionalInfo />
+      {facilityCode && <FacilityCodeAdditionalInfo />}
     </div>
   );
 };
@@ -53,6 +56,7 @@ DetailsCard.propTypes = {
       postalCode: PropTypes.string,
       country: PropTypes.string,
     }),
+    facilityCode: PropTypes.string,
   }).isRequired,
   isWithoutCode: PropTypes.bool.isRequired,
 };

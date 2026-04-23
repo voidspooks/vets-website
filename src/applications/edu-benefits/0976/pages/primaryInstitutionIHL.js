@@ -6,7 +6,6 @@ import {
   textSchema,
   titleUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import { validateWhiteSpace } from 'platform/forms/validations';
 
 /** @type {PageSchema} */
 export default {
@@ -16,7 +15,7 @@ export default {
       isIhl: yesNoUI({
         yesNoReverse: true,
         title:
-          'Does your country’s governing authority, with oversight over educational institutions and programs, officially classify the facility as a institution of higher learning?',
+          'Does your country’s governing authority, with oversight over educational institutions and programs, officially classify the facility as an institution of higher learning? (i.e., as a college, university, or similar establishment offering postsecondary level academic instruction to the conference of a degree)',
         labels: {
           N: 'Yes',
           Y: 'No',
@@ -34,14 +33,6 @@ export default {
           expandUnder: 'isIhl',
           expandUnderCondition: true,
         },
-        'ui:validations': [
-          validateWhiteSpace,
-          (errors, fieldData, _formData) => {
-            if (fieldData && !/^[\w\s]*$/.test(fieldData)) {
-              errors.addError('No special characters allowed');
-            }
-          },
-        ],
       },
     },
   },

@@ -6,11 +6,10 @@ export default function FacilityCodeAdditionalInfo() {
       <p>
         After you have verified the facility code is correctly entered, if
         either the facility name or address is incorrect, please contact your
-        State Approving Agency (SAA) to have your approval updated.&nbsp;
+        Education Liaison Representative (ELR) at{' '}
         <va-link
-          text="Go here to find your SAA’s email address"
-          href="https://nasaa-vetseducation.com/nasaa-contacts/"
-          external
+          href="mailto:Federal.Approvals@va.gov"
+          text="Federal.Approvals@va.gov"
         />
       </p>
     </va-additional-info>

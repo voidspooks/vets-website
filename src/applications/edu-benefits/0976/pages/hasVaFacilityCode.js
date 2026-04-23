@@ -12,7 +12,7 @@ export default {
     hasVaFacilityCode: yesNoUI({
       title: 'Does your institution have a VA Facility Code?',
       hint:
-        'A VA Facility Code is a 6-digit number assigned to institutions affiliated with the Department of Veterans Affairs.',
+        'A VA Facility Code is 8 characters in length and assigned to institutions with programs approved by VA.',
       errorMessages: {
         required: 'Select ‘yes’ if your institution has a VA Facility Code',
       },
