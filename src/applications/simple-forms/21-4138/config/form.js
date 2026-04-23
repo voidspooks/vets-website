@@ -52,6 +52,7 @@ import {
   isNonVeteranClaimant,
 } from '../helpers';
 import prefillTransformer from './prefill-transformer';
+import { RUM_ACTIONS } from './monitoring';
 
 // export isLocalhost() to facilitate unit-testing
 export function isLocalhost() {
@@ -144,6 +145,11 @@ const formConfig = {
           // we want required fields prefilled for LOCAL testing/previewing one single initialData prop here will suffice for entire form
           initialData: getMockData(mockData, isLocalhost),
           hideSaveLinkAndStatus: true,
+          onContinue: formData => {
+            window.DD_RUM?.addAction(RUM_ACTIONS.STATEMENT_TYPE_SELECTED, {
+              type: formData?.statementType,
+            });
+          },
         },
         layWitnessStatementPage: {
           depends: formData =>

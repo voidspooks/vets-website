@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -10,6 +10,7 @@ import { useBrowserMonitoring } from 'platform/monitoring/Datadog';
 import formConfig from '../config/form';
 import { WIP } from '../../shared/components/WIP';
 import { workInProgressContent } from '../config/constants';
+import { RUM_ACTIONS, SUBMISSION_ERROR_STATUSES } from '../config/monitoring';
 
 const EXCLUDED_DOMAINS = [
   'resource.digital.voice.va.gov',
@@ -45,8 +46,27 @@ export const BROWSER_MONITORING_PROPS = {
   },
 };
 
-function App({ location, children, showForm, isLoading }) {
+function App({ location, children, showForm, isLoading, submissionStatus }) {
   useBrowserMonitoring(BROWSER_MONITORING_PROPS);
+
+  const prevStatusRef = useRef(null);
+  useEffect(
+    () => {
+      const prev = prevStatusRef.current;
+      prevStatusRef.current = submissionStatus;
+
+      if (submissionStatus === prev) return;
+
+      if (SUBMISSION_ERROR_STATUSES.has(submissionStatus)) {
+        window.DD_RUM?.addAction(RUM_ACTIONS.SUBMISSION_FAILURE, {
+          reason: submissionStatus,
+        });
+      } else if (submissionStatus === 'applicationSubmitted') {
+        window.DD_RUM?.addAction(RUM_ACTIONS.SUBMISSION_SUCCESS);
+      }
+    },
+    [submissionStatus],
+  );
 
   if (isLoading) {
     return (
@@ -73,6 +93,7 @@ App.propTypes = {
   location: PropTypes.object.isRequired,
   isLoading: PropTypes.bool,
   showForm: PropTypes.bool,
+  submissionStatus: PropTypes.string,
 };
 
 const mapStateToProps = state => ({
@@ -80,6 +101,7 @@ const mapStateToProps = state => ({
   showForm:
     toggleValues(state)[FEATURE_FLAG_NAMES.form214138] ||
     environment.isLocalhost(),
+  submissionStatus: state?.form?.submission?.status,
 });
 
 export default connect(mapStateToProps)(App);

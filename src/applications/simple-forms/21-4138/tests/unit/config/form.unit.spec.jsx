@@ -6,6 +6,7 @@ import {
   STATEMENT_TYPES,
   DECISION_REVIEW_TYPES,
 } from '../../../config/constants';
+import { RUM_ACTIONS } from '../../../config/monitoring';
 
 describe('formConfig', () => {
   it('should be an object', () => {
@@ -71,6 +72,42 @@ describe('formConfig', () => {
               'title',
               'uiSchema',
             );
+          });
+
+          describe('onContinue', () => {
+            let addActionSpy;
+
+            beforeEach(() => {
+              addActionSpy = sinon.spy();
+              window.DD_RUM = { addAction: addActionSpy };
+            });
+
+            afterEach(() => {
+              delete window.DD_RUM;
+            });
+
+            it('fires 4138_statement_type_selected with the selected type', () => {
+              statementTypePage.onContinue({ statementType: 'new-evidence' });
+              expect(addActionSpy.calledOnce).to.be.true;
+              const [name, ctx] = addActionSpy.firstCall.args;
+              expect(name).to.equal(RUM_ACTIONS.STATEMENT_TYPE_SELECTED);
+              expect(ctx.type).to.equal('new-evidence');
+            });
+
+            it('passes any statementType value through as-is', () => {
+              statementTypePage.onContinue({
+                statementType: 'priority-processing',
+              });
+              const [, ctx] = addActionSpy.firstCall.args;
+              expect(ctx.type).to.equal('priority-processing');
+            });
+
+            it('does not throw when window.DD_RUM is undefined', () => {
+              delete window.DD_RUM;
+              expect(() =>
+                statementTypePage.onContinue({ statementType: 'new-evidence' }),
+              ).to.not.throw();
+            });
           });
         });
 

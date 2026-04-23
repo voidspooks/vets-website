@@ -3,9 +3,10 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, act } from '@testing-library/react';
 import * as datadogModule from 'platform/monitoring/Datadog';
 import App, { BROWSER_MONITORING_PROPS } from '../../../containers/App';
+import { RUM_ACTIONS } from '../../../config/monitoring';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -123,6 +124,127 @@ describe('BROWSER_MONITORING_PROPS.beforeSend', () => {
       action: null,
     });
     expect(result).to.be.true;
+  });
+});
+
+describe('App — submission failure tracking', () => {
+  let addActionSpy;
+  let monitoringStub;
+
+  const createMutableStore = (initialStatus = undefined) =>
+    createStore(
+      (state, action) => {
+        if (action?.type === 'SET_STATUS') {
+          return {
+            ...state,
+            form: {
+              ...state.form,
+              submission: { status: action.status },
+            },
+          };
+        }
+        return state;
+      },
+      {
+        featureToggles: { loading: true },
+        user: {
+          login: { currentlyLoggedIn: false },
+          profile: { loading: false },
+        },
+        form: {
+          loadedData: { metadata: {} },
+          pages: {},
+          data: {},
+          submission: { status: initialStatus },
+        },
+        navigation: { showLoginModal: false },
+      },
+    );
+
+  beforeEach(() => {
+    addActionSpy = sinon.spy();
+    window.DD_RUM = { addAction: addActionSpy };
+    monitoringStub = sinon.stub(datadogModule, 'useBrowserMonitoring');
+  });
+
+  afterEach(() => {
+    delete window.DD_RUM;
+    monitoringStub.restore();
+    cleanup();
+  });
+
+  ['clientError', 'throttledError', 'serverError'].forEach(status => {
+    it(`fires 4138_submission_failure with reason "${status}" on transition`, () => {
+      const store = createMutableStore();
+      render(
+        <Provider store={store}>
+          <App location={{ pathname: '/review-and-submit' }}>
+            <div />
+          </App>
+        </Provider>,
+      );
+
+      act(() => {
+        store.dispatch({ type: 'SET_STATUS', status });
+      });
+
+      expect(
+        addActionSpy.calledWith(RUM_ACTIONS.SUBMISSION_FAILURE, {
+          reason: status,
+        }),
+      ).to.be.true;
+    });
+  });
+
+  it('fires 4138_submission_success on transition to applicationSubmitted', () => {
+    const store = createMutableStore();
+    render(
+      <Provider store={store}>
+        <App location={{ pathname: '/review-and-submit' }}>
+          <div />
+        </App>
+      </Provider>,
+    );
+
+    act(() => {
+      store.dispatch({ type: 'SET_STATUS', status: 'applicationSubmitted' });
+    });
+
+    expect(addActionSpy.calledWith(RUM_ACTIONS.SUBMISSION_SUCCESS)).to.be.true;
+  });
+
+  it('does not fire for untracked statuses like submitPending', () => {
+    const store = createMutableStore();
+    render(
+      <Provider store={store}>
+        <App location={{ pathname: '/review-and-submit' }}>
+          <div />
+        </App>
+      </Provider>,
+    );
+
+    act(() => {
+      store.dispatch({ type: 'SET_STATUS', status: 'submitPending' });
+    });
+
+    expect(addActionSpy.called).to.be.false;
+  });
+
+  it('does not throw when window.DD_RUM is undefined', () => {
+    delete window.DD_RUM;
+    const store = createMutableStore();
+    expect(() => {
+      render(
+        <Provider store={store}>
+          <App location={{ pathname: '/review-and-submit' }}>
+            <div />
+          </App>
+        </Provider>,
+      );
+      act(() => {
+        store.dispatch({ type: 'SET_STATUS', status: 'clientError' });
+      });
+    }).to.not.throw();
   });
 });
 
