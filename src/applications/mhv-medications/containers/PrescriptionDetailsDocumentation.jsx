@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import {
-  useParams,
-  useSearchParams,
-  useNavigate,
-} from 'react-router-dom-v5-compat';
+import { useParams, useNavigate } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
 import {
   updatePageTitle,
@@ -26,7 +22,6 @@ import {
   filterOptions,
   DOWNLOAD_FORMAT,
   DATETIME_FORMATS,
-  STATION_NUMBER_PARAM,
 } from '../util/constants';
 import { pageType } from '../util/dataDogConstants';
 import BeforeYouDownloadDropdown from '../components/shared/BeforeYouDownloadDropdown';
@@ -42,22 +37,9 @@ import { selectCernerPilotFlag } from '../util/selectors';
 
 const PrescriptionDetailsDocumentation = () => {
   const { prescriptionId } = useParams();
-  const [searchParams] = useSearchParams();
-  const stationNumber = searchParams.get(STATION_NUMBER_PARAM);
   const navigate = useNavigate();
   const contentRef = useRef();
   const isCernerPilot = useSelector(selectCernerPilotFlag);
-
-  // Redirect to medications list if v2 API is enabled but station_number is missing
-  // This handles edge cases like old bookmarks or direct URL access without station_number
-  useEffect(
-    () => {
-      if (isCernerPilot && !stationNumber) {
-        navigate('/', { replace: true });
-      }
-    },
-    [isCernerPilot, stationNumber, navigate],
-  );
 
   const { dob, userName } = useSelector(state => ({
     userName: state.user.profile.userFullName,
@@ -66,15 +48,6 @@ const PrescriptionDetailsDocumentation = () => {
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const {
-    data: htmlContent,
-    isLoading: isLoadingDoc,
-    error: hasDocApiError,
-  } = useGetPrescriptionDocumentationQuery({
-    id: prescriptionId,
-    stationNumber,
-  });
 
   // Get sort/filter selections from store.
   const selectedSortOption = useSelector(selectSortOption);
@@ -91,11 +64,47 @@ const PrescriptionDetailsDocumentation = () => {
   });
 
   // Use the custom hook to fetch prescription data
+  // Must be called before documentation query to resolve station number
   const {
     prescription,
     prescriptionApiError,
     isLoading: isLoadingRx,
+    resolvedStationNumber,
+    isStationNumberLookupComplete,
   } = usePrescriptionData(prescriptionId, queryParams);
+
+  const shouldSkipDocQuery = isCernerPilot && !isStationNumberLookupComplete;
+
+  const {
+    data: htmlContent,
+    isLoading: isLoadingDoc,
+    error: hasDocApiError,
+  } = useGetPrescriptionDocumentationQuery(
+    {
+      id: prescriptionId,
+      stationNumber: resolvedStationNumber,
+    },
+    { skip: shouldSkipDocQuery },
+  );
+
+  useEffect(
+    () => {
+      if (
+        isCernerPilot &&
+        isStationNumberLookupComplete &&
+        !resolvedStationNumber
+      ) {
+        navigate('/', { replace: true });
+      }
+    },
+    [
+      isCernerPilot,
+      isStationNumberLookupComplete,
+      resolvedStationNumber,
+      navigate,
+    ],
+  );
+
   const pharmacyPhone = prescription ? pharmacyPhoneNumber(prescription) : null;
 
   const buildMedicationInformationTxt = useCallback(

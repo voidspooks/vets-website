@@ -266,4 +266,101 @@ describe('usePrescriptionData', () => {
       { timeout: 3000 },
     );
   });
+
+  it('should return isStationNumberLookupComplete true and resolvedStationNumber undefined when Cerner pilot is disabled', async () => {
+    // Cerner pilot is disabled by default in beforeEach
+    const { result } = renderHook(() => usePrescriptionData('123', {}), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.isStationNumberLookupComplete).to.be.true;
+      expect(result.current.resolvedStationNumber).to.be.undefined;
+    });
+  });
+
+  describe('when Cerner pilot is enabled', () => {
+    let cernerPilotStore;
+    let cernerWrapper;
+
+    beforeEach(() => {
+      cernerPilotStore = configureStore([])({
+        featureToggles: {
+          [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: true,
+        },
+      });
+
+      cernerWrapper = ({ children }) => (
+        <Provider store={cernerPilotStore}>
+          <MemoryRouter>{children}</MemoryRouter>
+        </Provider>
+      );
+    });
+
+    it('should resolve station number from URL param and mark lookup complete immediately', async () => {
+      const wrapperWithStationParam = ({ children }) => (
+        <Provider store={cernerPilotStore}>
+          <MemoryRouter initialEntries={['/?station_number=555']}>
+            {children}
+          </MemoryRouter>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => usePrescriptionData('123', {}), {
+        wrapper: wrapperWithStationParam,
+      });
+
+      expect(result.current.resolvedStationNumber).to.equal('555');
+      expect(result.current.isStationNumberLookupComplete).to.be.true;
+    });
+
+    it('should resolve station number from cached prescription when not in URL', async () => {
+      const mockCachedWithStation = {
+        prescriptionId: 123,
+        prescriptionName: 'Test Medication',
+        refillStatus: 'active',
+        stationNumber: '999',
+      };
+
+      const mockDataWithStation = {
+        prescriptions: [mockCachedWithStation],
+      };
+
+      useQueryStateStub.callsFake((_arg, options) => {
+        if (options && options.selectFromResult) {
+          return options.selectFromResult({ data: mockDataWithStation });
+        }
+        return mockCachedWithStation;
+      });
+
+      const { result } = renderHook(() => usePrescriptionData('123', {}), {
+        wrapper: cernerWrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.resolvedStationNumber).to.equal('999');
+        expect(result.current.isStationNumberLookupComplete).to.be.true;
+      });
+    });
+
+    it('should mark isStationNumberLookupComplete true after cache lookup determines no prescription available', async () => {
+      // No cached prescription
+      useQueryStateStub.returns(undefined);
+      useQueryStub.returns({
+        data: null,
+        error: null,
+        isLoading: false,
+      });
+
+      const { result } = renderHook(() => usePrescriptionData('123', {}), {
+        wrapper: cernerWrapper,
+      });
+
+      // Wait for the effect to set cachedPrescriptionAvailable to false
+      await waitFor(() => {
+        expect(result.current.isStationNumberLookupComplete).to.be.true;
+        expect(result.current.resolvedStationNumber).to.be.undefined;
+      });
+    });
+  });
 });

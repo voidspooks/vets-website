@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom-v5-compat';
 import {
@@ -12,7 +12,8 @@ import { selectCernerPilotFlag } from '../util/selectors';
  * Custom hook to fetch prescription data
  * @param {string} prescriptionId - The ID of the prescription to fetch
  * @param {object} queryParams - Query parameters for fetching the prescription list
- * @returns {object} - The prescription data, loading state, and error state
+ * @returns {object} - The prescription data, loading state, error state, resolved station number,
+ *                     and flag indicating if station number lookup is complete
  */
 export const usePrescriptionData = (prescriptionId, queryParams) => {
   const [searchParams] = useSearchParams();
@@ -48,6 +49,40 @@ export const usePrescriptionData = (prescriptionId, queryParams) => {
   };
 
   const resolvedStationNumber = getStationNumber();
+
+  // Determine if the station number lookup is complete
+  // The lookup is complete when:
+  // 1. We have a station number from the URL (immediate resolution), OR
+  // 2. We're not using Cerner pilot (station number not required), OR
+  // 3. We found a station number from the cached prescription, OR
+  // 4. We've determined the cached prescription is not available (cache lookup is done), OR
+  // 5. We found a cached prescription but it has no stationNumber (lookup done, no station number)
+  const isStationNumberLookupComplete = useMemo(
+    () => {
+      // If station number is in URL, lookup is immediately complete
+      if (stationNumber) return true;
+      // If not using Cerner pilot, station number is not required
+      if (!isCernerPilot) return true;
+      // If we found station number from cached prescription, lookup is complete
+      if (resolvedStationNumber) return true;
+      // If we found a cached prescription but it has no stationNumber, lookup is complete
+      if (
+        cachedPrescription?.prescriptionId &&
+        !cachedPrescription?.stationNumber
+      ) {
+        return true;
+      }
+      // If cache lookup is done (prescription not found), lookup is complete
+      return !cachedPrescriptionAvailable;
+    },
+    [
+      stationNumber,
+      isCernerPilot,
+      resolvedStationNumber,
+      cachedPrescriptionAvailable,
+      cachedPrescription,
+    ],
+  );
 
   // Skip API call if Cerner pilot is enabled but no station number is available from any source
   // This prevents failed API calls while waiting for redirect or cached data
@@ -111,5 +146,7 @@ export const usePrescriptionData = (prescriptionId, queryParams) => {
     prescription,
     prescriptionApiError,
     isLoading,
+    resolvedStationNumber,
+    isStationNumberLookupComplete,
   };
 };

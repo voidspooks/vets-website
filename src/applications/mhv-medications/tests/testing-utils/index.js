@@ -45,7 +45,21 @@ export const stubPrescriptionsApiCache = ({
   error = undefined,
   isLoading = false,
   isFetching = false,
+  useSelectFromResult = false,
 }) => {
+  if (useSelectFromResult) {
+    // When useSelectFromResult is true, properly invoke the selectFromResult callback
+    // This is needed for usePrescriptionData hook which uses selectFromResult to find
+    // a specific prescription from the cache
+    return sandbox
+      .stub(prescriptionsApiModule.getPrescriptionsList, 'useQueryState')
+      .callsFake((_queryParams, options) => {
+        if (options && options.selectFromResult) {
+          return options.selectFromResult({ data });
+        }
+        return { data, error, isLoading, isFetching };
+      });
+  }
   return sandbox
     .stub(prescriptionsApiModule.getPrescriptionsList, 'useQueryState')
     .returns({

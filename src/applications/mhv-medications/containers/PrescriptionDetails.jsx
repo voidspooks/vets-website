@@ -70,17 +70,6 @@ const PrescriptionDetails = () => {
     selectMedicationsManagementImprovementsFlag,
   );
 
-  // Redirect to medications list if v2 API is enabled but station_number is missing
-  // This handles edge cases like old bookmarks or direct URL access without station_number
-  useEffect(
-    () => {
-      if (isCernerPilot && !stationNumber) {
-        navigate('/', { replace: true });
-      }
-    },
-    [isCernerPilot, stationNumber, navigate],
-  );
-
   const currentFilterOptions = getFilterOptions(
     isCernerPilot,
     isV2StatusMapping,
@@ -97,9 +86,30 @@ const PrescriptionDetails = () => {
   });
 
   // Use the custom hook to fetch prescription data
-  const { prescription, prescriptionApiError, isLoading } = usePrescriptionData(
-    prescriptionId,
-    queryParams,
+  const {
+    prescription,
+    prescriptionApiError,
+    isLoading,
+    resolvedStationNumber,
+    isStationNumberLookupComplete,
+  } = usePrescriptionData(prescriptionId, queryParams);
+
+  useEffect(
+    () => {
+      if (
+        isCernerPilot &&
+        isStationNumberLookupComplete &&
+        !resolvedStationNumber
+      ) {
+        navigate('/', { replace: true });
+      }
+    },
+    [
+      isCernerPilot,
+      isStationNumberLookupComplete,
+      resolvedStationNumber,
+      navigate,
+    ],
   );
 
   const nonVaPrescription =

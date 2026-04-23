@@ -5,15 +5,18 @@ import { renderWithStoreAndRouterV6 } from '@department-of-veterans-affairs/plat
 import { waitFor } from '@testing-library/dom';
 import { cleanup } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom-v5-compat';
+import FEATURE_FLAG_NAMES from 'platform/utilities/feature-toggles/featureFlagNames';
 import { prescriptionsApi } from '../../api/prescriptionsApi';
 import { allergiesApi } from '../../api/allergiesApi';
 import {
   stubAllergiesApi,
   stubPrescriptionIdApi,
   stubPrescriptionDocumentationQuery,
+  stubPrescriptionsApiCache,
 } from '../testing-utils';
 import reducer from '../../reducers';
 import rxDetailsResponse from '../fixtures/prescriptionDetails.json';
+import singlePrescription from '../fixtures/prescriptionsListItem.json';
 import PrescriptionDetailsDocumentation from '../../containers/PrescriptionDetailsDocumentation';
 
 let sandbox;
@@ -55,6 +58,43 @@ describe('Prescription details documentation container', () => {
     );
   };
 
+  // Setup for testing redirect behavior - allows custom URL path and Cerner pilot flag
+  const setupWithCustomUrl = (state = {}, urlPath, isCernerPilot = false) => {
+    const fullState = {
+      ...initialState,
+      ...state,
+      featureToggles: {
+        ...initialState.featureToggles,
+        [FEATURE_FLAG_NAMES.mhvMedicationsCernerPilot]: isCernerPilot,
+        ...state.featureToggles,
+      },
+    };
+
+    return renderWithStoreAndRouterV6(
+      <Routes>
+        <Route
+          path="/prescriptions/:prescriptionId/documentation"
+          element={<PrescriptionDetailsDocumentation />}
+        />
+        <Route
+          path="/"
+          element={
+            <div data-testid="medications-list-page">Medications List</div>
+          }
+        />
+      </Routes>,
+      {
+        initialState: fullState,
+        reducers: reducer,
+        initialEntries: [urlPath],
+        additionalMiddlewares: [
+          allergiesApi.middleware,
+          prescriptionsApi.middleware,
+        ],
+      },
+    );
+  };
+
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     stubAllergiesApi({ sandbox });
@@ -73,6 +113,56 @@ describe('Prescription details documentation container', () => {
     const screen = setup();
     await waitFor(() => {
       expect(screen).to.exist;
+    });
+  });
+
+  it('should redirect to medications list when Cerner pilot enabled but station_number missing', async () => {
+    sandbox.restore();
+    stubAllergiesApi({ sandbox });
+    stubPrescriptionsApiCache({ sandbox, data: false });
+    stubPrescriptionIdApi({ sandbox });
+    stubPrescriptionDocumentationQuery({ sandbox });
+
+    const screen = setupWithCustomUrl(
+      {},
+      '/prescriptions/123456/documentation', // URL without station_number
+      true, // isCernerPilot = true
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('medications-list-page')).to.exist;
+    });
+  });
+
+  it('should NOT redirect when Cerner pilot enabled and station_number resolved from cache', async () => {
+    sandbox.restore();
+    stubAllergiesApi({ sandbox });
+
+    // Create cached prescription with stationNumber - simulates prescription list already loaded
+    const cachedPrescription = {
+      ...singlePrescription,
+      prescriptionId: 22377957,
+      stationNumber: '668',
+      rxRfRecords: [{ cmopNdcNumber: '00093314705' }],
+    };
+    stubPrescriptionsApiCache({
+      sandbox,
+      data: { prescriptions: [cachedPrescription] },
+      useSelectFromResult: true,
+    });
+    stubPrescriptionIdApi({ sandbox, data: cachedPrescription });
+    stubPrescriptionDocumentationQuery({ sandbox });
+
+    const screen = setupWithCustomUrl(
+      {},
+      '/prescriptions/22377957/documentation', // URL without station_number, but ID matches cached prescription
+      true, // isCernerPilot = true
+    );
+
+    // Page should load documentation, NOT redirect to list
+    await waitFor(() => {
+      expect(screen.queryByTestId('medications-list-page')).to.not.exist;
+      expect(screen.getByTestId('medication-information-title')).to.exist;
     });
   });
 

@@ -147,6 +147,44 @@ describe('Prescription details container', () => {
     });
   });
 
+  it('should NOT redirect when Cerner pilot enabled and station_number resolved from cache', async () => {
+    sandbox.restore();
+    stubAllergiesApi({ sandbox });
+
+    // Create cached prescription with stationNumber - simulates prescription list already loaded
+    const cachedPrescription = {
+      ...singlePrescription,
+      prescriptionId: 22377957,
+      stationNumber: '668',
+    };
+    stubPrescriptionsApiCache({
+      sandbox,
+      data: { prescriptions: [cachedPrescription] },
+      useSelectFromResult: true,
+    });
+    stubPrescriptionIdApi({ sandbox, data: cachedPrescription });
+    stubUsePrefetch({ sandbox });
+
+    const screen = setupWithCustomUrl(
+      {
+        user: {
+          profile: {
+            userFullName: { first: 'test', last: 'last' },
+            dob: '2000-01-01',
+          },
+        },
+      },
+      '/prescriptions/22377957', // URL without station_number, but ID matches cached prescription
+      true, // isCernerPilot = true
+    );
+
+    // Page should load prescription details, NOT redirect to list
+    await waitFor(() => {
+      expect(screen.queryByTestId('medications-list-page')).to.not.exist;
+      expect(screen.getByTestId('prescription-name')).to.exist;
+    });
+  });
+
   it('should display loading message when loading specific rx', async () => {
     sandbox.restore();
     stubAllergiesApi({ sandbox });
