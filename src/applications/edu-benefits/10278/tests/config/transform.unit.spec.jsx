@@ -90,7 +90,7 @@ describe('22-10278 transform', () => {
     expect(formData.dateSigned).to.equal('2025-01-15');
 
     expect(formData.claimantContactInformation.phoneNumber).to.equal(
-      '5551234567',
+      '555-123-4567',
     );
   });
 

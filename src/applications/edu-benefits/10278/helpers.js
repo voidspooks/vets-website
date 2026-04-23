@@ -185,3 +185,36 @@ InformationToDiscloseReviewField.propTypes = {
   disclosureKeys: PropTypes.arrayOf(PropTypes.string),
   options: PropTypes.object,
 };
+
+export const transformPhoneNumberObject = (phone = {}) => {
+  const {
+    isInternational,
+    areaCode,
+    phoneNumber,
+    countryCode,
+    extension,
+  } = phone;
+
+  if (!phoneNumber || !areaCode) {
+    return '';
+  }
+
+  let formattedPhoneNumber = phoneNumber;
+  if (!isInternational) {
+    formattedPhoneNumber = `${phoneNumber.substring(
+      0,
+      3,
+    )}-${phoneNumber.substring(3)}`;
+  }
+
+  let base = `${areaCode}-${formattedPhoneNumber}`;
+  if (isInternational && countryCode) {
+    base = `+${countryCode} ${base}`;
+  }
+
+  if (extension) {
+    base = `${base} x${extension}`;
+  }
+
+  return base;
+};

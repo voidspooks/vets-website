@@ -1,5 +1,6 @@
 import { cloneDeep, isNil } from 'lodash';
 import { transformForSubmit } from 'platform/forms-system/src/js/helpers';
+import { transformPhoneNumberObject } from '../helpers';
 
 export default function transform(formConfig, form) {
   const personalInformationTransform = formData => {
@@ -13,9 +14,7 @@ export default function transform(formConfig, form) {
     const phoneData = homePhone || mobilePhone;
 
     clonedData.claimantContactInformation = {
-      phoneNumber: phoneData
-        ? `${phoneData.areaCode || ''}${phoneData.phoneNumber || ''}`
-        : '',
+      phoneNumber: phoneData ? transformPhoneNumberObject(phoneData) : '',
       emailAddress: email?.emailAddress || '',
     };
 

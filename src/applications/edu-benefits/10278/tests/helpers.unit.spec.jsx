@@ -12,6 +12,7 @@ import {
   validateTerminationDate,
   InformationToDiscloseReviewField,
   ClaimInformationDescription,
+  transformPhoneNumberObject,
 } from '../helpers';
 
 describe('10278 helpers - validateTerminationDate', () => {
@@ -318,5 +319,33 @@ describe('organizationRepresentativesArrayOptions helpers', () => {
         organizationRepresentativesArrayOptions.text.summaryTitle,
       ).to.equal('Review the names of organization’s representatives');
     });
+  });
+});
+
+describe('10278 helpers - transformPhoneNumberObject', () => {
+  it('formats an international phone number correctly', () => {
+    const phoneObj = {
+      isInternational: true,
+      areaCode: '545',
+      phoneNumber: '3451234',
+      countryCode: '22',
+      extension: '654',
+    };
+
+    expect(transformPhoneNumberObject(phoneObj)).to.equal(
+      '+22 545-3451234 x654',
+    );
+  });
+
+  it('formats a non-international phone number correctly', () => {
+    const phoneObj = {
+      isInternational: false,
+      areaCode: '545',
+      phoneNumber: '3451234',
+      countryCode: '22',
+      extension: '654',
+    };
+
+    expect(transformPhoneNumberObject(phoneObj)).to.equal('545-345-1234 x654');
   });
 });
