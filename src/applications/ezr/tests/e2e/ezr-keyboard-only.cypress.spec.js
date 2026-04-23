@@ -392,7 +392,7 @@ describe('Form 10-10EZR Keyboard Only', () => {
       );
       cy.typeInIfDataExists(
         `${prefix}view:policyOrGroup_insurancePolicyNumber"]`,
-        policy.insurancePolicyNumber,
+        policy['view:policyOrGroup']?.insurancePolicyNumber,
       );
       cy.tabToContinueForm();
 

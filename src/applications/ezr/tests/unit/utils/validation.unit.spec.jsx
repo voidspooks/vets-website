@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon-v20';
+import { omit } from 'lodash';
 
 import {
   validateCurrency,
@@ -10,6 +11,8 @@ import {
   validatePolicyNumberGroupCode,
   validateMarriageDate,
   validateServiceDates,
+  validatePolicyNumber,
+  validateInsurancePolicy,
 } from '../../../utils/validation';
 
 describe('ezr validation utils', () => {
@@ -375,5 +378,83 @@ describe('ezr `validateServiceDates` form validation', () => {
     });
     validateServiceDates(errors, fieldData, formData);
     expect(entryDateSpy.called).to.be.true;
+  });
+});
+
+describe('ezr `validatePolicyNumber` form validation', () => {
+  const policySpy = sinon.spy();
+  const groupSpy = sinon.spy();
+  const getData = ({ policyNumber = '', groupCode = '' }) => ({
+    errors: {
+      insurancePolicyNumber: {
+        addError: policySpy,
+      },
+      insuranceGroupCode: {
+        addError: groupSpy,
+      },
+    },
+    fieldData: {
+      insurancePolicyNumber: policyNumber,
+      insuranceGroupCode: groupCode,
+    },
+  });
+
+  afterEach(() => {
+    policySpy.resetHistory();
+    groupSpy.resetHistory();
+  });
+
+  it('should not set error message when form data is valid', () => {
+    const { errors, fieldData } = getData({
+      policyNumber: '1234567890',
+    });
+    validatePolicyNumber(errors, fieldData);
+    expect(policySpy.called).to.be.false;
+    expect(groupSpy.called).to.be.false;
+  });
+
+  it('should set error message when form data is missing', () => {
+    const { errors, fieldData } = getData({});
+    validatePolicyNumber(errors, fieldData);
+    expect(policySpy.called).to.be.true;
+    expect(groupSpy.called).to.be.true;
+  });
+});
+
+describe('ezr `validateInsurancePolicy` method', () => {
+  const defaultItem = {
+    insuranceName: 'Cigna',
+    insurancePolicyHolderName: 'John Smith',
+  };
+
+  it('should gracefully return when props are omitted', () => {
+    expect(validateInsurancePolicy()).to.be.true;
+  });
+
+  it('should return `true` when `insuranceName` is omitted', () => {
+    const item = omit('insuranceName', defaultItem);
+    expect(validateInsurancePolicy(item)).to.be.true;
+  });
+
+  it('should return `true` when `insurancePolicyHolderName` is omitted', () => {
+    const item = omit('insurancePolicyHolderName', defaultItem);
+    expect(validateInsurancePolicy(item)).to.be.true;
+  });
+
+  it('should return `true` when `view:policyOrGroup` is omitted', () => {
+    const item = omit('view:policyOrGroup', defaultItem);
+    expect(validateInsurancePolicy(item)).to.be.true;
+  });
+
+  it('should return `true` when `insurancePolicyNumber` & `insuranceGroupCode` are omitted', () => {
+    expect(validateInsurancePolicy(defaultItem)).to.be.true;
+  });
+
+  it('should return `false` when all correct data is provided', () => {
+    const item = {
+      ...defaultItem,
+      'view:policyOrGroup': { insurancePolicyNumber: '12345' },
+    };
+    expect(validateInsurancePolicy(item)).to.be.false;
   });
 });

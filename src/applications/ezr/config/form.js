@@ -27,7 +27,6 @@ import {
   spouseDidNotCohabitateWithVeteranV1,
   spouseAddressDoesNotMatchVeteransV1,
   includeDependentInformation,
-  includeInsuranceInformation,
   collectMedicareInformation,
   canVeteranProvideRadiationCleanupResponse,
   canVeteranProvideGulfWarServiceResponse,
@@ -96,18 +95,13 @@ import supportingDocuments from './chapters/militaryService/supportingDocuments'
 import medicaidEligibility from './chapters/insuranceInformation/medicaid';
 import medicarePartAEnrollment from './chapters/insuranceInformation/medicare';
 import partAEffectiveDate from './chapters/insuranceInformation/partAEffectiveDate';
-import insurancePolicies from './chapters/insuranceInformation/insurancePolicies';
-import InsuranceSummaryPage from '../components/FormPages/InsuranceSummary';
-import InsurancePolicyInformationPage from '../components/FormPages/InsurancePolicyInformation';
-import InsurancePolicyReviewPage from '../components/FormReview/InsurancePolicyReviewPage';
 import postSept11Service from './chapters/militaryService/postSept11Service';
 import postSept11ServiceDates from './chapters/militaryService/postSept11ServiceDates';
+import healthInsurancePolicyPages from './chapters/insuranceInformation/policies';
+import insuranceIntro from './chapters/insuranceInformation/insuranceIntro';
 
 // declare shared paths for custom form page navigation
-const {
-  insurance: INSURANCE_PATHS,
-  dependents: DEPENDENT_PATHS,
-} = SHARED_PATHS;
+const { dependents: DEPENDENT_PATHS } = SHARED_PATHS;
 
 // declare schema definitions
 const { date } = ezrSchema.definitions;
@@ -496,23 +490,13 @@ const formConfig = {
           uiSchema: partAEffectiveDate.uiSchema,
           schema: partAEffectiveDate.schema,
         },
-        insurancePolicies: {
-          path: INSURANCE_PATHS.summary,
-          title: 'Insurance policies',
-          CustomPage: InsuranceSummaryPage,
-          CustomPageReview: InsurancePolicyReviewPage,
-          uiSchema: insurancePolicies.uiSchema,
-          schema: insurancePolicies.schema,
+        healthInsuranceIntro: {
+          path: 'insurance-information/health-insurance-overview',
+          title: 'Health insurance',
+          uiSchema: insuranceIntro.uiSchema,
+          schema: insuranceIntro.schema,
         },
-        insurancePolicyInformation: {
-          path: INSURANCE_PATHS.info,
-          title: 'Insurance policy information',
-          depends: includeInsuranceInformation,
-          CustomPage: InsurancePolicyInformationPage,
-          CustomPageReview: null,
-          uiSchema: {},
-          schema: VIEW_FIELD_SCHEMA,
-        },
+        ...healthInsurancePolicyPages,
       },
     },
   },

@@ -86,7 +86,7 @@ export const fillInsuranceInformation = policy => {
   const {
     insuranceName,
     insurancePolicyHolderName,
-    insurancePolicyNumber,
+    'view:policyOrGroup': { insurancePolicyNumber },
   } = policy;
 
   fillTextWebComponent('insuranceName', insuranceName);

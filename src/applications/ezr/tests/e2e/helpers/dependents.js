@@ -78,10 +78,12 @@ export const advanceFromDependentsToReview = testData => {
     'view:isEnrolledMedicarePartA_isEnrolledMedicarePartA',
     false,
   );
+  goToNextPage('/insurance-information/health-insurance-overview');
 
   goToNextPage('/insurance-information/policies');
-  cy.get(`[name="root_${INSURANCE_VIEW_FIELDS.add}"]`).check('N');
-
+  cy.get(`input[name="root_${INSURANCE_VIEW_FIELDS.add}"][value="N"]`).check({
+    force: true,
+  });
   goToNextPage('review-and-submit');
 };
 

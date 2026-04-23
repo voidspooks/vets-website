@@ -46,15 +46,22 @@ describe('EZR Insurance Policies', () => {
 
     advanceToInsurancePolicies(testData);
 
+    goToNextPage('/insurance-information/health-insurance-overview');
+
     goToNextPage('/insurance-information/policies');
-    cy.get(`[name="root_${INSURANCE_VIEW_FIELDS.add}"]`).check('Y');
+
+    cy.get(`input[name="root_${INSURANCE_VIEW_FIELDS.add}"][value="Y"]`).check({
+      force: true,
+    });
     cy.injectAxeThenAxeCheck();
 
-    goToNextPage('/insurance-information/policy-information');
+    goToNextPage('/insurance-information/0/policy-information');
     fillInsuranceInformation(testData.providers[0]);
 
     goToNextPage('/insurance-information/policies');
-    cy.get(`[name="root_${INSURANCE_VIEW_FIELDS.add}"]`).check('N');
+    cy.get(`input[name="root_${INSURANCE_VIEW_FIELDS.add}"][value="N"]`).check({
+      force: true,
+    });
     cy.injectAxeThenAxeCheck();
 
     goToNextPage('review-and-submit');

@@ -6,6 +6,9 @@ import {
   HIGH_DISABILITY_MINIMUM,
 } from '../constants';
 
+import content from '../../locales/en/content.json';
+import { replaceStrValues } from './general';
+
 /**
  * Helper that determines if the form data is missing the Veteran's date of birth
  * @param {Object} formData - the current data object passed from the form
@@ -467,4 +470,37 @@ export const shouldHaveDocumentUpload = formData => {
       (!formData['view:hasPrefillServiceHistory'] ||
         !formData.isServiceHistoryCorrect))
   );
+};
+
+export const insuranceTextOverrides = () => {
+  return {
+    getItemName: item => item?.insuranceName || '—',
+    cardDescription: item =>
+      replaceStrValues(
+        content['insurance-info--card-description'],
+        item?.insurancePolicyHolderName || '—',
+      ),
+    cancelAddTitle: () => content['insurance-info--array-cancel-add-title'],
+    cancelEditTitle: () => content['insurance-info--array-cancel-edit-title'],
+    cancelEditDescription: () =>
+      replaceStrValues(
+        content['insurance-modal-cancel-description'],
+        'editing',
+      ),
+    cancelAddDescription: () =>
+      replaceStrValues(content['insurance-modal-cancel-description'], 'adding'),
+    cancelEditReviewDescription: () =>
+      content['insurance-info--array-cancel-edit-review-description'],
+    cancelAddYes: () => content['modal-cancel-button-primary-text'],
+    cancelEditYes: () => content['modal-cancel-button-primary-text'],
+    cancelAddNo: () => content['modal-cancel-button-secondary-text'],
+    cancelEditNo: () => content['modal-cancel-button-secondary-text'],
+    deleteYes: () => content['insurance-modal-remove-button-text'],
+    deleteNo: () => content['button-modal-cancel'],
+    deleteDescription: item =>
+      replaceStrValues(
+        content['insurance-modal-remove-description'],
+        item?.itemData?.insuranceName || 'this policy',
+      ),
+  };
 };

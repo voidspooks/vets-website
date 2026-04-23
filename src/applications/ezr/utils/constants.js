@@ -105,7 +105,7 @@ export const SHARED_PATHS = {
   },
   insurance: {
     summary: 'insurance-information/policies',
-    info: 'insurance-information/policy-information',
+    info: 'insurance-information/:index/policy-information',
   },
 };
 

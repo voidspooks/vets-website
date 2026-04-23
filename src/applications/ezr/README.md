@@ -181,7 +181,7 @@ sequenceDiagram
       vaMedicalFacility: '668QE'
     },
     'view:locator': {},
-    'view:hasHealthInsuranceToAdd': false,
+    'view:addInsurancePolicy': false,
     isMedicaidEligible: false,
     gulfWarService: false,
     hasTeraResponse: true,

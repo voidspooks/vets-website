@@ -26,7 +26,7 @@ describe('ezr InsurancePolicyInformation', () => {
       };
       expect(selectors.form).to.exist;
       expect(selectors.title).to.contain.text(
-        content['insurance-policy-information-title'],
+        content['insurance-info--policy-title'],
       );
     });
 

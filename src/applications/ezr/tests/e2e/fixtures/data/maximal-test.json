@@ -4,8 +4,10 @@
       {
         "insuranceName": "Big Insurance Co",
         "insurancePolicyHolderName": "Jim Doe",
-        "insurancePolicyNumber": "2342344",
-        "insuranceGroupCode": "2324234434"
+        "view:policyOrGroup": {
+          "insurancePolicyNumber": "2342344",
+          "insuranceGroupCode": "2324234434"
+        }
       }
     ],
     "view:isMedicaidEligible": {

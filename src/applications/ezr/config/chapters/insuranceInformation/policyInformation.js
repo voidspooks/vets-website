@@ -1,87 +1,76 @@
-import ezrSchema from 'vets-json-schema/dist/10-10EZR-schema.json';
 import {
+  arrayBuilderItemFirstPageTitleUI,
+  textUI,
   titleUI,
-  descriptionUI,
 } from 'platform/forms-system/src/js/web-component-patterns';
-import VaTextInputField from 'platform/forms-system/src/js/web-component-fields/VaTextInputField';
-
 import {
   PolicyOrGroupDescription,
-  InsurancePolicyOrDescription,
   TricarePolicyDescription,
 } from '../../../components/FormDescriptions/InsurancePolicyDescriptions';
-import { validatePolicyNumberGroupCode } from '../../../utils/validation';
-import { VIEW_FIELD_SCHEMA } from '../../../utils/constants';
+import { FULL_SCHEMA } from '../../../utils/imports';
+import { validatePolicyNumber } from '../../../utils/validation';
 import content from '../../../locales/en/content.json';
 
-const {
-  providers: { items: provider },
-} = ezrSchema.properties;
-const {
-  insuranceName,
-  insurancePolicyHolderName,
-  insurancePolicyNumber,
-  insuranceGroupCode,
-} = provider.properties;
+const { providers } = FULL_SCHEMA.properties;
+const policy = providers.items.properties;
 
 export default {
   uiSchema: {
-    ...titleUI(content['insurance-policy-information-title']),
-    insuranceName: {
-      'ui:title': content['insurance-provider-name-label'],
-      'ui:webComponentField': VaTextInputField,
-      'ui:errorMessages': {
-        pattern: 'Enter the insurance provider name',
+    ...arrayBuilderItemFirstPageTitleUI({
+      title: content['insurance-info--policy-title'],
+      showEditExplanationText: false,
+    }),
+    insuranceName: textUI({
+      title: content['insurance-info--provider-label'],
+      errorMessages: {
+        required: content['insurance-info--provider-error-message'],
+        pattern: content['insurance-info--provider-error-message'],
       },
-    },
-    insurancePolicyHolderName: {
-      'ui:title': content['insurance-policyholder-name-label'],
-      'ui:webComponentField': VaTextInputField,
-      'ui:errorMessages': {
-        pattern: 'Enter the policyholder\u2019s name',
+    }),
+    insurancePolicyHolderName: textUI({
+      title: content['insurance-info--policyholder-label'],
+      errorMessages: {
+        required: content['insurance-info--policyholder-error-message'],
+        pattern: content['insurance-info--policyholder-error-message'],
       },
-    },
+    }),
     'view:policyOrGroup': {
-      'ui:title': PolicyOrGroupDescription,
-      ...descriptionUI(TricarePolicyDescription, { hideOnReview: true }),
-      'ui:validations': [validatePolicyNumberGroupCode],
-      insurancePolicyNumber: {
-        'ui:title': content['insurance-policy-number-label'],
-        'ui:webComponentField': VaTextInputField,
-        'ui:options': {
-          hint: content['insurance-policy-number-hint-text'],
+      ...titleUI({
+        title: PolicyOrGroupDescription,
+        description: TricarePolicyDescription,
+        headerLevel: 4,
+        classNames: 'vads-u-margin-top--3',
+      }),
+      insurancePolicyNumber: textUI({
+        title: content['insurance-info--policy-number-label'],
+        hint: content['insurance-info--policy-number-hint'],
+        errorMessages: {
+          required: content['insurance-info--policy-number-error-message'],
+          pattern: content['insurance-info--policy-number-error-message'],
         },
-        'ui:errorMessages': {
-          pattern: 'Enter a valid policy number',
+      }),
+      insuranceGroupCode: textUI({
+        title: content['insurance-info--group-code-label'],
+        hint: content['insurance-info--group-code-hint'],
+        errorMessages: {
+          required: content['insurance-info--group-code-error-message'],
+          pattern: content['insurance-info--group-code-error-message'],
         },
-      },
-      'view:or': {
-        ...descriptionUI(InsurancePolicyOrDescription),
-      },
-      insuranceGroupCode: {
-        'ui:title': content['insurance-group-code-label'],
-        'ui:webComponentField': VaTextInputField,
-        'ui:options': {
-          hint: content['insurance-group-code-hint-text'],
-        },
-        'ui:errorMessages': {
-          pattern: 'Enter a valid group code',
-        },
-      },
+      }),
+      'ui:validations': [validatePolicyNumber],
     },
   },
   schema: {
     type: 'object',
     required: ['insuranceName', 'insurancePolicyHolderName'],
     properties: {
-      insuranceName,
-      insurancePolicyHolderName,
+      insuranceName: policy.insuranceName,
+      insurancePolicyHolderName: policy.insurancePolicyHolderName,
       'view:policyOrGroup': {
         type: 'object',
         properties: {
-          insurancePolicyNumber,
-          'view:or': VIEW_FIELD_SCHEMA,
-          insuranceGroupCode,
+          insurancePolicyNumber: policy.insurancePolicyNumber,
+          insuranceGroupCode: policy.insuranceGroupCode,
         },
       },
     },

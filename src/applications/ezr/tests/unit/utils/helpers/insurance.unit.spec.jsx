@@ -15,7 +15,9 @@ describe('ezr insurance information helpers', () => {
 
     context('when the provider name exists in the form data', () => {
       it('should return a string with the provider name included', () => {
-        const formData = { insuranceName: 'Aetna', 'view:policyOrGroup': {} };
+        const formData = {
+          insuranceName: 'Aetna',
+        };
         expect(getInsuranceSrLabel(formData)).to.contain(
           formData.insuranceName,
         );
@@ -24,7 +26,9 @@ describe('ezr insurance information helpers', () => {
 
     context('when the policy number does not exist in the form data', () => {
       it('should return a string that does not contain reference to the policy number', () => {
-        const formData = { insuranceName: 'Aetna', 'view:policyOrGroup': {} };
+        const formData = {
+          insuranceName: 'Aetna',
+        };
         expect(getInsuranceSrLabel(formData)).to.not.contain(
           content['insurance-policy-number-label'],
         );
@@ -47,7 +51,9 @@ describe('ezr insurance information helpers', () => {
 
     context('when group code does not exist in the form data', () => {
       it('should return a string that does not contain reference to the group code', () => {
-        const formData = { insuranceName: 'Aetna', 'view:policyOrGroup': {} };
+        const formData = {
+          insuranceName: 'Aetna',
+        };
         expect(getInsuranceSrLabel(formData)).to.not.contain(
           content['insurance-group-code-label'],
         );

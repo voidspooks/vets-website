@@ -78,7 +78,6 @@ describe('ezr <InsurancePolicyList>', () => {
           {
             insuranceName: 'Aetna',
             insurancePolicyHolderName: 'Mary Smith',
-            'view:policyOrGroup': {},
           },
         ],
         mode: 'edit',

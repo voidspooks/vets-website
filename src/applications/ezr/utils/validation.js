@@ -187,3 +187,43 @@ export const validateServiceDates = (
     errors.lastDischargeDate.addError(messages.dischargeDate);
   }
 };
+
+/**
+ * Validates if insurance policy array item data is valid
+ * @param {Object} item - field data for individual array item
+ * @returns {Boolean} - false if the item missing any required data
+ */
+export const validateInsurancePolicy = ({
+  insuranceName,
+  insurancePolicyHolderName,
+  'view:policyOrGroup': { insurancePolicyNumber, insuranceGroupCode } = {},
+} = {}) => {
+  const isBlank = value => (typeof value === 'string' ? !value.trim() : !value);
+
+  return (
+    isBlank(insuranceName) ||
+    isBlank(insurancePolicyHolderName) ||
+    (isBlank(insurancePolicyNumber) && isBlank(insuranceGroupCode))
+  );
+};
+/**
+ * Validates if insurance policy number or group code is present
+ * @param {Object} errors - object holding the error message content
+ * @param {Object} fieldData - field data for individual array item
+ */
+export const validatePolicyNumber = (
+  errors,
+  { insurancePolicyNumber, insuranceGroupCode },
+) => {
+  const messages = {
+    groupCode: content['validation-insurance-group-code'],
+    policyNumber: content['validation-insurance-policy-number'],
+  };
+  const trimmedPolicyNumber = insurancePolicyNumber?.trim();
+  const trimmedGroupCode = insuranceGroupCode?.trim();
+
+  if (!trimmedPolicyNumber && !trimmedGroupCode) {
+    errors.insuranceGroupCode.addError(messages.groupCode);
+    errors.insurancePolicyNumber.addError(messages.policyNumber);
+  }
+};
