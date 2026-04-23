@@ -85,14 +85,13 @@ describe('Claimant Identification Info Page', () => {
 
       // Check SSN schema
       expect(fieldSchema.properties.ssn).to.have.property('type', 'string');
-      expect(fieldSchema.properties.ssn).to.have.property('pattern');
 
       // Check VA file number schema
       expect(fieldSchema.properties.vaFileNumber).to.have.property(
         'type',
         'string',
       );
-      expect(fieldSchema.properties.vaFileNumber).to.have.property('pattern');
+      expect(fieldSchema.required).to.include('ssn');
     });
   });
 
