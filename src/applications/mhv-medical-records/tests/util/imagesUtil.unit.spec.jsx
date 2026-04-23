@@ -65,6 +65,26 @@ describe('Sort date', () => {
     const convertedRecord = convertCvixRadiologyRecord(record);
     expect(parseISO(convertedRecord.sortDate).getTime()).to.eq(compareDate);
   });
+
+  it('returns null sortDate when performedDatePrecise is null', () => {
+    const record = { performedDatePrecise: null };
+    const convertedRecord = convertCvixRadiologyRecord(record);
+    expect(convertedRecord.sortDate).to.be.null;
+  });
+
+  it('returns null sortDate when performedDatePrecise is undefined', () => {
+    const record = {};
+    const convertedRecord = convertCvixRadiologyRecord(record);
+    expect(convertedRecord.sortDate).to.be.null;
+  });
+
+  it('returns valid sortDate for numeric string performedDatePrecise', () => {
+    const timestamp = 1712264604902;
+    const compareDate = Math.floor(timestamp / 1000) * 1000;
+    const record = { performedDatePrecise: String(timestamp) };
+    const convertedRecord = convertCvixRadiologyRecord(record);
+    expect(parseISO(convertedRecord.sortDate).getTime()).to.eq(compareDate);
+  });
 });
 
 describe('mergeRadiologyLists', () => {

@@ -354,4 +354,17 @@ describe('radiologyRecordHash', () => {
 
     expect(hash1).to.eq(hash2); // Assert that the hashes are the same.
   });
+
+  it('does not throw when performedDatePrecise is null', () => {
+    const result = radiologyRecordHash({
+      ...record,
+      performedDatePrecise: null,
+    });
+    expect(result).to.be.a('string');
+  });
+
+  it('does not throw when performedDatePrecise is undefined', () => {
+    const result = radiologyRecordHash({ ...record });
+    expect(result).to.be.a('string');
+  });
 });

@@ -20,9 +20,7 @@ export const convertScdfImagingStudy = record => {
   return {
     id: `${record.id}`,
     name: attrs.description || EMPTY_FIELD,
-    date: attrs.date
-      ? formatDateInLocalTimezone(attrs.date, true)
-      : EMPTY_FIELD,
+    date: formatDateInLocalTimezone(attrs.date, true) || EMPTY_FIELD,
     rawDate: attrs.date || null,
     results: attrs.notes?.length ? attrs.notes.join('\n') : EMPTY_FIELD,
     imageCount: attrs.imageCount || 0,
@@ -307,6 +305,17 @@ export const mergeImagingStudiesIntoLabs = (
   return mergedList;
 };
 
+const toSortableISOString = dateInput => {
+  if (dateInput == null) return null;
+  const input =
+    typeof dateInput === 'string' && /^\d+$/.test(dateInput)
+      ? Number(dateInput)
+      : dateInput;
+  const d = new Date(input);
+  if (Number.isNaN(d.getTime())) return null;
+  return `${d.toISOString().split('.')[0]}Z`;
+};
+
 export const buildRadiologyResults = record => {
   const reportText = record?.reportText || '\n';
   const impressionText = record?.impressionText || '\n';
@@ -325,9 +334,7 @@ export const convertMhvRadiologyRecord = record => {
     orderedBy: orderedBy || EMPTY_FIELD,
     clinicalHistory: record?.clinicalHistory?.trim() || EMPTY_FIELD,
     imagingLocation: record.performingLocation,
-    date: record.eventDate
-      ? formatDateInLocalTimezone(record.eventDate, true)
-      : EMPTY_FIELD,
+    date: formatDateInLocalTimezone(record.eventDate, true) || EMPTY_FIELD,
     sortDate: record.eventDate,
     imagingProvider: imagingProvider || EMPTY_FIELD,
     results: buildRadiologyResults(record),
@@ -344,12 +351,10 @@ export const convertCvixRadiologyRecord = record => {
     orderedBy: parsedReport['Req Phys'] || EMPTY_FIELD,
     clinicalHistory: parsedReport['Clinical History'] || EMPTY_FIELD,
     imagingLocation: record.facilityInfo?.name || EMPTY_FIELD,
-    date: record.performedDatePrecise
-      ? formatDateInLocalTimezone(record.performedDatePrecise, true)
-      : EMPTY_FIELD,
-    sortDate: record.performedDatePrecise
-      ? `${new Date(record.performedDatePrecise).toISOString().split('.')[0]}Z`
-      : null,
+    date:
+      formatDateInLocalTimezone(record.performedDatePrecise, true) ||
+      EMPTY_FIELD,
+    sortDate: toSortableISOString(record.performedDatePrecise),
     imagingProvider: EMPTY_FIELD,
     results: buildRadiologyResults({
       reportText: parsedReport.Report,

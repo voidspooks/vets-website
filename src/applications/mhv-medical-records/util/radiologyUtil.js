@@ -205,13 +205,15 @@ export const radiologyRecordHash = record => {
   const { procedureName, radiologist, stationNumber } = record;
   let date = record.eventDate || record.performedDatePrecise;
 
-  if (!Number.isNaN(Number(date))) {
+  if (date != null && !Number.isNaN(Number(date))) {
     // If the date is a timestamp, convert it to a date (with no time). This is because subsequent
     // fetches of the same study from CVIX can have timestamps that differ by a few seconds. This
     // ensures the hash will remain consistent across fetches.
     const timestamp = parseInt(date, 10);
     const dateObj = new Date(timestamp);
-    [date] = dateObj.toISOString().split('T'); // Extract the date part
+    if (!Number.isNaN(dateObj.getTime())) {
+      [date] = dateObj.toISOString().split('T'); // Extract the date part
+    }
   }
 
   // Normalize procedure name to handle whitespace differences between PHR and CVIX

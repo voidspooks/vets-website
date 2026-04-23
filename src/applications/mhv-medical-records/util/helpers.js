@@ -15,6 +15,7 @@ import {
   startOfYear,
   endOfYear,
   parseISO,
+  isValid,
 } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import {
@@ -814,21 +815,32 @@ export const handleDataDogAction = ({
 /**
  * Format an ISO 8601 date in the local browser timezone.
  *
- * @param {string|number} date the date to format, in ISO 8601 format or as a millisecond timestamp
+ * @param {string|number|null|undefined} date the date to format, in ISO 8601 format or as a millisecond timestamp
  * @param {boolean} hideTimeZone hide time zone in output if true, otherwise include it (default is false)
- * @returns {String} a formatted date and time string in the local timezone
+ * @returns {string|null} a formatted date and time string in the local timezone, or null if the input is null, undefined, or invalid
  * @example formatDateInLocalTimezone(1712264626910, true); // "April 4, 2024 5:03 p.m."
  * @example formatDateInLocalTimezone('1997-05-07T19:14:00Z', true); // "May 7, 1997 3:14 p.m."
  * @example formatDateInLocalTimezone('1997-05-07T19:14:00Z'); // "May 7, 1997 3:14 p.m. EDT"
  */
 export const formatDateInLocalTimezone = (date, hideTimeZone = false) => {
+  if (date == null) return null;
+
   let dateObj;
 
   if (typeof date === 'number') {
     dateObj = new Date(date); // Millisecond timestamp
+  } else if (typeof date === 'string') {
+    // Handle numeric strings (epoch millis as string, e.g. from CVIX)
+    if (/^\d+$/.test(date)) {
+      dateObj = new Date(parseInt(date, 10));
+    } else {
+      dateObj = parseISO(date); // ISO 8601
+    }
   } else {
-    dateObj = parseISO(date); // ISO 8601
+    return null;
   }
+
+  if (!isValid(dateObj)) return null;
 
   const formattedDate = dateFnsFormat(dateObj, 'MMMM d, yyyy h:mm aaaa');
   if (hideTimeZone) {

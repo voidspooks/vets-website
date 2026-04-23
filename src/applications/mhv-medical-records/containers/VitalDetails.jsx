@@ -42,6 +42,7 @@ import {
   refreshExtractTypes,
   loadStates as LOAD_STATES,
   statsdFrontEndActions,
+  EMPTY_FIELD,
 } from '../util/constants';
 import AccessTroubleAlertBox from '../components/shared/AccessTroubleAlertBox';
 import useAlerts from '../hooks/use-alerts';
@@ -321,7 +322,9 @@ Provider notes: ${vital.notes}\n\n`,
                     <HeaderSection
                       header={
                         isCerner
-                          ? formatDateInLocalTimezone(vital.effectiveDateTime)
+                          ? formatDateInLocalTimezone(
+                              vital.effectiveDateTime,
+                            ) || EMPTY_FIELD
                           : vital.date
                       }
                       data-testid="vital-date"

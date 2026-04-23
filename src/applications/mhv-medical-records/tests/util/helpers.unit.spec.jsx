@@ -1006,25 +1006,32 @@ describe('formatDateInLocalTimezone', () => {
     expect(formattedDate).to.include('UTC');
   });
 
-  it('should handle an invalid date string gracefully', () => {
+  it('should return null for an invalid date string', () => {
     const invalidDateString = 'invalid-date';
-    expect(() => formatDateInLocalTimezone(invalidDateString)).to.throw();
+    expect(formatDateInLocalTimezone(invalidDateString)).to.be.null;
   });
 
-  it('should handle a null value gracefully', () => {
+  it('should return null for a null value', () => {
     const nullValue = null;
-    expect(() => formatDateInLocalTimezone(nullValue)).to.throw();
+    expect(formatDateInLocalTimezone(nullValue)).to.be.null;
   });
 
-  it('should handle an undefined value gracefully', () => {
+  it('should return null for an undefined value', () => {
     const undefinedValue = undefined;
-    expect(() => formatDateInLocalTimezone(undefinedValue)).to.throw();
+    expect(formatDateInLocalTimezone(undefinedValue)).to.be.null;
   });
 
   it('should format a date string without time correctly', () => {
     const dateString = '2023-10-03';
     const formattedDate = formatDateInLocalTimezone(dateString);
     const expectedDate = 'October 3, 2023 12:00 a.m. UTC';
+    expect(formattedDate).to.equal(expectedDate);
+  });
+
+  it('should format a numeric string (epoch millis) correctly', () => {
+    const numericString = '1672941680000'; // Jan 5, 2023, 18:01 UTC
+    const formattedDate = formatDateInLocalTimezone(numericString);
+    const expectedDate = 'January 5, 2023 6:01 p.m. UTC';
     expect(formattedDate).to.equal(expectedDate);
   });
 });
