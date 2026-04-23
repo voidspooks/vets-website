@@ -88,7 +88,9 @@ export function transform(
   form,
   formTransformer = removeFacilityCodeIfManualEntry,
 ) {
-  const formData = transformForSubmit(formConfig, formTransformer(form), null);
+  const formData = transformForSubmit(formConfig, formTransformer(form), {
+    allowPartialAddress: true,
+  });
   return JSON.stringify({
     giBillFeedback: {
       form: formData,
