@@ -8,9 +8,7 @@ import manifest from '../manifest.json';
 import content from '../locales/en/content.json';
 import { SHARED_PATHS, VIEW_FIELD_SCHEMA } from '../utils/constants';
 import {
-  includeSpousalInformationV1,
   includeHouseholdInformation,
-  includeHouseholdInformationV1,
   includeHouseholdInformationV2,
   isMissingVeteranDob,
   isMissingVeteranGender,
@@ -24,8 +22,6 @@ import {
   includeOtherExposureDetails,
   isEmergencyContactsEnabled,
   showFinancialStatusAlert,
-  spouseDidNotCohabitateWithVeteranV1,
-  spouseAddressDoesNotMatchVeteransV1,
   includeDependentInformation,
   collectMedicareInformation,
   canVeteranProvideRadiationCleanupResponse,
@@ -59,10 +55,6 @@ import nextOfKinPages from './chapters/veteranInformation/nextOfKin';
 
 // chapter 2 - Household Information
 import maritalStatus from './chapters/householdInformation/maritalStatus';
-import spousePersonalInformation from './chapters/householdInformation/spousePersonalInformation';
-import spouseAdditionalInformation from './chapters/householdInformation/spouseAdditionalInformation';
-import spouseFinancialSupport from './chapters/householdInformation/spouseFinancialSupport';
-import spouseContactInformation from './chapters/householdInformation/spouseContactInformation';
 import dependentSummary from './chapters/householdInformation/dependentSummary';
 import DependentSummaryPage from '../components/FormPages/DependentSummary';
 import DependentInformationPage from '../components/FormPages/DependentInformation';
@@ -370,14 +362,6 @@ const formConfig = {
     householdInformation: {
       title: 'Household financial information',
       pages: {
-        maritalStatus: {
-          path: 'household-information/marital-status',
-          title: 'Marital status',
-          initialData: {},
-          depends: includeHouseholdInformationV1,
-          uiSchema: maritalStatus.uiSchema,
-          schema: maritalStatus.schema,
-        },
         maritalStatusInformation: {
           path: 'household-information/marital-status-information',
           title: 'Marital status',
@@ -389,37 +373,6 @@ const formConfig = {
           schema: maritalStatus.schema,
         },
         ...spousalInformationPages,
-        spousePersonalInformation: {
-          path: 'household-information/spouse-personal-information',
-          title: 'Spouse\u2019s personal information',
-          initialData: {},
-          depends: includeSpousalInformationV1,
-          uiSchema: spousePersonalInformation.uiSchema,
-          schema: spousePersonalInformation.schema,
-        },
-        spouseAdditionalInformation: {
-          path: 'household-information/spouse-additional-information',
-          title: 'Spouse\u2019s additional information',
-          initialData: {},
-          depends: includeSpousalInformationV1,
-          uiSchema: spouseAdditionalInformation.uiSchema,
-          schema: spouseAdditionalInformation.schema,
-        },
-        spouseFinancialSupport: {
-          path: 'household-information/spouse-financial-support',
-          title: 'Spouse\u2019s financial support',
-          depends: spouseDidNotCohabitateWithVeteranV1,
-          uiSchema: spouseFinancialSupport.uiSchema,
-          schema: spouseFinancialSupport.schema,
-        },
-        spouseContactInformation: {
-          path: 'household-information/spouse-contact-information',
-          title: 'Spouse\u2019s address and phone number',
-          initialData: {},
-          depends: spouseAddressDoesNotMatchVeteransV1,
-          uiSchema: spouseContactInformation.uiSchema,
-          schema: spouseContactInformation.schema,
-        },
         dependentSummary: {
           path: DEPENDENT_PATHS.summary,
           title: 'Your Dependents',

@@ -24,16 +24,6 @@ const sharedResumePrefill = {
   'view:isEnrolledMedicarePartA': false,
 };
 
-const mockPrefillMarried = inProgressMock({
-  prefill: {
-    ...sharedResumePrefill,
-    'view:maritalStatus': {
-      maritalStatus: 'Married',
-    },
-  },
-  returnUrl: START_URL,
-});
-
 const mockPrefillNeverMarried = inProgressMock({
   prefill: {
     ...sharedResumePrefill,
@@ -45,18 +35,6 @@ const mockPrefillNeverMarried = inProgressMock({
 });
 
 describe('EZR - spouse information flow', () => {
-  describe('when the Veteran is married or separated', () => {
-    const testConfig = getConfig({
-      dataSets: ['maximal-test'],
-      prefill: mockPrefillMarried,
-      user: mockUserInProgress,
-      stop: STOP_URL,
-      useAuth: true,
-    });
-
-    testForm(testConfig);
-  });
-
   describe('when the Veteran is not married or separated', () => {
     const testConfig = getConfig({
       dataSets: ['minimal-test'],

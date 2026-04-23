@@ -395,9 +395,7 @@ describe('ezr prefill transformer', () => {
             vapContactInfo: {},
           },
         },
-        featureToggles: {
-          ezrSpouseConfirmationFlowEnabled: true,
-        },
+        featureToggles: {},
       };
       const formDataWithSpouse = {
         ...formData,
@@ -607,7 +605,6 @@ describe('ezr prefill transformer', () => {
             },
           },
           featureToggles: {
-            ezrSpouseConfirmationFlowEnabled: true,
             ezrProvidersAndDependentsPrefillEnabled: true,
           },
         };
@@ -671,7 +668,6 @@ describe('ezr prefill transformer', () => {
           },
         },
         featureToggles: {
-          ezrSpouseConfirmationFlowEnabled: false,
           ezrProvidersAndDependentsPrefillEnabled: false,
         },
       };
@@ -698,7 +694,6 @@ describe('ezr prefill transformer', () => {
           null,
           state,
         );
-        expect(prefillData.spouseInformation).to.be.undefined;
         expect(prefillData.financialInformation).to.be.undefined;
         // Verify flat fields remain flat
         expect(prefillData.spouseFullName).to.deep.equal({
@@ -724,7 +719,6 @@ describe('ezr prefill transformer', () => {
       const formDataWithFormFlags = {
         ...formData,
         maritalStatus: 'married',
-        'view:isSpouseConfirmationFlowEnabled': true,
         'view:isProvidersAndDependentsPrefillEnabled': true,
         spouseFullName: {
           first: 'John',

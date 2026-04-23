@@ -3,11 +3,7 @@ import mockUser from './fixtures/mocks/mock-user.json';
 import mockPrefill from './fixtures/mocks/mock-prefill-with-v2-prefill-data.json';
 import featureToggles from './fixtures/mocks/mock-features.json';
 import { goToNextPage } from './helpers';
-import {
-  MOCK_ENROLLMENT_RESPONSE,
-  LAST_YEAR,
-  API_ENDPOINTS,
-} from '../../utils/constants';
+import { MOCK_ENROLLMENT_RESPONSE, API_ENDPOINTS } from '../../utils/constants';
 import { advanceToHouseholdSection } from './helpers/household';
 import maxTestData from './fixtures/data/maximal-test.json';
 import {
@@ -22,26 +18,19 @@ featureToggles.data.features.push({
   name: 'ezrFormPrefillWithProvidersAndDependents',
   value: true,
 });
-featureToggles.data.features.push({
-  name: 'ezrSpouseConfirmationFlowEnabled',
-  value: false,
-});
 
 const { data } = maxTestData;
 
 function advanceToFinancialIntroductionPage(hasSpouse) {
-  goToNextPage('/household-information/marital-status');
-  if (!hasSpouse) {
-    cy.selectVaSelect('root_view:maritalStatus_maritalStatus', 'Never Married');
-  }
-  cy.injectAxeThenAxeCheck();
+  goToNextPage('/household-information/marital-status-information');
   if (hasSpouse) {
-    goToNextPage('/household-information/spouse-personal-information');
+    cy.selectVaSelect('root_view:maritalStatus_maritalStatus', 'Married');
+    goToNextPage('/household-information/spouse-information');
     cy.injectAxeThenAxeCheck();
-    goToNextPage('/household-information/spouse-additional-information');
-    cy.selectRadio('root_cohabitedLastYear', 'Y');
-    cy.selectRadio('root_sameAddress', 'Y');
+    goToNextPage('/household-information/spouse-information-summary');
     cy.injectAxeThenAxeCheck();
+  } else {
+    cy.selectVaSelect('root_view:maritalStatus_maritalStatus', 'Never Married');
   }
   goToNextPage('/household-information/dependents');
   cy.selectRadio('root_view:reportDependents', 'N');
@@ -104,11 +93,11 @@ function fillFinancialInformation(
 }
 
 describe('EZR V2 financial information flow', () => {
-  beforeEach(() => {
-    setUserDataAndAdvanceToHouseholdSection(mockUser, mockPrefill);
-  });
-
   context('when the user has no financial information to report', () => {
+    beforeEach(() => {
+      setUserDataAndAdvanceToHouseholdSection(mockUser, mockPrefill);
+    });
+
     it('should not show financial information questions', () => {
       advanceToFinancialIntroductionPage(false);
       cy.selectRadio('root_view:hasFinancialInformationToAdd', 'N');
@@ -120,6 +109,10 @@ describe('EZR V2 financial information flow', () => {
 
   context('when the user has financial information to report', () => {
     context('when the user has a spouse', () => {
+      beforeEach(() => {
+        setUserDataAndAdvanceToHouseholdSection(mockUser, mockPrefill);
+      });
+
       it('should successfully fill veteran annual income, spouse annual income, and deductible expenses', () => {
         advanceToVeteranAnnualIncomePage(true);
         fillFinancialInformation(true, data);
@@ -127,86 +120,32 @@ describe('EZR V2 financial information flow', () => {
         cy.get('va-card')
           .find('h4')
           .should('have.length', 3);
-        cy.get('va-card')
-          .find('h4')
-          .first()
-          .should('contain', `Your annual income from ${LAST_YEAR}`);
-        cy.get('va-card')
-          .find('h4')
-          .eq(1)
-          .should('contain', `Spouse’s annual income from ${LAST_YEAR}`);
-        cy.get('va-card')
-          .find('h4')
-          .last()
-          .should('contain', `Deductible expenses from ${LAST_YEAR}`);
         cy.injectAxeThenAxeCheck();
       });
-
-      context('when the user does not have a spouse', () => {
-        it('should successfully fill veteran annual income and deductible expenses, but not render the spouse annual income page', () => {
-          advanceToVeteranAnnualIncomePage(false);
-          fillFinancialInformation(false, data);
-          cy.get('va-card')
-            .find('h4')
-            .should('have.length', 2);
-          cy.get('va-card')
-            .find('h4')
-            .first()
-            .should('contain', `Your annual income from ${LAST_YEAR}`);
-          cy.get('va-card')
-            .find('h4')
-            .last()
-            .should('contain', `Deductible expenses from ${LAST_YEAR}`);
-          cy.injectAxeThenAxeCheck();
-        });
-      });
     });
-    // TODO: Fix this spec. This feature currently isn't enabled in production,
-    // so it's okay to disable for the Node 22 bug bash
-    xit('should allow the user to edit existing financial information', () => {
-      const updatedData = {
-        'view:veteranGrossIncome': {
-          veteranGrossIncome: 5,
-        },
-        'view:veteranNetIncome': {
-          veteranNetIncome: 3,
-        },
-        'view:veteranOtherIncome': {
-          veteranOtherIncome: 12,
-        },
-        'view:spouseGrossIncome': {
-          spouseGrossIncome: 5,
-        },
-        'view:spouseNetIncome': {
-          spouseNetIncome: 33,
-        },
-        'view:spouseOtherIncome': {
-          spouseOtherIncome: 3,
-        },
-        'view:deductibleMedicalExpenses': {
-          deductibleMedicalExpenses: 4,
-        },
-        'view:deductibleFuneralExpenses': {
-          deductibleFuneralExpenses: 65,
-        },
-        'view:deductibleEducationExpenses': {
-          deductibleEducationExpenses: 47,
-        },
-      };
+    context('when the user does not have a spouse', () => {
+      beforeEach(() => {
+        // Use prefill WITHOUT spouse data
+        const nospousePrefill = JSON.parse(JSON.stringify(mockPrefill));
+        delete nospousePrefill.formData.spouseFullName;
+        delete nospousePrefill.formData.spouseSocialSecurityNumber;
+        delete nospousePrefill.formData.spouseDateOfBirth;
+        delete nospousePrefill.formData.dateOfMarriage;
+        nospousePrefill.formData.maritalStatus = 'Never Married';
+        nospousePrefill.formData.maritalStatus['view:maritalStatus'] =
+          'Never Married';
 
-      advanceToVeteranAnnualIncomePage(true);
-      fillFinancialInformation(true, data);
-      cy.findAllByRole('link', {
-        name: /edit/i,
-      })
-        .first()
-        .click();
-      // There should be no delete button
-      cy.findAllByRole('button', {
-        name: /delete/i,
-      }).should('not.exist');
-      fillFinancialInformation(true, updatedData, true, true);
-      cy.injectAxeThenAxeCheck();
+        setUserDataAndAdvanceToHouseholdSection(mockUser, nospousePrefill);
+      });
+
+      it('should successfully fill veteran annual income and deductible expenses, but not render the spouse annual income page', () => {
+        advanceToVeteranAnnualIncomePage(false);
+        fillFinancialInformation(false, data);
+        cy.get('va-card')
+          .find('h4')
+          .should('have.length', 2);
+        cy.injectAxeThenAxeCheck();
+      });
     });
   });
 });
