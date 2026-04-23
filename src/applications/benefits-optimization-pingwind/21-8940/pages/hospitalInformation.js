@@ -119,22 +119,22 @@ const treatmentDateSchema = {
 
 const treatmentDateRangeUi = currentOrPastMonthYearDateRangeUI(
   {
-    title: 'Start date of treatment',
+    title: 'Start date of hospitalization',
     hint: 'For example: January 2022',
   },
   {
-    title: 'End date of treatment (if applicable)',
+    title: 'End date of hospitalization (if applicable)',
     hint: 'For example: January 2022',
   },
 );
 
 const treatmentStartDateUi = currentOrPastMonthYearDateUI({
-  title: 'Start date of treatment',
+  title: 'Start date of hospitalization',
   hint: 'For example: January 2022',
 });
 
 const treatmentEndDateUi = currentOrPastMonthYearDateUI({
-  title: 'End date of treatment (if applicable)',
+  title: 'End date of hospitalization (if applicable)',
   hint: 'For example: January 2022',
 });
 
@@ -174,7 +174,7 @@ export default {
   uiSchema: {
     ...titleUI(
       'Hospital Information',
-      'Please provide information about your hospital stays and treatment dates',
+      'Please provide information about your hospital stays and hospitalization dates',
     ),
     hospitals: {
       'ui:field': SafeArrayField,
@@ -343,16 +343,16 @@ export default {
         treatmentDates: {
           'ui:field': SafeArrayField,
           'ui:options': {
-            itemName: 'Treatment Date',
+            itemName: 'Hospitalization Date',
             viewField: DateRangeView,
-            customTitle: 'Your important treatment dates',
+            customTitle: 'Your important hospitalization dates',
             useDlWrap: true,
             keepInPageOnReview: true,
             doNotScroll: true,
             confirmRemove: true,
             confirmRemoveDescription:
-              'Are you sure you want to remove this treatment date?',
-            addAnotherText: 'Add another treatment date',
+              'Are you sure you want to remove this hospitalization date?',
+            addAnotherText: 'Add another hospitalization date',
             itemAriaLabel: ({ from, to, startDate, endDate } = {}) =>
               `Hospitalization Date: ${[from || startDate, to || endDate]
                 .filter(Boolean)
