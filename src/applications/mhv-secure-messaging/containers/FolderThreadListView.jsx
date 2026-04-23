@@ -16,6 +16,7 @@ import useInterval from '../hooks/use-interval';
 import FolderHeader from '../components/MessageList/FolderHeader';
 import { getFolders, retrieveFolder } from '../actions/folders';
 import AlertBackgroundBox from '../components/shared/AlertBackgroundBox';
+import TrackedSpinner from '../components/shared/TrackedSpinner';
 import { closeAlert } from '../actions/alerts';
 import ThreadsList from '../components/ThreadList/ThreadsList';
 import Footer from '../components/Footer';
@@ -256,9 +257,10 @@ const FolderThreadListView = () => {
     }
   }, 60000); // 1 minute
 
-  const LoadingIndicator = () => {
+  const LoadingIndicator = ({ id }) => {
     return (
-      <va-loading-indicator
+      <TrackedSpinner
+        id={id}
         message="Loading your secure messages..."
         setFocus
         data-testid="loading-indicator"
@@ -269,7 +271,7 @@ const FolderThreadListView = () => {
   const content = useMemo(
     () => {
       if (isLoading || awaitingResults) {
-        return <LoadingIndicator />;
+        return <LoadingIndicator id="thread-list-loading-indicator" />;
       }
 
       if (threadList?.length === 0 && threadSort?.page === 1) {
@@ -341,7 +343,7 @@ const FolderThreadListView = () => {
       return <AlertBackgroundBox closeable />;
     }
     if (loadingFolder || folderId === undefined) {
-      return <LoadingIndicator />;
+      return <LoadingIndicator id="folder-loading-indicator" />;
     }
     return (
       <>

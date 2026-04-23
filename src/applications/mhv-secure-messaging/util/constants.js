@@ -701,3 +701,5 @@ export const teamNotListedReasons = [
   'Your care team is part of a different VA health care system.',
   'You removed the care team from your contact list.',
 ];
+
+export const TRACKED_SPINNER_DURATION = 180000; // in milliseconds
