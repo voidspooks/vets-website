@@ -167,6 +167,7 @@ class Batteries extends Component {
                     }
                     checked={isBatterySelected(batterySupply.productId)}
                     label="Order batteries for this device"
+                    data-dd-action-name="Order batteries for this device"
                   />
                 </div>
               )}

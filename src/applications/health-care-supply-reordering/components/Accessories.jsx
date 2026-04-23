@@ -150,6 +150,7 @@ class Accessories extends Component {
                     }
                     checked={isAccessorySelected(accessorySupply.productId)}
                     label="Order this hearing aid accessory"
+                    data-dd-action-name="Order this hearing aid accessory"
                   />
                 </div>
               )}

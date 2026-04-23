@@ -161,4 +161,12 @@ describe('Accessories', () => {
     );
     wrapper.unmount();
   });
+  it('should include data-dd-action-name on the hearing aid accessory checkbox', () => {
+    const wrapper = mount(<Accessories store={fakeStore} />);
+    const checkbox = wrapper.find('VaCheckbox').first();
+    expect(checkbox.prop('data-dd-action-name')).to.equal(
+      'Order this hearing aid accessory',
+    );
+    wrapper.unmount();
+  });
 });

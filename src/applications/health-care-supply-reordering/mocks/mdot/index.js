@@ -1,3 +1,14 @@
+// Generate dates relative to now so mock data doesn't go stale
+const now = new Date();
+const sixMonthsAgo = new Date(now);
+sixMonthsAgo.setMonth(now.getMonth() - 6);
+const yesterday = new Date(now);
+yesterday.setDate(now.getDate() - 1);
+const oneYearAgo = new Date(now);
+oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+const formatDate = d => d.toISOString().split('T')[0];
+
 const suppliesResponse = {
   formData: {
     fullName: {
@@ -36,8 +47,8 @@ const suppliesResponse = {
         productGroup: 'Accessory',
         productId: 6584,
         availableForReorder: true,
-        lastOrderDate: '2022-05-16',
-        nextAvailabilityDate: '2022-10-16',
+        lastOrderDate: formatDate(sixMonthsAgo),
+        nextAvailabilityDate: formatDate(yesterday),
         quantity: 5,
       },
       {
@@ -45,8 +56,8 @@ const suppliesResponse = {
         productGroup: 'Apnea',
         productId: 6641,
         availableForReorder: true,
-        lastOrderDate: '2022-07-05',
-        nextAvailabilityDate: '2022-12-05',
+        lastOrderDate: formatDate(sixMonthsAgo),
+        nextAvailabilityDate: formatDate(yesterday),
         quantity: 1,
       },
       {
@@ -54,17 +65,29 @@ const suppliesResponse = {
         productGroup: 'Apnea',
         productId: 6650,
         availableForReorder: true,
-        lastOrderDate: '2022-07-05',
-        nextAvailabilityDate: '2022-12-05',
+        lastOrderDate: formatDate(sixMonthsAgo),
+        nextAvailabilityDate: formatDate(yesterday),
         quantity: 1,
       },
       {
         productName: 'AIRCURVE10-ASV-CLIMATELINE',
         productGroup: 'Apnea',
         productId: 8467,
-        lastOrderDate: '2022-07-06',
-        nextAvailabilityDate: '2022-12-06',
+        availableForReorder: true,
+        lastOrderDate: formatDate(sixMonthsAgo),
+        nextAvailabilityDate: formatDate(yesterday),
         quantity: 1,
+      },
+      {
+        deviceName: 'OTICON REAL 1 MINIRITE R',
+        productName: 'ZA312',
+        productGroup: 'Battery',
+        productId: 2299,
+        availableForReorder: true,
+        lastOrderDate: formatDate(sixMonthsAgo),
+        nextAvailabilityDate: formatDate(yesterday),
+        quantity: 60,
+        prescribedDate: formatDate(oneYearAgo),
       },
     ],
   },

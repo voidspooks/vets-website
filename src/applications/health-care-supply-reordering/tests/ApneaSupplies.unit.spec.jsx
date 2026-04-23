@@ -151,4 +151,12 @@ describe('ApneaSupplies', () => {
     );
     wrapper.unmount();
   });
+  it('should include data-dd-action-name on the CPAP supply checkbox', () => {
+    const wrapper = mount(<ApneaSupplies store={fakeStore} />);
+    const checkbox = wrapper.find('VaCheckbox').first();
+    expect(checkbox.prop('data-dd-action-name')).to.equal(
+      'Order this CPAP supply',
+    );
+    wrapper.unmount();
+  });
 });

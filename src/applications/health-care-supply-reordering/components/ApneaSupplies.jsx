@@ -151,6 +151,7 @@ class ApneaSupplies extends Component {
                         }
                         checked={isApneaSupplySelected(apneaSupply.productId)}
                         label="Order this CPAP supply"
+                        data-dd-action-name="Order this CPAP supply"
                       />
                     </div>
                   )}
