@@ -22,9 +22,6 @@ import withRouter from '../utils/withRouter';
 import Default5103EvidenceNotice from '../components/claim-document-request-pages/Default5103EvidenceNotice';
 import { cstMultiClaimProvider } from '../selectors';
 
-const filesPath = '../files';
-const statusPath = '../status';
-
 class DocumentRequestPage extends React.Component {
   componentDidMount() {
     this.props.resetUploads();
@@ -38,8 +35,10 @@ class DocumentRequestPage extends React.Component {
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(props) {
+    const providerSearch = this.props.location?.search || '';
+    const statusPath = `../status${providerSearch}`;
     if (!props.loading && !props.trackedItem) {
-      this.props.navigate(`../status`, {
+      this.props.navigate(statusPath, {
         replace: true,
       });
     }
@@ -56,6 +55,8 @@ class DocumentRequestPage extends React.Component {
   }
 
   handleUploadComplete() {
+    const providerSearch = this.props.location?.search || '';
+    const statusPath = `../status${providerSearch}`;
     const provider = this.props.cstMultiClaimProviderEnabled
       ? this.props.claim?.attributes?.provider
       : null;
@@ -71,6 +72,10 @@ class DocumentRequestPage extends React.Component {
     } = this.props;
 
     const pageProps = {
+      acceptedFileTypes: this.props.claim?.attributes?.uploadMetadata
+        ?.acceptedFileTypes,
+      documentTypes: this.props.claim?.attributes?.uploadMetadata
+        ?.documentTypeOptions,
       item: this.props.trackedItem,
       message,
       onCancel: this.props.cancelUpload,
@@ -80,6 +85,7 @@ class DocumentRequestPage extends React.Component {
           this.props.trackedItem,
           files,
           timezoneMitigationEnabled,
+          this.props.claim?.attributes?.uploadMetadata,
         ),
       progress: this.props.progress,
       type1UnknownErrors,
@@ -101,6 +107,9 @@ class DocumentRequestPage extends React.Component {
       const previousPage = sessionStorage.getItem('previousPage');
       return previousPage === 'files';
     };
+    const providerSearch = this.props.location?.search || '';
+    const filesPath = `../files${providerSearch}`;
+    const statusPath = `../status${providerSearch}`;
 
     const filesBreadcrumb = {
       href: filesPath,

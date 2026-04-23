@@ -21,6 +21,7 @@ import UploadStatus from '../UploadStatus';
 import {
   LABEL_TEXT,
   HINT_TEXT,
+  buildUploadHintText,
   VALIDATION_ERROR,
   PASSWORD_ERROR,
   DOC_TYPE_ERROR,
@@ -227,6 +228,8 @@ const createSubmissionPayload = (files, docTypes, encrypted) => {
 };
 
 const AddFilesForm = ({
+  acceptedFileTypes,
+  documentTypes,
   fileTab,
   hideOtherWaysLink,
   onSubmit,
@@ -240,6 +243,11 @@ const AddFilesForm = ({
   const [encrypted, setEncrypted] = useState([]);
   const [canShowUploadModal, setCanShowUploadModal] = useState(false);
   const fileInputRef = useRef(null);
+  const selectOptions = documentTypes?.length ? documentTypes : DOC_TYPES;
+  const fileTypes = acceptedFileTypes?.length ? acceptedFileTypes : FILE_TYPES;
+  const uploadHintText = acceptedFileTypes?.length
+    ? buildUploadHintText(fileTypes)
+    : HINT_TEXT;
 
   // Build the href for "other ways to send documents" link
   // When on the files tab, use anchor link; otherwise use full path
@@ -364,9 +372,9 @@ const AddFilesForm = ({
           )}
         </div>
         <VaFileInputMultiple
-          accept={FILE_TYPES.map(type => `.${type}`).join(',')}
+          accept={fileTypes.map(type => `.${type}`).join(',')}
           ref={fileInputRef}
-          hint={HINT_TEXT}
+          hint={uploadHintText}
           label={LABEL_TEXT}
           labelClass="vads-u-visibility--screen-reader"
           onVaMultipleChange={handleFileChange}
@@ -381,7 +389,7 @@ const AddFilesForm = ({
             name="docType"
             label="What type of document is this?"
           >
-            {DOC_TYPES.map(doc => (
+            {selectOptions.map(doc => (
               <option key={doc.value} value={doc.value}>
                 {doc.label}
               </option>
@@ -432,6 +440,13 @@ const AddFilesForm = ({
 };
 
 AddFilesForm.propTypes = {
+  acceptedFileTypes: PropTypes.arrayOf(PropTypes.string),
+  documentTypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    }),
+  ),
   progress: PropTypes.number.isRequired,
   uploading: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,

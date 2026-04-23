@@ -1,6 +1,10 @@
 import React from 'react';
 import environment from '@department-of-veterans-affairs/platform-utilities/environment';
-import { MAX_FILE_SIZE_MB, MAX_PDF_SIZE_MB } from './utils/validations';
+import {
+  FILE_TYPES,
+  MAX_FILE_SIZE_MB,
+  MAX_PDF_SIZE_MB,
+} from './utils/validations';
 
 /**
  * Service registry for unavailable service alerts.
@@ -217,7 +221,13 @@ export const standard5103Item = {
 
 // File upload form text constants
 export const LABEL_TEXT = 'Upload additional evidence';
-export const HINT_TEXT = `You can upload a .pdf, .gif, .jpg, .jpeg, .bmp, or .txt file. Your file should be no larger than ${MAX_FILE_SIZE_MB} MB (non-PDF) or ${MAX_PDF_SIZE_MB} MB (PDF only).`;
+export const buildUploadHintText = (fileTypes = FILE_TYPES) =>
+  `You can upload a ${fileTypes
+    .map(type => `.${type}`)
+    .join(
+      ', ',
+    )} file. Your file should be no larger than ${MAX_FILE_SIZE_MB} MB (non-PDF) or ${MAX_PDF_SIZE_MB} MB (PDF only).`;
+export const HINT_TEXT = buildUploadHintText();
 export const VALIDATION_ERROR = 'Please select a file first';
 export const PASSWORD_ERROR = 'Please provide a password to decrypt this file';
 export const DOC_TYPE_ERROR = 'Please provide a document type';

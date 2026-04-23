@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/browser';
 
 import recordEvent from 'platform/monitoring/record-event';
 import { apiRequest } from '@department-of-veterans-affairs/platform-utilities/exports';
-import environment from '@department-of-veterans-affairs/platform-utilities/environment';
 import localStorage from 'platform/utilities/storage/localStorage';
 
 import { getErrorStatus, UNKNOWN_STATUS } from '../utils/appeals-v2-helpers';
@@ -17,6 +16,10 @@ import {
   getTimezoneDiscrepancyMessage,
   getDocTypeDescription,
 } from '../utils/helpers';
+import {
+  resolveUploadDestinationConfig,
+  resolveFinalizeDestinationConfig,
+} from '../utils/uploadDestinationConfig';
 import { setPageFocus } from '../utils/page';
 import { mockApi } from '../tests/e2e/fixtures/mocks/mock-api';
 import manifest from '../manifest.json';
@@ -414,6 +417,7 @@ export function submitFiles(
   trackedItem,
   files,
   timezoneMitigationEnabled = false,
+  uploadMetadata = {},
 ) {
   let filesComplete = 0;
   let bytesComplete = 0;
@@ -422,6 +426,12 @@ export function submitFiles(
   const totalSize = files.reduce((sum, file) => sum + file.file.size, 0);
   const totalFiles = files.length;
   const trackedItemId = trackedItem ? trackedItem.id : null;
+  const uploadDestinationConfig = resolveUploadDestinationConfig({
+    claimId,
+    trackedItemId,
+    uploadMetadata,
+  });
+  const uploadedFiles = [];
 
   // Record enhanced upload start event and get retry info for each file
   const { filesWithRetryInfo, retryFileCount } = recordUploadStartEvent({
@@ -446,9 +456,7 @@ export function submitFiles(
         const csrfTokenStored = localStorage.getItem('csrfToken');
         const uploader = new FineUploaderBasic({
           request: {
-            endpoint: `${
-              environment.API_URL
-            }/v0/benefits_claims/${claimId}/benefits_documents`,
+            endpoint: uploadDestinationConfig.endpoint,
             inputName: 'file',
             customHeaders: {
               'Source-App-Name': manifest.entryName,
@@ -462,7 +470,36 @@ export function submitFiles(
           },
           multiple: false,
           callbacks: {
-            onAllComplete: () => {
+            onAllComplete: async () => {
+              if (!hasError) {
+                const finalizeConfig = resolveFinalizeDestinationConfig({
+                  claimId,
+                  uploadMetadata,
+                  uploadedFiles,
+                });
+
+                if (finalizeConfig) {
+                  try {
+                    await apiRequest(finalizeConfig.endpoint, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(finalizeConfig.requestBody),
+                    });
+                  } catch (error) {
+                    hasError = error || true;
+                    errorFiles.push({
+                      errors: [
+                        {
+                          detail: 'DOC_UPLOAD_FINALIZE_FAILED',
+                        },
+                      ],
+                      fileName: 'Submission finalization',
+                      docType: 'Supporting document',
+                    });
+                  }
+                }
+              }
+
               if (!hasError) {
                 recordUploadSuccessEvent({
                   fileCount: totalFiles,
@@ -517,7 +554,7 @@ export function submitFiles(
                 ),
               });
             },
-            onComplete: () => {
+            onComplete: (id, fileName, responseJSON) => {
               filesComplete += 1;
               dispatch({
                 type: SET_PROGRESS,
@@ -528,6 +565,20 @@ export function submitFiles(
                   bytesComplete,
                 ),
               });
+
+              const confirmationCode =
+                responseJSON?.data?.attributes?.confirmationCode;
+              if (confirmationCode) {
+                const matchingFile = files[id] || {};
+                uploadedFiles.push({
+                  confirmationCode,
+                  name: fileName,
+                  attachmentId:
+                    matchingFile?.docType?.value ||
+                    matchingFile?.attachmentId?.value ||
+                    matchingFile?.attachmentId,
+                });
+              }
             },
             onError: (id, fileName, _reason, { response, status }) => {
               if (status === 401) {
@@ -571,12 +622,11 @@ export function submitFiles(
         });
 
         /* eslint-disable camelcase */
-        files.forEach(({ file, docType, password }) => {
-          uploader.addFiles(file, {
-            tracked_item_ids: JSON.stringify([trackedItemId]),
-            document_type: docType.value,
-            password: password.value,
-          });
+        files.forEach(fileMeta => {
+          uploader.addFiles(
+            fileMeta.file,
+            uploadDestinationConfig.buildUploadParams(fileMeta),
+          );
         });
         /* eslint-enable camelcase */
       },

@@ -576,3 +576,106 @@ context('when claim has supporting documents (additional evidence)', () => {
     expectMaskedFilenames(container);
   });
 });
+
+context(
+  'when claim has successful evidence submissions without supporting documents',
+  () => {
+    const claim = {
+      type: 'claim',
+      attributes: {
+        trackedItems: [],
+        supportingDocuments: [],
+        evidenceSubmissions: [
+          {
+            id: 99,
+            fileName: 'successful-evidence.pdf',
+            documentType: 'Supporting document',
+            uploadStatus: 'SUCCESS',
+            createdAt: '2026-04-16',
+          },
+        ],
+      },
+    };
+
+    it('should render successful evidence submission under files received', () => {
+      const { container, getByText } = render(<FilesReceived claim={claim} />);
+
+      expect($('.files-received-container', container)).to.exist;
+      expect($('va-tag-status[text="On file"]', container)).to.exist;
+      expect(getByText('successful-evidence.pdf')).to.exist;
+      expect(getByText('Document type: Supporting document')).to.exist;
+      expect(getByText('You submitted this file as additional evidence.')).to
+        .exist;
+      expect(getByText('Received on April 16, 2026')).to.exist;
+    });
+  },
+);
+
+context(
+  'when successful evidence submissions are returned with snake_case keys',
+  () => {
+    /* eslint-disable camelcase */
+    const claim = {
+      type: 'claim',
+      attributes: {
+        trackedItems: [],
+        supportingDocuments: [],
+        evidenceSubmissions: [
+          {
+            id: 100,
+            file_name: 'snake-case-successful-evidence.pdf',
+            document_type: 'Supporting document',
+            upload_status: 'SUCCESS',
+            created_at: '2026-04-16',
+          },
+        ],
+      },
+    };
+    /* eslint-enable camelcase */
+
+    it('should render snake_case successful evidence submission under files received', () => {
+      const { container, getByText } = render(<FilesReceived claim={claim} />);
+
+      expect($('.files-received-container', container)).to.exist;
+      expect($('va-tag-status[text="On file"]', container)).to.exist;
+      expect(getByText('snake-case-successful-evidence.pdf')).to.exist;
+      expect(getByText('Document type: Supporting document')).to.exist;
+      expect(getByText('You submitted this file as additional evidence.')).to
+        .exist;
+      expect(getByText('Received on April 16, 2026')).to.exist;
+    });
+  },
+);
+
+context(
+  'when claim has both supporting documents and successful evidence submissions with the same file name',
+  () => {
+    const claim = {
+      type: 'claim',
+      attributes: {
+        trackedItems: [],
+        supportingDocuments: [
+          {
+            originalFileName: 'duplicate-file.pdf',
+            documentTypeLabel: 'Additional Evidence',
+            date: '2026-04-16',
+          },
+        ],
+        evidenceSubmissions: [
+          {
+            id: 101,
+            fileName: 'duplicate-file.pdf',
+            documentType: 'Supporting document',
+            uploadStatus: 'SUCCESS',
+            createdAt: '2026-04-16',
+          },
+        ],
+      },
+    };
+
+    it('should not duplicate the same file in files received', () => {
+      const { getAllByText } = render(<FilesReceived claim={claim} />);
+      expect(getAllByText('duplicate-file.pdf')).to.have.lengthOf(1);
+    });
+  },
+);

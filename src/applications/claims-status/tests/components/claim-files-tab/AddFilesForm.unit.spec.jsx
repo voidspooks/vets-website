@@ -138,6 +138,46 @@ describe('<AddFilesForm>', () => {
     expect(additionalInfo).to.be.null;
   });
 
+  it('renders provider-configured document type options when provided', () => {
+    const initialState = {
+      featureToggles: { loading: false },
+    };
+    const customOptions = [
+      { value: 'Birth certificate', label: 'Birth certificate' },
+      { value: 'Marriage certificate', label: 'Marriage certificate' },
+    ];
+
+    const { container } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} documentTypes={customOptions} />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+
+    const options = Array.from(container.querySelectorAll('va-select option'));
+    const values = options.map(option => option.value);
+
+    expect(values).to.include('Birth certificate');
+    expect(values).to.include('Marriage certificate');
+    expect(values).to.not.include('L014');
+  });
+
+  it('renders provider-configured accepted file types and hint text when provided', () => {
+    const initialState = {
+      featureToggles: { loading: false },
+    };
+    const acceptedFileTypes = ['pdf', 'jpg', 'jpeg', 'png'];
+
+    const { container } = renderWithRouterAndRedux(
+      <AddFilesForm {...fileFormProps} acceptedFileTypes={acceptedFileTypes} />,
+      { initialState, initialEntries: defaultInitialEntries },
+    );
+
+    const fileInput = $('va-file-input-multiple', container);
+    expect(fileInput.getAttribute('accept')).to.equal('.pdf,.jpg,.jpeg,.png');
+    expect(fileInput.getAttribute('hint')).to.contain(
+      'You can upload a .pdf, .jpg, .jpeg, .png file.',
+    );
+  });
+
   describe('va-link for other ways to send documents', () => {
     const initialState = {
       featureToggles: { loading: false },

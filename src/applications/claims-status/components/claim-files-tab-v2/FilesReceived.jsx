@@ -3,11 +3,41 @@ import React from 'react';
 import { VaButton } from '@department-of-veterans-affairs/component-library/dist/react-bindings';
 
 import * as TrackedItem from '../../utils/trackedItemContent';
+import { getTrackedItemDisplayNameFromEvidenceSubmission } from '../../utils/helpers';
 import { useIncrementalReveal } from '../../hooks/useIncrementalReveal';
 import { ANCHOR_LINKS } from '../../constants';
 import DocumentCard from '../DocumentCard';
 
 const NEED_ITEMS_STATUS = 'NEEDED_FROM_';
+
+const getEvidenceValue = (submission, camelKey, snakeKey) =>
+  submission?.[camelKey] ?? submission?.[snakeKey];
+
+const getUploadStatus = submission =>
+  getEvidenceValue(submission, 'uploadStatus', 'upload_status');
+
+const normalizeEvidenceSubmission = submission => ({
+  ...submission,
+  createdAt: getEvidenceValue(submission, 'createdAt', 'created_at'),
+  documentType: getEvidenceValue(submission, 'documentType', 'document_type'),
+  fileName: getEvidenceValue(submission, 'fileName', 'file_name'),
+  trackedItemDisplayName: getEvidenceValue(
+    submission,
+    'trackedItemDisplayName',
+    'tracked_item_display_name',
+  ),
+  trackedItemFriendlyName: getEvidenceValue(
+    submission,
+    'trackedItemFriendlyName',
+    'tracked_item_friendly_name',
+  ),
+  trackedItemId: getEvidenceValue(
+    submission,
+    'trackedItemId',
+    'tracked_item_id',
+  ),
+  uploadStatus: getUploadStatus(submission),
+});
 
 const getTrackedItemText = item => {
   if (item.status === 'INITIAL_REVIEW_COMPLETE' || item.status === 'ACCEPTED') {
@@ -66,10 +96,45 @@ const generateDocsFiled = docsFiled => {
   });
 };
 
-const getSortedItems = itemsFiled => {
-  // Get items from trackedItems and additionalEvidence
-  const items = generateDocsFiled(itemsFiled);
+const successfulEvidenceSubmissionsToReceivedItems = (
+  evidenceSubmissions = [],
+  supportingDocuments = [],
+) => {
+  const supportingDocumentFileNames = new Set(
+    supportingDocuments
+      .map(doc => doc?.originalFileName)
+      .filter(Boolean)
+      .map(fileName => fileName.toLowerCase()),
+  );
 
+  return evidenceSubmissions
+    .map(normalizeEvidenceSubmission)
+    .filter(es => es.uploadStatus === 'SUCCESS')
+    .filter(es => {
+      const fileName = es.fileName?.toLowerCase();
+      return fileName ? !supportingDocumentFileNames.has(fileName) : true;
+    })
+    .map(es => {
+      const requestType = getTrackedItemDisplayNameFromEvidenceSubmission(es);
+      const requestTypeText = requestType
+        ? `Submitted in response to request: ${requestType}`
+        : 'You submitted this file as additional evidence.';
+
+      return {
+        requestTypeText,
+        document: {
+          originalFileName: es.fileName,
+          documentTypeLabel: es.documentType,
+          uploadDate: es.createdAt,
+        },
+        text: null,
+        date: es.createdAt,
+        type: 'additional_evidence_item',
+      };
+    });
+};
+
+const sortReceivedItems = items => {
   return items.sort((item1, item2) => {
     return new Date(item2.date) - new Date(item1.date);
   });
@@ -105,15 +170,26 @@ const getStatusBadgeStatus = item => {
 };
 
 const FilesReceived = ({ claim }) => {
-  const { supportingDocuments, trackedItems } = claim.attributes;
+  const {
+    supportingDocuments = [],
+    trackedItems = [],
+    evidenceSubmissions = [],
+  } = claim.attributes;
 
   // Get itemsFiled from trackedItems and supportingDocuments
   const itemsFiled = trackedItems.filter(
     item => !item.status.startsWith(NEED_ITEMS_STATUS),
   );
   itemsFiled.push(...supportingDocuments);
+  const receivedItems = generateDocsFiled(itemsFiled);
+  receivedItems.push(
+    ...successfulEvidenceSubmissionsToReceivedItems(
+      evidenceSubmissions,
+      supportingDocuments,
+    ),
+  );
 
-  const allItems = getSortedItems(itemsFiled);
+  const allItems = sortReceivedItems(receivedItems);
 
   const {
     currentPageItems,

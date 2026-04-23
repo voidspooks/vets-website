@@ -12,17 +12,49 @@ import TimezoneDiscrepancyMessage from '../TimezoneDiscrepancyMessage';
 import { ANCHOR_LINKS } from '../../constants';
 import { setPageFocus } from '../../utils/page';
 
+const getEvidenceValue = (submission, camelKey, snakeKey) =>
+  submission?.[camelKey] ?? submission?.[snakeKey];
+
+const getUploadStatus = submission =>
+  getEvidenceValue(submission, 'uploadStatus', 'upload_status');
+
+const normalizeEvidenceSubmission = submission => ({
+  ...submission,
+  createdAt: getEvidenceValue(submission, 'createdAt', 'created_at'),
+  documentType: getEvidenceValue(submission, 'documentType', 'document_type'),
+  fileName: getEvidenceValue(submission, 'fileName', 'file_name'),
+  trackedItemDisplayName: getEvidenceValue(
+    submission,
+    'trackedItemDisplayName',
+    'tracked_item_display_name',
+  ),
+  trackedItemFriendlyName: getEvidenceValue(
+    submission,
+    'trackedItemFriendlyName',
+    'tracked_item_friendly_name',
+  ),
+  trackedItemId: getEvidenceValue(
+    submission,
+    'trackedItemId',
+    'tracked_item_id',
+  ),
+  uploadStatus: getUploadStatus(submission),
+});
+
 const generateInProgressDocs = evidenceSubmissions => {
   return (evidenceSubmissions || [])
+    .map(normalizeEvidenceSubmission)
     .filter(es => es.uploadStatus !== 'FAILED' && es.uploadStatus !== 'SUCCESS')
-    .map(es => ({
-      ...es,
+    .map(submission => ({
+      ...submission,
       uploadStatusDisplayValue: 'Submission in progress',
     }));
 };
 
 const hasFailedUploads = evidenceSubmissions => {
-  return (evidenceSubmissions || []).some(es => es.uploadStatus === 'FAILED');
+  return (evidenceSubmissions || [])
+    .map(normalizeEvidenceSubmission)
+    .some(es => es.uploadStatus === 'FAILED');
 };
 
 const getSortedInProgressItems = evidenceSubmissions => {

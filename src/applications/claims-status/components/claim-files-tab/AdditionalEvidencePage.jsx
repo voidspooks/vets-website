@@ -21,8 +21,6 @@ import * as TrackedItem from '../../utils/trackedItemContent';
 import withRouter from '../../utils/withRouter';
 import { cstMultiClaimProvider } from '../../selectors';
 
-const filesPath = `../files`;
-
 class AdditionalEvidencePage extends React.Component {
   componentDidMount() {
     this.props.resetUploads();
@@ -53,10 +51,13 @@ class AdditionalEvidencePage extends React.Component {
       null,
       files,
       this.props.timezoneMitigationEnabled,
+      this.props.claim?.attributes?.uploadMetadata,
     );
   }
 
   goToFilesPage() {
+    const providerSearch = this.props.location?.search || '';
+    const filesPath = `../files${providerSearch}`;
     const provider = this.props.cstMultiClaimProviderEnabled
       ? this.props.claim?.attributes?.provider
       : null;
@@ -124,6 +125,12 @@ class AdditionalEvidencePage extends React.Component {
                 </Toggler.Disabled>
               </Toggler>
               <AddFilesForm
+                acceptedFileTypes={
+                  claim?.attributes?.uploadMetadata?.acceptedFileTypes
+                }
+                documentTypes={
+                  claim?.attributes?.uploadMetadata?.documentTypeOptions
+                }
                 fileTab
                 progress={this.props.progress}
                 uploading={this.props.uploading}

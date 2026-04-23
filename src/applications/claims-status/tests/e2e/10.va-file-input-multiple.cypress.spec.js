@@ -503,8 +503,8 @@ describe('VA File Input Multiple', () => {
         '/v0/benefits_claims/189685/benefits_documents',
         req => {
           const formData = req.body;
-          // Verify password field is empty (not the actual password that was typed earlier)
-          expect(formData).to.include('name="password"');
+          // Verify password field is omitted after switching to a non-encrypted file
+          expect(formData).to.not.include('name="password"');
           expect(formData).to.not.include('my-password');
           req.reply({ statusCode: 200, body: {} });
         },
@@ -1088,7 +1088,7 @@ describe('VA File Input Multiple', () => {
         .find('va-text-input')
         .shadow()
         .find('input')
-        .type('middle-password', { force: true });
+        .type('{selectall}{backspace}middle-password', { force: true });
 
       // Change file 2 (last): regular to regular
       getFileInput(2)

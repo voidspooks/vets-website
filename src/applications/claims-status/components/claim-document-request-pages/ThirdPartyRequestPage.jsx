@@ -8,6 +8,8 @@ import { resolveSharedContent } from './shared/descriptionContent';
 import RequestNotifications from './shared/RequestNotifications';
 
 export default function ThirdPartyRequestPage({
+  acceptedFileTypes,
+  documentTypes,
   item,
   onCancel,
   onSubmit,
@@ -108,6 +110,8 @@ export default function ThirdPartyRequestPage({
       {item.canUploadFile && (
         <>
           <AddFilesForm
+            acceptedFileTypes={acceptedFileTypes}
+            documentTypes={documentTypes}
             hideOtherWaysLink
             progress={progress}
             uploading={uploading}
@@ -124,6 +128,8 @@ export default function ThirdPartyRequestPage({
 }
 
 ThirdPartyRequestPage.propTypes = {
+  acceptedFileTypes: PropTypes.array,
+  documentTypes: PropTypes.array,
   item: PropTypes.object.isRequired,
   onCancel: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,

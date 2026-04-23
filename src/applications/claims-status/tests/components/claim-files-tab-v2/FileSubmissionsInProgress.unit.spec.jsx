@@ -281,4 +281,41 @@ describe('<FileSubmissionsInProgress>', () => {
         .exist;
     });
   });
+
+  context('when evidence submissions use snake_case keys', () => {
+    const claimWithSnakeCaseSuccess = {
+      type: 'claim',
+      attributes: {
+        evidenceSubmissions: [
+          {
+            id: 1,
+            file_name: 'snake-case-success.pdf',
+            document_type: 'Medical records',
+            created_at: '2024-01-15T10:00:00Z',
+            upload_status: 'SUCCESS',
+          },
+        ],
+        supportingDocuments: [
+          {
+            documentId: '{1}',
+            documentTypeLabel: 'Medical records',
+            originalFileName: 'snake-case-success.pdf',
+            uploadDate: '2024-01-15T10:00:00Z',
+          },
+        ],
+      },
+    };
+
+    it('treats successful snake_case submissions as not in progress', () => {
+      const { getByText, queryByText } = render(
+        <Provider store={store}>
+          <FileSubmissionsInProgress claim={claimWithSnakeCaseSuccess} />
+        </Provider>,
+      );
+
+      expect(getByText('We’ve received all the files you’ve uploaded.')).to
+        .exist;
+      expect(queryByText('snake-case-success.pdf')).to.not.exist;
+    });
+  });
 });
