@@ -1,0 +1,12 @@
+{
+  "appName": "Apply for VA Education Benefits Under the National Call to Service Program",
+  "entryFile": "./app-entry.jsx",
+  "entryName": "edu-benefits-1990n",
+  "rootUrl": "/education/apply-for-education-benefits/application/1990n",
+  "productId": "edu-benefits-1990n",
+  "template": {
+    "vagovprod": true,
+    "layout": "page-react.html",
+    "includeBreadcrumbs": true
+  }
+}
