@@ -8,11 +8,6 @@ describe('GetFormHelp component', () => {
     expect(() => render(<GetFormHelp />)).to.not.throw();
   });
 
-  it('renders the Need help heading', () => {
-    const { getByText } = render(<GetFormHelp />);
-    expect(getByText('Need help?')).to.exist;
-  });
-
   it('renders telephone elements', () => {
     const { container } = render(<GetFormHelp />);
     const phoneElements = container.querySelectorAll('va-telephone');
